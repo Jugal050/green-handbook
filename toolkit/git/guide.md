@@ -7,16 +7,32 @@
 ### Windows
 
    1. 安装Git客户端
+
    2. 配置用户名、邮箱
-          git config --global user.name 'yourname'
-          git config --global user.email 'email@email.com'
+
+	``````
+        git config --global user.name 'yourname'
+        git config --global user.email 'email@email.com'
+	``````
+
    3. 生成公钥
-          ssh -keygen -t rsa -C 'email@email.com'
+
+	``````
+        ssh -keygen -t rsa -C 'email@email.com'
+	``````
+
    4. 连接github
-          登陆github,右上角Settings > SSH and GPG keys > New SSH key<br>
-          将第3步生成的公钥(C:\Users\Adminstrator\.ssh\id_rsa.pub)中的全部内容粘贴到Key下的文本框中，Title可不填，点击'Add SSH key'保存即可
+
+	``````
+        登陆github,右上角Settings > SSH and GPG keys > New SSH key<br>
+        将第3步生成的公钥(C:\Users\Adminstrator\.ssh\id_rsa.pub)中的全部内容粘贴到Key下的文本框中，Title可不填，点击'Add SSH key'保存即可
+	``````
+
    5. 测试
-          ssh -T git@github.com
+
+	``````
+        ssh -T git@github.com
+	``````
 
 ### Mac
 
