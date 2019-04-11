@@ -1,10 +1,10 @@
-#Git Guide
+# Git Guide
 
 ## Install
 
- <p>Install website: <a href="http://www.git-scm.com/download">http://www.git-scm.com/download/</a></p>
+ <p>下载地址: <a href="http://www.git-scm.com/download">http://www.git-scm.com/download/</a></p>
 
-###Windows
+### Windows
 
    1. 安装Git客户端
    2. 配置用户名、邮箱
@@ -18,9 +18,9 @@
    5. 测试
           ssh -T git@github.com
 
-###Mac
+### Mac
 
-###Unix/Linux
+### Unix/Linux
 
 
 ## Command
@@ -29,6 +29,8 @@
 
    常用命令：
 1. 初始化仓库
+
+	``````
 	* 在当前目录新建一个Git仓库
 	$ git init
 
@@ -37,9 +39,12 @@
 
 	* 下载一个项目和它的整个仓库历史
 	$ git clone [url]
-	
+	``````
+
 2. 配置git
+
 	Git的设置文件为.gitconfig，它可以在用户主目录下（全局配置），也可以在项目目录下（项目配置）。	
+	``````
 	* 显示当前的Git配置
 	$ git config --list
 
@@ -49,8 +54,11 @@
 	* 设置提交代码时的用户信息
 	$ git config [--global] user.name "[name]"
 	$ git config [--global] user.email "[email address]"
+	``````
 	
 3. 增加、删除文件
+
+	``````
 	* 添加指定文件到暂存区
 	$ git add [file1] [file2] ...
 
@@ -72,8 +80,11 @@
 
 	* 改名文件，并且将这个改名放入暂存区
 	$ git mv [file-original] [file-renamed]	
-	
+	``````
+
 4. 提交
+
+	``````
 	* 提交暂存区到仓库区
 	$ git commit -m [message]
 
@@ -92,8 +103,11 @@
 
 	* 重做上一次commit，并包括指定文件的新变化
 	$ git commit --amend [file1] [file2] ...
-	
+	``````
+
 5. 分支
+
+	``````
 	* 列出所有本地分支
 	$ git branch
 
@@ -136,8 +150,11 @@
 	* 删除远程分支
 	$ git push origin --delete [branch-name]
 	$ git branch -dr [remote/branch]	
-	
+	``````
+
 6. 标签
+
+	``````
 	* 列出所有tag
 	$ git tag
 
@@ -164,8 +181,11 @@
 
 	* 新建一个分支，指向某个tag
 	$ git checkout -b [branch] [tag]	
-	
+	``````
+
 7. 查看信息
+
+	``````
 	* 显示有变更的文件
 	$ git status
 
@@ -229,8 +249,11 @@
 
 	* 从本地master拉取代码更新当前分支：branch 一般为master
 	$ git rebase [branch]	
-	
+	``````
+
 8. 远程同步
+
+	``````	
 	* 更新远程仓储
 	$ git remote update  
 	
@@ -257,8 +280,11 @@
 
 	* 推送所有分支到远程仓库
 	$ git push [remote] --all
-	
+	``````	
+
 9. 撤销
+
+	``````
 	* 恢复暂存区的指定文件到工作区
 	$ git checkout [file]
 
@@ -290,8 +316,11 @@
 	* 暂时将未提交的变化移除，稍后再移入
 	$ git stash
 	$ git stash pop	
+	``````
 
 10. 其他
+
+	``````
 	* 生成一个可供发布的压缩包
-	$ git archive
-	      
+	$ git archive	
+	``````
