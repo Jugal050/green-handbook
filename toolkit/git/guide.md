@@ -1,59 +1,59 @@
 # Git Guide
 
-## Install
+## 一、Install
 
  <p>下载地址: <a href="http://www.git-scm.com/download">http://www.git-scm.com/download/</a></p>
 
-### Windows
+#### Windows
 
    1. 安装Git客户端
 
    2. 配置用户名、邮箱
 
-	``````
-        git config --global user.name 'yourname'
-        git config --global user.email 'email@email.com'
-	``````
+      ```
+      git config --global user.name 'yourname'
+      git config --global user.email 'email@email.com'
+      ```
 
    3. 生成公钥
 
-	``````
-        ssh -keygen -t rsa -C 'email@email.com'
-	``````
+      ```
+      ssh -keygen -t rsa -C 'email@email.com'
+      ```
 
    4. 连接github
 
-	``````
-        登陆github,右上角Settings > SSH and GPG keys > New SSH key<br>
-        将第3步生成的公钥(C:\Users\Adminstrator\.ssh\id_rsa.pub)中的全部内容粘贴到Key下的文本框中，Title可不填，点击'Add SSH key'保存即可
-	``````
+      ```
+      登陆github,右上角Settings > SSH and GPG keys > New SSH key<br>
+      将第3步生成的公钥(C:\Users\Adminstrator\.ssh\id_rsa.pub)中的全部内容粘贴到Key下的文本框中，Title可不填，点击'Add SSH key'保存即可
+      ```
 
    5. 测试
 
-	``````
-        ssh -T git@github.com
-	``````
+      ```
+      ssh -T git@github.com
+      ```
 
-### Mac
+#### Mac
 
-### Unix/Linux
+#### Unix/Linux
 
 
-## Command
-   
+## 二、Command
+
    文档地址: <a href="https://git-scm.com/docs">https://git-scm.com/docs</a>
 
    常用命令：
 1. 初始化仓库
 
 	``````
-	* 在当前目录新建一个Git仓库
+	* 在当前目录新建Git仓库
 	$ git init
 
 	* 新建一个目录，将其初始化为Git仓库
 	$ git init [project-name]
 
-	* 下载一个项目和它的整个仓库历史
+	* 下载项目
 	$ git clone [url]
 	``````
 
@@ -296,7 +296,7 @@
 
 	* 推送所有分支到远程仓库
 	$ git push [remote] --all
-	``````	
+	``````
 
 9. 撤销
 
