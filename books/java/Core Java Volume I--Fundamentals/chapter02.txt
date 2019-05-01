@@ -2,16 +2,59 @@
 
 一、 安装Java开发工具包
 
-	1.
-	2.
-	3.
-	4.
-	5.
+	1.下载JDK
+	    下载地址：https://www.oracle.com/technetwork/java/javase/downloads/index.html
+	    常用术语：
+	        Java Development Kit    JDK     编写Java程序的程序员使用的软件
+	2.设置JDK
+
+	    安装：
+	        ##  在 Windows 上， 启动安装程序。 会询问你要在哪里安装 JDK。 最好不要接受路径名
+                中包含空格的默认位置， 如 c:\Program Files\Java\jdkl.8.0_verj/o«。 取出路径名中的
+                Program Files 部分就可以了。
+
+            ##  在 Mac 上，运行安装程序。这会把软件安装到 /Libraiy/Java/JavaVirtualMachines/
+                jdkl.8.0_version.jdk/Contents/Home。用 Finder 找到这个目录
+
+            ##  在 Linux 上t 只需要把 .tar.gz 文件解压缩到你选择的某个位置， 如你的主目录，或者
+                /opt。 如果从 RPM 文件安装， 则要反复检查是否安装在 /usr/java/jdkl.S.Ojersfofj。
+
+        设置：
+            ## 在 Linux 上，需要在 7.bashrc 或 7.bash_profile 文件的最后增加这样一行：export PATH=jdk/bin;$PATH
+
+            ## 在Windows上，设置环境变量：
+                    新增系统变量：JAVA_HOME = C:\home\java\jdk1.8
+                    修改系统变量：CLASS_PATH = .;%JAVA_HOME%\lib;%JAVA_HOME%\lib\dt.jar;%JAVA_HOME%\lib\tools.jar
+                    修改系统变量：PATH = ;%JAVA_HOME%\bin;%JAVA_HOME%\jre\bin;
+
+        测试：
+            java -version
+            javac -version
+
+    3.源代码：
+            公共类库：jdk/src.zip
+            其他（编译器、虚拟机、本地方法以及私有辅助类）：http://jdk8.java.net
 
 二、 使用命令行工具
 
+        编译：javac Welcome.java
+        运行：java Welcome
+        解压：jar xvf jdk/src.zip
+        将两个类文件归档到一个名为classes.jar的档案中：
+              jar cvf classes.jar Foo.class Bar.class
+        使用现有的清单文件'mymanifest'并将foo/目录中的文件归档到'classes.jar'中：
+              jar cvfm classes.jar mymanifest -C foo/ .
+
 三、 使用集成开发环境
+
+        NetBeans
+        Eclipse
+        IntelliJ IDEA
 
 四、 运行图形化应用程序
 
 五、 构建并运行applet
+
+        javac RoadApplet.java
+        jar cvfm RoadApplet.jar RoadApplet.mf *.class
+        appletview RoadApplet.html
