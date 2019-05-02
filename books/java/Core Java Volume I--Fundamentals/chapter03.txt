@@ -1,0 +1,263 @@
+第三章 Java的基本程序设计结构
+
+一、一个简单的Java应用程序
+
+二、注释
+
+        文档注释：/** ... */
+        多行注释：/* ... */
+        单行注释：// ...
+
+三、数据类型
+
+	1.整形
+	2.浮点类型
+	3.char类型
+	4.Unicode和char类型
+	5.boolean类型
+
+四、变量
+
+    1.变量初始化
+    2.常量
+
+五、运算符
+
+    关键字strictfp: 标记的方法必须使用严格的浮点计算来生成可再生的结果。
+
+    1.数学函数和常量
+
+        Math：为了达到最快的性能，所有的方法都使用计算机浮点单元中的例程
+        StrictMath：使用自由发布的Math库fdlibm实现算法，以确保在所有平台上得到相同的结果
+            算法源代码：www.netlib.org/fdlibm
+
+    2.数值类型之间的转换
+    3.强制类型转换
+    4.结合赋值和运算符
+    5.自增与自减运算符
+    6.关系和boolean运算符
+    7.位运算符
+    8.括号与运算符级别
+
+            Operators                                                   Associativity
+            [] . () (method call)                                       Left to right
+            ! ~ ++ -- + (unary) - (unary) () (cast) new                 Right to left
+            * / %                                                       Left to right
+            + -                                                         Left to right
+            << >> >>>                                                   Left to right
+            < <= > >= instanceof                                        Left to right
+            == !=                                                       Left to right
+            &                                                           Left to right
+            ^                                                           Left to right
+            |                                                           Left to right
+            &&                                                          Left to right
+            ||                                                          Left to right
+            ?:                                                          Right to left
+            = += -= *= /= %= &= |= ^= <<= >>= >>>=                      Right to left
+
+    9.枚举类型
+
+六、字符串
+
+    1.子串
+    2.拼接
+    3.不可变字符串
+    4.检测字符串是否相等
+    5.空串与Null串
+    6.码点与代码单元
+    7.String API
+    8.阅读联机API文档
+    9.构建字符串
+        StringBuilder builder = new StringBuilder();
+        builder.append(ch); // append a single character
+        builder.append(str); // append a string
+
+七、输入输出
+
+    1.读取输入
+        Scanner scanner = new Scanner(System.in);
+        System.out.pringln("what's your name?");
+        String name = scanner.nextLine();
+        String firstName = scanner.next();
+        System.out.println("How old are you?");
+        Int age = scanner.nextInt();
+    2.格式化输出
+
+            Conversion Character     Type                                                Example
+            d                        Decimal integer                                     159
+            x                        Hexadecimal integer                                 9f
+            o                        Octal integer                                       237
+            f                        Fixed-point floating-point                          15.9
+            e                        Exponential floating-point                          1.59e+01
+            g                        General floating-point (the shorter of e and f)     —
+            a                        Hexadecimal floating-point                          0x1.fccdp3
+            s                        String                                              Hello
+            c                        Character                                           H
+            b                        boolean                                             true
+            h                        Hash code                                           42628b2
+            tx or Tx                 Date and time (T forces uppercase)                  Obsolete, use the java.time classes instead—see Chapter 6 of Volume II
+            %                        The percent symbol                                  %
+            n                        The platform-dependent line separator               —
+
+            i.e:
+                String message = String.format("Hello, %s. Next year, you'll be %d", name, age);
+                    输出结果: Hello, binvi, Next year, you'll be 29
+                System.out.printf("%1$s %2$tB %2$te, %2$tY", "Due date: ", new Date());
+                等价于 System.out.printf("%s %tB %<te, %<tY", "Due date:", new Date());
+                    输出结果: Due date: May 2, 2019
+
+    3.文件输入与输出
+        读：Scanner in = new Scanner(Paths.get("readme.md"), "UTF-8");
+        写：PrintWriter out = new PrintWriter("readme.md", "UTF-8");
+
+
+八、控制流程
+
+    1.块作用域
+
+        {
+            ...
+        }
+
+    2.条件语句
+
+        if (condition1) {
+            statement1;
+        } else if (condition2) {
+            statement2;
+        } else {
+            statement3;
+        }
+
+    3.循环
+
+        先判断后循环：while (condition) statement;
+        先循环后判断：do statement while (condition);
+
+    4.确定循环
+
+        for (int i = 0; i < size; i++) {
+            statement;
+        }
+
+    5.多重选择：switch语句
+
+        switch(choice) {
+            case 1: statement1; break;
+            case 2: statement2; break;
+            case 3: statement3; break;
+            ... ...
+            case n: statement n; break;
+            default: statement default; break;
+        }
+
+    6.中断控制流程语句
+
+        loop:
+        while (condition_while) {
+            statement;
+            if (condition_inner) {
+                break loop;
+            }
+        }
+
+        label:
+        {
+            ...
+            if (condition) {
+                break label;
+            }
+            ...
+        }
+
+        while (condition) {
+            if (condition1) {
+                break;
+            }
+            if (condition2) {
+                continue;
+            }
+        }
+
+九、大数值
+
+    BigInteger a = new BigInteger(100);
+    BigDecimal b = new BigDecimal(100);
+
+十、数组
+
+    声明：int[] a;
+    初始化：int[] a = new int[100];
+    声明+初始化：int[] a = {1, 2, 3, 4};
+
+    1.foreach循环
+
+            for (variable : collection) {
+                statement;
+            }
+
+        等价于：
+
+            for (int i = 0; i < collection.size(); i++) {
+                statement;
+            }
+
+    2.数组初始化以及匿名数组
+
+        初始化：int[] a = {1, 2, 3, 4, 5};
+        匿名数组：new int[] {1, 2, 3, 4, 5};
+
+    3.数组拷贝
+
+        T[] = Arrays.copyOf(U[] original, int newLength, Class<? extends T[]> newType);
+
+    4.命令行参数
+
+        public class Message {
+            public static void main(String[] args) {
+                if (args.length == 0 || args[0].equals("-h")) {
+                    System.out.print("Hello,");
+                } else if (args[0].equals("-g")) {
+                    System.out.print("Goodbye,");
+                }
+                for (int i = 1, i < args.length; i++) {
+                    System.out.println(" " + args[i]);
+                }
+                System.out.println("!");
+            }
+        }
+        编译：javac Message
+        运行：java Message -g cruel world
+        结果：Goodbye, cruel world!
+
+    5.数组排序
+
+        Arrays.sort(T[] array);
+
+    6.多维数组
+
+        初始化：
+            double[][] balances = {
+                {1, 2, 3, 4, 5},
+                {1, 2, 3, 4, 5},
+                {1, 2, 3, 4, 5}
+            };
+        遍历：
+                for (int i = 0; i < double.length; i++) {
+                    for (int j = 0; j < double[i].length; j++) {
+                        double balance = double[i][j];
+                    }
+                }
+            或者：
+                for (double[] row : balances) {
+                    for (double value : row) {
+                        do something with value
+                    }
+                }
+
+    7.不规则数组
+
+        double[][] balances = new double[length1][];
+        for (int i = 0; i < length; i++) {
+            balances[i] = new double[length2];
+        }

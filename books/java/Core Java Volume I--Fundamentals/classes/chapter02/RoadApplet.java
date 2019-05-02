@@ -1,3 +1,5 @@
+package chapter02;
+
 import javax.swing.*;
 import java.awt.*;
 

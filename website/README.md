@@ -12,6 +12,7 @@
 * [awesome](https://github.com/sindresorhus/awesome)
 * [IMOOC](https://www.icourse163.org/)
 
+
 ## API
 
 * [Microsoft文档](https://docs.microsoft.com/zh-cn/)
@@ -24,6 +25,7 @@
 * [微信小程序](https://developers.weixin.qq.com/miniprogram/dev/index.html)
 * [开发手册](https://docs.segmentfault.com)
 * [opensource](https://opensource.com/)
+* [Oracle文档](https://docs.oracle.com/en/)
 
 ## Front-end
 
@@ -35,6 +37,7 @@
 
 * [awesome-java](https://github.com/akullpp/awesome-java#readme)
 * [java资源分享](http://www.java1234.com)
+* [Java Components page](https://docs.oracle.com/en/java/javase/12/)
 
 ## Office
 
