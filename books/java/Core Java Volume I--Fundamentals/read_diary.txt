@@ -12,3 +12,7 @@
         end: 第三章 3.6.5 空串与Null串
     21:34
         end: 第四章 对象和类
+
+2019-05-03
+    16:40
+        end 4.6 Object Construction

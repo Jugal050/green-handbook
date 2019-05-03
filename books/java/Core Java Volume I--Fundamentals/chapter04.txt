@@ -1,0 +1,70 @@
+第四章 Object and Classes
+
+一、Introduction to Object-Oriented Programming
+
+	1. Classes
+	2. Objects
+	3. Identifying Classes
+	4. Relationships between Classes
+
+二、Using Predefined Classes
+
+	1. Objects and Objects Variables
+	2. The LocalDate Class and the java Library
+	3. Mutator and Accessor Methods
+
+三、Defining Your Own Classes
+
+	1. An Employee Class
+	2. Use of Multiple Source Files
+	3. Dissecting the Employee Class
+	4. First Steps with Constructors
+	5. Implicit and Explicit Parameters
+	6. Benefits of Encapsulation
+	7. Class-Based Access Privileges
+	8. Private Methods
+	9. Final Instance Fields
+
+四、Static Fields and Methods
+
+	1. Static Fields
+	2. Static Constants
+	3. Static Methods
+	4. Factory Methods
+	5. The main Method
+
+五、Method Parameters
+
+六、Object Construction
+
+	1. Overloading
+	2. Default Field Initialization
+	3. The Construct with No Arguments
+	4. Explicit Field Initialization
+	5. Parameter Names
+	6. Calling Another Constructor
+	7. Initialization Blocks
+	8. Object Destruction and the finalize Method
+
+七、Packages
+
+    1. Class Importation
+    2. Static Import
+    3. Addition of a Class into a Package
+    4. Package Scope
+
+八、The Class Path
+
+    1. Setting the Class Path
+
+九、Documentation Comments
+
+    1. Comment Insertion
+    2. Class Comments
+    3. Method Comments
+    4. Field Comments
+    5. General Comments
+    6. Package and Overview Comments
+    7. Comment Extraction
+
+十、Class Design Hints
