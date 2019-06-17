@@ -1,0 +1,4343 @@
+
+##	《Spring Boot + Vue 全栈开发实战》
+
+第1章：Spring Boot入门
+
+	1.1 Spring Boot简介
+
+		优势：
+			** 提供一个快速的Spring项目搭建渠道
+			** 开箱即用，很少的Spring配置就能运行一个JavaEE项目
+			** 提供了生产级的服务监控方案
+			** 内嵌服务器，可以快速部署
+			** 提供了一系列非功能性的通用配置
+			** 纯Java配置，没有代码生成，也不需要xml配置
+
+	1.2 开发第一个Spring Boot程序
+
+		1.2.1 创建Maven工程
+
+			1. 使用命令创建Maven工程
+
+				cmd:
+					mvn archetype:generate -DgroupId=com.binvi -DartifactId=demo -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+
+				powershell:
+					mvn archetype:generate "-DgroupId=com.binvi.spring" "-DartifactId=demoPS" "-DarchetypeArtifactId=maven-archetype-quickstart" "-DinteractiveMode=false"
+
+			2. 在Eclipse中创建Maven工程
+
+				File > New Project > Maven > next.. next.. next.. finish
+			
+			3. 在IntelliJ IDEA中创建Maven工程
+
+					tips: 
+						**  问题： idea中class文件右上角点击download source时显示"Sources not found for: org.springframework.boot:spring-boot-autoconfigure:2.1.5.RELEASE"
+							解决方法：在项目pom.xml所在的目录下，执行如下命令：mvn dependency:resolve -Dclassifier=source
+
+		1.2.2 项目构建
+
+			1. 添加依赖
+
+				<parent>
+					<groupId>org.apache.springboot</groupId>
+					<artifactId>spring-boot-starter-parent</artifactId> or <artifactId>spring-boot-starter-web</artifactId>
+					<version></version>
+				</parent> 
+
+			2. 编写启动类：
+
+				启动类：
+
+					@SpringBootApplication // @SpringBootApplication = @EnableAutoConfiguration + @ComponentScan
+					public class Application {
+						public static void main(String[] args) {
+							SpringApplication.run(Application.class, args);
+						}
+					}
+
+					// 有时候会看见启动类继承SpringBootServletInitializer并重写configure方法，这是为了springboot打成war包
+
+				控制器：
+
+					@RestController
+					public class HelloController {
+						@GetMapper("/hello")
+						public String hello() {
+							return "hello, spring boot!";
+						}
+					}
+
+				
+		1.2.3 项目启动
+
+			1. Maven命令启动： mvn spring-boot:run
+
+			2. 直接运行main方法： Application.main();
+
+			3. 打包启动： 
+					打包： mvn package(需要添加插件plugin: org.springframework.boot:spring-boot-maven-plugin)
+					启动： java -jar .\springboot-vue-demo1-2.1.5.RELEASE.jar
+                    
+                    tips: 
+                    	问题：.\springboot-vue-demo-01-2.1.5.RELEASE.jar中没有主清单属性
+                    	原因：打包生成的jar包中没有MAINFEST.MF配置信息，或者其配置问题
+                    	解决方法：增加maven插件（spring-boot-maven-plugin）及配置信息（主方法mainClass）
+	                              <build>
+	                                <plugins>
+	                                  <plugin>
+	                                    <groupId>org.springframework.boot</groupId>
+	                                    <artifactId>spring-boot-maven-plugin</artifactId>
+	                                    <configuration>
+	                                      <mainClass>com.binvi.springboot.App</mainClass>
+	                                    </configuration>
+	                                  </plugin>
+	                                </plugins>
+	                              </build>
+
+	1.3 Spring Boot的简便创建方式
+
+		1.3.1 在线创建方式
+
+				https://start.spring.io/
+
+		1.3.2 IntelliJ IDEA创建
+
+				File > New Project > Spring Initializr > next.. next.. next.. finish
+
+		1.3.3 STS创建
+
+				New > Spring Starter Project > next.. next.. next..
+
+第2章 Spring Boot基础配置
+
+	2.1 不使用spring-boot-starter-parent
+
+			spring-boot-starter-parent提供的默认配置：
+
+				** Java版本默认1.8 
+				** 编码格式默认utf-8
+				** 提供Dependency Management进行项目依赖的版本管理
+				** 默认的资源过滤和插件配置
+
+			pom文件相关配置：（详细配置信息左转到《Maven权威指南》或Maven官网查看）
+
+				<!-- 属性配置 -->
+				<properties>
+					<project.compile.source>1.8</project.compile.source>
+					<project.compile.target>1.8</project.compile.target>
+					<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+				</properties>
+
+
+				<!--项目依赖版本的统一管理配置-->
+				<dependencyManagement>
+					<dependencies>
+						<dependency>
+							<groupId>org.springframework.boot</groupId>
+							<artifactId>spring-boot-dependencies</artifactId>
+							<version>2.1.5.RELEASE</version>
+							<type>pom</type>
+							<scope>import</scope>
+						</dependency>
+					</dependencies>
+				</dependencyManagement>	
+
+
+				<!-- 插件配置 -->	
+				<build>
+					<plugins>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-compile-plugin</artifactId>
+							<version>3.8.0</version>
+							<configuration>
+								<source>${project.compile.source}</source>
+								<target>${project.compile.target}</target>
+								<encoding>${project.build.sourceEncoding}</encoding>
+							</configuration>
+						</plugin>
+					</plugins>
+				</build>
+
+	2.2 注解@SpringBootApplication
+
+			相当于以下注解组合：
+
+				** @SpringBootConfiguration = @Configuration
+					
+					表明这是一个配置类，开发者可以在这个类中配置Bean。类似ApplicationContext.xml配置文件的角色
+
+				** @EnableAutoConfiguration
+
+					表示开启自动化配置。SpringBoot中的自动化配置是非侵入式的，在任何时候，开发者都可以使用自定义配置代替自动化配置中的某一配置。
+
+				** @ComponentScan
+				
+					完成包扫描。扫描类包括：@Service, @Component, @Configuration, @Repository, @Controller, @RestController注解的类。
+
+	2.3 定制banner
+
+			定制： 在main/resources下添加banner.txt即可。
+
+					txt文本转换艺术字体的网站：
+
+						http://www.network-science.de/ascii/
+						http://www.kammerl.de/ascii/AsciiSignature.php
+						http://www.patorjk.com/software/taag/
+
+			屏蔽： 修改启动类Application
+
+					@SpringBootApplication
+					public class Application {
+						public static void main(String[] args) {
+							SpringApplicationBuilder builder = new SpringApplicationBuilder(Application.class);
+							builder.bannerMode(Banner.Mode.OFF).run(args);
+						}
+					}
+
+	2.4 容器配置
+
+		2.4.1 Tomcat配置
+
+			1. 常用配置：
+
+				server.port=8080						// web容器的端口			
+				server.error.path=/error				// 项目出错时跳转的页面
+				server.servlet.session.timeout=30m		// session有效期，30m表示30min，如果不写单位，默认单位为秒，最大60秒（i.e: 配置120，实际为60秒）
+				server.servlet.context-path=/			// 项目名称，默认为"/"，如果配置了，访问路径中要加上配置的路径
+				server.tomcat.uri-encoding=UTF-8		// 请求编码
+				server.tomcat.max-threads=500			// 最大线程数
+				server.tomcat.basedir=/home/binvi/tmp	// 存放容器运行日志和临时文件的目录，若不配置，默认使用系统的临时目录(windows:C:\Users\hbw44\AppData\Local\Temp)
+
+				tips:  
+					完整配置，参考官方文档： https://docs.spring.io/spring-boot/docs/2.1.2.RELEASE/reference/htmlsingle/#common-application-properties
+
+			2. HTTPS配置：
+
+				** 生成证书：
+
+					1. 购买
+					2. 云服务厂商申请
+					3. 工具生成
+
+						java数字证书管理工具keytool：
+
+						 	命令： keytool -genkey -alias binvi -keyalg RSA -keysize 2048 -keystore cert -validity 365
+						 	解释： 
+						 		-genkey 	创建新的密钥
+						 		-alias  	keystore别名
+						 		-keyalg 	使用的加密算法，这里是RSA（一种非对称加密算法）
+						 		-keysize 	生成密钥的长度
+						 		-keystore 	生成密钥的存放位置
+						 		-validity 	密钥有效期，单位：天
+
+				** 配置（application.properties）
+
+					server.ssl.key-store = cert
+					server.ssl.key-alias = binvi
+					server.sll.key-store-password = hanbinwei
+
+				** 配置请求重定向，将HTTP请求重定向为HTTPS请求
+
+					@Configuration
+					public class TomcatConfig {
+
+					    @Bean
+					    TomcatServletWebServerFactory tomcatServletWebServerFactory() {
+					        TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory() {
+					            @Override
+					            protected void postProcessContext(Context context) {
+					                SecurityConstraint constraint = new SecurityConstraint();
+					                constraint.setUserConstraint("CONFIDENTIAL");
+					                SecurityCollection collection = new SecurityCollection();
+					                collection.addPattern("/*");
+					                constraint.addCollection(collection);
+					                context.addConstraint(constraint);
+					            }
+					        };
+					        factory.addAdditionalTomcatConnectors(createTomcatConnector());
+					        return factory;
+					    }
+
+					    private Connector createTomcatConnector() {
+					        Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
+					        connector.setScheme("http");
+					        connector.setPort(8080);
+					        connector.setSecure(false);
+					        connector.setRedirectPort(8081);
+					        return connector;
+					    }
+
+					}
+
+
+		2.4.2 Jetty配置
+
+			<dependency>
+	            <groupId>org.springframework.boot</groupId>
+	            <artifactId>spring-boot-starter-web</artifactId>
+	            <exclusions>
+	                <exclusion>
+	                    <groupId>org.springframework.boot</groupId>
+	                    <artifactId>spring-boot-starter-tomcat</artifactId>
+	                </exclusion>
+	            </exclusions>
+	        </dependency>
+	       	<dependency>
+	            <groupId>org.springframework.boot</groupId>
+	            <artifactId>spring-boot-starter-jetty</artifactId>
+	        </dependency>
+
+	    2.4.3 Undertow配置
+	    
+	    	<dependency>
+	            <groupId>org.springframework.boot</groupId>
+	            <artifactId>spring-boot-starter-undertow</artifactId>
+	        </dependency>	    
+
+	2.5 Properties配置
+
+		配置文件名称： application.properties/application.yml
+		
+		配置文件存放位置（优先级从高到低）： 
+
+			1. 项目根目录下的config文件夹中 (project/config/)
+			2. 项目根目录下                (project/)
+			3. classpath下的config文件夹中（project/src/main/resources/config/）
+			4. classpath下                (project/src/main/resources/)
+
+		tips:
+
+			如果开发中，不想使用application.properties作为文件名，也可以自定义，比如app.properties，项目打成jar包后，使用如下命令运行：
+				
+				java -jar .\springboot-vue-demo1-2.1.5.RELEASE.jar --spring.config.name=app --spring.config.location=classpath:\
+
+	2.6 类型安全配置属性
+
+		配置文件：
+
+			book.name = Thinking in Java
+			book.author = Bruce Eckel
+			book.price = 108.00
+
+		实体类：
+
+			@Component
+			@ConfigurationProperties(prefix="book")
+			public class Book {
+
+				private String name;
+				private String author;
+				private Float price;
+
+				// getter and setter
+				// equals and hashCode
+				// toString
+			}	
+
+		控制器：
+
+			@RestController
+			public class BookController {
+
+				@Autowired
+				Book book;
+
+				@GetMapper("/book") 
+				public String book() {
+					return book.toString();
+				}
+
+			}	
+
+	2.7 YAML配置
+
+		2.7.1 常规配置
+
+			server:
+			  port: 80
+			  servlet:
+			    context-path: /
+			  tomcat:
+			    uri-encoding: utf-8
+			  ssl:
+			    key-store: cert
+			    key-alias: binvi
+			    key-store-password: hanbinwei
+
+		2.7.2 复杂配置
+
+			couple:
+			  users:
+			    - name: binvi
+			      address: China
+			      favorites:
+			        - lol
+			        - code
+			        - sleep
+			    - name: lily
+			      address: China
+			      favorites:
+			        - crayfish
+			        - hotpot
+			        - lipstick
+
+			对应实体类：
+
+				@Component
+				@ConfigurationProperties(prefix = "couple")
+				public class Couple {
+
+				    private List<User> users;
+
+				    //getter setter equals hashCode toString ...
+
+				}    
+
+				public class User {
+
+					private String name;
+					private String address;
+					private List<String> favorites;
+
+					//getter setter equals hashCode toString ...
+				}
+
+		tips: 
+			在SpringBoot中使用YAML虽然方便，但是也有一些缺陷，例如无法使用@PropertySource注解加载YAML文件。
+
+	2.8 Profile
+
+		1. 创建配置文件
+
+			application-dev.properties
+			application-test.properties
+			application-prod.properties
+
+		2. 配置配置文件application.properties
+
+			spring.profiles.active = dev
+
+		3. 在代码中配置
+
+			SpringApplicationBuilder builder = new SpringApplicationBuilder(Application.class);
+			builder.application().setAdditionalProfiles("prod");
+			builder.run(args);
+
+		4. 项目启动时配置
+		
+			java -jar .\springboot-vue-demo1-2.1.5.RELEASE.jar --spring.profiles.active=prod
+
+第3章 Spring Boot整合视图层技术
+
+	3.1 整合Thymeleaf
+
+		1. 创建工程，添加依赖
+
+			<dependency>
+	            <groupId>org.springframework.boot</groupId>
+	            <artifactId>spring-boot-starter-web</artifactId>
+            </dependency>
+            <dependency>
+	            <groupId>org.springframework.boot</groupId>
+	            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+	        </dependency>
+
+	    2. 配置Thymeleaf
+
+	    	自动化配置类：ThymeleafAutoConfiguration
+	    	配置属性：ThymeleafProperites
+	    	常用配置：
+	    			spring:
+		    		  	thymeleaf:
+					    cache: true
+					    check-template: true
+					    check-template-location: true
+					    encoding: UTF-8
+					    prefix: classpath:/templates/
+					    servlet:
+					    	content-type: text/html
+					    suffix: .html
+
+	    3. 配置控制器
+
+    		@Controller
+			public class BookController {
+
+			    @GetMapping("books")
+			    public ModelAndView books() {
+			        List<Book> books = Lists.newArrayList();
+			        Book book1 = new Book();
+			        book1.setName("Thinking in Java");
+			        book1.setAuthor("tij");
+			        book1.setPrice(108f);
+
+			        Book book2 = new Book();
+			        book2.setName("Effective Java");
+			        book2.setAuthor("ej");
+			        book2.setPrice(100f);
+
+			        books.add(book1);
+			        books.add(book2);
+
+			        ModelAndView mv = new ModelAndView();
+			        mv.addObject("books", books);
+			        mv.setViewName("books");
+			        return mv;
+			    }
+		    }
+
+	    4. 创建视图
+
+	    	<!DOCTYPE html>
+			<html lang="en" xmlns:th="http://www.thymeleaf.org">
+			<head>
+			    <meta charset="UTF-8">
+			    <title>book html 1</title>
+			</head>
+			<body>
+			    <table border="1">
+			        <tr>
+			            <td>图书名称</td>
+			            <td>图书作者</td>
+			            <td>图书价格</td>
+			        </tr>
+			        <tr th:each="book:${books}">
+			            <td th:text="${book.name}"></td>
+			            <td th:text="${book.author}"></td>
+			            <td th:text="${book.price}"></td>
+			        </tr>
+			    </table>
+			</body>
+			</html>
+
+	3.2 整合FreeMarker
+
+		1. 创建项目，添加依赖
+
+			<dependency>
+	            <groupId>org.springframework.boot</groupId>
+	            <artifactId>spring-boot-starter-web</artifactId>
+            </dependency>
+			<dependency>
+	            <groupId>org.springframework.boot</groupId>
+	            <artifactId>spring-boot-starter-freemarker</artifactId>
+	        </dependency>
+
+        2. 配置FreeMarker
+
+        	自动化配置类：FreeMarkerAutoConfiguration
+        	配置属性：FreeMarkerProperties
+        	常用配置：
+        		spring:
+        		  	freemarker:
+				    cache: false
+				    allow-request-override: false
+				    allow-session-override: false
+				    charset: UTF-8
+				    check-template-location: true
+				    content-type: text/html
+				    expose-request-attributes: false
+				    expose-session-attributes: false
+				    suffix: .ftl
+				    template-loader-path: classpath:/templates/
+
+	    3. 配置控制器
+
+    		ditto
+
+		4. 创建视图
+
+			<!DOCTYPE html>
+			<html lang="en">
+			<head>
+			    <meta charset="UTF-8">
+			    <title>book in freemarker template</title>
+			</head>
+			<body>
+			    <table border="1" bgcolor="#556b2f">
+			        <thead>
+			            <tr>
+			                <th>图书名称</th>
+			                <th>图书作者</th>
+			                <th>图书价格</th>
+			            </tr>
+			        </thead>
+			        <tbody>
+			            <#if books ??&& (books?size > 0)>
+			                <#list books as book>
+			                    <tr>
+			                        <td>${book.name}</td>
+			                        <td>${book.author}</td>
+			                        <td>${book.price}</td>
+			                    </tr>
+			                </#list>
+			            </#if>
+			        </tbody>
+			    </table>
+			</body>
+			</html>	
+
+	3.3 Velocity
+
+		SpringBoot高版本默认不支持Velocity模板引擎，可以用较低版本，或者手动复制低版本有关Velocity包/类进行项目开发。
+
+第4章 SpringBoot整合Web开发
+
+	4.1 返回JSON数据
+
+		4.1.1 默认实现
+
+			SpringMVC: HttpMessageConverter
+			Spring: MappingJackson2HttpMessageConverter (默认的json处理器：jackson-databind)
+
+		4.1.2 自定义转换器
+
+			1. 使用GSON
+
+				GSON: Google开源的JSON解析库
+				GSON的自动转换类：GsonHttpMessageConvertersConfiguration
+				使用：
+					① 去除默认的jackson-databind，加入JSON依赖
+
+				        <dependency>
+				            <groupId>org.springframework.boot</groupId>
+				            <artifactId>spring-boot-starter-web</artifactId>
+				            <exclusions>
+				                <exclusion>
+				                    <groupId>com.fasterxml.jackson.core</groupId>
+				                    <artifactId>jackson-databind</artifactId>
+				                </exclusion>
+				            </exclusions>
+				        </dependency>
+		                <dependency>
+					        <groupId>com.google.code.gson</groupId>
+					        <artifactId>gson</artifactId>
+					        <version>2.8.5</version>
+					    </dependency>
+
+					② 提供GsonHttpMessageConverter(非必需，如果想自定义日期格式等其他操作才需要)
+
+						@Configuration
+							public class GsonConfig {
+
+							    @Bean
+							    GsonHttpMessageConverter gsonHttpMessageConverter() {
+							        GsonHttpMessageConverter converter = new GsonHttpMessageConverter();
+							        GsonBuilder builder = new GsonBuilder();
+							        builder.setDateFormat("yyyy/MM/dd HH:mm:ss:SSS");
+							        builder.excludeFieldsWithModifiers(Modifier.PROTECTED);
+							        Gson gson = builder.create();
+							        converter.setGson(gson);
+							        return converter;
+							    }
+
+							}
+
+			2. 使用fastjson
+
+					① 去除默认的jackson-databind，加入JSON依赖。 ditto
+
+					② 配置fastjson的HttpMessageConverter（必需，下面两种方式2选1）
+
+						第一种：
+
+							@Configuration
+							public class MyFastJsonConfig {
+
+							    @Bean
+							    FastJsonHttpMessageConverter fastJsonHttpMessageConverter() {
+							        FastJsonHttpMessageConverter converter = new FastJsonHttpMessageConverter();
+							        FastJsonConfig config = new FastJsonConfig();
+							        config.setDateFormat("yyyy/MM/dd HH:mm:ss");
+							        config.setCharset(Charset.forName("UTF-8"));
+							        config.setSerializerFeatures(
+							                SerializerFeature.WriteClassName,
+							                SerializerFeature.WriteMapNullValue,
+							                SerializerFeature.PrettyFormat,
+							                SerializerFeature.WriteNullListAsEmpty,
+							                SerializerFeature.WriteNullStringAsEmpty
+							        );
+							        converter.setFastJsonConfig(config);
+							        return converter;
+							    }
+
+							}
+
+						第二种：
+
+							@Configuration
+							public class MyWebMvcConfig implements WebMvcConfigurer {
+
+							    @Override
+							    public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+							        FastJsonHttpMessageConverter converter = new FastJsonHttpMessageConverter();
+							        FastJsonConfig config = new FastJsonConfig();
+							        config.setDateFormat("yyyy/MM/dd");
+							        config.setCharset(Charset.forName("UTF-8"));
+							        config.setSerializerFeatures(
+							                SerializerFeature.WriteClassName,
+							                SerializerFeature.WriteMapNullValue,
+							                SerializerFeature.PrettyFormat,
+							                SerializerFeature.WriteNullListAsEmpty,
+							                SerializerFeature.WriteNullStringAsEmpty
+							        );
+							        converter.setFastJsonConfig(config);
+							        converters.add(converter);
+							    }
+
+							}	
+
+					③ 配置响应编码：（防止中文乱码）
+
+						spring.http.encoding.force-response: true
+
+	4.2 静态资源访问
+
+		4.2.1 默认策略
+
+			SpringBoot中对于SpringMVC的自动化配置： WebMvcAutoConfiguration，
+				其内部静态类WebMvcAutoConfigurationAdapter implements WebMvcConfigurer {
+					public void addResourceHandlers(ResourceHandlerRegistry registry) {
+						...静态资源相关信息在此配置。
+					}
+				}
+
+			默认位置：(优先级依次降低)
+
+				"classpath:/META-INF/resources/", 
+				"classpath:/resources/",
+				"classpath:/static/", 					// 静态资源一般放在此目录即可
+				"classpath:/public/"
+				"/" 									// SpringBoot项目一般不需要webapp目录，所以"/"可以暂不考虑
+
+
+		4.2.2 自定义策略
+
+			1. 在配置文件中定义
+
+				spring.mvc.static-path-pattern = /static/**					# 过滤规则
+				spring.resources.static-location = classpath:/static/		# 静态资源位置
+
+
+			2. Java编码定义
+
+				public class MyWebMvcConfig implements WebMvcConfigurer {
+
+					public void addResouceHandlers(ResouceHandlerRegistry registry) {
+						registry.addReosuceHandler("/static/**")
+								 .addResouceLocations("classpath:/static/");
+					}
+
+				}
+
+	4.3 文件上传
+
+		Java文件上传的两个组件：
+
+			CommonsMultipartResolve: 使用commons-fileupload处理multipart请求
+
+			StandardServletMultipartResolver: 基于Servlet3.0来处理multipart请求（若使用此组件，则不需要添加额外的jar包）
+
+		SpringBoot提供的文件上传自动化配置类：MultipartAutoConfiguration
+
+		4.3.1 单文件上传
+
+			upload.html:
+
+			    <h2 style="color: darkolivegreen">单文件上传</h2>
+			    <form action="/upload" method="post" enctype="multipart/form-data">
+			        <input type="file" name="uploadFile" value="请选择文件"/>
+			        <input type="submit" value="上传">
+			    </form>
+
+			controller: com.binvi.springboot.demo03.controller.FileUploadController
+
+
+			配置信息：
+
+				spring.servlet.multipart.enable = true				# 是否开启文件上传，默认为true
+				spring.servlet.multipart.file-size-threshold = 0	# 文件写入磁盘的阈值，默认为0
+				spring.servlet.multipart.location = E:\\temp 		# 上传文件的临时保存位置
+				spring.servlet.multipart.max-file-size = 10MB 		# 上传的单个文件的最大大小，默认为1MB
+				spring.servlet.multipart.max-request-size = 10M 	# 多文件上传时文件的总大小，默认为10MB
+				spring.servlet.multipart.resolve-lazily = false 	# 文件是否延迟解析，默认为false
+
+
+		4.3.2 多文件上传	
+
+			upload.html
+
+				<h2 style="color: darkolivegreen">多文件上传</h2>
+			    <form action="/uploads" method="post" enctype="multipart/form-data">
+			        <input type="file" name="uploadFiles" value="请选择文件" multiple/>
+			        <input type="submit" value="上传">
+			    </form>
+
+		    controller: com.binvi.springboot.demo03.controller.FileUploadController // 处理逻辑与单文件上传一致，只是多一个遍历的操作。
+
+
+	4.4 @ControllerAdvice
+
+		4.4.1 全局异常处理
+
+			Handler:
+
+				@ControllerAdvice
+				public class CustomExceptionHandler {
+
+				    @ExceptionHandler(MaxUploadSizeExceededException.class)
+				    public void uploadException(MaxUploadSizeExceededException e,
+				                                HttpServletResponse response) throws IOException {
+				        response.setContentType("text/html;charset=utf-8");
+				        PrintWriter out = response.getWriter();
+				        out.write("上传文件大小超出限制");
+				        out.flush();
+				        out.close();
+				    }
+
+				    @ExceptionHandler(MaxUploadSizeExceededException.class)
+				    public ModelAndView uploadException(MaxUploadSizeExceededException e) {
+				        ModelAndView mv = new ModelAndView();
+				        mv.addObject("message", "上传文件大小超出限制!");
+				        mv.setViewName("error");
+				        return mv;
+				    }
+
+				}
+
+			tips: 
+				
+				1. 上述hanlder中的方法只能选择其中一种，不能同时定义多个相同的方法名。	
+				2. 方法的参数可以异常实例、HttpServletResponse、HttpServletRequest、Model等。
+				3. 返回值可以是一段JSON、一个ModelAndView、一个逻辑视图名等。
+
+		4.4.2 添加全局数据
+
+			Config: 
+
+				@ControllerAdvice
+				public class GlobalConfig {
+
+				    @ModelAttribute(value = "user")
+				    public Map<String, String> userInfo() {
+				        HashMap<String, String> map = Maps.newHashMap();
+				        map.put("username", "曹雪芹");
+				        map.put("gender", "男");
+				        map.put("masterpiece", "红楼梦");
+				        return map;
+				    }
+
+				}
+
+			Controller: 		
+
+				@RestController
+				public class HelloController {
+
+				    private static final Logger logger = LoggerFactory.getLogger(HelloController.class);
+
+				    @GetMapping("hello")
+				    public String hello(Model model) {
+				        Map<String, Object> map = model.asMap();
+				        logger.info("map:[{}]", map);
+				        Set<String> keySet = map.keySet();
+				        Iterator<String> iterator = keySet.iterator();
+				        while (iterator.hasNext()) {
+				            String key = iterator.next();
+				            Object value = map.get(key);
+				            logger.info("key:[{}], value:[{}]", key, value);
+				        }
+				        return "hello";
+				    }
+
+				}
+
+		4.4.3 请求参数预处理
+
+			model:
+
+				@Data
+				public class Book {
+					private String name;
+					private String author;
+				}
+
+				@Data
+				public class Author {
+					private String name;
+					private int age;
+				}
+
+			Controller: 
+
+				@GetMapping("/book")
+				@ResponseBody
+				public String book(@ModelAttribute("b")Book book, @ModelAttribute("a")Author author) {
+					return book.toString() + "\t" + author.toString();
+				}
+
+			Config: 
+
+				@ControllerAdvice
+				public class GlobalConfig() {
+
+					// 表示该方法是处理@ModelAttribute("b")对应的参数
+					@InitBinder("b")
+				    public void init(WebDataBinder binder) {
+				        binder.setFieldDefaultPrefix("b.");
+				    }
+
+					// 表示该方法是处理@ModelAttribute("a")对应的参数
+				    @InitBinder("a")
+				    public void init2(WebDataBinder binder) {
+				        binder.setFieldDefaultPrefix("a.");
+				    }
+				}
+
+				tips: 
+
+					1. 在每个方法中给响应的Field设置一个前缀，然后在浏览器中请求http://localhost:8080/book?b.name=三国演义
+						&b.author=罗贯中&a.name=曹雪芹&a.age=48即可成功的区分出name属性。
+					2. 在WebDataBinder对象中，还可以设置允许的字段、禁止的字段、必填字段以及验证器等。
+
+
+	4.5 自定义错误页
+
+		SpringBoot中的错误默认是BasicErrorController处理的。 核心方法：
+			org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController#errorHtml // 返回错误html页面
+			org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController#error 	// 返回错误JSON
+
+		SpringBoot默认是在classpath:error/目录下，查找4xx、5xx页面作为错误视图。找不到时，使用error作为默认的错误页面视图名，如果error也找不到，则展示默认提示页面。
+
+		4.5.1 简单配置
+
+			增加resources/static/error目录，目录下添加4xx.html、5xx.html，或者具体的错误码页面，如400.html、404.html、500.html...
+
+				tips： 
+					错误码.html优先级更高
+					动态页面的优先级要高于静态页面，即resources/templates > resources/static下的4xx.html
+
+		4.5.2 复杂配置
+
+			1. 自定义Error数据
+
+				@Component
+				public class MyErrorAttribute extends DefaultErrorAttributes {
+
+				    @Override
+				    public Map<String, Object> getErrorAttributes(WebRequest webRequest, boolean includeStackTrace) {
+				        Map<String, Object> attributes = super.getErrorAttributes(webRequest, includeStackTrace);
+				        attributes.put("custom", "who am i");
+				        attributes.put("special", "old boy");
+				        attributes.put("goal", "just do it");
+				        return attributes;
+				    }
+				}
+
+			2. 自定义Error视图
+			
+				@Component
+				public class MyErrorVIewResolver implements ErrorViewResolver {
+
+				    @Override
+				    public ModelAndView resolveErrorView(HttpServletRequest request,
+				                                         HttpStatus status, Map<String, Object> model) {
+				        ModelAndView mv = new ModelAndView("errorPage");
+				        mv.addObject("ester_eggs", "I am iron man");
+				        mv.addAllObjects(model);
+				        return mv;
+				    }
+				}	
+
+			3. 完全自定义
+
+				@Controller
+				public class MyErrorController extends BasicErrorController {
+
+				    @Autowired
+				    public MyErrorController(ErrorAttributes errorAttributes,
+				                             ServerProperties serverProperties,
+				                             List<ErrorViewResolver> errorViewResolvers) {
+				        super(errorAttributes, serverProperties.getError(), errorViewResolvers);
+				    }
+
+				    @Override
+				    public ModelAndView errorHtml(HttpServletRequest request,
+				                                  HttpServletResponse response) {
+				        HttpStatus status = getStatus(request);
+				        Map<String, Object> model = getErrorAttributes(request,
+				                isIncludeStackTrace(request, MediaType.TEXT_HTML));
+				        model.put("ester_eggs", "I am iron man");
+				        ModelAndView mv = new ModelAndView("myErrorPage", model, status);
+				        return mv;
+				    }
+
+				    @Override
+				    public ResponseEntity<Map<String, Object>> error(HttpServletRequest request) {
+				        Map<String, Object> body = getErrorAttributes(request, isIncludeStackTrace(request, MediaType.ALL));
+				        body.put("ester_eggs", "I am iron man");
+				        HttpStatus status = getStatus(request);
+				        return new ResponseEntity<>(body, status);
+				    }
+				}
+
+
+	4.6 CORS支持
+
+		CORS: Cross-Orgin Resource Sharing(跨域资源共享技术标准)
+
+		配置跨域：
+
+			1. 直接在相应的请求方法上添加跨域注解
+
+				@RestController
+				@RequestMapping("/cors")
+				public class CorsController {
+
+				    @PostMapping("/add")
+				    @CrossOrigin(value = "http://localhost:8081", maxAge = 1800, allowedHeaders = "*")
+				    public String addBook(String name) {
+				        return "receive:" + name;
+				    }
+
+				    @DeleteMapping("/{id}")
+				    @CrossOrigin(value = "http://localhost:8081", maxAge = 1800, allowedHeaders = "*")
+				    public String deleteById(@PathVariable Long id) {
+				        return String.valueOf(id);
+				    }
+
+				    @GetMapping("/")
+				    public ModelAndView index() {
+				        ModelAndView mv = new ModelAndView();
+				        mv.setViewName("cors");
+				        return mv;
+				    }
+
+				}
+
+			2. 全局配置
+
+				@Configuration
+				public class MyWebMvcConfig implements WebMvcConfigurer {
+
+				    // 配置cors跨域策略
+				    @Override
+				    public void addCorsMappings(CorsRegistry registry) {
+				        registry.addMapping("/cors/**")
+				                .allowedHeaders("*")
+				                .allowedMethods("*")
+				                .maxAge(1800)
+				                .allowedOrigins("http://localhost:8081")
+				                .allowCredentials(false);
+				    }
+			    }
+
+	4.7 配置类与XML配置
+
+		Hello.java
+			public class Hello {
+				public String sayHello(String name) {
+					return "hello " + name;
+				}
+			}
+
+		resources/beans.xml	
+
+			<beans xmlns="http://www.springframework.org/schema/beans"
+				   xmlns:xsi="http://wwww.w3.org/2001/XMLSchema-instance"
+				   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+				   <bean id="hello" class="com.binvi.springboot.component.Hello"></bean>
+		   </beans>
+
+	   Beans.java
+
+	   		@Configuration
+	   		@ImportResource("classpath:beans.xml")
+	   		public class Beans{
+
+	   		}
+
+   		Controller.java
+   			public class HelloController {
+   				@Autowired
+   				private Hello hello;
+   				@GetMapping("/hello")
+   				public String hello() {
+   					return hello.sayHello("binvi");
+   				}
+   			}
+
+	4.8 注册拦截器
+
+		新建拦截器
+
+			public class MyInterceptor implements HandlerInterceptor {
+
+			    private static final Logger logger = LoggerFactory.getLogger(MyInterceptor.class);
+
+			    @Override
+			    public boolean preHandle(HttpServletRequest request,
+			                             HttpServletResponse response,
+			                             Object handler) {
+			        logger.info("-------------- preHandle --------------");
+			        return true;
+			    }
+
+			    @Override
+			    public void postHandle(HttpServletRequest request,
+			                           HttpServletResponse response,
+			                           Object handler,
+			                           ModelAndView modelAndView) {
+			        logger.info("-------------- postHandle --------------");
+			    }
+
+			    @Override
+			    public void afterCompletion(HttpServletRequest request,
+			                                HttpServletResponse response,
+			                                Object handler,
+			                                Exception ex) {
+			        logger.info("-------------- afterCompletion --------------");
+			    }
+			}
+
+		配置拦截器
+
+			@Configuration
+			public class MyWebMvcConfig implements WebMvcConfigurer {
+
+			    @Override
+			    public void addInterceptors(InterceptorRegistry registry) {
+			        registry.addInterceptor(new MyInterceptor())
+			                .addPathPatterns("/**")
+			                .excludePathPatterns("/hello");
+			    }
+		    }
+
+    4.9 启动系统任务
+
+    	有一些特殊的任务需要在系统启动时执行，例如配置文件加载、数据库初始化等操作。
+    	如果没有SpringBoot，可以在Listener中解决。
+    	如果使用SpringBoot，有两种解决方案： CommandLineRunner、ApplicationRunner
+
+    	4.9.1 CommandLineRunner
+
+    		@Component
+			@Order(1) // order越小，执行顺序越靠前
+			public class MyCommandLineRunner1 implements CommandLineRunner {
+
+			    private static final Logger logger = LoggerFactory.getLogger(MyCommandLineRunner1.class);
+
+			    @Override
+			    public void run(String... args) throws Exception {
+			        logger.info("custom command line runner with order[1]: " + Arrays.toString(args));
+			    }
+			}
+
+    	4.9.2 ApplicationRunner
+
+    		@Component
+			@Order(1)
+			public class MyApplicationRunner1 implements ApplicationRunner {
+
+			    private static final Logger logger = LoggerFactory.getLogger(MyApplicationRunner1.class);
+
+			    @Override
+			    public void run(ApplicationArguments args) throws Exception {
+			        List<String> nonOptionArgs = args.getNonOptionArgs();
+			        logger.info("custom application runner with order[1]: " + nonOptionArgs);
+			        Set<String> optionNames = args.getOptionNames();
+			        for (String name : optionNames) {
+			            logger.info("key:{}, value:{}.", name, args.getOptionValues(name));
+			        }
+			    }
+			}
+
+	4.10 整合Servlet、Filter和Listener
+
+		servlet:
+
+			@WebServlet("/my")
+			public class MyServlet extends HttpServlet {
+
+			    private static final Logger logger = LoggerFactory.getLogger(MyServlet.class);
+
+			    @Override
+			    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+			        logger.info("custom servlet do get.");
+			        doPost(req, resp);
+			    }
+
+			    @Override
+			    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+			        logger.info("custom servlet do post.");
+			    }
+			}	
+
+		filter:
+
+			@WebFilter("/*")
+			public class MyFilter implements Filter {
+
+			    private static final Logger logger = LoggerFactory.getLogger(MyFilter.class);
+
+			    @Override
+			    public void init(FilterConfig filterConfig) throws ServletException {
+			        logger.info("custom filter init");
+			    }
+
+			    @Override
+			    public void doFilter(ServletRequest request, ServletResponse response,
+			                         FilterChain chain) throws IOException, ServletException {
+			        logger.info("custom filter do filter");
+			        chain.doFilter(request, response);
+			    }
+
+			    @Override
+			    public void destroy() {
+			        logger.info("custom filter destroy");
+			    }
+			}
+
+		listener:
+
+			@WebListener
+			public class MyListener implements ServletRequestListener {
+
+			    private static final Logger logger = LoggerFactory.getLogger(MyListener.class);
+
+			    @Override
+			    public void requestInitialized(ServletRequestEvent sre) {
+			        logger.info("custom listener request initialized");
+			    }
+
+			    @Override
+			    public void requestDestroyed(ServletRequestEvent sre) {
+			        logger.info("custom listener request destroyed");
+			    }
+			}
+
+		tips:
+				
+			概念：	
+				servlet：servlet是一种运行服务器端的java应用程序，具有独立平台和协议的特性，可以动态生成web页面，工作在客户端请求和服务器响应的中间层
+
+				filter: 过滤器，filter是一个可以服用的代码片段，可以用来转换http请求、响应和头信息。它不能产生一个请求或者响应，只是修改对某一资源的请求或者响应
+
+				listener: 监听器，通过listener可以监听web服务器中某一执行动作，并根据其要求作出响应的响应，就是在application、session、request三个对象创建消亡或者
+					往其中添加、修改、删除属性时自动执行代码的功能组件。
+
+				interceptor: 拦截器，比过滤器更加细化的应用，不仅可以应用在service方法前后还可以应用到其他方法的前后。
+
+	4.11 路径映射
+
+		@Configuration
+		public class MyWebMvcConfig implements WebMvcConfigurer {
+
+		    @Override // 配置完成之后可以直接访问http://localhost:8080/login等地址
+		    public void addViewControllers(ViewControllerRegistry registry) {
+		        registry.addViewController("/login").setViewName("login");
+		        registry.addViewController("/index").setViewName("index");
+		    }
+
+		}   
+
+	4.12 配置AOP	
+
+		4.12.1 AOP简介
+
+			常见概念：
+
+				JoinPoint(连接点)： 类里面可以被增强的方法即为连接点。
+
+				PointCut(切入点): 对JoinPoint进行拦截的定义即为切入点。
+
+				Advice(通知): 拦截到JoinPoint之后要做的事情就是通知。
+
+				Aspect(切面): Point和Adivce的结合。
+
+				Target(目标对象): 要增强的类成为Target。
+
+		4.12.2 SpringBoot支持
+
+			1. 添加依赖
+
+				<dependency>
+		            <groupId>org.springframework.boot</groupId>
+		            <artifactId>spring-boot-starter-aop</artifactId>
+		        </dependency>
+
+	        2. 创建service
+
+	        	@Service
+				public class AopService {
+
+				    private static final Logger logger = LoggerFactory.getLogger(AopService.class);
+
+				    public String start() {
+				        logger.info("start");
+				        return "start";
+				    }
+
+				    public String end() {
+				        logger.info("end");
+				        return "end";
+				    }
+
+				}
+
+			3. 创建切面
+
+				@Component
+				@Aspect
+				public class LogAspect {
+
+				    private static final Logger logger = LoggerFactory.getLogger(LogAspect.class);
+
+				    @Pointcut("execution(* com.binvi.springboot.demo03.service.*.*(..))")
+				    public void pc1() {
+				        logger.info("pointcut [1]");
+				    }
+
+				    @Before(value = "pc1()")
+				    public void before(JoinPoint jp) {
+				        logger.info("{} method begin.", jp.getSignature().getName());
+				    }
+
+				    @After(value = "pc1()")
+				    public void after(JoinPoint jp) {
+				        logger.info("{} method end.", jp.getSignature().getName());
+				    }
+
+				    @AfterReturning(value = "pc1()", returning = "result")
+				    public void afterReturning(JoinPoint jp, Object result) {
+				        logger.info("{} return result: {}", jp.getSignature().getName(), result);
+				    }
+
+				    @AfterThrowing(value = "pc1()", throwing = "e")
+				    public void afterThrowing(JoinPoint jp, Exception e) {
+				        logger.info("{} throw a exception: {}", jp.getSignature().getName(), e.getMessage());
+				    }
+
+				    @Around("pc1()")
+				    public Object around(ProceedingJoinPoint pjp) throws Throwable {
+				        logger.info("{} around", pjp.getSignature().getName());
+				        return pjp.proceed();
+				    }
+
+				}
+
+			4. Controller
+
+				@RestController
+				@RequestMapping("/aop")
+				public class AopController {
+
+				    @Autowired
+				    BookService bookService;
+
+				    @Autowired
+				    AopService aopService;
+
+				    @GetMapping("/book/get/en")
+				    public String getEnBooks() {
+				        return bookService.generateEnBooks().toString();
+				    }
+
+				    @GetMapping("/book/get/cn")
+				    public String getCnBooks() {
+				        return bookService.generateCnBooks().toString();
+				    }
+
+				    @GetMapping("/start")
+				    public String start() {
+				        return aopService.start();
+				    }
+
+				    @GetMapping("/end")
+				    public String end() {
+				        return aopService.end();
+				    }
+
+				}
+
+	4.13 其他
+
+		4.13.1 自定义欢迎页
+
+			动态首页： resources/templates/index.html 	(先)
+			静态首页： resources/static/index.html 		(后) // 如果是freemarker模板引擎，index.ftl
+
+			Controller:
+
+				@RestController
+				@RequestMapping("/index")
+				public class IndexController {
+
+				    private static final Logger logger = LoggerFactory.getLogger(IndexController.class);
+
+				    @RequestMapping
+				    public String index() {
+				        logger.info("welcome to index page");
+				        return "index";
+				    }
+
+				}
+
+		4.13.2 自定义favicon.ico
+
+			将普通图片转为.ico格式，重命名位favicon.ico，复制到resouces/static/目录下，启动项目即可。
+
+			在线转换网址： https://jinaconvert.com/cn/convert-to-ico.php
+
+		4.13.3 除去某个自动配置
+
+
+			1. 使用注解
+
+				@SpringBootApplication
+				@EnableAutoConfiguration(exclude = {ErrorMvcAutoConfiguration.class})
+				public class OtherApplication {
+					public static void main(String[] args) {
+						SpringApplication.run(OtherApplication.class, args);
+					}
+				}
+
+			2. 使用配置文件
+
+				spring.autoconfigure.exclude = org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration
+
+	4.14 小结
+
+第5章 SpringBoot整合持久层技术
+
+	5.1 整合JdbcTemplate
+
+		自动化配置类：org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration
+
+		想要使用JdbcTemplate，只需要提供JdbcTemplate的依赖和DataSource依赖即可。具体步骤如下：
+
+		1. 创建数据库、表
+
+		2. 创建项目，添加依赖
+
+			org.springframework.boot:spring-boot-starter-web
+			org.springframework.boot:spring-boot-starter-jdbc
+			mysql:mysql-connector-java:runtime
+			com.alibaba:druid:1.1.10
+
+		3. 数据库配置
+		
+			spring.datasource.type=com.alibaba.druid.pool.DruidDataSource
+			spring.datasource.url=jdbc:mysql://localhost:3306/binvi?useUnicode=true&characterEncoding=utf-8
+									&useSSL=false&serverTimezone=GMT%2B8&zeroDateTimeBehavior=convertToNull
+			spring.datasource.username=root
+			spring.datasource.password=binvi
+
+		4. 创建实体类
+
+			@Data
+			public class Movie {
+
+			    private Integer id;
+			    private String name;
+			    private String author;
+			    private Date publishDate;
+			    private BigDecimal price;
+			    private String description;
+			    private String remark;
+
+			    public static Movie getInstance() {
+
+			        Movie movie = new Movie();
+			        movie.setName("Iron Man I");
+			        movie.setAuthor("Marvel");
+			        movie.setPrice(new BigDecimal(50.00));
+			        movie.setPublishDate(new Date());
+			        movie.setDescription("I am iron man");
+			        movie.setRemark("first movie in marvel world");
+			        return movie;
+			    }
+
+			}
+
+		5. 创建数据库访问层
+
+			@Repository
+			public class MovieDao {
+
+			    @Autowired
+			    JdbcTemplate jdbcTemplate;
+
+			    public int addMovie(Movie movie) {
+			        return jdbcTemplate.update(
+			                "insert into movie (name, author, publish_date, price, description, remark) values (?, ?, ?, ?, ?, ?)",
+			                movie.getName(), movie.getAuthor(), movie.getPublishDate(), movie.getPrice(), movie.getDescription(), movie.getRemark());
+			    }
+
+			    public int updateMovie(Movie movie) {
+			        return jdbcTemplate.update(
+			                "update movie set name = ?, author = ?, publish_date = ?, price = ?, description = ?, remark = ? where id = ?",
+			                movie.getName(), movie.getAuthor(), movie.getPublishDate(), movie.getPrice(), movie.getDescription(), movie.getRemark(), movie.getId());
+			    }
+
+			    public int deleteById(Integer id) {
+			        return jdbcTemplate.update("delete from movie where id = ?", id);
+			    }
+
+			    public Movie getMovieById(Integer id) {
+			        return jdbcTemplate.queryForObject("select * from movie where id = ?", new BeanPropertyRowMapper<>(Movie.class), id);
+			    }
+
+			    public List<Movie> getAllMovies() {
+			        return jdbcTemplate.query("select * from movie", new BeanPropertyRowMapper<>(Movie.class));
+			    }
+
+			}
+
+		6. 创建Service和Controller	
+
+			@Service
+			public class MovieService {
+
+			    @Autowired
+			    private MovieDao movieDao;
+
+			    public int addMovie(Movie movie) {
+			        return movieDao.addMovie(movie);
+			    }
+
+			    public int updateMovie(Movie movie) {
+			        return movieDao.updateMovie(movie);
+			    }
+
+			    public int deleteMovieById(Integer id) {
+			        return movieDao.deleteById(id);
+			    }
+
+			    public Movie getMovieById(Integer id) {
+			        return movieDao.getMovieById(id);
+			    }
+
+			    public List<Movie> getAllMovies() {
+			        return movieDao.getAllMovies();
+			    }
+
+			}
+
+			@RestController
+			@RequestMapping("/movie")
+			public class MovieController {
+
+			    private static final Logger logger = LoggerFactory.getLogger(MovieController.class);
+
+			    @Autowired
+			    MovieService movieService;
+
+			    @PostMapping("/add")
+			    public String addMovie() {
+			        logger.info("add movie start");
+			        Movie movie = Movie.getInstance();
+			        movieService.addMovie(movie);
+			        return movie.toString();
+			    }
+
+			    @PostMapping("/update")
+			    public String updateMovie(Movie movie) {
+			        logger.info("update movie start. movie:[{}]", movie);
+			        movieService.updateMovie(movie);
+			        return movie.toString();
+			    }
+
+			    @DeleteMapping("/delete/{id}")
+			    public void deleteMovie(@PathVariable(value = "id")Integer id) {
+			        logger.info("delete movie start. id:[{}]", id);
+			        movieService.deleteMovieById(id);
+			    }
+
+			    @GetMapping("/get/{id}")
+			    public String getMovieById(@PathVariable(value = "id")Integer id) {
+			        logger.info("get movie by id start. id:[{}]", id);
+			        return movieService.getMovieById(id).toString();
+			    }
+
+			    @GetMapping("/all")
+			    public String getAllMovies() {
+			        logger.info("get all movies start.");
+			        return movieService.getAllMovies().toString();
+			    }
+
+			}
+
+
+	5.2 整合Mybatis
+
+		1. 创建项目，添加依赖
+
+			org.springframework.boot:spring-boot-starter-web
+			org.mybatis.spring.boot:mybatis-spring-boot-starter:2.0.1
+			mysql:mysql-connector-java:runtime
+			com.alibaba:druid:1.1.10
+
+		2. 创建数据库、表、实体类等
+
+		3. 创建数据库访问层
+
+			//@Mapper
+			@Repository
+			public interface MovieMapper {
+
+			    int addMovie(Movie movie);
+
+			    int updateMovieById(Movie movie);
+
+			    int deleteMovieById(Integer id);
+
+			    Movie getMovieById(Integer id);
+
+			    List<Movie> getAllMovies();
+
+			}
+
+		4. 创建mapper.xml
+
+			<?xml version="1.0" encoding="UTF-8"?>
+			<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+			<mapper namespace="com.binvi.springboot.demo03.mapper.MovieMapper">
+			    <resultMap id="baseResultMap" type="com.binvi.springboot.demo03.entity.Movie">
+			        <id column="id" property="id" />
+			        <result column="author" property="author" />
+			        <result column="publish_date" property="publishDate" />
+			        <result column="price" property="price" />
+			        <result column="description" property="description" />
+			        <result column="remark" property="remark" />
+			    </resultMap>
+
+			    <insert id="addMovie" parameterType="com.binvi.springboot.demo03.mapper.MovieMapper">
+			        insert into movie (name, author, publish_date, price, description, remark)
+			        values (#{name}, #{author}, #{publishDate}, #{price}, #{description}, #{remark})
+			    </insert>
+
+			    <delete id="deleteMovieById" parameterType="int">
+			        delete from movie where id = #{id}
+			    </delete>
+
+			    <update id="updateMovieById" parameterType="com.binvi.springboot.demo03.entity.Movie">
+			        update movie set name = #{name}, author = #{author}, publish_date = #{publishDate},
+			        price = #{price}, description = #{description}, remark = #{remark} where id = #{id}
+			    </update>
+
+			    <select id="getMovieById" parameterType="int" resultMap="baseResultMap">
+			        select * from movie where id = #{id}
+			    </select>
+
+			    <select id="getAllMovies" resultMap="baseResultMap">
+			        select * from movie
+			    </select>
+			</mapper>
+
+		5. 创建Service和Controller: ditto
+
+		6. 配置pom.xml
+
+			<build>
+		        <resources>
+		            <resource>
+		                <directory>src/main/java</directory>
+		                <includes>
+		                    <include>**/*.xml</include>
+		                </includes>
+		            </resource>
+		            <resource>
+		                <directory>src/main/resources</directory>
+		            </resource>
+		        </resources>
+	        </build>
+
+		tips:
+
+			1. Could not autowire.No beans of 'xxxMapper' type found：
+					Mapper.java可以使用@Mapper注解，也可以使用@Repository（推荐使用），由于使用@Mapper注解时，虽然IDEA编译不报错，但是@Aotowired引入时报无Beans
+					（虽然不影响正常编译，也可以settings设置不报此类红线警告）
+
+			2. Maven添加扫描的资源目录： src/main/java **/*.xml
+
+			3. 数据库时间比程序正常时间少8个小时问题：连接数据库时设置时区, spring.datasource.url = ...&serverTimezone=GMT%2B8...
+
+	5.3 整合Spring Data JPA
+
+		1. 创建数据库 ditto
+
+		2. 创建项目，添加依赖
+
+			org.springframework.boot:spring-boot-starter-web
+			org.springframework.boot:spring-boot-starter-data-jpa
+			mysql:mysql-connector-java:runtime
+			com.alibaba:druid:1.1.10			
+
+		3. 数据库配置：
+
+			...spring.datasource.*** = ***...
+			spring.jpa.show-sql=true
+			spring.jpa.database=mysql
+			spring.jpa.hibernate.ddl-auto=update
+			spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL55Dialect
+
+		4. 创建实体类
+
+			@Entity(name = "anime")
+			@Data
+			public class Anime {
+
+			    @Id
+			    @GeneratedValue(strategy = GenerationType.IDENTITY)
+			    private Integer id;
+
+			    @Column(nullable = false)
+			    private String name;
+
+			    private String author;
+
+			    private BigDecimal price;
+
+			    private String star;
+
+			    private Date publishDate;
+
+			    private String description;
+
+			    private String remark;
+
+			    @Transient
+			    private Boolean famous;
+
+			    public static Anime getInstance() {
+			        Anime anime = new Anime();
+			        anime.setName("One Punch Man");
+			        anime.setAuthor("one");
+			        anime.setPrice(new BigDecimal(0));
+			        anime.setStar("琦玉");
+			        anime.setPublishDate(new Date());
+			        anime.setDescription("平热系最强英雄传说");
+			        anime.setRemark("any one,just one punch");
+			        anime.setFamous(Boolean.TRUE);
+			        return anime;
+			    }
+
+			}
+
+		5. 创建Dao接口
+
+			public interface AnimeDao extends JpaRepository<Anime, Integer> {
+
+			    List<Anime> getAllByAuthorStartingWith(String author);
+
+			    List<Anime> getAllByPriceGreaterThanEqual(BigDecimal price);
+
+			    @Query(value = "select * from anime where id = (select max(id) from anime)", nativeQuery = true)
+			    Anime getAnimeMaxId();
+
+			    @Query(value = "select a from anime a where a.id > :id and a.author = :author")
+			    List<Anime> getAnimesByIdAndAuthor(@Param("author")String author, @Param("id") Integer id);
+
+			    @Query("select a from anime a where a.id < ?2 and a.name like %?1%")
+			    List<Anime> getAnimesByIdAndName(String name, Integer id);
+
+			}
+
+				tips： 
+					如果涉及修改操作，需要添加@Modifying注解并添加事务
+
+		7. 创建Service和Controller
+
+			@Service
+			public class AnimeService {
+
+			    @Autowired
+			    AnimeDao animeDao;
+
+			    public void addAnime(Anime anime) {
+			        if (anime == null) {
+			            anime = Anime.getInstance();
+			        }
+			        animeDao.save(anime);
+			    }
+
+			    public Page<Anime> getAnimeByPage(Pageable pageable) {
+			        return animeDao.findAll(pageable);
+			    }
+
+			    public List<Anime> getAnimesByAuthorStartingWith(String author) {
+			        return animeDao.getAllByAuthorStartingWith(author);
+			    }
+
+			    public List<Anime> getBooksByPriceGreaterThanEqual(BigDecimal price) {
+			        return animeDao.getAllByPriceGreaterThanEqual(price);
+			    }
+
+			    public Anime getAnimeMaxId() {
+			        return animeDao.getAnimeMaxId();
+			    }
+
+			    public List<Anime> getAnimeByIdAndAuthor(String author, Integer id) {
+			        return animeDao.getAnimesByIdAndAuthor(author, id);
+			    }
+
+			    public List<Anime> getAnimesByIdAndName(String name, Integer id) {
+			        return animeDao.getAnimesByIdAndName(name, id);
+			    }
+
+			}
+
+
+			@RestController
+			@RequestMapping("anime")
+			public class AnimeController {
+
+			    private static final Logger logger = LoggerFactory.getLogger(AnimeController.class);
+
+			    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+			    @Autowired
+			    AnimeService animeService;
+
+			    @PostMapping("add")
+			    public String add() {
+			        logger.info("anime add start");
+			        Anime anime = Anime.getInstance();
+			        logger.info("anime:[{}]", anime);
+			        animeService.addAnime(anime);
+			        return anime.toString();
+			    }
+
+			    @GetMapping("page")
+			    public String getByPage() {
+			        logger.info("anime get by page start");
+			        PageRequest pageRequest = PageRequest.of(2, 3);
+			        Page<Anime> animes = animeService.getAnimeByPage(pageRequest);
+			        String json = null;
+			        try {
+			            json = OBJECT_MAPPER.writeValueAsString(animes);
+			            logger.info("result: {}", json);
+			        } catch (JsonProcessingException e) {
+			            e.printStackTrace();
+			        }
+			        return json;
+			    }
+
+			    @GetMapping("search")
+			    public String search() {
+			        logger.info("anime search start");
+			        Map<String, List<Anime>> result = Maps.newHashMap();
+			        result.put("getAnimesByAuthorStartingWith", animeService.getAnimesByAuthorStartingWith("one"));
+			        result.put("getBooksByPriceGreaterThanEqual", animeService.getBooksByPriceGreaterThanEqual(new BigDecimal(0)));
+			        result.put("getAnimeByIdAndAuthor", animeService.getAnimeByIdAndAuthor("one", 1));
+			        result.put("getAnimesByIdAndName", animeService.getAnimesByIdAndName("One Punch Man", 2));
+			        String json = null;
+			        try {
+			            json = OBJECT_MAPPER.writeValueAsString(result);
+			            logger.info("result: {}", json);
+			        } catch (JsonProcessingException e) {
+			            e.printStackTrace();
+			        }
+			        return json;
+			    }
+
+			}
+
+	5.4 多数据源
+
+		5.4.1 JdbcTemplate多数据源
+
+			1. 创建数据库
+
+				create database 'chapter05-1' default charset set utf8;
+				use 'chapter05-1';
+				create table 'book' (
+					'id' int(11) NOT NULL AUTO_INCREMENT,
+					'name' varchar(128) default null,
+					'author' varchar(128) default null,
+					primary key ('id')
+				) ENGINE = InooDB AUTO_INCREMENT = 2 DEFAULT CAHRSET = utf8;
+				insert into 'book' ('id', 'name', 'author') values (1, '水浒传', '施耐庵');
+
+				create database 'chapter05-2' default charset set utf8;
+				use 'chapter05-2';
+				create table 'book' (
+					'id' int(11) NOT NULL AUTO_INCREMENT,
+					'name' varchar(128) default null,
+					'author' varchar(128) default null,
+					primary key ('id')
+				) ENGINE = InooDB AUTO_INCREMENT = 2 DEFAULT CAHRSET = utf8;				
+				insert into 'book' ('id', 'name', 'author') values (1, '三国演义', '罗贯中');
+
+			2. 创建项目，添加依赖
+			
+				org.springframework.boot:spring-boot-starter-web
+				org.springframework.boot:spring-boot-starter-jdbc
+				mysql:mysql-connector-java:runtime
+				com.alibaba:druid-spring-boot-starter:1.1.10
+
+			3. 配置数据库连接
+
+				spring.datasource.one.type=com.alibaba.druid.pool.DruidDataSource
+				spring.datasource.one.url=jdbc:mysql://localhost:3306/binvi?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2B8&zeroDatei 		meBehavior=convertToNull
+				spring.datasource.one.username=root
+				spring.datasource.one.password=binvi
+
+				spring.datasource.two.type=com.alibaba.druid.pool.DruidDataSource
+				spring.datasource.two.url=jdbc:mysql://localhost:3306/sinda?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2B8&zeroDatei 		meBehavior=convertToNull
+				spring.datasource.two.username=root
+				spring.datasource.two.password=binvi
+
+			4. 配置数据源
+
+				@Configuration
+				public class DataSourceConfig {
+
+				    @Bean
+				    @ConfigurationProperties("spring.datasource.one")
+				    DataSource dsOne() {
+				        return DruidDataSourceBuilder.create().build();
+				    }
+
+				    @Bean
+				    @ConfigurationProperties("spring.datasource.two")
+				    DataSource dsTwo() {
+				        return DruidDataSourceBuilder.create().build();
+				    }
+
+				}
+
+			5. 配置JdbcTemplate
+
+				@Configuration
+				public class JdbcTemplateConfig {
+
+				    @Bean
+				    JdbcTemplate jdbcTemplateOne(@Qualifier("dsOne") DataSource dataSource) {
+				        return new JdbcTemplate(dataSource);
+				    }
+
+				    @Bean
+				    JdbcTemplate jdbcTemplateTwo(@Qualifier("dsTwo") DataSource dataSource) {
+				        return new JdbcTemplate(dataSource);
+				    }
+
+				}
+
+			6. 创建Controller
+			
+				@RestController
+				@RequestMapping("dbs/jdbc")
+				public class MovieController3 {
+
+				    private static final Logger logger = LoggerFactory.getLogger(MovieController3.class);
+
+				    @Resource(name = "jdbcTemplateOne")
+				    JdbcTemplate jdbcTemplateOne;
+
+				    @Autowired
+				    @Qualifier("jdbcTemplateTwo")
+				    JdbcTemplate jdbcTemplateTwo;
+
+				    @RequestMapping("test")
+				    public void test() {
+				        logger.info("JDBC多数据源测试：dbs jdbc test start");
+				        List<Movie> movies1 = jdbcTemplateOne.query("select * from movie", new BeanPropertyRowMapper<>(Movie.class));
+				        logger.info("movies1: {}", movies1);
+				        List<Movie> movies2 = jdbcTemplateTwo.query("select * from movie", new BeanPropertyRowMapper<>(Movie.class));
+				        logger.info("movies2: {}", movies2);
+				    }
+
+				}	
+
+			7. 测试
+			
+				http://localhost:8081/dbs/jdbc/test	
+
+		5.4.2 Mybatis多数据源
+
+			1. 准备工作
+
+				其他ditto，依赖换成mybatis的依赖：
+
+					org.springframework.boot:spring-boot-starter-web
+					org.mybatis.spring.boot:mybatis-spring-boot-starter:2.0.1
+					mysql:mysql-connector-java:runtime
+					com.alibaba:druid-spring-boot-starter:1.1.10		
+
+			2. 创建MyBatis配置
+			
+				@Configuration
+				@MapperScan(basePackages = "com.binvi.springboot.demo03.mapper1", sqlSessionFactoryRef = "sqlSessionFactoryBean1")
+				public class MyBatisConfigOne {
+
+				    @Autowired
+				    @Qualifier("dsOne")
+				    DataSource dsOne;
+
+				    @Bean
+				    SqlSessionFactory sqlSessionFactoryBean1() throws Exception {
+				        SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
+				        bean.setDataSource(dsOne);
+				        return bean.getObject();
+				    }
+
+				    @Bean
+				    SqlSessionTemplate sqlSessionTemplate1() throws Exception {
+				        return new SqlSessionTemplate(sqlSessionFactoryBean1());
+				    }
+
+				}			
+
+				@Configuration
+				@MapperScan(basePackages = "com.binvi.springboot.demo03.mapper2", sqlSessionFactoryRef = "sqlSessionFactoryBean2")
+				public class MyBatisConfigTwo {
+
+				    @Autowired
+				    @Qualifier("dsTwo")
+				    DataSource dsTwo;
+
+				    @Bean
+				    SqlSessionFactory sqlSessionFactoryBean2() throws Exception {
+				        SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
+				        bean.setDataSource(dsTwo);
+				        return bean.getObject();
+				    }
+
+				    @Bean
+				    SqlSessionTemplate sqlSessionTemplate2() throws Exception {
+				        return new SqlSessionTemplate(sqlSessionFactoryBean2());
+				    }
+
+				}		
+
+			3. 创建Mapper
+				
+				com.binvi.springboot.demo03.mapper1.MovieMapper1				
+				com/binvi/springboot/demo03/mapper1/MovieMapper1.xml	
+
+				com.binvi.springboot.demo03.mapper2.MovieMapper2
+				com/binvi/springboot/demo03/mapper2/MovieMapper2.xml
+
+			4. 创建Controller
+
+				@RestController
+				@RequestMapping("dbs/mybatis")
+				public class MovieController4 {
+
+				    private static final Logger logger = LoggerFactory.getLogger(MovieController4.class);
+
+				    @Autowired
+				    MovieMapper1 movieMapper1;
+				    @Autowired
+				    MovieMapper2 movieMapper2;
+
+				    @GetMapping("/test")
+				    public void test() {
+				        logger.info("MyBatis多数据源测试：dbs mybatis test start");
+				        List<Movie> movies1 = movieMapper1.getAllMovies();
+				        logger.info("movies1: {}", movies1);
+				        List<Movie> movies2 = movieMapper2.getAllMovies();
+				        logger.info("movies2: {}", movies2);
+				    }
+
+				}
+
+			5. 测试
+			
+				http://localhost:8081/dbs/mybatis/test				
+
+		5.4.3 JPA多数据源
+
+			1. 准备工作
+
+				其他ditto，依赖需换:
+
+					org.springframework.boot:spring-boot-starter-web
+					org.springframework.boot:spring-boot-starter-data-jpa
+					mysql:mysql-connector-java:runtime
+					com.alibaba:druid-spring-boot-starter:1.1.10
+
+				配置数据源参数：(与单独配置JPA有区别)
+
+					spring.jap.properties.hibernate.dialect=org.hibernate.dialect.MySQL55Dialect
+					spring.jpa.properties.database=mysql
+					spring.jpa.properties.hibernate.hbm2ddl.auto=update
+					spring.jpa.properties.show-sql=true
+
+			2. 创建实体类
+
+			3. 创建JPA配置
+
+				@Configuration
+				@EnableTransactionManagement
+				@EnableJpaRepositories(basePackages = "com.binvi.springboot.demo03.repository1",
+				        entityManagerFactoryRef = "entityManagerFactoryBeanOne",
+				        transactionManagerRef = "platformTransactionManagerOne")
+				public class JpaConfigOne {
+
+				    @Resource(name = "dsOne")
+				    DataSource dsOne;
+
+				    @Autowired
+				    JpaProperties jpaProperties;
+
+				    @Bean
+				    @Primary
+				    LocalContainerEntityManagerFactoryBean entityManagerFactoryBeanOne(EntityManagerFactoryBuilder builder) {
+				        return builder.dataSource(dsOne)
+				                .properties(jpaProperties.getProperties())
+				                .packages("com.binvi.springboot.demo03.entity")
+				                .persistenceUnit("pu1").build();
+				    }
+
+				    @Bean
+				    PlatformTransactionManager platformTransactionManagerOne(EntityManagerFactoryBuilder builder) {
+				        LocalContainerEntityManagerFactoryBean factoryBean = entityManagerFactoryBeanOne(builder);
+				        return new JpaTransactionManager(factoryBean.getObject());
+				    }
+
+				}
+
+				@Configuration
+				@EnableTransactionManagement
+				@EnableJpaRepositories(basePackages = "com.binvi.springboot.demo03.repository2",
+				        entityManagerFactoryRef = "entityManagerFactoryBeanTwo",
+				        transactionManagerRef = "platformTransactionManagerTwo")
+				public class JpaConfigTwo {
+
+				    @Resource(name = "dsTwo")
+				    DataSource dsTwo;
+
+				    @Autowired
+				    JpaProperties jpaProperties;
+
+				    @Bean
+				    LocalContainerEntityManagerFactoryBean entityManagerFactoryBeanTwo(EntityManagerFactoryBuilder builder) {
+				        return builder.dataSource(dsTwo)
+				                .properties(jpaProperties.getProperties())
+				                .packages("com.binvi.springboot.demo03.entity")
+				                .persistenceUnit("pu2").build();
+				    }
+
+				    @Bean
+				    PlatformTransactionManager platformTransactionManagerTwo(EntityManagerFactoryBuilder builder) {
+				        LocalContainerEntityManagerFactoryBean factoryBean = entityManagerFactoryBeanTwo(builder);
+				        return new JpaTransactionManager(factoryBean.getObject());
+				    }
+
+				}
+
+			4. 创建Repository
+
+				com.binvi.springboot.demo03.repository1.MovieDao1
+					public interface MovieDao1 extends JpaRepository<Movie, Integer> {}
+				com.binvi.springboot.demo03.repository2.MovieDao2
+					public interface MovieDao2 extends JpaRepository<Movie, Integer> {}
+
+			5. 创建Controller
+
+				@RestController
+				@RequestMapping("dbs/jpa")
+				public class MovieController5 {
+
+				    private static final Logger logger = LoggerFactory.getLogger(MovieController4.class);
+
+				    @Autowired
+				    MovieDao1 movieDao1;
+				    @Autowired
+				    MovieDao2 movieDao2;
+
+				    @GetMapping("test")
+				    public void test() {
+				        logger.info("JPA多数据源测试：dbs jpa test start");
+				        List<Movie> movies1 = movieDao1.findAll();
+				        logger.info("movies1: {}", movies1);
+				        List<Movie> movies2 = movieDao2.findAll();
+				        logger.info("movies2: {}", movies2);
+				    }
+
+				}
+
+			6. 测试
+			
+				http://localhost:8081/dbs/jpa/test
+
+第6章 SpringBoot整合NoSQL
+
+	6.1 整合Redis
+
+		6.1.1 Redis简介
+
+		6.1.2 Redis下载、安装、配置
+
+			daemonizeyes			## 允许redis在后台启动
+			#bind 127.0.0.1			## 允许连接Redis实例的地址，默认情况只允许本地连接，将默认配置注释掉，外网就可以连接Redis了
+			requirepass 123456		## 表示登陆该Redis实例需要的密码
+			protected-mode no 		## 保护模式，如果有第3行密码，可以选择关闭
+
+		6.1.3 整合SpringBoot	
+
+			1. 创建项目，添加依赖
+
+				org.springframework.boot:spring-boot-starter-web
+				org.springframework.boot:spring-boot-starter-data-redis
+					<exclusion> io.lettuce:lettuce-core <exclusion>
+				redis.clients:jedis
+
+			2. 配置Redis
+
+				spring.redis.database=0
+				spring.redis.host=localhost
+				spring.redis.port=6379
+				#spring.redis.password=binvi
+				spring.redis.jedis.pool.max-active=8
+				spring.redis.jedis.pool.max-idle=8
+				spring.redis.jedis.pool.max-wait=-1ms
+				spring.redis.jedis.pool.min-idle=0
+
+				SpringBoot中的自动配置类: RedisAutoConfiguration
+
+			3. 创建实体类
+
+				@Data
+				public class Song implements Serializable {
+
+				    private Integer id;             // 编号
+				    private String nameCh;          // 中文名称
+				    private String nameEn;          // 英文名称
+				    private String compose;         // 作曲
+				    private String lyricist;        // 作词
+				    private String arranger;        // 编曲
+				    private String singer;          // 演唱
+				    private String album;           // 专辑
+				    private String style;           // 风格
+				    private Long duration;          // 市场
+				    private Date publishDate;       // 发行日期
+				    private BigDecimal price;       // 价格
+				    private String producer;        // 监制
+				    private String recordCompany;   // 唱片公司
+				    private String introduction;    // 简介
+				    private String remark;          // 备注
+
+				    public static Song getInstance() throws ParseException {
+				        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+				        Song song = new Song();
+				        song.setNameCh("来自天堂的魔鬼");
+				        song.setNameEn("Away");
+				        song.setCompose("G.E.M.邓紫棋");
+				        song.setLyricist("G.E.M.邓紫棋");
+				        song.setArranger("Lupo Groinig");
+				        song.setSinger("G.E.M.邓紫棋");
+				        song.setAlbum("新的心跳");
+				        song.setStyle("电子，摇滚，流行");
+				        song.setDuration(245L);
+				        song.setPublishDate(dateFormat.parse("2015-11-05"));
+				        song.setPrice(new BigDecimal(20));
+				        song.setRecordCompany("蜂鸟音乐");
+				        song.setIntroduction("这首歌单纯的是讲爱情，有时候觉得这个人带给你很多快乐，可同时这些幸福的瞬间又会使你患得患失，产生很多不快乐。因为这个人带给你的快乐越多，他带给你的伤害也就会越大，是一个双面的感觉。所以你说他到底是天使，还是魔鬼？无从得知。");
+				        song.setRemark("");
+				        return song;
+				    }
+
+				}
+
+			4. 创建Controller
+			
+				@RestController
+				@RequestMapping("redis")
+				public class SongController {
+
+				    public static final Logger logger = LoggerFactory.getLogger(SongController.class);
+
+				    @Autowired
+				    RedisTemplate redisTemplate;
+				    @Autowired
+				    StringRedisTemplate stringRedisTemplate;
+
+				    @GetMapping("test")
+				    public String test() throws ParseException {
+				        logger.info("song controller test start");
+				        ValueOperations<String, String> svo = stringRedisTemplate.opsForValue();
+				        svo.set("name", "来自天堂的魔鬼");
+				        String name = svo.get("name");
+				        logger.info("name:[{}]", name);
+
+				        ValueOperations vo = redisTemplate.opsForValue();
+				        vo.set("song", Song.getInstance());
+				        Song song = (Song) vo.get("song");
+				        logger.info("song:[{}]", song);
+
+				        return song.toString();
+				    }
+
+				}	
+
+			5. 测试： http://localhost:8081/redis/test
+
+		6.1.4 Redis集群整合Spring Boot  //TODO 由于软件railsinstaller安装问题，后期有空搭建。
+
+			window，参考：https://blog.csdn.net/qq_39086296/article/details/90699622
+			linux，参考本书即可
+
+	6.2 整合MongoDB
+
+		6.2.1 MongDB简介
+
+		6.2.2 MongDB安装
+
+		6.2.3 整合SpringBoot
+
+			1. 创建项目、添加依赖
+
+				org.springframework.boot:spring-boot-starter-web
+				org.springframework.boot:spring-boot-starter-data-mongodb
+
+			2. 配置MongoDB
+			
+				spring.data.mongodb.authentication-database=admin 		// 验证登陆的库
+				spring.data.mongodb.database=test 						// 要连接的库
+				spring.data.mongodb.host=localhost         				
+				spring.data.mongodb.port=27017
+				#spring.data.mongodb.username=
+				#spring.data.mongodb.password=	
+
+			3. 创建实体类
+			
+				@Data
+				public class Teleplay {
+
+				    private Integer id;             // 编号
+				    private String name;            // 名称
+				    private short season;           // 季数
+				    private short episode;          // 集数
+				    private String stars;           // 主演
+				    private String author;          // 作者
+				    private String scriptwriter;    // 编剧
+				    private Date publishDate;       // 出版日期
+				    private String introduction;    // 简介
+				    private String remark;          // 说明
+
+				    public static Teleplay getInstance() {
+				        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+				        Teleplay teleplay = new Teleplay();
+				        teleplay.setName("Game Of Thrones");
+				        teleplay.setSeason((short)8);
+				        teleplay.setEpisode((short)73);
+				        teleplay.setStars("stark");
+				        teleplay.setAuthor("George Raymond Richard Martin");
+				        teleplay.setScriptwriter("George Raymond Richard Martin, David Beniof");
+				        try {
+				            teleplay.setPublishDate(dateFormat.parse("2011-04-17"));
+				        } catch (ParseException e) {
+				            teleplay.setPublishDate(new Date());
+				        }
+				        teleplay.setIntroduction("权力的游戏");
+				        teleplay.setRemark("recommend to watch");
+				        return teleplay;
+				    }
+
+				}	
+
+			4. 创建DAO层
+
+				public interface TeleplayDao extends MongoRepository<Teleplay, Integer> {
+
+				    List<Teleplay> findByAuthorContains(String author);
+
+				    List<Teleplay> findByNameEquals(String name);
+
+				}
+
+			5. 创建Controller
+			
+				@RestController
+				@RequestMapping("mongo")
+				public class TeleplayController {
+
+				    private static final Logger logger = LoggerFactory.getLogger(TeleplayController.class);
+
+				    @Autowired
+				    TeleplayDao teleplayDao;
+				    @Autowired
+				    MongoTemplate mongoTemplate;
+
+				    @GetMapping("test")
+				    public String test() {
+				        logger.info("teleplay controller test start");
+
+				        List<Teleplay> teleplays = Lists.newArrayList();
+
+				        Teleplay teleplay1 = Teleplay.getInstance();
+				        teleplay1.setId(3);
+				        teleplays.add(teleplay1);
+
+				        Teleplay teleplay2 = Teleplay.getInstance();
+				        teleplay2.setName("GOT");
+				        teleplay2.setId(4);
+				        teleplays.add(teleplay2);
+
+				        teleplayDao.insert(teleplays);
+				        List<Teleplay> teleplayList = teleplayDao.findAll();
+				        List<Teleplay> teleplayList2 = teleplayDao.findByAuthorContains("George Raymond Richard Martin");
+				        List<Teleplay> teleplayList3 = teleplayDao.findByNameEquals("GOT");
+
+				        logger.info("teleplayList: [{}]", teleplayList);
+				        logger.info("teleplayList2: [{}]", teleplayList2);
+				        logger.info("teleplayList3: [{}]", teleplayList3);
+
+				        return teleplayList.toString();
+				    }
+
+				    @GetMapping("test2")
+				    public String test2() {
+				        logger.info("teleplay controller test2 start");
+
+				        Teleplay teleplay = Teleplay.getInstance();
+				        teleplay.setId(5);
+
+				        mongoTemplate.insert(teleplay);
+
+				        List<Teleplay> teleplayList = mongoTemplate.findAll(Teleplay.class);
+				        logger.info("teleplayList:[{}]", teleplayList);
+
+				        return teleplayList.toString();
+				    }
+
+				    @GetMapping("get")
+				    public String get() {
+				        logger.info("teleplay controller get start");
+				        List<Teleplay> teleplayList = mongoTemplate.findAll(Teleplay.class);
+				        logger.info("teleplayList:[{}]", teleplayList);
+				        return teleplayList.toString();
+				    }
+
+				}	
+
+			6. 测试： 
+					http://localhost:8081/mongo/test
+					http://localhost:8081/mongo/test2
+					http://localhost:8081/mongo/get
+
+	6.3 Session共享
+
+		6.3.1 Session共享配置
+
+			1. 创建项目、添加依赖
+
+				org.springframework.boot:spring-boot-starter-web
+				org.springframework.boot:spring-boot-starter-data-redis
+					<exclusion> io.lettuce:lettuce-core <exclusion>
+				redis.clients:jedis
+				org.springframework.session:spring-session-data-redis
+				org.springframework.boot:spring-boot-starter-security
+
+				tips: 
+					spring session 中默认加入了 security 不添加 security 依赖会抛异常：
+						java.lang.ClassNotFoundException: org.springframework.security.web.authentication.RememberMeServices
+
+			2. 配置 
+
+				ditto
+
+			3. 创建Controller
+
+				@RestController
+				@RequestMapping("session")
+				public class SessionController {
+
+				    private static final Logger logger = LoggerFactory.getLogger(SessionController.class);
+
+				    @Value("${server.port}")
+				    String port;
+
+				    @PostMapping("save")
+				    public String saveName(String name, HttpSession session) {
+				        logger.info("session controller save name start. name:[{}], session:[{}]", name, session);
+				        session.setAttribute("name", name);
+				        return port;
+				    }
+
+				    @GetMapping("get")
+				    public String getName(HttpSession session) {
+				        logger.info("session controller get name start. session:[{}]", session);
+				        return port + ":" + session.getAttribute("name").toString();
+				    }
+
+				}
+
+				tips:
+					启动类需要稍作修改：
+						@SpringBootApplication(exclude = {SecurityAutoConfiguration.class})去掉security权限认证自动装配，不去掉会引起权限不足
+
+		6.3.2 Nginx负载均衡		//TODO 安装虚拟机Linux系统后进行
+
+		6.3.3 请求分发			//TODO ditto 需要安装虚拟机Linux操纵系统
+
+第7章 构建RESTful服务
+
+	7.1 REST简介
+
+		REST: Representational State Transfer
+
+		SpringMVC中可以通过@RestController注解开发一个RESTful服务，不过SpringBoot对此提供了自动化配置方案，添加相关依赖即可快速构建RESTful服务。
+
+		
+		测试： 
+
+	7.2 JPA实现REST
+
+		7.2.1 基本实现
+
+			1. 创建项目、添加依赖、添加配置
+
+				org.springframework.boot:spring-boot-starter-data-jpa
+				org.springframework.boot:spring-boot-starter-data-rest
+				mysql:mysql-connector-java:runtime
+				com.alibaba:druid:1.1.10
+
+				spring.datasource.type=com.alibaba.druid.pool.DruidDataSource
+				spring.datasource.url=jdbc:mysql://localhost:3306/binvi?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2B8
+						&zeroDateTimeBehavior=convertToNull
+				spring.datasource.username=root
+				spring.datasource.password=binvi
+				spring.jpa.show-sql=true
+				spring.jpa.database=mysql
+				spring.jpa.hibernate.ddl-auto=update
+				spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL55Dialect
+
+			2. 创建实体类
+
+				com.binvi.springboot.demo03.entity.Anime
+
+			3. 创建Repository
+
+				public interface AnimeDao extends JpaRepository<Anime, Integer> {}
+
+			4. 测试	（postman）
+
+				(1). 添加
+
+					type: post
+					url: http://localhost:8081/animes
+					param:  {"name":"火影忍者", "author":"岸本齐史", "price":0, "star":"火影", "publishDate":"2002-10-03", "description":"忍者村", 
+							 "remark": "recommand to watch"}
+
+					=http:
+						POST /animes HTTP/1.1
+						Host: localhost:8081
+						Content-Type: application/json
+						User-Agent: PostmanRuntime/7.13.0
+						Accept: */*
+						Cache-Control: no-cache
+						Postman-Token: bdc5ea99-9a90-4df0-ae29-b26c833ed949,2fe7fd33-152a-4906-8eaa-00f47e25dea0
+						Host: localhost:8081
+						cookie: SESSION=OGFkNzY5MzEtYWRlZi00NjIxLTk3NjktMDhhYTA2OTFjOTRh
+						accept-encoding: gzip, deflate
+						content-length: 163
+						Connection: keep-alive
+						cache-control: no-cache
+
+						{"name":"火影忍者", "author":"岸本齐史", "price":0, "star":"火影", "publishDate":"2002-10-03", "description":"忍者村", "remark": "recommend to watch"}		 
+
+				(2). 查询
+
+					type: get
+					url:
+						http://localhost:8081/animes  								// 全量查询
+						http://localhost:8081/animes/20 							// 按id查询
+						http://localhost:8081/animes?page=2&size=5 					// 分页查询
+						http://localhost:8081/animes?page=2&size=5$sort=id,desc 	// 分页排序查询（逆序）
+
+					=http：	
+						GET /animes/1 HTTP/1.1
+						Host: localhost:8081
+						Content-Type: application/json
+						User-Agent: PostmanRuntime/7.13.0
+						Accept: */*
+						Cache-Control: no-cache
+						Postman-Token: 01a60c27-4fd5-4737-9749-636e87dfec0c,49b230df-e35b-499e-85f7-e59312cef73f
+						Host: localhost:8081
+						cookie: SESSION=OGFkNzY5MzEtYWRlZi00NjIxLTk3NjktMDhhYTA2OTFjOTRh
+						accept-encoding: gzip, deflate
+						content-length: 158
+						Connection: keep-alive
+						cache-control: no-cache
+
+				(3). 修改
+
+					type: put
+					url: http://localhost:8081/animes/2
+					params: {"name":"一拳超人", "author":"one", "price":20, "star":"琦玉", "publishDate":"2002-10-03", "description":"虎鬼龙神", 
+							 "remark": "recommand to watch"}
+
+					=http:		 	
+						PUT /animes/1 HTTP/1.1
+						Host: localhost:8081
+						Content-Type: application/json
+						User-Agent: PostmanRuntime/7.13.0
+						Accept: */*
+						Cache-Control: no-cache
+						Postman-Token: 4491b06d-38da-4779-b8d8-553c7c550447,f0c69906-d54f-471c-8c86-bb8748d469e4
+						Host: localhost:8081
+						cookie: SESSION=OGFkNzY5MzEtYWRlZi00NjIxLTk3NjktMDhhYTA2OTFjOTRh
+						accept-encoding: gzip, deflate
+						Connection: keep-alive
+						cache-control: no-cache
+
+						{"name":"一拳超人", "author":"one", "price":20, "star":"琦玉", "publishDate":"2002-10-03", "description":"虎鬼龙神", "remark": "recommend to watch"}		
+
+				(4). 删除
+				
+					type: delete
+					url: http://localhost:8081/animes/22		
+
+		7.2.2 自定义请求路径
+		
+			@RepositoryRestResource(path = "animes", collectionResourceRel = "animes", itemResourceRel = "anime")
+			public interface AnimeDao extends JpaRepository<Anime, Integer> {}				
+
+			path: 请求路径中的animes 
+			collectionResourceRel: 返回的JSON集合中的animes
+			itemResourceRel: 返回的JSON集合中的单个anime
+
+		7.2.3 自定义查询方法
+		
+			public interface AnimeDao extends JpaRepository<Anime, Integer> {
+
+				@RestResource(path = "author", rel = "author")
+    			List<Anime> getAllByAuthorStartingWith(String author);
+
+			}	
+
+			不添加@RestResource： http://localhost:8081/animes/search/getAllByAuthorStartingWith?author=one
+			添加@RestResource： http://localhost:8081/animes/search/author?author=one  
+
+			tips：
+				用户可以直接访问：http://localhost:8081/anime/search 查看该实体类暴露出来哪些查询方法。
+
+		7.2.4 隐藏方法
+		
+			如果开发者继承了JpaRepository，但是又不想暴露相关操作，可以做如下配置： @RestResource(exported = false)，
+			可以添加到类、方法，从而使整个类、或某个方法失效。
+
+		7.2.5 配置CORS
+		
+			@CrossOrigin // 可以添加到类、方法。
+			public interface AnimeDao extends JpaRepository<Anime, Integer> {}	
+
+		7.2.6 其他配置
+		
+			spring.data.rest.default-page-size=10
+			spring.data.rest.page-param-name=page
+			spring.data.rest.limit-param-name=size
+			spring.data.rest.sort-param-name=sort
+			spring.data.rest.base-path=/api
+			spring.data.rest.return-body-on-create=true
+			spring.data.rest.return-body-on-update=true	
+
+			==
+
+			@Configuration // 优先级高于配置文件application.properties
+			public class RestConfig implements RepositoryRestConfigurer {
+
+			    @Override
+			    public void configureRepositoryRestConfiguration(RepositoryRestConfiguration config) {
+			        config.setDefaultPageSize(10)           // 每页默认记录数，默认20
+			                .setPageParamName("page")       // 分页查询页码参数名，默认值为page
+			                .setLimitParamName("size")      // 分页查询记录数参数名，默认为size
+			                .setSortParamName("sort")       // 分页查询排序参数名，默认值为sort
+			                //.setBasePath("/api")          // 表示给所有请求路径都加上前缀
+			                .setReturnBodyOnCreate(true)    // 添加成功时是否返回添加内容
+			                .setReturnBodyOnUpdate(true);   // 更新成功时是否返回更新内容
+			    }
+
+			}
+
+
+	7.3 MongoDB实现REST
+
+		1. 创建项目、添加依赖、添加配置
+
+			org.springframework.boot:spring-boot-starter-data-mongodb
+			org.springframework.boot:spring-boot-starter-data-rest
+			mysql:mysql-connector-java:runtime
+			com.alibaba:druid:1.1.10			
+
+			spring.data.mongodb.authentication-database=admin
+			spring.data.mongodb.database=test
+			spring.data.mongodb.host=localhost
+			spring.data.mongodb.port=27017
+			#spring.data.mongodb.username=
+			#spring.data.mongodb.password=
+
+		2. 创建实体类
+		
+			com.binvi.springboot.demo03.entity.Teleplay
+
+		3. 创建Repository
+
+			public interface TeleplayDao extends MongoRepository<Teleplay, Integer> {}
+		
+		4. 其他： ditto
+
+第8章 开发者工具与单元测试
+
+	8.1 devtools简介
+
+	8.2 devtools实战
+
+		8.2.1 基本用法
+
+			添加依赖： org.springframework.boot:spring-boot-devtools:true
+
+			配置热部署：
+
+				Eclipse: 不用配置，添加依赖后直接可以触发
+
+				IDEA: 设置自动编译： 
+
+						File > Settings > Build, Execution, Deployment > Compiler >  勾选 Build project automatically
+
+						Ctrl+Shift+Alt+/ 调出 Maintenance页面，单击Registry，勾选 compiler.automake.allow.when.app.running
+
+		8.2.2 基本原理
+
+			类加载器：
+
+				baseclassloader: 用来加载不会变化的类，例如第三方jar包。
+
+				restartclassloder: 用来加载开发者自己写的会变化的类。但项目需要重启时，restartclassloader将被一个新创建的类加载器代替。
+
+		8.2.3 自定义监控资源
+		
+			默认情况下：/META-INF/maven、/META-INF/resources、/resources、/static、/public以及/templates位置下资源变化不会触发重启
+
+			如果想要这些位置变化也进行重启，可以进行如下配置：
+
+				1. spring.devtools.restart.exclude = static/**                            	// 排除法
+				2. spring.devtools.restart.additional-paths = src/main/resources/static 	// 反向配置监控
+
+			配置触发文件：(修改文件时，默认不会重启，需要项目重启时，只需要修改.trigger-file即可)
+
+				spring.devtools.restart.trigger-file = .trigger-file
+
+		8.2.4 使用LiveReload
+
+			devtools默认嵌入了LiveReload服务器，可以解决静态文件的热部署，LiveReload可以在资源发生变化时自动触发浏览器更新。支持Chorme、Firefox、Safari。
+
+			关闭配置： spring.devtools.livereload.enabled = false
+
+		8.2.5 禁用自动重启
+		
+				spring.devtools.restart.enabled = false
+
+			or
+				@SpringBootApplication
+				public class Application {
+					public static void main(String[] args) {
+						System.setProperty("spring.devtools.restart.enabled", "false");
+						SpringApplication.run(Application.class, args);
+					}
+				}
+
+		8.2.6 全局配置
+		
+			如果项目模块众多，可以在当前用户目录下创建spring-boot-devtools.properties文件来对devtools进行全局配置，适用于当前计算机任何使用了devtools的springboot项目
+
+			C:\Users\hanbw\spring-boot-devtools.properties
+
+				spring.devtools.restart.trigger-file = .trigger-file
+
+	8.3 单元测试
+
+		8.3.1 基本用法
+
+			@RunWith(SpringRunner.class)
+			@SpringBootTest
+			public class Demo03ApplicationTests {
+
+			    @Test
+			    public void contextLoads() { }
+
+			}
+
+		8.3.2 Service测试
+		
+			@RunWith(SpringRunner.class)
+			@SpringBootTest
+			public class TestAnimeService {
+
+			    @Autowired
+			    AnimeService animeService;
+
+			    @Test
+			    public void testFindAll() {
+			        List<Anime> animes = animeService.findAll();
+			        Assert.assertNotNull("anime is null", animes);
+			    }
+
+			}
+
+		8.3.3 Controller测试
+
+			MockMvc方式：
+
+				@RunWith(SpringRunner.class)
+				@SpringBootTest
+				public class TestAnimeController {
+
+				    private static final Logger logger = LoggerFactory.getLogger(TestAnimeController.class);
+
+				    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+				    @Autowired
+				    AnimeService animeService;
+				    @Autowired
+				    WebApplicationContext wac;
+				    MockMvc mockMvc;
+
+				    @Before
+				    public void before() {
+				        mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
+				    }
+
+				    @Test
+				    public void test1() throws Exception {
+				        MvcResult mvcResult = mockMvc.perform(
+				                MockMvcRequestBuilders
+				                        .get("/anime/page")
+				                        .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+				                .andExpect(MockMvcResultMatchers.status().isOk())
+				                .andDo(MockMvcResultHandlers.print())
+				                .andReturn();
+				        logger.info("mvcResult: {}", mvcResult);
+				        logger.info(mvcResult.getResponse().getContentAsString());
+				    }
+
+				    @Test
+				    public void test2() throws Exception {
+				        Anime anime = Anime.getInstance();
+				        String json = OBJECT_MAPPER.writeValueAsString(anime);
+				        MvcResult mvcResult = mockMvc.perform(
+				                MockMvcRequestBuilders
+				                        .post("/anime/add")
+				                        .contentType(MediaType.APPLICATION_JSON)
+				                        .content(json))
+				                .andExpect(MockMvcResultMatchers.status().isOk())
+				                .andDo(MockMvcResultHandlers.print())
+				                .andReturn();
+				        logger.info("mvcResult: {}", mvcResult);
+				        logger.info(mvcResult.getResponse().getContentAsString());
+				    }
+
+				}
+
+			TestRestTemplate方式：
+
+				@RunWith(SpringRunner.class)
+				@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+				public class TestRestController {
+
+				    private static final Logger logger = LoggerFactory.getLogger(TestRestController.class);
+
+				    @Autowired
+				    TestRestTemplate template;
+
+				    @Test
+				    public void test() {
+				        ResponseEntity<String> responseEntity = template.getForEntity("/animes/22", String.class);
+				        logger.info(responseEntity.toString());
+
+				        Anime anime = Anime.getInstance();
+
+				        responseEntity = template.postForEntity("/animes", anime, String.class);
+				        logger.info(responseEntity.toString());
+
+				        anime.setPrice(new BigDecimal(22.55));
+				        template.put("/animes/23", anime);
+
+				        template.delete("/animes/24");
+				    }
+
+				}
+
+		8.3.4 JSON测试
+
+			@RunWith(SpringRunner.class)
+			@JsonTest
+			public class TestJson {
+
+			    @Autowired
+			    JacksonTester<Anime> jacksonTester;
+
+			    @Test
+			    public void testSerialize() throws Exception {
+			        Anime anime = Anime.getInstance();
+			        JsonContent<Anime> jsonContent = jacksonTester.write(anime);
+			        Assertions.assertThat(jsonContent)
+			                .isEqualToJson("anime.json");
+			        Assertions.assertThat(jsonContent)
+			                .hasJsonPathStringValue("@.author");
+			        Assertions.assertThat(jsonContent)
+			                .extractingJsonPathStringValue("@.author")
+			                .isEqualTo("one");
+			    }
+
+			    @Test
+			    public void testDeserialize() throws Exception {
+			        String content = "{\"name\":\"一拳超人\", \"author\":\"one\", \"price\":20, \"star\":\"琦玉\", \"publishDate\":\"2002-10-03\", \"description\":\"虎鬼龙神\", \"remark\": \"recommend to watch\"}";
+			        Anime anime = jacksonTester.parseObject(content);
+			        Assertions.assertThat(anime.getName()).isEqualTo("一拳超人");
+			    }
+
+			}
+
+第9章 SpringBoot缓存
+
+	SpringBoot支持的缓存：
+
+		JCache(JSR-107)、 EnCache2.x、 Hazelcast、 Infinishpan、 Couchbase、 Redis、 Caffeine、 Simple
+
+	不同的缓存对应的缓存管理类：
+		
+		SimpleCacheManager         		使用简单的Collection来存储缓存，主要用于测试
+		ConcurrentMapCacheManager 		使用ConcurrentMap作为缓存技术（默认）
+		NoOpCacheManager 				测试用
+		EhCacheCacheManger 				使用EhCache作为缓存技术
+		GuavaCacheManger 				使用google guava的Guava Cache作为缓存技术
+		HazelcastCacheManager 			使用Hazelcast作为缓存技术
+		JCacheCacheManager 				使用JCache标准的实现作为缓存技术，如Apache Commons JCS
+		RedisCacheManager				使用Redis作为缓存技术
+
+	9.1 Encache2.x缓存
+
+		1. 创建项目、添加依赖
+
+			org.springframework.boot:spring-boot-starter-web
+			org.springframework.boot:spring-boot-starter-cache
+			net.sf.ehcache:ehcache
+
+		2. 添加缓存配置文件
+
+			配置缓存配置文件位置：
+
+				spring.cache.ehcache.config=classpath:config/ehcache.xml
+
+			ehcache.xml：
+
+				<ehcache>
+					<diskStore path="java.io.tmpdir/cache"/>
+
+					<defaultCache 												
+					        maxElementsInMemory = "10000"
+					        eternal = "false"
+					        timeToIdleSeconds = "120"
+					        timeToLiveSeconds = "120"
+					        overflowToDisk = "false"
+					        diskPersistent = "false"
+					        diskExpiryThreadIntervalSeconds = "120" />
+					<cache name = "anime_cache"
+					       maxElementsInMemory = "10000"
+					       eternal = "true"
+					       timeToIdleSeconds = "120"
+					       timeToLiveSeconds = "120"
+					       overflowToDisk = "true"
+					       diskPersistent = "true"
+					       diskExpiryThreadIntervalSeconds = "600" />
+				</ehcache>	
+
+				<!-- 属性说明 -->
+
+				diskStore 							: 	当内存缓存中对象数量超过maxElementsInMemory时,将缓存对象写到磁盘缓存中(需对象实现序列化接口) 
+					path 							: 	用来配置磁盘缓存使用的物理路径,Ehcache磁盘缓存使用的文件后缀名是*.data和*.index
+
+				defaultCache 						:   默认缓存
+				cache 								: 	自定义缓存
+					name 							:	缓存名称,cache的唯一标识(ehcache会把这个cache放到HashMap里)
+					maxElementsOnDisk 				:	磁盘缓存中最多可以存放的元素数量,0表示无穷大
+					maxElementsInMemory 			:	内存缓存中最多可以存放的元素数量,放入Cache中的元素超过这个数值,则有以下两种情况:
+														1)若overflowToDisk=true,则会将Cache中多出的元素放入磁盘文件中
+														2)若overflowToDisk=false,则根据memoryStoreEvictionPolicy策略替换Cache中原有的元素
+					eternal 						: 	缓存中对象是否永久有效,即是否永驻内存,true时将忽略timeToIdleSeconds和timeToLiveSeconds
+					timeToIdleSeconds 				: 	缓存数据在失效前的允许闲置时间(单位:秒),仅当eternal=false时使用,默认值是0表示可闲置时间无穷大,此为可选属性
+					timeToLiveSeconds 				: 	缓存数据在失效前的允许存活时间(单位:秒),仅当eternal=false时使用,默认值是0表示可存活时间无穷大
+					overflowToDisk 					:	内存不足时,是否启用磁盘缓存(即内存中对象数量达到maxElementsInMemory时,Ehcache会将对象写到磁盘中)
+					diskPersistent 					: 	是否持久化磁盘缓存,当这个属性的值为true时,系统在初始化时会在磁盘中查找文件名为cache名称,后缀名为index的文件
+					diskExpiryThreadIntervalSeconds :	磁盘缓存的清理线程运行间隔,默认是120秒
+					diskSpoolBufferSizeMB 			:	设置DiskStore（磁盘缓存）的缓存区大小,默认是30MB
+					memoryStoreEvictionPolicy 		:	内存存储与释放策略,即达到maxElementsInMemory限制时,Ehcache会根据指定策略清理内存
+														共有三种策略,分别为
+															LRU(Least Recently Used 最近最少使用)
+															LFU(Less Frequently Used最不常用的)
+															FIFO(first in first out先进先出)		
+		3. 开启缓存
+
+			@SpringBootApplication
+			@EnableCaching
+			public class Demo03Application {
+
+			    public static void main(String[] args) {
+			        SpringApplication.run(Demo03Application.class, args);
+			    }
+
+			}
+
+		4. 创建DAO
+		
+			@Repository
+			@CacheConfig(cacheNames = "base_cache")
+			public class BasicDao {
+
+			    @Autowired
+			    MyCacheKeyGenerator myCacheKeyGenerator;
+
+			    private static final Logger logger = LoggerFactory.getLogger(BasicDao.class);
+
+			    @Cacheable
+			    public Anime get() {
+			        logger.info("===============get=================");
+			        return Anime.getInstance();
+			    }
+
+			    @CachePut(keyGenerator = "myCacheKeyGenerator")
+			    public Anime update(Anime anime) {
+			        logger.info("===============update=================");
+			        return anime;
+			    }
+
+			    @CacheEvict(key = "#id")
+			    public Anime delete(Integer id) {
+			        logger.info("===============delete=================");
+			        Anime anime = Anime.getInstance();
+			        anime.setId(id);
+			        return anime;
+			    }
+
+			    @Cacheable
+			    public Anime save(Anime anime) {
+			        logger.info("===============add=================");
+			        return anime;
+			    }
+
+			}	
+
+			tips: 
+
+			自定义缓存key生成器：
+
+				import org.springframework.cache.interceptor.KeyGenerator;
+				@Component
+				public class MyCacheKeyGenerator implements KeyGenerator {
+
+				    @Override
+				    public Object generate(Object target, Method method, Object... params) {
+				        StringBuilder sb = new StringBuilder();
+				        sb.append(target.toString())
+				                .append(method.getName())
+				                .append(Arrays.toString(params));
+				        return sb.toString();
+				    }
+				}	
+
+		5. 创建测试类
+		
+			@RunWith(SpringRunner.class)
+			@SpringBootTest
+			public class TestCache {
+
+			    private static final Logger logger = LoggerFactory.getLogger(TestCache.class);
+
+			    @Autowired
+			    BasicDao basicDao;
+
+			    @Test
+			    public void testBasic() {
+			        logger.info("cache test-basic start");
+			        Anime anime = Anime.getInstance();
+			        anime.setId(1);
+
+			        basicDao.save(anime);
+			        basicDao.save(anime);
+			        basicDao.save(anime);
+
+			        basicDao.delete(1);
+			        basicDao.delete(1);
+			        basicDao.delete(1);
+
+			        basicDao.update(anime);
+			        basicDao.update(anime);
+			        basicDao.update(anime);
+
+			        basicDao.get();
+			        basicDao.get();
+			        basicDao.get();
+
+			    }
+
+			}
+
+	9.2 Redis单机缓存
+
+		1. 创建项目、添加依赖
+
+			org.springframework.boot:spring-boot-starter-web
+			org.springframework.boot:spring-boot-starter-cache
+			org.springframework.boot:spring-boot-starter-data-redis
+				<exclusion> io.lettuce:lettuce-core <exclusion>
+			redis.clients:jedis
+
+		2. 缓存配置
+		
+			#redis
+			spring.redis.database=0
+			spring.redis.host=localhost
+			spring.redis.port=6379
+			#spring.redis.password=binvi
+			spring.redis.jedis.pool.max-active=8
+			spring.redis.jedis.pool.max-idle=8
+			spring.redis.jedis.pool.max-wait=-1ms
+			spring.redis.jedis.pool.min-idle=0	
+
+			#cache
+			spring.cache.cache-names=c1,c2
+			spring.cache.redis.time-to-live=1800s
+
+		4. 开启缓存、创建DAO、创建测试类： ditto
+
+	9.3 Redis集群缓存	//TODO
+
+第10章 SpringBoot安全管理
+
+	10.1 Spring Security的基本配置
+
+		10.1.1 基本用法
+
+			1. 创建项目、添加依赖
+
+				org.springframework.boot:spring-boot-starter-web
+				org.springframework.boot:spring-boot-starter-security
+
+			2. 添加Controller
+			
+				@RestController
+				public class SecurityController {
+
+				    @GetMapping("/admin/hello")
+				    public String admin() {
+				        return "hello admin";
+				    }
+
+				    @GetMapping("/user/hello")
+				    public String user() {
+				        return "hello user";
+				    }
+
+				    @GetMapping("/db/hello")
+				    public String dba() {
+				        return "hello dba";
+				    }
+
+				    @GetMapping("/security/hello")
+				    public String security() {
+				        return "hello security";
+				    }
+
+				}	
+
+			3. 启动项目
+			
+				默认跳转的登陆页面： org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter.java
+				默认的用户名： user
+				默认的密码： 启动日志中查看
+
+		10.1.2 配置用户名、密码
+
+			spring.security.user.name=admin
+			spring.security.user.password=admin
+			spring.security.user.roles=admin
+
+		10.1.3 基于内存的认证
+
+			@Configuration
+			public class MyWebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+			    private static final Logger logger = LoggerFactory.getLogger(MyWebSecurityConfig.class);
+
+			    @Bean
+			    PasswordEncoder passwordEncoder() {
+			        return new BCryptPasswordEncoder();
+			    }
+
+			    @Override
+			    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+			        auth.inMemoryAuthentication()
+			                .withUser("root").password("$2a$10$OciW5kufXqinS71A0m4IGubMH/Y2pR1jFJtudpU.HWBWnlSrxFxZC").roles("ADMIN", "DBA")
+			                .and()
+			                .withUser("admin").password("$2a$10$blchBa/QrzI8RLYStHCwAucY0Oc/ZeNvUdlY/QW8SFp9xsvN3Oz76").roles("ADMIN", "USER")
+			                .and()
+			                .withUser("binvi").password("$2a$10$jlzI.D3qy1e8ZMTpAmr1eeo9QQB73cCdPw7MScYVB3uhLvF5yzj4.").roles("USER");
+			    }
+		    }
+		
+		10.1.4 HttpsSecurity
+
+			@Configuration
+			public class MyWebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+			    @Override
+			    protected void configure(HttpSecurity http) throws Exception {
+			        http.authorizeRequests()
+			                .antMatchers("/admin/**")
+			                .hasRole("ADMIN")
+			                .antMatchers("/user/**")
+			                .access("hasAnyRole('ADMIN', 'USER')")
+			                .antMatchers("/db/**")
+			                .access("hasRole('ADMIN') and hasRole('DBA')")
+			                .anyRequest()
+			                .authenticated()
+			                .and()
+			                .formLogin()
+			                .loginPage("/login_page")
+			                .loginProcessingUrl("/login")
+			                .usernameParameter("username")
+			                .passwordParameter("password")
+			                .successHandler((request, response, authentication) -> {
+			                    logger.info("AuthenticationSuccessHandler onAuthenticationSuccess start");
+			                    Object principal = authentication.getPrincipal();
+			                    response.setContentType("application/json; charset=utf-8");
+			                    PrintWriter writer = response.getWriter();
+			                    response.setStatus(HttpStatus.OK.value());
+			                    HashMap<String, Object> map = Maps.newHashMap();
+			                    map.put("status", HttpStatus.OK.value());
+			                    map.put("message", principal);
+			                    ObjectMapper objectMapper = new ObjectMapper();
+			                    writer.write(objectMapper.writeValueAsString(map));
+			                    writer.flush();
+			                    writer.close();
+			                })
+			                .failureHandler((request, response, exception) -> {
+			                    logger.info("AuthenticationSuccessHandler onAuthenticationFailure start");
+			                    response.setContentType("application/json; charset=utf-8");
+			                    PrintWriter writer = response.getWriter();
+			                    response.setStatus(HttpStatus.UNAUTHORIZED.value());
+			                    HashMap<String, Object> map = Maps.newHashMap();
+			                    map.put("status", HttpStatus.UNAUTHORIZED.value());
+			                    map.put("message", exception instanceof LockedException ? "账户被锁定，登陆失败！"
+			                            : exception instanceof BadCredentialsException ? "账户名或密码输入错误，登陆失败！"
+			                            : exception instanceof DisabledException ? "账户被禁用，登陆失败！"
+			                            : exception instanceof AccountExpiredException ? "账户已过期，登陆失败！"
+			                            : exception instanceof CredentialsExpiredException ? "密码已过期，登陆失败！"
+			                            : "登陆失败！");
+			                    ObjectMapper objectMapper = new ObjectMapper();
+			                    writer.write(objectMapper.writeValueAsString(map));
+			                    writer.flush();
+			                    writer.close();
+			                })
+			                .permitAll()
+			                .and()
+			                .logout()
+			                .logoutUrl("/logout")
+			                .clearAuthentication(true)
+			                .invalidateHttpSession(true)
+			                .addLogoutHandler((request, response, authentication) -> {
+			                    // 推出登陆时的一些数据清除工作
+			                    logger.info("LogoutHandler logout start");
+			                })
+			                .logoutSuccessHandler((request, response, authentication) -> {
+			                    logger.info("LogoutSuccessHandler onLogoutSuccess start");
+			                    response.sendRedirect("/login_page");
+			                })
+			                .and()
+			                .csrf()
+			                .disable();
+			    }
+
+		    }
+
+		10.1.5 登陆表单详细配置
+
+			.and()
+            .formLogin()
+            .loginPage("/login_page")
+            .loginProcessingUrl("/login")
+            .usernameParameter("username")
+            .passwordParameter("password")
+            .successHandler((request, response, authentication) -> {
+                Object principal = authentication.getPrincipal();
+                response.setContentType("application/json; charset=utf-8");
+                PrintWriter writer = response.getWriter();
+                response.setStatus(HttpStatus.OK.value());
+                HashMap<String, Object> map = Maps.newHashMap();
+                map.put("status", HttpStatus.OK.value());
+                map.put("message", principal);
+                ObjectMapper objectMapper = new ObjectMapper();
+                writer.write(objectMapper.writeValueAsString(map));
+                writer.flush();
+                writer.close();
+            })
+            .failureHandler((request, response, exception) -> {
+                response.setContentType("application/json; charset=utf-8");
+                PrintWriter writer = response.getWriter();
+                response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                HashMap<String, Object> map = Maps.newHashMap();
+                map.put("status", HttpStatus.UNAUTHORIZED.value());
+                map.put("message", exception instanceof LockedException ? "账户被锁定，登陆失败！"
+                        : exception instanceof BadCredentialsException ? "账户名或密码输入错误，登陆失败！"
+                        : exception instanceof DisabledException ? "账户被禁用，登陆失败！"
+                        : exception instanceof AccountExpiredException ? "账户已过期，登陆失败！"
+                        : exception instanceof CredentialsExpiredException ? "密码已过期，登陆失败！"
+                        : "登陆失败！");
+                ObjectMapper objectMapper = new ObjectMapper();
+                writer.write(objectMapper.writeValueAsString(map));
+                writer.flush();
+                writer.close();
+            })
+            .permitAll()
+            .and()
+
+
+			测试：
+				post : http://localhost:8081/login?username=binvi&password=binvi
+				result : 
+						{
+						    "message": {
+						        "password": null,
+						        "username": "binvi",
+						        "authorities": [
+						            {
+						                "authority": "ROLE_USER"
+						            }
+						        ],
+						        "accountNonExpired": true,
+						        "accountNonLocked": true,
+						        "credentialsNonExpired": true,
+						        "enabled": true
+						    },
+						    "status": 200
+						}
+
+				post : http://localhost:8081/login?username=binvi&password=123456
+				result :
+					{
+					    "message": "账户名或密码输入错误，登陆失败！",
+					    "status": 401
+					}		
+
+		10.1.6 注销登陆配置
+		
+			.and()
+            .logout()
+            .logoutUrl("/logout")
+            .clearAuthentication(true)
+            .invalidateHttpSession(true)
+            .addLogoutHandler((request, response, authentication) -> {
+                // 推出登陆时的一些数据清除工作
+            })
+            .logoutSuccessHandler((request, response, authentication) -> response.sendRedirect("/login_page"))
+            .and()			
+
+       10.1.7 多个HttpSecurity配置
+
+       		@Configuration
+			public class MultiHttpSecurityConfig {
+
+			    @Bean
+			    PasswordEncoder passwordEncoder() {
+			        return new BCryptPasswordEncoder();
+			    }
+
+			    @Autowired
+			    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+			        auth.inMemoryAuthentication()
+			                .withUser("root").password("$2a$10$OciW5kufXqinS71A0m4IGubMH/Y2pR1jFJtudpU.HWBWnlSrxFxZC").roles("ADMIN", "DBA")
+			                .and()
+			                .withUser("admin").password("$2a$10$blchBa/QrzI8RLYStHCwAucY0Oc/ZeNvUdlY/QW8SFp9xsvN3Oz76").roles("ADMIN", "USER")
+			                .and()
+			                .withUser("binvi").password("$2a$10$jlzI.D3qy1e8ZMTpAmr1eeo9QQB73cCdPw7MScYVB3uhLvF5yzj4.").roles("USER");
+			    }
+
+			    @Configuration
+			    @Order(1)
+			    public static class AdminSecurityConfig extends WebSecurityConfigurerAdapter {
+			        @Override
+			        protected void configure(HttpSecurity http) throws Exception {
+			            http.antMatcher("/admin/**").authorizeRequests().anyRequest().hasRole("ADMIN");
+			        }
+			    }
+
+			    public static class OtherSecurityConfig extends WebSecurityConfigurerAdapter {
+			        @Override
+			        protected void configure(HttpSecurity http) throws Exception {
+			            http.authorizeRequests()
+			                    .anyRequest().authenticated()
+			                    .and()
+			                    .formLogin()
+			                    .loginProcessingUrl("/login")
+			                    .permitAll()
+			                    .and()
+			                    .csrf()
+			                    .disable();
+			        }
+			    }
+
+			}
+
+		10.1.8 密码加密
+		
+			1. 为什么要加密
+
+			2. 加密方案
+
+				常用的散列函数: MD5消息摘要算法、SHA安全散列算法	(Secure Hash Algorithm)
+
+				Spring Security加密方案： BCryptPasswordEncoder（使用BCrypt强哈希算法）
+
+					i.e.: String encryptedPassword = (new BCryptPasswordEncoder()).encode("password");
+
+			3. 实践
+
+		        @Bean
+			    PasswordEncoder passwordEncoder() {
+			        return new BCryptPasswordEncoder();
+			    }
+
+			    @Override
+			    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+			        auth.inMemoryAuthentication()
+			                .withUser("root").password("$2a$10$OciW5kufXqinS71A0m4IGubMH/Y2pR1jFJtudpU.HWBWnlSrxFxZC").roles("ADMIN", "DBA")
+			                .and()
+			                .withUser("admin").password("$2a$10$blchBa/QrzI8RLYStHCwAucY0Oc/ZeNvUdlY/QW8SFp9xsvN3Oz76").roles("ADMIN", "USER")
+			                .and()
+			                .withUser("binvi").password("$2a$10$jlzI.D3qy1e8ZMTpAmr1eeo9QQB73cCdPw7MScYVB3uhLvF5yzj4.").roles("USER");
+			    }
+
+		 10.1.9 方法安全
+		 
+		 	1. 开启基于注解的安全配置
+
+		 		@Configuration
+				@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
+				public class WebSecurityConfig { }
+
+			2. 新建Service	
+
+				@Service
+				public class SecurityService {
+
+				    @Secured("ROLE_ADMIN")
+				    public String admin() {
+				        return "hello admin";
+				    }
+
+				    @PreAuthorize("hasRole('ADMIN') and hasRole('DBA')")
+				    public String dba() {
+				        return "hello dba";
+				    }
+
+				    @PreAuthorize("hasAnyRole('ADMIN', 'DBA', 'USER')")
+				    public String user() {
+				        return "hello user";
+				    }
+
+				}
+
+			3. 新建Controller测试
+
+	10.2 基于数据库的认证
+
+		1. 设计数据表
+
+			用户登陆信息表user_login、 角色信息表role、 用户角色关系表user_role
+
+		2. 创建项目、添加依赖...
+
+		3. 配置数据库...
+
+		4. 创建实体类POJO
+
+			@Data
+			@Entity(name = "user_login")
+			public class UserLogin implements UserDetails {
+
+			    @Id
+			    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+			    private String id;
+			    private String username;
+			    private String password;
+			    private String enable;
+			    private String locked;
+			    private String accountExpired;
+			    private String credentialsExpired;
+			    private Date logonTime;
+			    private Date updateTime;
+			    private Date lastLoginTime;
+			    private String lastLoginIp;
+			    private String loginErrorTimes;
+			    private String logonWay;
+			    private String phone;
+			    private String email;
+			    private String remark;
+
+			    private List<Role> roles;
+
+			    @Override
+			    public Collection<? extends GrantedAuthority> getAuthorities() {
+			        ArrayList<SimpleGrantedAuthority> authorities = Lists.newArrayList();
+			        if (!CollectionUtils.isEmpty(roles)) {
+			            for (Role role : roles) {
+			                authorities.add(new SimpleGrantedAuthority(role.getName()));
+			            }
+			        }
+			        return authorities;
+			    }
+
+			    @Override
+			    public boolean isAccountNonExpired() {
+			        return StringUtils.equals("1", accountExpired);
+			    }
+
+			    @Override
+			    public boolean isAccountNonLocked() {
+			        return StringUtils.equals("1", locked);
+			    }
+
+			    @Override
+			    public boolean isCredentialsNonExpired() {
+			        return StringUtils.equals("1", credentialsExpired);
+			    }
+
+			    @Override
+			    public boolean isEnabled() {
+			        return StringUtils.equals("1", enable);
+			    }
+			}
+
+			@Data
+			@Entity(name = "role")
+			public class Role implements Serializable {
+
+			    @Id
+			    @GeneratedValue(strategy = GenerationType.IDENTITY)
+			    private String id;
+			    private String name;
+			    private String nameZh;
+
+			}
+
+			@Data
+			@Entity(name = "user_role")
+			public class UserRole {
+
+			    @Id
+			    @GeneratedValue(strategy = GenerationType.IDENTITY)
+			    private String id;
+			    private String userId;
+			    private String roleId;
+
+			}
+
+		5. 创建Dao
+		
+			@Repository
+			public interface UserLoginDao extends JpaRepository<UserLogin, String> {
+
+			    UserLogin findByName(String name);
+
+			}	
+
+			@Repository
+			public interface RoleDao extends JpaRepository<Role, String> { }
+
+			@Repository
+			public interface UserRoleDao extends JpaRepository<UserRole, String> {
+
+			    List<UserRole> getAllByUserIdEquals(String userId);
+
+			}
+
+		5. 创建服务类Service
+
+			@Service
+			public class UserLoginService implements UserDetailsService {
+
+			    private static final Logger logger = LoggerFactory.getLogger(UserLoginService.class);
+
+			    @Autowired
+			    private UserLoginDao userLoginDao;
+			    @Autowired
+			    private UserRoleDao userRoleDao;
+			    @Autowired
+			    private RoleDao roleDao;
+
+			    @Override
+			    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+			        logger.info("UserLoginService loadUserByUsername start");
+			        UserLogin user = userLoginDao.findByName(username);
+			        if (Objects.isNull(user)) {
+			            throw new UsernameNotFoundException("账户不存在！");
+			        }
+			        List<UserRole> userRoles = userRoleDao.getAllByUserIdEquals(user.getId());
+			        List<String> roleIds = Lists.newArrayList();
+			        if (!CollectionUtils.isEmpty(userRoles)) {
+			            userRoles.forEach((userRole)-> roleIds.add(userRole.getRoleId()));
+			            user.setRoles(roleDao.findAllById(roleIds));
+			        }
+			        return user;
+			    }
+
+			}
+
+		6. 配置Spring Security
+
+			@Configuration
+			public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+			    @Autowired
+			    private UserLoginService userLoginService;
+
+			    @Bean
+			    PasswordEncoder passwordEncoder() {
+			        return new BCryptPasswordEncoder();
+			    }
+
+			    @Override
+			    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+			        auth.userDetailsService(userLoginService);
+			    }
+
+			    @Override
+			    protected void configure(HttpSecurity http) throws Exception {
+			        http.authorizeRequests()
+			                .antMatchers("/admin/**").hasRole("admin")
+			                .antMatchers("/db/**").hasRole("dba")
+			                .antMatchers("/user/**").hasRole("user")
+			                .anyRequest().authenticated()
+			                .and()
+			                .formLogin()
+			                .loginProcessingUrl("/login").permitAll()
+			                .and()
+			                .csrf().disable();
+
+			    }
+			}
+
+	10.3 高级配置
+
+		10.3.1 角色继承
+
+			@Configuration
+			public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+			    @Bean
+			    RoleHierarchy roleHierarchy() {
+			        RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
+			        String hierarchy = "ROLE_dba > ROLE_admin ROLE_admin > ROLE_user";
+			        roleHierarchy.setHierarchy(hierarchy);
+			        return roleHierarchy;
+			    }
+			}
+
+		10.3.2 动态配置权限
+		
+			1. 数据库设计
+
+				Table：
+					资源格式表pattern、 资源角色关系表pattern_role
+
+				POJO：
+
+					@Data
+					@Entity(name = "pattern")
+					public class Pattern {
+
+					    @Id
+					    @GeneratedValue(strategy = GenerationType.IDENTITY)
+					    private String id;
+					    private String pattern;
+					    private List<Role> roles;
+
+					}
+
+					@Data
+					@Entity(name = "pattern_role")
+					public class PatternRole {
+
+					    @Id
+					    @GeneratedValue(strategy = GenerationType.IDENTITY)
+					    private String id;
+					    private String patternId;
+					    private String roleId;
+
+					}
+
+				DAO:
+				
+					@Repository
+					public interface PatternDao extends JpaRepository<Pattern, String> {}
+
+					@Repository
+					public interface PatternRoleDao extends JpaRepository<PatternRole, String> {}
+
+			2. 自定义FilterInvocationSecurityMetadataSource
+
+				@Component
+				public class CustomFIlterInvocationSecurityMetadataSource implements FilterInvocationSecurityMetadataSource {
+
+				    AntPathMatcher antPathMatcher = new AntPathMatcher();
+
+				    @Autowired
+				    private PatternDao patternDao;
+
+				    @Override
+				    public Collection<ConfigAttribute> getAttributes(Object object) throws IllegalArgumentException {
+				        String requestUrl = ((FilterInvocation) object).getRequestUrl();
+				        List<Pattern> patterns = patternDao.findAll();
+				        if (!CollectionUtils.isEmpty(patterns)) {
+				            for (Pattern pattern : patterns) {
+				                if (antPathMatcher.match(pattern.getPattern(), requestUrl)) {
+				                    List<Role> roles = pattern.getRoles();
+				                    if (!CollectionUtils.isEmpty(roles)) {
+				                        String[] roleArray = new String[roles.size()];
+				                        for (int i = 0, length = roles.size(); i < length; i++) {
+				                            roleArray[i] = roles.get(i).getName();
+				                        }
+				                        return SecurityConfig.createList(roleArray);
+				                    }
+				                }
+				            }
+				        }
+				        return SecurityConfig.createList("ROLE_LOGIN");
+				    }
+
+				    @Override
+				    public Collection<ConfigAttribute> getAllConfigAttributes() {
+				        return null;
+				    }
+
+				    @Override
+				    public boolean supports(Class<?> clazz) {
+				        return FilterInvocation.class.isAssignableFrom(clazz);
+				    }
+				}
+
+		3. 自定义AccessDecisionManager
+		
+			@Component
+			public class CustomAccessDecisionManager implements AccessDecisionManager {
+			    @Override
+			    public void decide(Authentication authentication,
+			                       Object object,
+			                       Collection<ConfigAttribute> configAttributes)
+			            throws AccessDeniedException, InsufficientAuthenticationException {
+			        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+			        if (!CollectionUtils.isEmpty(configAttributes)) {
+			            for (ConfigAttribute attribute : configAttributes) {
+			                if (StringUtils.equals("ROLE_LOGIN", attribute.getAttribute())
+			                        && authentication instanceof UsernamePasswordAuthenticationToken) {
+			                    return;
+			                }
+			                if (!CollectionUtils.isEmpty(authorities)) {
+			                    for (GrantedAuthority authority : authorities) {
+			                        if (StringUtils.equals(attribute.getAttribute(), authority.getAuthority())) {
+			                            return;
+			                        }
+			                    }
+			                }
+			            }
+			        }
+			        throw new AccessDeniedException("权限不足");
+			    }
+
+			    @Override
+			    public boolean supports(ConfigAttribute attribute) {
+			        return true;
+			    }
+
+			    @Override
+			    public boolean supports(Class<?> clazz) {
+			        return true;
+			    }
+			}	
+
+		4. 配置
+		
+			@Configuration
+			public class WebSecurityConfig extends WebSecurityConfigurerAdapter {		
+
+			 	@Override
+			    protected void configure(HttpSecurity http) throws Exception {
+			    
+			        /* 动态配置权限 */
+			        http.authorizeRequests()
+			                .withObjectPostProcessor(new ObjectPostProcessor<FilterSecurityInterceptor>() {
+			                    @Override
+			                    public <O extends FilterSecurityInterceptor> O postProcess(O object) {
+			                        object.setSecurityMetadataSource(customFIlterInvocationSecurityMetadataSource());
+			                        object.setAccessDecisionManager(customAccessDecisionManager());
+			                        return object;
+			                    }
+			                })
+			                .and()
+			                .formLogin()
+			                .loginProcessingUrl("/login").permitAll()
+			                .and()
+			                .csrf().disable();
+
+			    }
+
+
+			    @Bean
+			    CustomFIlterInvocationSecurityMetadataSource customFIlterInvocationSecurityMetadataSource() {
+			        return new CustomFIlterInvocationSecurityMetadataSource();
+			    }
+
+			    @Bean
+			    CustomAccessDecisionManager customAccessDecisionManager() {
+			        return new CustomAccessDecisionManager();
+			    }
+			}
+
+	10.4 OAuth2
+
+		10.4.1 OAuth2简介
+
+		10.4.2 OAuth2角色	
+
+			基本角色：
+
+				资源所有者	： 用户
+				客户端		： 第三方应用
+				授权服务器	： 用来验证用户提供的信息是否正确并返回一个令牌给第三方应用
+				资源服务器	： 提供给用户资源的服务器
+
+		10.4.3 OAuth2授权流程
+		
+			1. 客户端向用户请求授权 
+			2. 用户单击客户端所呈现的服务授权页面上的同意授权按钮后，服务端返回一个授权许可凭证给客户端
+			3. 客户端拿着授权许可凭证去授权服务器申请令牌
+			4. 授权服务器验证信息无误后，发令牌给客户端
+			5. 客户端拿着令牌去资源服务器访问资源
+			6. 资源服务器验证令牌无误后开放资源
+
+
+						==>请求授权		用户	
+						同意授权<==	
+
+			客户端 		==>申请令牌		授权服务器
+						发放令牌<==
+
+						==>申请资源
+						开放资源<==		资源服务器
+
+		10.4.4 授权模式
+		
+			1. 授权码模式：通过客户的服务器与授权服务器进行交互
+
+			2. 简化模式：不需要客户端参与，直接在浏览器中向授权服务器申请令牌。
+
+			3. 密码模式：用户把用户名密码直接告诉客户端，客户端使用这些信息向授权服务器申请令牌。
+
+			4. 客户端模式：客户端使用自己的名义而不是用户的名义向服务提供者申请授权。
+
+		10.5 实践
+			
+			1. 创建项目、添加依赖、配置Redis连接
+
+				org.springframework.boot:spring-boot-starter-web
+				org.springframework.boot:spring-boot-starter-security
+				org.springframework.boot:spring-boot-starter-data-redis
+					<exclusions><exclusion>io.lettuce:lettuce-core</exclusions></exclusion>
+				redis.clients:jedis	
+				org.springframework.security.oauth:spring-security-oauth2:2.3.6.RELEASE
+
+				spring.redis.database=0
+				spring.redis.host=localhost
+				spring.redis.port=6379
+				#spring.redis.password=binvi
+				spring.redis.jedis.pool.max-active=8
+				spring.redis.jedis.pool.max-idle=8
+				spring.redis.jedis.pool.max-wait=-1ms
+				spring.redis.jedis.pool.min-idle=0
+
+			2. 配置授权服务器
+			
+				@Configuration
+				@EnableAuthorizationServer // 开启授权服务器
+				public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
+
+				    @Autowired
+				    AuthenticationManager authenticationManager; // 支持password模式
+				    @Autowired
+				    RedisConnectionFactory redisConnectionFactory; // 令牌存储到redis缓存
+				    @Autowired
+				    UserDetailsService userDetailsService; // 为刷新token提供支持
+
+				    @Override
+				    public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
+				        clients.inMemory()
+				                .withClient("password")
+				                .authorizedGrantTypes("password", "refresh_token")
+				                .accessTokenValiditySeconds(1800)
+				                .resourceIds("rid")
+				                .scopes("all")
+				                .secret("$2a$10$YH0Ek4fNB/mLGjcGoqK7QuY3Xyfh1ug5j4EWXSEHt3ZcKQUbbMvCe"); // 123
+				    }
+
+				    @Override
+				    public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
+				        endpoints.tokenStore(new RedisTokenStore(redisConnectionFactory))
+				                .authenticationManager(authenticationManager)
+				                .userDetailsService(userDetailsService);
+				    }
+
+				    @Override
+				    public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
+				        security.allowFormAuthenticationForClients();
+				    }
+				}	
+
+			3. 配置资源服务器
+			
+				@Configuration
+				@EnableResourceServer // 开启资源服务器
+				public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
+
+				    @Override
+				    public void configure(HttpSecurity http) throws Exception {
+				        http.authorizeRequests()
+				                .antMatchers("/admin/**").hasRole("admin")
+				                .antMatchers("/user/**").hasRole("user")
+				                .anyRequest().authenticated();
+				    }
+
+				    @Override
+				    public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
+				        resources.resourceId("rid").stateless(true);
+				    }
+				}	
+
+			4. 配置Security
+			
+				@Configuration
+				public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+				    @Bean
+				    PasswordEncoder passwordEncoder() {
+				        return new BCryptPasswordEncoder();
+				    }
+
+				    @Override
+				    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+				        auth.inMemoryAuthentication()
+				                .withUser("admin")
+				                .password("$2a$10$PPIuveym0ySME6ntdZ99mezqO72yecT42pAUooeKgqCOz.w7RkqWi")
+				                .roles("admin")
+				                .and()
+				                .withUser("binvi")
+				                .password("$2a$10$vBv5rA.DlLUQCVdpDh6f6ejVP2XQW0R4aEuUDsikK6otkMJsQWYX6")
+				                .roles("user");
+				    }
+
+				    @Override
+				    protected void configure(HttpSecurity http) throws Exception {
+				        /* OAuth配置 */
+				        http.antMatcher("/oauth/**").authorizeRequests()
+				                .antMatchers("/oauth/**")
+				                .permitAll()
+				                .and()
+				                .csrf()
+				                .disable();
+				    }
+
+				    @Bean
+				    CustomFilterInvocationSecurityMetadataSource cfisms() {
+				        return new CustomFilterInvocationSecurityMetadataSource();
+				    }
+
+				    @Bean
+				    CustomAccessDecisionManager cadm() {
+				        return new CustomAccessDecisionManager();
+				    }
+
+				    @Bean
+				    @Override
+				    public AuthenticationManager authenticationManagerBean() throws Exception {
+				        return super.authenticationManagerBean();
+				    }
+
+				    @Bean
+				    protected UserDetailsService userDetailsService() {
+				        return super.userDetailsService();
+				    }
+				}	
+
+		10.4.6 测试验证		
+
+			1. post请求获取token（授权模式为password）：
+
+				url：
+
+					http://localhost:8081/oauth/token?username=admin&password=admin&grant_type=password&client_id=password&scope=all&client_secret=123
+					http://localhost:8081/oauth/token?username=binvi&password=binvi&grant_type=password&client_id=password&scope=all&client_secret=123
+
+				返回结果：	
+
+					{
+					    "access_token": "9ce77bd5-022d-4792-b060-5259226590fb",
+					    "token_type": "bearer",
+					    "refresh_token": "264f28ca-c4df-41b0-87ba-af9842c64583",
+					    "expires_in": 1799,
+					    "scope": "all"
+					}
+
+			2. post请求获取token（授权模式为freshtoken）：
+
+				url： http://localhost:8081/oauth/token?grant_type=refresh_token&refresh_token=264f28ca-c4df-41b0-87ba-af9842c64583
+						&client_id=password&client_secret=123
+
+				返回结果：
+
+					{
+					    "access_token": "3525b816-2f22-4e1f-9fbf-56a0f2c844bd",
+					    "token_type": "bearer",
+					    "refresh_token": "264f28ca-c4df-41b0-87ba-af9842c64583",
+					    "expires_in": 1799,
+					    "scope": "all"
+					}	
+
+			3. get请求访问资源：	
+
+				url： http://localhost:8081/user/hello?access_token=3525b816-2f22-4e1f-9fbf-56a0f2c844bd
+
+				返回结果：	
+
+					hello user
+
+				url（越权）: http://localhost:8081/admin/hello?access_token=3525b816-2f22-4e1f-9fbf-56a0f2c844bd		
+
+				返回结果：
+
+					error
+
+				redis服务器缓存数据：	
+
+					local_redis:0>keys *
+					 1)  "uname_to_access:id9e037fcd-57be-4520-b4c5-c992e6a16933:test2"
+					 2)  "auth_to_access:5cd30015c0fed6095a89918cb9beb30c"
+					 3)  "spring:oauth2:client_id_to_access:idd5500ffa-9ee8-4073-96f6-c514a7b1f8df"
+					 4)  "auth_to_access:95a3dc6adbfeedf21c63a6c5144492a3"
+					 5)  "spring:oauth2:auth_to_access:976f3147d8839be15d77e058038fbd1d"
+					 6)  "spring:session:sessions:40a57395-7b9d-455c-93c7-7872f61a238a"
+					 7)  "uname_to_access:id:test"
+					 8)  "auth_to_access:1cf9bfc0442665e7b6152dd1920fb751"
+					 9)  "uname_to_access:id61b86c10-178b-44f3-aa81-58b25a2434a9:test2b7015e78-2345-4ba9-9508-f47baebd1bf5"
+					 10)  "spring:session:expirations:1560690480000"
+					 11)  "auth_to_access:35dc4f01b636a14c2eddb7f83ea5de7f"
+					 12)  "auth:testToken"
+					 13)  "uname_to_access:id:test2"
+					 14)  "client_id_to_access:id"
+					 15)  "spring:oauth2:refresh_to_access:refreshToken"
+					 16)  "access:3525b816-2f22-4e1f-9fbf-56a0f2c844bd"
+					 17)  "refresh:264f28ca-c4df-41b0-87ba-af9842c64583"
+					 18)  "spring:oauth2:access_to_refresh:testToken"
+					 19)  "spring:oauth2:client_id_to_access:id9404503b-ca5c-41df-ba52-62a29c21c7b0"
+					 20)  "refresh_to_access:264f28ca-c4df-41b0-87ba-af9842c64583"
+					 21)  "name"
+					 22)  "client_id_to_access:id61b86c10-178b-44f3-aa81-58b25a2434a9"
+					 23)  "auth_to_access:b9d6e3d1660122746dd9786f44893100"
+					 24)  "access_to_refresh:3525b816-2f22-4e1f-9fbf-56a0f2c844bd"
+					 25)  "spring:session:index:org.springframework.session.FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME:binvi"
+					 26)  "refresh_auth:264f28ca-c4df-41b0-87ba-af9842c64583"
+					 27)  "client_id_to_access:password"
+					 28)  "spring:oauth2:uname_to_access:id:test2"
+					 29)  "spring:session:sessions:expires:40a57395-7b9d-455c-93c7-7872f61a238a"
+					 30)  "spring:oauth2:auth_to_access:b9d6e3d1660122746dd9786f44893100"
+					 31)  "��"
+					 32)  "spring:oauth2:client_id_to_access:id"
+					 33)  "auth:3525b816-2f22-4e1f-9fbf-56a0f2c844bd"
+					 34)  "spring:oauth2:auth:testToken"
+					 35)  "client_id_to_access:id9e037fcd-57be-4520-b4c5-c992e6a16933"
+					 36)  "refresh_to_access:refreshToken"
+					 37)  "spring:oauth2:auth_to_access:95a3dc6adbfeedf21c63a6c5144492a3"
+					 38)  "myKey"
+					 39)  "access:testToken"
+					 40)  "spring:oauth2:uname_to_access:id:test"
+					 41)  "spring:oauth2:access:testToken"
+					 42)  "uname_to_access:password:binvi"
+					 43)  "spring:oauth2:auth_to_access:c699296b131a301c60530c26123cfda5"
+					 44)  "spring:oauth2:uname_to_access:idd5500ffa-9ee8-4073-96f6-c514a7b1f8df:test2"
+					 45)  "access_to_refresh:testToken"
+					 46)  "spring:oauth2:uname_to_access:id9404503b-ca5c-41df-ba52-62a29c21c7b0:test226d394e9-73be-4cfd-93cf-50ee5dcb4473"
+
+	10.5 SpringBoot整合Shiro
+
+		10.5.1 Shiro简介
+
+			开源的轻量级的Java安全框架，提供身份验证、授权、密码管理以及会员管理等功能。
+
+		10.5.2 整合Shiro
+		
+			1. 创建项目、添加依赖
+
+				org.apache.shiro:shiro-spring-boot-web-starter:1.4.1
+				com.github.theborakompanioni:thymeleaf-extras-shiro:2.0.0
+				org.springframework.boot:spring-boot-starter-thymeleaf
+
+			2. shiro配置
+
+				application.properties:
+			
+					shiro.enabled=true
+					shiro.web.enabled=true
+					shiro.loginUrl=/login
+					shiro.successUrl=/index
+					shiro.unauthorizedUrl=/unauthorized
+					shiro.sessionManager.sessionIdCookieEnabled=true
+					shiro.sessionManager.sessionIdUrlRewritingEnabled=true	
+
+				Config:
+					
+					@Configuration
+					public class ShiroConfig {
+
+					    @Bean
+					    public Realm realm() {
+					        TextConfigurationRealm realm = new TextConfigurationRealm();
+					        realm.setUserDefinitions("binvi=binvi, user\n admin=admin, admin");
+					        realm.setRoleDefinitions("admin=read, write\n user=read");
+					        return realm;
+					    }
+
+					    @Bean
+					    public ShiroFilterChainDefinition shiroFilterChainDefinition() {
+					        DefaultShiroFilterChainDefinition definition = new DefaultShiroFilterChainDefinition();
+					        definition.addPathDefinition("/login", "anon");
+					        definition.addPathDefinition("/doLogin", "anon");
+					        definition.addPathDefinition("/logout", "logout");
+					        definition.addPathDefinition("/**", "authc");
+					        return definition;
+					    }
+
+					    @Bean
+					    public ShiroDialect shiroDialect() {
+					        return new ShiroDialect();
+					    }
+
+					}	
+
+				Controller:
+				
+					@RestController
+					public class ShiroController {
+
+					    private static final Logger logger = LoggerFactory.getLogger(ShiroController.class);
+
+					    @PostMapping("/doLogin")
+					    public String doLogin(String username, String password, Model model) {
+					        logger.info("ShiroController doLogin start, username:[{}], password:[{}]", username, password);
+					        UsernamePasswordToken token = new UsernamePasswordToken(username, password);
+					        Subject subject = SecurityUtils.getSubject();
+					        try {
+					            subject.login(token);
+					        } catch (AuthenticationException e) {
+					            model.addAttribute("error", "用户名和密码输入错误");
+					            return "login";
+					        }
+					        return "redirect:/index";
+					    }
+
+					    @RequiresRoles("admin")
+					    @GetMapping("/admin")
+					    public String admin() {
+					        logger.info("ShiroController admin start");
+					        return "admin";
+					    }
+
+					    @RequiresRoles(value = {"admin", "user"}, logical = Logical.OR)
+					    public String user() {
+					        logger.info("ShiroController admin start");
+					        return "user";
+					    }
+
+					}	
+
+				WebMvcConfig:
+				
+				    @Override
+				    public void addViewControllers(ViewControllerRegistry registry) {
+				        registry.addViewController("/login").setViewName("login");
+				        registry.addViewController("/index").setViewName("index");
+				        registry.addViewController("/unauthorized").setViewName("unauthorized");
+				    }	
+
+				CustomExceptionHandler    
+
+					@ControllerAdvice
+					public class CustomExceptionHandler {    
+
+					    @ExceptionHandler(AuthorizationException.class)
+					    public ModelAndView authException(AuthorizationException e) {
+					        ModelAndView mv = new ModelAndView("unauthorized");
+					        mv.addObject("error", e.getMessage());
+					        return mv;
+					    }
+
+					}
+
+				HTML:
+				
+					index.html
+						<!DOCTYPE html>
+						<html lang="en" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+						<head>
+						    <meta charset="UTF-8">
+						    <title>Hello, Spring Boot!</title>
+						</head>
+						<body>
+						    <h1 style="color: aquamarine">Hello, Spring Boot! This is a index page!</h1>
+						    <h3>Hello, <shiro:principal/></h3>
+						    <h3><a href="/logout">注销登陆</a></h3>
+						    <h3><a shiro:hasRole="admin" href="/admin">管理员页面</a></h3>
+						    <h3><a shiro:hasAnyRoles="admin, user" href="/user">普通用户页面</a></h3>
+						</body>
+						</html>	
+
+
+					login.html
+					
+						<!DOCTYPE html>
+						<html lang="en" xmlns:th="http://www.thymeleaf.org">
+						<head>
+						    <meta charset="UTF-8">
+						    <title>Title</title>
+						</head>
+						<body>
+						    <div>
+						        <form action="/doLogin" method="post">
+						            <input type="text" name="username"><br>
+						            <input type="password" name="password"><br>
+						            <div th:text="${error}"></div>
+						            <input type="submit" value="登陆">
+						        </form>
+						    </div>
+						</body>
+						</html>		
+
+					user.html
+
+						<!DOCTYPE html>
+						<html lang="en">
+						<head>
+						    <meta charset="UTF-8">
+						    <title>Title</title>
+						</head>
+						<body>
+						    <h1>普通用户页面</h1>
+						</body>
+						</html>
+
+					admin.html
+
+						<!DOCTYPE html>
+						<html lang="en">
+						<head>
+						    <meta charset="UTF-8">
+						    <title>Title</title>
+						</head>
+						<body>
+						    <h1>管理员页面</h1>
+						</body>
+						</html>
+
+					unauthorized.html	
+
+						<!DOCTYPE html>
+						<html lang="en" xmlns:th="http://www.thymeleaf.org">
+						<head>
+						    <meta charset="UTF-8">
+						    <title>Title</title>
+						</head>
+						<body>
+						    <div>
+						        <h3>未经授权，非法访问</h3>
+						        <h3 th:text="${error}"></h3>
+						    </div>
+						</body>
+						</html>
+
+			3. 测试
+				
+第11章 SpringBoot整合WebSocket
+
+	11.1 为什么需要WebSocket
+
+	11.2 WebSocket简介
+
+	11.3 SpringBoot整合WebSocket
+
+第12章 消息服务
+
+	12.1 JMS
+
+		12.1.1 JMS 简介
+
+		12.1.2 SpringBoot整合JMS
+
+	12.2 AMQP
+
+		12.2.1 AMQP简介
+
+		12.2.2 SpringBoot整合AMQP
+
+第13章 企业开发
+
+	13.1 邮件发送
+
+	13.2 定时任务
+
+	13.3 批处理
+
+	13.4 Swagger2
+
+	13.5 数据校验
+
+第14章 应用监控
+
+	14.1 端点配置
+
+	14.2 监控信息可视化
+
+	14.3 邮件报警
+
+第15章 项目构建与部署
+
+	15.1 JAR
+
+	15.2 WAR
+
+第16章 微人事项目实战
+
+	16.1 项目简介
+
+	16.2 项目架构
+
+	16.3 项目构建
+
+	16.4 登陆模块
+
+	16.5 动态加载用户菜单
+
+	16.6 员工资料模块
+
+	16.7 配置邮件发送
+
+	16.8 员工资料导出
+
+	16.9 员工资料导入
+
+	16.10 在线聊天
+
+	16.11 前端项目打包

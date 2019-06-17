@@ -1,0 +1,11 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - ConstructorTest",
+            "request": "launch",
+            "mainClass": "ConstructorTest",
+            "projectName": "green-handbook"
+        }
+    ]
+}

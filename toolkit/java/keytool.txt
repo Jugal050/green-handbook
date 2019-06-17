@@ -1,0 +1,12 @@
+数字证书工具：
+    keytool:
+        keytool -genkey -alias binvi -keyalg RSA -keysize 2048 -keystore cert
+-validity 365
+
+    命令解释：
+        -genkey: 创建一个新的密钥
+        -alias:  keystore的别名
+        -keyalg: 使用的加密算法，这里是RSA(一种非对称加密算法)
+        -keysize: 密钥的长度
+        -keystore: 生成的密钥存放位置
+        -validity: 密钥的有效期，单位：天

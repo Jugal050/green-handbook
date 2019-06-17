@@ -185,4 +185,17 @@ mvn versions:set -DnewVersion=1.0.1-SNAPSHOT 和 mvn -N versions:update-ch
   jar:jar 打jar包
   ```
 
+* 常见问题
+
+    1. 问题描述：
+            idea中class文件右上角点击download source时显示"Sources not found for: org.springframework.boot:spring-boot-autoconfigure:2.1.5.RELEASE"
+    
+       解决方法：
+            在项目pom.xml所在的目录下，执行如下命令：mvn dependency:resolve -Dclassifier=source
+            
+* 常用命令：
+    
+    1. springboot项目运行：
+            mvn spring-boot:run            
+
 来自 <https://www.cnblogs.com/Vae1990Silence/p/4673949.html> 
