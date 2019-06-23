@@ -4274,23 +4274,718 @@
 
 	11.1 为什么需要WebSocket
 
+		在HTTP协议中，所有的请求都是由客户端发起的，由服务端进行响应，服务端无法向客户端推送消息，但是在一些需要即时通信的应用中，又不可避免地需要服务端向客户端推送消息，传统的解决方案主要有如下几种：
+
+			1. 轮询	
+
+				解释： 客户端在固定的时间间隔下不停地向服务端发起请求，查看服务端是否有最新的数据，若服务端有最新的数据，则返回给客户端，若没有，则返回一个空的JSON或XML文档。
+
+				优点： 实现方便。
+
+				弊端： 客户端每次都要新建HTTP请求，服务端要处理大量的无效请求，在高并发场景下会严重拖慢服务端的运行效率，同时造成服务端极大的资源浪费。
+
+			2. 长轮询
+			
+				解释： 传统轮询的升级版，不同的是，服务端不是每次都会立即响应客户端的请求，只有在服务端有最新数据的时候才会立即响应客户端请求，否则会持有这个请求而不返回，直到
+					   有新数据时才返回。
+
+				优点： 一定程度上节省网络资源和服务端资源。
+
+				弊端： 如果浏览器在服务器响应之前有新数据要发送，就只能创建一个新的并发请求，或者先尝试断掉当前请求，再创建新的请求。
+
+					   TCP和HTTP规范中都有连接超时一说，所以所谓的长轮询并不能一直持续，服务端和客户端的连接需要定期的连接和关闭再连接，又增大了工作量，当然也有一些技术能够延长每次连接的时间，但也属于非主流解决方案。
+
+			3. Applet和Flash
+
+				解释： 这两种技术，开发者可以使用其来模拟全双工通信，通过创建一个只有1个像素大小的透明的Applet或者Flash，然后将之内嵌到网页中，再从Applet或Flash的代码中
+					   创建一个Socket连接进行双向通信。
+
+			 	优点： 可以让我们的HTML页面更加绚丽。
+
+			 		   这种连接方式消除了HTTP协议中的诸多限制，当服务端有消息发送到客户端的时候，开发者可以在Applet或Flash中调用js函数将数据显示在页面上，当浏览器有数据要
+			 		   发送给服务器时也一样，通过Applet或Flash来传递，这种方式真正实现了全双工通信。
+
+	 		    缺点： 浏览器必须能够运行Applet或Flash。
+
+	 		    	   Applet或Flash都存在安全问题。
+
+	 		    	   随着HTML5标准被各大浏览器厂商广泛支持，Flash下架已经被提上日程。	
+			 	  
+    	   	于是有了WebSocket。
+
 	11.2 WebSocket简介
+
+		WebSocket是一种在单个TCP连接上进行全双工通信的协议。允许服务端主动向客户端推送数据。在WebSocket协议中，浏览器和服务端只需要完成一次握手，两者之间就可以直接创建
+		持久性的连接，并进行双向数据传输。
+
+		特点：
+
+			• WebSocket 使用时需要先创建连接，这使得 WebSocket 成为一种有状态的协议 ， 在之后的通信过程中可以省略部分状态信息（例如身份认证等）。
+			• WebSocket 连接在端口 80 ( WS ）或者 443 ( wss ）上创建，与 HTTP 使用的端口相同，这样，基本上所有的防火墙都不会阻止 WebSocket 连接。
+			• WebSocket 使用HTTP协议进行握手，因此它可以自然而然地集成到网络浏览器和HTTP服务器中，而不需要额外的成本。
+			• 心跳消息（ ping 和 pong ）将被反复的发送，进而保持 WebSocket 连接一直处于活跃状态 。
+			• 使用该协议，当消息启动或者到达的时候，服务端和客户端都可以知道。
+			• WebSocket连接关闭时将发送一个特殊的关闭消息。
+			• WebSocket支持跨域，可以避免Ajax的限制。
+			• HTTP规范要求浏览器将并发连接数限制为每个主机名两个连接，但是当我们使用WebSocket的时候，当握手完成之后，该限制就不存在了，因为此时的连接已经不再是HTTP连接了。
+			• WebSocket协议支持扩展，用户可以扩展协议，实现部分自定义的子协议。
+			• 更好的二进制支持以及更好的压缩效果。
+
+		使用场景：
+
+			• 在线股票网站．
+			• 即时聊天．
+			• 多 人在线游戏．
+			• 应用集群通信。
+			• 系统性能实时监控。
 
 	11.3 SpringBoot整合WebSocket
 
+		11.3.1 消息群发
+
+			1. 创建项目、添加依赖
+
+				org.springframework.boot:spring-boot-starter-websocket
+				<!-- 下面的属于前端库，这里放在pom文件中方便统一管理，也可以下载js库引入 -->
+				org.webjars:webjars-locator-core:0.37
+				org.webjars:sockjs-client:1.0.0
+				org.webjars:stomp-websocket:2.3.3
+				org.webjars:jquery:3.4.1
+
+			2. 配置WebSocket
+
+				@Configuration
+				@EnableWebSocketMessageBroker //开启websocket消息代理
+				public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+
+				    @Override
+				    public void registerStompEndpoints(StompEndpointRegistry registry) {
+				        /*
+				         * 定义一个前缀为'/chat'的终端，并开启sockjs支持。（sockjs可以解决浏览器对WebSocket的兼容性问题，）
+				         * 客户端将通过这里配置的URL来建立WebSocket连接。（let socket = new SockJS('/chat');）
+				         */
+				        registry.addEndpoint("/chat").withSockJS();
+				    }
+
+				    @Override
+				    public void configureMessageBroker(MessageBrokerRegistry registry) {
+				        // 设置消息代理的前缀：如果消息前缀是"/topic"，就会将消息转发给消息代理broker，再由消息代理将消息广播给当前连接的客户端
+				        registry.enableSimpleBroker("/topic");
+				        // 配置一个或多个前缀，通过这些前缀过滤出需要被注解方法处理的消息。例如：前缀为"/app"的destination可以通过@MessageMapping注解
+				        // 的方法处理，而其他destination(例如"/topic"，"/queue")将直接交给代理broker处理。
+				        registry.setApplicationDestinationPrefixes("/app");
+				    }
+				}
+
+			3. 定义Controller
+
+				@Controller
+				public class WebSocketController {
+				    private static final Logger logger = LoggerFactory.getLogger(WebSocketController.class);
+
+				    @MessageMapping("/hello")
+				    @SendTo("/topic/greetings")
+				    public Message greeting(Message message) throws Exception {
+				        logger.info("greeting start. message:[{}]", message);
+				        return message;
+				    }
+
+				    @GetMapping("chat")
+				    public ModelAndView chat() {
+				        ModelAndView mv = new ModelAndView();
+				        mv.setViewName("chat");
+				        return mv;
+				    }
+
+				}
+
+			4. 构建聊天页面
+			
+				chat.html
+
+					<!DOCTYPE html>
+					<html lang="en">
+					<head>
+					    <meta charset="UTF-8">
+					    <title>websocket chat</title>
+					    <script src="/webjars/jquery/3.4.1/jquery.min.js"></script>
+					    <script src="/webjars/sockjs-client/1.0.0/sockjs.min.js"></script>
+					    <script src="/webjars/stomp-websocket/2.3.3/stomp.min.js"></script>
+					    <!--<script src="../static/js/app.js"></script>-->
+					</head>
+					<body>
+					    <div>
+					        <label for="name">请输入用户名：</label>
+					        <input type="text" id="name" placeholder="用户名">
+					    </div>
+					    <div>
+					        <button id="connect" type="button">连接</button>
+					        <button id="disconnect" type="button" disabled="disabled">断开连接</button>
+					    </div>
+					    <div id="chat" style="display: none;">
+					        <div>
+					            <label for="name">请输入聊天内容：</label>
+					            <input type="text" id="content" placeholder="聊天内容">
+					        </div>
+					        <button id="send" type="button">发送</button>
+					        <div id="greetings">
+					            <div id="conversation" style="display: none;">对方正在输入...</div>
+					        </div>
+					    </div>
+					    <script>
+					        $(function () {
+					            $('#connect').click(function () {
+					                connect();
+					            });
+					            $('#disconnect').click(function () {
+					                disconnect();
+					            });
+					            $('#send').click(function () {
+					                sendName();
+					            });
+					        });
+					        let stompClient = null;
+					        function setConnected(connected) {
+					            console.log('setConnected start');
+					            $('#connect').prop('disabled', connected);
+					            $('#disconnect').prop('disabled', !connected);
+					            if (connected) {
+					                $('#conversation').show();
+					                $('#chat').show();
+					            } else {
+					                $('#conversation').hide();
+					                $('#chat').hide();
+					            }
+					            $('#greetings').html('');
+					        };
+					        function connect() {
+					            console.log('connect start');
+					            if (!$('#name').val()) {
+					                return;
+					            }
+					            let socket = new SockJS('/chat');
+					            stompClient = Stomp.over(socket);
+					            stompClient.connect(
+					                {},
+					                function () {
+					                    setConnected(true);
+					                    stompClient.subscribe(
+					                        '/topic/greetings',
+					                        function (greeting) {
+					                            console.log('subscribe start');
+					                            console.log(greeting);
+					                            showGreeting(JSON.parse(greeting.body));
+					                        }
+					                    );
+					                }
+					            );
+					        };
+					        function disconnect() {
+					            console.log('disconnect start');
+					            if (stompClient != null) {
+					                stompClient.disconnect();
+					            }
+					            setConnected(false);
+					        };
+					        function sendName() {
+					            console.log('sendName start');
+					            stompClient.send(
+					                '/app/hello',
+					                {},
+					                JSON.stringify(
+					                    {
+					                        'name': $('#name').val(),
+					                        'content': $('#content').val()
+					                    }
+					                )
+					            );
+					        };
+					        function showGreeting(message) {
+					            console.log('showGreeting start');
+					            $('#greetings').append('<div>' + message.name + ' : ' + message.content + '</div>');
+					        }
+					    </script>
+					</body>
+					</html>
+
+			5. 测试
+
+				http://localhost:8081/chat
+
+		11.3.2 消息点对点发送	  // 由于项目，集成security需要调试，所以此处不再进行点对点发送集成
+
+			1. 添加依赖
+
+			2. 配置Spring Security
+
+			3. 改造WebSocket配置
+
+			4. 配置Controller
+
+			5. 创建聊天界面
+
+			6. 测试
+
+		tips：
+
+			如果使用内嵌的Tomcat服务器，可能新建WebSocket连接时会失败，此处改为Jetty，可以正常对接。
+
+	11.4 小结
+
 第12章 消息服务
+
+	消息队列（ Message Queue ）是一种进程间或者线程间的异步通信方式，使用消息队列，消息生产者在产生消息后，会将消息保存在消息队列中，直到消息消费者来取走它 ，
+	即消息的发送者和接收者不需要同时与消息队列交互。使用消息队列可以有效实现服务的解祸，并提高系统的可靠性以及可扩展性。
+	目前，开源的消息队列服务非常多，如 Apache ActiveMQ 、 RabbitMQ 等，这些产品也就是常说的消息中间件。
 
 	12.1 JMS
 
 		12.1.1 JMS 简介
 
+			JMS(Java Message Service）即 Java 消息服务，它通过统一JAVA API层面的标准，使得多个客户端可以通过JMS进行交互，大部分消息中间件提供商都对JMS提供支持。 
+			JMS和ActiveMQ的关系就象JDBC和JDBC驱动的关系。JMS包括两种消息模型：点对点和发布者／订阅者，同时JMS仅支持Java平台。
+
 		12.1.2 SpringBoot整合JMS
+
+			1. ActiveMQ简介
+
+			2. ActiveMQ安装
+
+				Windows:
+
+					1. jdk1.8
+
+					2. 下载地址：http://activemq.apache.org/download-archives.html 
+
+					3. 解压缩
+
+					4. 运行脚本apache-activemq-5.15.9\bin\win64\activemq.bat
+
+					5. 访问http://localhost:8161/admin
+
+			3. 整合SpringBoot
+
+				* 添加依赖：
+
+					org.springframework.boot:spring-boot-starter-activemq
+
+				* 配置：
+
+					spring.activemq.broker-url=tcp://localhost:61616
+					spring.activemq.packages.trust-all=true
+					spring.activemq.user=admin
+					spring.activemq.password=admin
+
+				* 提供消息列队Bean
+
+					@SpringBootApplication 
+					public class Demo03Application {
+
+					    public static void main(String[] args) {
+					        SpringApplication.run(Demo03Application.class, args);
+					    }
+
+					    @Bean
+					    Queue queue() {
+					        return new ActiveMQQueue("amq");
+					    }
+
+					}
+
+				* 消息发送|接受组件：
+
+					@Component
+					public class JmsComponent {
+
+					    private static final Logger logger = LoggerFactory.getLogger(JmsComponent.class);
+
+					    @Autowired
+					    JmsMessagingTemplate messagingTemplate;
+					    @Autowired
+					    Queue queue;
+
+					    public void send(Message message) {
+					        logger.info("send start. message:[{}]", message);
+					        messagingTemplate.convertAndSend(this.queue, message);
+					    }
+
+					    @JmsListener(destination = "amq")
+					    public void receive(Message message) {
+					        logger.info("receive start. message[{}]", message);
+					    }
+
+					}
+
+					@Data
+					public class Message implements Serializable {
+
+					    private String name;
+					    private String content;
+
+					}
+
+			4. 测试
+
+				@RunWith(SpringRunner.class)
+				@SpringBootTest
+				public class TestJMS {
+
+				    @Autowired
+				    JmsComponent jmsComponent;
+
+				    @Test
+				    public void contextLoad() {
+				        Message message = new Message();
+				        message.setName("test");
+				        message.setContent("hello jms");
+				        jmsComponent.send(message);
+				    }
+
+				}
 
 	12.2 AMQP
 
 		12.2.1 AMQP简介
 
+			AMQP (Advanced Message Queuing Protocol，高级消息队列协议）是一个线路层的协议规范，而不是 API 规范（例如 JMS ）。
+			由于 AMQP 是一个线路层协议规范，因此它天然就是跨平台的，就像 SMTP 、 HTTP 等协议一样，只要开发者按照规范的格式发送数据，
+			任何平台都可以通过 AMQP 进行消息交互。像目前流行的 StormMQ 、 RabbitMQ 等都实现了 AMQP 
+
 		12.2.2 SpringBoot整合AMQP
+
+			1. RabbitMQ简介
+
+				RabbitMQ 是一个实现了 AMQP 的开源消息中间件，使用高性能的 Erlang 编写。 RabbitMQ 具有可靠性、支持多种协议、高可用、支持消息集群以及多语言客户端等特点，
+				在分布式系统中存储转发消息，具有不错的性能表现
+
+			2. RabbitMQ的安装
+
+				Windows：
+
+					1. erlang下载安装
+
+						下载地址： http://www.erlang.org/downloads
+
+					2. RabbitMQ下载安装	
+
+						下载地址：https://www.rabbitmq.com/download.html
+
+					3. 登陆验证
+
+						访问：http://localhost:15672/		
+						登陆：guest/guest
+
+			3. 整合SpringBoot
+
+				添加依赖：
+
+					org.springframework.boot:spring-boot-starter-amqp
+
+				属性配置：
+
+					spring.rabbitmq.host=localhost
+					spring.rabbitmq.port=5672
+					spring.rabbitmq.username=guest
+					spring.rabbitmq.password=guest				
+
+				在RabbitMQ中，所有的消息生产者都会交给Exchange进行再分配，Exchange会根据不同的策略将消息分发到不同的Queue中。
+				RabbitMQ中，一共提供了四种Exchange策略：Direct、 Fanout、 Topic、 Header。
+
+				（1）Direct策略
+
+					策略：将消息列队绑定到一个DirectExchange上，当一条消息到达DirectExchange时，会被转发到与该条消息routing key相同的Queue上。
+							 例如：消息列队名为"direct-queue"，则路由键routingkey为"direct-name"的消息会被该消息列队接受。
+
+				 	配置：
+
+				 		@Configuration
+						public class RabbitDirectConfig {
+
+						    public static final String DIRECT_NAME = "direct-name";
+
+						    @Bean
+						    Queue directQueue() {
+						        return new Queue("direct-queue");
+						    }
+
+						    @Bean
+						    DirectExchange directExchange() {
+						        return new DirectExchange(DIRECT_NAME, true, false);
+						    }
+
+						    @Bean
+						    Binding directBinding() {
+						        return BindingBuilder.bind(directQueue()).to(directExchange()).with("direct-routing-key");
+						    }
+
+						}
+
+				 	消费者组件：
+
+				 		@Component
+						public class RabbitDirectReceiver {
+
+						    private static final Logger logger = LoggerFactory.getLogger(RabbitDirectReceiver.class);
+
+						    @RabbitListener(queues = "direct-queue")
+						    public void handler(String message) {
+						        logger.info("[RabbitMQ] direct receiver handler start. message:{}", message);
+						    }
+
+						}
+
+					测试：
+
+						@RunWith(SpringRunner.class)
+						@SpringBootTest
+						public class TestAMQP {
+
+						    @Autowired
+						    RabbitTemplate rabbitTemplate;
+
+						    @Test
+						    public void testDirect() {
+						        rabbitTemplate.convertAndSend("direct-queue", "this is rabbitmq direct-queue message!");
+						    }
+					    }
+
+			    (2) Fanout
+
+			    	策略：把所有到达FanoutExchange的消息转发给它绑定的Queue，这种策略中，路由键routingkey不起作用。
+
+			    	配置：
+
+			    		@Configuration
+						public class RabbitFanoutConfig {
+
+						    public static final String FANOUT_NAME = "fanout-name";
+
+						    @Bean
+						    Queue fanoutQueueOne() {
+						        return new Queue("fanout-queue-one");
+						    }
+
+						    @Bean
+						    Queue fanoutQueueTwo () {
+						        return new Queue("fanout-queue-two");
+						    }
+
+						    @Bean
+						    FanoutExchange fanoutExchange() {
+						        return new FanoutExchange(FANOUT_NAME, true, false);
+						    }
+
+						    @Bean
+						    Binding fanoutBindingOne() {
+						        return BindingBuilder.bind(fanoutQueueOne()).to(fanoutExchange());
+						    }
+
+						    @Bean
+						    Binding fanoutBindingTwo() {
+						        return BindingBuilder.bind(fanoutQueueTwo()).to(fanoutExchange());
+						    }
+
+						}
+
+					消费者组件：
+
+						@Component
+						public class RabbitFanoutReceiver {
+
+						    private static final Logger logger = LoggerFactory.getLogger(RabbitFanoutReceiver.class);
+
+						    @RabbitListener(queues = "fanout-queue-one")
+						    public void handlerOne(String message) {
+						        logger.info("[RabbitMQ] fanout receiver handler one start! message: {}", message);
+						    }
+
+						    @RabbitListener(queues = "fanout-queue-two")
+						    public void handlerTwo(String message) {
+						        logger.info("[RabbitMQ] fanout receiver handler two start. message: {}", message);
+						    }
+
+						}
+
+					测试：
+
+						@RunWith(SpringRunner.class)
+						@SpringBootTest
+						public class TestAMQP {
+
+						    @Autowired
+						    RabbitTemplate rabbitTemplate;
+
+						 	@Test
+						    public void testFanout() {
+						        rabbitTemplate.convertAndSend(RabbitFanoutConfig.FANOUT_NAME, null, "this is rabbitmq fanout-queue-one message");
+						    }
+					    }
+					    
+			    （3）Topic
+
+			    	策略： TopicExchange是比较复杂也比较灵活的一种路由策略，在TopicExchange中，Queue通过routingkey绑定到TopicExchange上，当消息到达TopicExchange后，
+			    		  TopicExchange根据消息的routingkey将消息路由到一个或者多个Queue上。
+
+			    	配置： 
+
+			    		@Configuration
+						public class RabbitTopicConfig {
+
+						    public static final String TOPIC_NAME = "topic-name";
+
+						    @Bean
+						    Queue xiaomi() {
+						        return new Queue("topic-queue-xiaomi");
+						    }
+
+						    @Bean
+						    Queue huawei() {
+						        return new Queue("topic-queue-huawei");
+						    }
+
+						    @Bean
+						    Queue phone() {
+						        return new Queue("topic-queue-phone");
+						    }
+
+						    @Bean
+						    TopicExchange topicExchange() {
+						        return new TopicExchange(TOPIC_NAME, true, false);
+						    }
+
+						    @Bean
+						    Binding topicBindingOne() {
+						        return BindingBuilder.bind(xiaomi()).to(topicExchange()).with("xiaomi.#");
+						    }
+
+						    @Bean
+						    Binding topicBindingTwo() {
+						        return BindingBuilder.bind(huawei()).to(topicExchange()).with("huawei.#");
+						    }
+
+						    @Bean
+						    Binding topicBindingThree() {
+						        return BindingBuilder.bind(phone()).to(topicExchange()).with("#.phone.#");
+						    }
+
+						}
+
+			    	消费者组件：
+
+			    		@Component
+						public class RabbitTopicReceiver {
+
+						    private static final Logger logger = LoggerFactory.getLogger(RabbitTopicReceiver.class);
+
+						    @RabbitListener(queues = "topic-queue-phone")
+						    public void handlerOne(String message) {
+						        logger.info("[RabbitMQ] topic receiver handler phone start. message: {}", message);
+						    }
+
+						    @RabbitListener(queues = "topic-queue-xiaomi")
+						    public void handlerTwo(String message) {
+						        logger.info("[RabbitMQ] topic receiver handler xiaomi start. message: {}", message);
+						    }
+
+						    @RabbitListener(queues = "topic-queue-huawei")
+						    public void handlerThree(String message) {
+						        logger.info("[RabbitMQ] topic receiver handler huawei start. message: {}", message);
+						    }
+
+						}
+
+			    	测试：
+
+		    		    @Test
+					    public void testTopic() {
+					        rabbitTemplate.convertAndSend(RabbitTopicConfig.TOPIC_NAME, "xiaomi.news", "小米新闻...");
+					        rabbitTemplate.convertAndSend(RabbitTopicConfig.TOPIC_NAME, "huawei.news", "华为新闻...");
+					        rabbitTemplate.convertAndSend(RabbitTopicConfig.TOPIC_NAME, "xiaomi.phone", "小米手机...");
+					        rabbitTemplate.convertAndSend(RabbitTopicConfig.TOPIC_NAME, "huawei.phone", "华为手机...");
+					        rabbitTemplate.convertAndSend(RabbitTopicConfig.TOPIC_NAME, "phone.news", "手机新闻...");
+					    }
+
+			    （4）Header
+			    
+			    	策略： HeaderChange会根据消息的Header将消息路由到不同的Queue上，这种策略也与routingkey无关。
+
+			    	配置：
+
+			    		@Configuration
+						public class RabbitHeaderConfig {
+
+						    public static final String HEADER_NAME = "header-name";
+
+						    @Bean
+						    HeadersExchange headersExchange() {
+						        return new HeadersExchange(HEADER_NAME, true, false);
+						    }
+
+						    @Bean
+						    Queue headerQueueName() {
+						        return new Queue("header-queue-name");
+						    }
+
+						    @Bean
+						    Queue headerQueueAge() {
+						        return new Queue("header-queue-age");
+						    }
+
+						    @Bean
+						    Binding headerBindingName() {
+						        Map<String, Object> map = Maps.newHashMap();
+						        map.put("name", "binvi");
+						        return BindingBuilder.bind(headerQueueName()).to(headersExchange()).whereAny(map).match();
+						    }
+
+						    @Bean
+						    Binding headerBindingAge() {
+						        return BindingBuilder.bind(headerQueueAge()).to(headersExchange()).where("age").exists();
+						    }
+
+						}
+
+			    	消费者组件：
+
+			    		@Component
+						public class RabbitHeaderReceiver {
+
+						    private static final Logger logger = LoggerFactory.getLogger(RabbitHeaderReceiver.class);
+
+						    @RabbitListener(queues = "header-queue-name")
+						    public void headerHandlerOne(byte[] message) {
+						        logger.info("[RabbitMQ] header receiver handler one start. message:{}", new String(message));
+						    }
+
+						    @RabbitListener(queues = "header-queue-age")
+						    public void headerHandlerTwo(byte[] message) {
+						        logger.info("[RabbitMQ] header receiver handler two start. message: {}", new String(message));
+						    }
+
+						}
+
+			    	测试：	  	
+
+	    			    @Test
+					    public void testHeader() {
+					        Message messageName = MessageBuilder
+					                .withBody("Hello header! header-queue-name".getBytes())
+					                .setHeader("name", "binvi")
+					                .build();
+					        Message messageAge = MessageBuilder
+					                .withBody("Hello header! header-queue-age".getBytes())
+					                .setHeader("age", 27)
+					                .build();
+					        rabbitTemplate.convertAndSend(RabbitHeaderConfig.HEADER_NAME, null, messageName);
+					        rabbitTemplate.convertAndSend(RabbitHeaderConfig.HEADER_NAME, null, messageAge);
+					    }
+
+    12.3 小结
+
+    	JMS和AMQP各有千秋，JMS从API的层面对消息中间件进行了统一，AMQP从协议层面来统一，JMS不支持跨平台，而AMQP天然地具备跨平台功能。
+    	AMQP支持的消息模式也更加丰富。
+
+    // 有空补充其他的消息组件： Kafak、 Artemis、StormMQ......
 
 第13章 企业开发
 
