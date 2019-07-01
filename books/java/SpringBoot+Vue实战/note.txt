@@ -4991,6 +4991,360 @@
 
 	13.1 邮件发送
 
+		13.1.1 发送前的准备
+
+			开启POP3/SMTP服务、IMAP/SMTP服务，保存授权码
+
+		13.1.2 发送
+		
+			1. 环境搭建
+
+				org.springframework.boot:spring-boot-starter-mail
+
+			2. 配置文件
+			
+				spring.mail.host=smtp.qq.com
+				spring.mail.port=465
+				spring.mail.username=1140932775@qq.com
+				spring.mail.password=tmzabzntxrngjbea
+				spring.mail.default-encoding=UTF-8
+				spring.mail.properties.mail.smtp.socketFactory.class=javax.net.ssl.SSLSocketFactory
+				spring.mail.properties.mail.debug=false
+				spring.mail.protocol=smtp	
+
+			3. 发送邮件
+			
+				** Service	
+
+					/**
+					 * @author binvi
+					 * @version 1.0
+					 * @Description: 发送邮件
+					 * @date 2019/7/1 21:34
+					 */
+					@Component
+					public class MailService {
+
+						private static final Logger logger = LoggerFactory.getLogger(MailService.class);
+
+						@Autowired
+						JavaMailSender javaMailSender;
+
+						/**
+						 * 发送普通邮件
+						 * @param from
+						 * @param to
+						 * @param cc
+						 * @param subject
+						 * @param content
+						 */
+						public void sendSimpleMail(String from,
+												   String to,
+												   String cc,
+												   String subject,
+												   String content) {
+							logger.info("发送普通邮件开始");
+							SimpleMailMessage message = new SimpleMailMessage();
+							message.setFrom(from);
+							message.setTo(to);
+							message.setCc(cc);
+							message.setSubject(subject);
+							message.setText(content);
+							javaMailSender.send(message);
+							logger.info("发送普通邮件完成");
+						}
+
+						/**
+						 * 发送带附件的邮件
+						 * @param from
+						 * @param to
+						 * @param cc
+						 * @param subject
+						 * @param content
+						 * @param file
+						 */
+						public void sendAttachFileMail(String from,
+													   String to,
+													   String cc,
+													   String subject,
+													   String content,
+													   File file) {
+							logger.info("发送带附件的邮件开始");
+							try {
+								MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+								MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
+								mimeMessageHelper.setFrom(from);
+								mimeMessageHelper.setTo(to);
+								mimeMessageHelper.setCc(cc);
+								mimeMessageHelper.setSubject(subject);
+								mimeMessageHelper.setText(content);
+								mimeMessageHelper.addAttachment(file.getName(), file);
+								javaMailSender.send(mimeMessage);
+							} catch (MessagingException e) {
+								logger.error("发送带附件的邮件异常", e);
+								e.printStackTrace();
+							}
+							logger.info("发送带附件的邮件完成");
+						}
+
+						/**
+						 * 发送带图片的邮件
+						 * @param from
+						 * @param to
+						 * @param cc
+						 * @param subject
+						 * @param content
+						 * @param srcPath
+						 * @param resIds
+						 */
+						public void sendMessageWithImage(String from,
+														 String to,
+														 String cc,
+														 String subject,
+														 String content,
+														 String[] srcPath,
+														 String[] resIds) {
+							logger.info("发送带图片的邮件开始");
+							if (srcPath == null || srcPath.length == 0
+									|| resIds == null || resIds.length == 0
+									|| srcPath.length != resIds.length) {
+								logger.info("图片信息不对应，请确认正确后重新发送");
+								return;
+							}
+							try {
+								MimeMessage message = javaMailSender.createMimeMessage();
+								MimeMessageHelper helper = new MimeMessageHelper(message, true);
+								helper.setFrom(from);
+								helper.setTo(to);
+								helper.setCc(cc);
+								helper.setSubject(subject);
+								helper.setText(content, true);
+								for (int i = 0; i < srcPath.length; i++) {
+									FileSystemResource resource = new FileSystemResource(srcPath[i]);
+									helper.addInline(resIds[i], resource);
+								}
+								javaMailSender.send(message);
+							} catch (MessagingException e) {
+								logger.error("发送带图片的邮件异常", e);
+								e.printStackTrace();
+							}
+							logger.info("发送带图片的邮件完成");
+						}
+
+						public void sendHtmlMessage(String from,
+													String to,
+													String cc,
+													String subejct,
+													String content) {
+							logger.info("发送HTML格式的邮件开始");
+							try {
+								MimeMessage message = javaMailSender.createMimeMessage();
+								MimeMessageHelper helper = new MimeMessageHelper(message, true);
+								helper.setFrom(from);
+								helper.setTo(to);
+								helper.setCc(cc);
+								helper.setSubject(subejct);
+								helper.setText(content, true);
+								javaMailSender.send(message);
+							} catch (MessagingException e) {
+								logger.info("发送HTML格式的邮件异常");
+								e.printStackTrace();
+							}
+							logger.info("发送HTML格式的邮件完成");
+						}
+
+					}
+
+
+				模板：
+
+					FreeMarker模板：mailTemplate.ftl
+
+						<div style="color: rebeccapurple">
+							<h2>Freemarker 模板邮件</h2>
+						</div>
+						<hr>
+						<div style="color: green">
+							<h4>邮件信息：</h4>
+							<table border="1" style="color: darkgoldenrod">
+								<thead>
+									<tr>
+										<th>name</th>
+										<th>content</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>${name}</td>
+										<td>${content}</td>
+									</tr>
+								</tbody>
+								<tfoot>
+									<tr>
+										<td>just table foot</td>
+										<td>nothing else</td>
+									</tr>
+								</tfoot>
+							</table>
+						</div>
+						<hr>
+						<div style="color: crimson">
+							<h4>注册邮箱：</h4>
+							<form action="">
+								<label for="name">请输入用户名：</label>
+								<input type="text" id="name" placeholder="用户名"><br>
+								<label for="password">请输入密码：</label>
+								<input type="password" id="password" placeholder="密码"><br>
+								<input type="submit" value="提交"/>
+							</form>
+						</div>
+
+
+					Thymeleaf模板：mailTemplate.html
+
+						<html lang="en" xmlns:th="http://www.thymeleaf.org">
+						<head>
+							<meta charset="UTF-8">
+							<title>Thymeleaf 模板邮件</title>
+						</head>
+						<body>
+							<div style="color: rebeccapurple">
+								<h2>Thymeleaf 模板邮件</h2>
+							</div>
+							<hr>
+							<div style="color: green">
+								<h4>邮件信息：</h4>
+								<table border="1" style="color: darkgoldenrod; text-align: center">
+									<thead>
+									<tr>
+										<th>name</th>
+										<th>content</th>
+									</tr>
+									</thead>
+									<tbody>
+									<tr>
+										<td th:text="${name}"></td>
+										<td th:text="${content}"></td>
+									</tr>
+									</tbody>
+									<tfoot>
+									<tr>
+										<td>just table foot</td>
+										<td>nothing else</td>
+									</tr>
+									</tfoot>
+								</table>
+							</div>
+							<hr>
+							<div style="color: crimson">
+								<h4>注册邮箱：</h4>
+								<form action="">
+									<label for="name">请输入用户名：</label>
+									<input type="text" id="name" placeholder="用户名"><br>
+									<label for="password">请输入密码：</label>
+									<input type="password" id="password" placeholder="密码"><br>
+									<input type="submit" value="提交"/>
+								</form>
+							</div>
+							<br><hr>
+							<div>
+								<h4>邮件签名：</h4>
+								<pre>
+									韩斌伟 Han Bin Wei
+									北京软件中心 Java开发工程师
+									艾融软件股份有限公司
+									i2Finance Software CO.,LTD.
+									股票代码：830799
+
+									Mobile：13752330376
+									E-mail: hanbw@i2finance.net
+									网址：http://www.i2finance.net
+									地址：上海市浦东新区民生路1199弄1号楼5层（上海）
+									      北京市海淀区农大南路1号硅谷亮城5号楼5层（北京）
+										  广州市天河区天河路621号天娱广场西塔10层（广州）
+								</pre>
+							</div>
+						</body>
+						</html>
+
+				 ** Test：
+
+					 	@RunWith(SpringRunner.class)
+						@SpringBootTest
+						public class SendMailTest {
+
+							@Autowired
+							MailService mailService;
+							@Autowired
+							TemplateEngine templateEngine;
+
+							private static final String FROM = "1140932775@qq.com";
+							private static final String TO = "13752330376@163.com";
+							private static final String CC = "413483557@qq.com";
+
+							@Test
+							public void sendSimpleMessageTest() {
+								String subject = "普通邮件发送测试";
+								String content = "来自java程序的普通测试邮件，能收到不？";
+								mailService.sendSimpleMail(FROM, TO, CC, subject, content);
+							}
+
+							@Test
+							public void sendMimeMessageTest() {
+								String subject = "带附件的邮件发送测试";
+								String content = "来自java程序的带附件的测试邮件，能收到不？";
+								File file = new File("G:\\Document\\doc\\个人资料\\韩斌伟简历_2019.pdf");
+								mailService.sendAttachFileMail(FROM, TO, CC, subject, content, file);
+							}
+
+							@Test
+							public void sendMessageWithImageTest() {
+								String subject = "带图片的邮件发送测试";
+								String content = "<div>来自java程序的带图片的测试邮件，能收到不？"
+										+ "（1）一轮明月正在冉冉升起:<div><img src='cid:p01'/></div>"
+										+ "（2）我还以为你从来都不会选我呢:<div><img src='cid:p02'/></div>"
+										+ "（3）享受荆棘的幽梦吧:<div><img src='cid:p03'/></div>"
+										+ "</div>";
+								String[] srcPath = {"C:\\Users\\hbw44\\Pictures\\Camera Roll\\1559136533113.jpg",
+										"C:\\Users\\hbw44\\Pictures\\Camera Roll\\1559136968921.jpg",
+										"C:\\Users\\hbw44\\Pictures\\Camera Roll\\1559137102910.jpg"};
+								String[] resIds = {"p01", "p02", "p03"};
+								mailService.sendMessageWithImage(FROM, TO, CC, subject, content, srcPath, resIds);
+							}
+
+							@Test
+							public void sendHtmlMessageWithFreemarkerTemplateTest() {
+								String subject = "HTML格式的邮件发送测试（Freemarker模板）";
+								try {
+									Configuration configuration = new Configuration(Configuration.VERSION_2_3_0);
+									ClassLoader classLoader = getClass().getClassLoader();
+									configuration.setClassLoaderForTemplateLoading(classLoader, "templates");
+									Template template = configuration.getTemplate("mailTemplate.ftl");
+									StringWriter writer = new StringWriter();
+									Message message = new Message();
+									message.setName("Jim Green");
+									message.setContent("English");
+									template.process(message, writer);
+									mailService.sendHtmlMessage(FROM, TO, CC, subject, writer.toString());
+								} catch (IOException e) {
+									e.printStackTrace();
+								} catch (TemplateException e) {
+									e.printStackTrace();
+								}
+							}
+
+							@Test
+							public void sendHtmlMessageWithThymeleafTemplateTest() {
+								String subject = "HTML格式的邮件发送测试（Thymeleaf模板）";
+								Context context = new Context();
+								context.setVariable("name", "Lily");
+								context.setVariable("content", "麻辣小龙虾");
+								String mail = templateEngine.process("mailTemplate.html", context);
+								mailService.sendHtmlMessage(FROM, TO, CC, subject, mail);
+							}
+
+						}
+
 	13.2 定时任务
 
 	13.3 批处理
