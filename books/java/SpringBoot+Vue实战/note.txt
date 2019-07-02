@@ -5347,6 +5347,173 @@
 
 	13.2 定时任务
 
+		13.2.1 @Scheduled
+
+			@Scheduled是由Spring提供的定时任务注解，使用方便，配置简单。
+
+			1. 创建项目、添加依赖
+
+				org.springframework.boot:spring-boot-starter-web
+
+			2. 开启定时任务
+			
+				@SpringBootApplication
+				@EnableScheduling
+				public class Demo03Application {
+
+				    public static void main(String[] args) {
+				        SpringApplication.run(Demo03Application.class, args);
+				    }
+
+				}
+
+			3. 配置定时任务
+			
+				@Component
+				public class MySchedule {
+
+					private static final Logger logger = LoggerFactory.getLogger(MySchedule.class);
+
+					@Scheduled(fixedDelay = 10000)
+					public void fixedDelay() {
+						logger.info("MySchedule fixedDelay run at {}", Instant.now());
+					}
+
+					@Scheduled(fixedRate = 20000)
+					public void fixedRate() {
+						logger.info("MySchedule fixedRate run at {}", Instant.now());
+					}
+
+					@Scheduled(initialDelay = 10000, fixedRate = 20000)
+					public void initialDelay() {
+						logger.info("MySchedule initialDelay run at {}", Instant.now());
+					}
+
+					@Scheduled(cron = "*/30 * * * * *")
+					public void cron() {
+						logger.info("MySchedule cron run at {}", Instant.now());
+					}
+
+				}	
+	
+
+		13.2.2 Quartz
+
+			1. Quartz简介
+
+				Quartz是一个功能丰富的开源作业调度库，由Java写成，可以集成在任何Java应用程序中，包括JavaSE和JavaEE等。
+				使用Quartz可以创建简单或者复杂的执行计划，它支持数据库、集群、插件以及邮件，并且支持cron表达式，具有极高的灵活性。
+				SpringBoot中集成Quartz与Sping集成Quartz比较类似，主要提供三个bean：JobDetail、Trigger、SchedulerFactory。
+
+			2. 整合SpringBoot
+
+				** 创建项目、添加依赖
+
+					org.springframework.boot:spring-boot-starter-quartz
+
+				** 创建Job
+					
+						/**
+						 * @author binvi
+						 * @version 1.0
+						 * @Description: Quartz定时（注解式）
+						 * @date 2019/7/2 23:08
+						 */
+						@Component
+						public class MyQuartzJobOne {
+
+							private static final Logger logger = LoggerFactory.getLogger(MyQuartzJobOne.class);
+
+							public void sayHello() {
+								logger.info("MyQuartzJobOne start at {}", Instant.now());
+								logger.info("---------------------------------------");
+							}
+
+						}	
+
+
+						/**
+						 * @author binvi
+						 * @version 1.0
+						 * @Description: Quartz定时（继承式）
+						 * @date 2019/7/2 23:11
+						 */
+						public class MyQuartzJobTwo extends QuartzJobBean {
+
+							private static final Logger logger = LoggerFactory.getLogger(MyQuartzJobTwo.class);
+
+							private String name;
+
+							@Override
+							protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
+								logger.info("MyQuartzJobTwo start at {}", Instant.now());
+								logger.info("hello {}, Good night!", name);
+								logger.info("=======================================");
+							}
+
+							public String getName() {
+								return name;
+							}
+
+							public void setName(String name) {
+								this.name = name;
+							}
+						}
+
+				** 配置类
+
+					@Configuration
+					public class QuartzConfig {
+
+						@Bean
+						MethodInvokingJobDetailFactoryBean jobDetailOne() {
+							MethodInvokingJobDetailFactoryBean bean = new MethodInvokingJobDetailFactoryBean();
+							bean.setTargetBeanName("myQuartzJobOne");
+							bean.setTargetMethod("sayHello");
+							return bean;
+						}
+
+						@Bean
+						JobDetailFactoryBean jobDetailTwo() {
+							JobDetailFactoryBean bean = new JobDetailFactoryBean();
+							bean.setJobClass(MyQuartzJobTwo.class);
+							JobDataMap dataMap = new JobDataMap();
+							dataMap.put("name", "lily");
+							bean.setJobDataMap(dataMap);
+							bean.setDurability(true);
+							return bean;
+						}
+
+						@Bean
+						SimpleTriggerFactoryBean simpleTrigger() {
+							SimpleTriggerFactoryBean bean = new SimpleTriggerFactoryBean();
+							bean.setJobDetail(jobDetailOne().getObject());
+							bean.setRepeatCount(5);
+							bean.setStartDelay(10000);
+							bean.setRepeatInterval(60000);
+							return bean;
+						}
+
+						@Bean
+						CronTriggerFactoryBean cronTrigger() {
+							CronTriggerFactoryBean bean = new CronTriggerFactoryBean();
+							bean.setJobDetail(jobDetailTwo().getObject());
+							bean.setCronExpression("0 0/1 * * * ?");
+							return bean;
+						}
+
+						@Bean
+						SchedulerFactoryBean scheduler() {
+							SchedulerFactoryBean bean = new SchedulerFactoryBean();
+							SimpleTrigger simpleTrigger = simpleTrigger().getObject();
+							CronTrigger cronTrigger = cronTrigger().getObject();
+							bean.setTriggers(simpleTrigger, cronTrigger);
+							return bean;
+						}
+
+					}
+
+
 	13.3 批处理
 
 	13.4 Swagger2
