@@ -5513,8 +5513,173 @@
 
 					}
 
-
 	13.3 批处理
+
+		13.3.1 Spring Batch简介
+
+			Spring Batch是一个开源的、全面的、轻量级的批处理框架，通过Spring Batch可以实现强大的批处理应用程序的开发。
+			Spring Batch还可以提供记录/跟踪、事务管理、作业处理统计、作业重启以及资源管理等功能。结合定时任务可以发挥更大的作用。
+
+			Spring Batch提供了ItemReader、ItemProcessor和ItemWriter来完成数据的读取、处理以及写出操作，并且可以将批处理的执行状态持久化到数据库中。
+
+		13.3.2 整合Spring Boot
+
+			1. 新建项目、添加依赖
+
+				org.springframework.boot:spring-boot-starter-batch
+
+			2. 属性文件配置
+			
+				spring.batch.schema=classpath:/org/springframework/batch/core/schema-mysql.sql
+				spring.batch.initialize-schema=always
+				spring.batch.job.enabled=false	
+
+			3. 启动类配置
+
+				@SpringBootApplication
+				@EnableBatchProcessing
+				public class Demo03Application {
+
+				    public static void main(String[] args) {
+				        SpringApplication.run(Demo03Application.class, args);
+				    }
+
+				}
+
+			4. Config配置类
+
+				/**
+				 * @author binvi
+				 * @version 1.0
+				 * @Description: CSV批处理配置
+				 * @date 2019/7/3 18:47
+				 */
+				@Configuration
+				public class CsvBatchJobConfig {
+
+					@Autowired
+					JobBuilderFactory jobBuilderFactory;
+					@Autowired
+					StepBuilderFactory stepBuilderFactory;
+					@Autowired
+					DataSource dataSource;
+
+					@Bean
+					@StepScope
+					FlatFileItemReader itemReader() {
+						FlatFileItemReader<Anime> reader = new FlatFileItemReader<>();
+						reader.setLinesToSkip(1);
+						reader.setResource(new ClassPathResource("file\\anime.csv"));
+						reader.setLineMapper(new DefaultLineMapper<Anime>(){{
+							setLineTokenizer(new DelimitedLineTokenizer(){{
+								setNames("id", "author", "description", "name", "price", "publish_date", "remark", "star");
+								setDelimiter(",");
+							}});
+							setFieldSetMapper(new BeanWrapperFieldSetMapper<Anime>(){{
+								setTargetType(Anime.class);
+							}});
+						}});
+						return reader;
+					}
+
+					@Bean
+					JdbcBatchItemWriter jdbcBatchItemWriter() {
+						JdbcBatchItemWriter writer = new JdbcBatchItemWriter();
+						writer.setDataSource(dataSource);
+						writer.setSql("insert into anime " +
+								"(id, author, description, name, price, publish_date, remark, star)" +
+								"values " +
+								"(:id, :author, :description, :name, :price, :publishDate, :remark, :star)");
+						writer.setItemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider());
+						return writer;
+					}
+
+					@Bean
+					Step csvStep() {
+						return stepBuilderFactory.get("csvStep")
+								.<Anime, Anime>chunk(2)
+								.reader(itemReader())
+								.writer(jdbcBatchItemWriter())
+								.build();
+					}
+
+					@Bean
+					Job csvJob() {
+						return jobBuilderFactory.get("csvJob")
+								.start(csvStep())
+								.build();
+					}
+
+				}
+
+			5. csv文件： resources/file/anime.csv
+
+					id,author,description,name,price,publish_date,remark,star
+					100, 'one', 'kiyu', 'One Punch Man',20,Wed Jul 03 23:34:00 CST 2019, 'recommand to watch', 'qi yu'
+					101, 'one', 'kiyu', 'One Punch Man',0,Wed Jul 03 23:34:00 CST 2019, 'any one just one punch', 'qi yu'
+					102, 'one', 'kiyu', 'One Punch Man',0,Wed Jul 03 23:34:00 CST 2019, 'any one just one punch', 'qi yu'
+					103, 'one', 'kiyu', 'One Punch Man',0,Wed Jul 03 23:34:00 CST 2019, 'any one just one punch', 'qi yu'
+					104, 'one', 'kiyu', 'One Punch Man',0,Wed Jul 03 23:34:00 CST 2019, 'any one just one punch', 'qi yu'
+					105, 'one', 'kiyu', 'One Punch Man',0,Wed Jul 03 23:34:00 CST 2019, 'any one just one punch', 'qi yu'
+					106, 'one', 'kiyu', 'One Punch Man',0,Wed Jul 03 23:34:00 CST 2019, 'any one just one punch', 'qi yu'
+					107, 'one', 'kiyu', 'One Punch Man',0,Wed Jul 03 23:34:00 CST 2019, 'any one just one punch', 'qi yu'
+					108, 'one', 'kiyu', 'One Punch Man',0,Wed Jul 03 23:34:00 CST 2019, 'any one just one punch', 'qi yu'
+					109, 'one', 'kiyu', 'One Punch Man',0,Wed Jul 03 23:34:00 CST 2019, 'any one just one punch', 'qi yu'
+					110, 'one', 'kiyu', 'One Punch Man',0,Wed Jul 03 23:34:00 CST 2019, 'any one just one punch', 'qi yu'
+					111, 'one', 'kiyu', 'One Punch Man',0,Wed Jul 03 23:34:00 CST 2019, 'any one just one punch', 'qi yu'
+					112, 'one', 'kiyu', 'One Punch Man',0,Wed Jul 03 23:34:00 CST 2019, 'any one just one punch', 'qi yu'
+					113, 'one', 'kiyu', 'One Punch Man',0,Wed Jul 03 23:34:00 CST 2019, 'any one just one punch', 'qi yu'
+					114, 'one', 'kiyu', 'One Punch Man',0,Wed Jul 03 23:34:00 CST 2019, 'any one just one punch', 'qi yu'
+					115, 'one', 'kiyu', 'One Punch Man',0,Wed Jul 03 23:34:00 CST 2019, 'any one just one punch', 'qi yu'
+					116, 'one', 'kiyu', 'One Punch Man',0,Wed Jul 03 23:34:00 CST 2019, 'any one just one punch', 'qi yu'
+					117, 'one', 'kiyu', 'One Punch Man',0,Wed Jul 03 23:34:00 CST 2019, 'any one just one punch', 'qi yu'
+					118, 'one', 'kiyu', 'One Punch Man',0,Wed Jul 03 23:34:00 CST 2019, 'any one just one punch', 'qi yu'
+					119, 'Kishimoto Masashi', 'Uzumaki Naruto', 'NARUTO',0,Wed Jul 03 23:34:00 CST 2019, 'recommand to watch', 'ming ren'
+					120, 'one', 'kiyu', 'One Punch Man',0,Wed Jul 03 23:34:00 CST 2019, 'any one just one punch', 'qi yu'
+					121, 'one', 'kiyu', 'One Punch Man',0,Wed Jul 03 23:34:00 CST 2019, 'any one just one punch', 'qi yu'
+					122, 'one', 'kiyu', 'One Punch Man',22.55,Wed Jul 03 23:34:00 CST 2019, 'any one just one punch', 'qi yu'
+					123, 'one', 'kiyu', 'One Punch Man',0,Wed Jul 03 23:34:00 CST 2019, 'any one just one punch', 'qi yu'
+					124, 'one', 'kiyu', 'One Punch Man',0,Wed Jul 03 23:34:00 CST 2019, 'any one just one punch', 'qi yu'
+					125, 'one', 'kiyu', 'One Punch Man',0,Wed Jul 03 23:34:00 CST 2019, 'any one just one punch', 'qi yu'
+					126, 'one', '20% 40% 60% 80% 100%', 'Mob Psycho 100',0,Wed Jul 03 23:34:00 CST 2019, '100%', 'long tao'
+
+			6. Controller控制类
+
+				@RestController
+				@RequestMapping("csv")
+				public class CsvController {
+
+					private static final Logger logger = LoggerFactory.getLogger(CsvController.class);
+
+					@Autowired
+					JobLauncher jobLauncher;
+					@Autowired
+					Job job;
+
+					@GetMapping("/init")
+					public String init() {
+						logger.info("csv controller init start.");
+						String result;
+						try {
+							jobLauncher.run(job, new JobParameters());
+							result = "success";
+							logger.info("csv controller init complete.");
+						} catch (Exception e) {
+							result = e.getMessage();
+							logger.error("csv controller init exception.", e);
+							e.printStackTrace();
+						}
+						return result;
+					}
+
+				}
+
+		tips:
+		
+			如果csv文件中有日期数据，程序默认读取到的是字符串String格式，框架处理时默认是使用反射成Constructor，使用日期构造函数new Date(String date)进行数据转换。
+			而new Date(String date)，是调用的DateFormer.parse(String date)进行格式化的，使用实现类默认的无参构造new SimpleDateFormatter()时，
+			pattern默认格式为"yy-M-D ah:mm"，
+			所以csv文件中，日期格式要使用默认的formater.format(new Date)后的类似格式，e.g.: Wed Jul 03 23:34:00 CST 2019，否则，会报字符串-日期转换异常。
 
 	13.4 Swagger2
 
