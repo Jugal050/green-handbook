@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>js</title>
+	<script type="text/javascript" src="../js/jquery-1.9.1.js"></script>
+</head>
+<body>
+	<div>
+		<h5>导入订单：</h5>
+		<table class="modeltable" border="1px">
+			<thead>
+				<tr>
+					<td><input type="checkbox" name="checkAll" onclick="checkAll()">全选</td>
+					<td>序号</td>
+					<td>商品编号</td>
+					<td>商品名称</td>
+					<td>商品数量</td>
+					<td>收货人</td>
+					<td>联系方式</td>
+					<td>自提网点/收货地址</td>
+				</tr>
+			</thead>
+			<tbody>
+			</tbody>
+		</table>
+	</div><br>
+	<div>
+		<input type="button" name="makeOrder" onclick="makeOrder()" value="生产订单"/>
+	</div>
+	<br><hr>
+	<div class="marketorderdiv">
+		
+	</div>
+<script type="text/javascript">
+
+	$(function() {
+		initMarketOrderList();
+	})
+
+	function checkAll() {
+		var marketOrderList = $('.checkOne');
+		marketOrderList.each(function() {
+			$(this).attr('checked', true);
+		});
+	}
+
+	function initMarketOrderList() {
+		var i;
+		var marketOrderList = [];
+		for (i = 1; i < 10; i++) {
+			let marketOrder = {
+				serialNo: i,
+				prodId: '2019071600' + i,
+				prodName: '商品' + i,
+				prodNumber: i,
+				contact: '联系人' + i,
+				phone: '12345678' + i,
+				consignee: '地址' + i
+			}
+			marketOrderList.push(marketOrder);
+		}
+		var tbody_html = '';
+		marketOrderList.forEach(function(marketOrder) {
+			tbody_html += '<tr>'
+					+ '<td><input type="checkbox" class="checkOne" onclick="checkOne()" /></td>' 
+					+ '<td class="serialno">' + marketOrder.serialNo  + '</td>' 
+					+ '<td class="prodid">' + marketOrder.prodId + '</td>' 
+					+ '<td class="prodname">' + marketOrder.prodName + '</td>' 
+					+ '<td class="prodnumber">' + marketOrder.prodNumber + '</td>' 
+					+ '<td class="contact">' + marketOrder.contact + '</td>' 
+					+ '<td class="phone">' + marketOrder.phone + '</td>' 
+					+ '<td class="consignee">' + marketOrder.consignee + '</td>' 
+					+ '</tr>';
+		});
+		var tbody = $('.modeltable tbody');
+		tbody.append(tbody_html);
+	}
+
+	var orderNo = 1;
+	function makeOrder() {
+		let marketOrderDiv = $('.marketorderdiv');
+		marketOrderDiv.empty();
+		let checkOne = $('.checkOne:checked');
+		let order_html = '<h5>订单' + orderNo + ':</h5>'
+						+ '<h6>发票信息：发票' + orderNo + '</h6>'
+						+ '<table class="marketOrderTable" border="1">' 
+						+ '<thead>'
+						+ '<tr>'
+						+ '<td>序号</td>'
+						+ '<td>商品编号</td>'
+						+ '<td>商品名称</td>'
+						+ '<td>商品数量</td>'
+						+ '<td>联系人</td>'
+						+ '<td>联系方式</td>'
+						+ '<td>自提网点/收货地址</td>'
+						+ '</tr>'
+						+ '</thead>'
+						+ '<tbody>';
+		let tr;
+		let i = 1;
+		checkOne.each(function() {
+			tr = $(this).parent().parent();
+			order_html +='<tr>'
+						+ '<td class="orderserialno">' + tr.find('.serialno').text()  + '</td>' 
+						+ '<td class="orderprodid">' + tr.find('.prodid').text() + '</td>' 
+						+ '<td class="orderprodname">' + tr.find('.prodname').text() + '</td>' 
+						+ '<td class="orderprodnumber">' + tr.find('.prodnumber').text() + '</td>' 
+						+ '<td class="ordercontact">' + tr.find('.contact').text() + '</td>' 
+						+ '<td class="orderphone">' + tr.find('.phone').text() + '</td>' 
+						+ '<td class="orderconsignee">' + tr.find('.consignee').text() + '</td>' 
+						+ '</tr>';
+			i++;
+		});
+		order_html += '</tbody></table>';
+		marketOrderDiv.append(order_html);
+		orderNo++;
+	}
+
+	function checkOne() {
+		console.info('checkOne');
+	}
+
+</script>
+</body>
+</html>
