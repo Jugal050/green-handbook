@@ -1,0 +1,163 @@
+《TCP/IP详解 卷1：协议》	--start 2019-8-20 16:43:51 
+
+阅读地址 http://www.52im.net/topic-tcpipvol1.html
+
+第1章 概述
+
+	1.1 引言
+
+	1.2 分层
+
+		1. 链路层：
+			有时也称作数据链路层或网络接口层，通常包括操作系统中的设备驱动程序和计算机中对应的网络接口卡。它们一起处理与电缆（或其他任何传输媒介）的物理接口细节。
+
+		2. 网络层：
+			有时也称作互联网层，处理分组在网络中的活动，例如分组的选路。在TCP/IP协议族中，网络层协议包括IP协议（网际协议），ICMP协议（Internet互联网控制报文协议），以及IGMP协议（Internet组管理协议）。
+
+		3. 传输层：
+			主要为两台主机上的应用程序提供端到端的通信。在TCP/IP协议族中，有两个互不相同的传输协议：TCP（传输控制协议）和UDP（用户数据报协议）。
+
+			TCP为两台主机提供高可靠性的数据通信。它所做的工作包括把应用程序交给它的数据分成合适的小块交给下面的网络层，确认接收到的分组，设置发送最后确认分组的超时时钟等。由于运输层提供了高可靠性的端到端的通信，因此应用层可以忽略所有这些细节。
+
+			UDP则为应用层提供一种非常简单的服务。它只是把称作数据报的分组从一台主机发送到另一台主机，但并不保证该数据报能到达另一端。任何必需的可靠性必须由应用层来提供。
+
+		4. 应用层
+			负责处理特定的应用程序细节。几乎各种不同的TCP/IP实现都会提供下面这些通用的应用程序：
+				• Telnet远程登录。
+				• FTP文件传输协议。
+				• SMTP简单邮件传送协议。
+				• SNMP简单网络管理协议。
+
+	1.3 TCP/IP的分层
+
+	1.4 互联网的地址
+
+		5类IP地址：
+
+			类别                        格式                                                   范围								最大数量
+
+			A类： 0|  网络号(7位)  |          主机号(24位)           |                    0.0.0.0 - 127.255.255.255                2^7-2(-2因为全0或全1ID非法)
+			B类： 1|0|     网络号(14位)      |       主机号(16位)    |                  128.0.0.0 - 191.255.255.255                2^14-2
+			C类： 1|1|0|         网络号(21位)    |    主机号(8位)    |                  192.0.0.0 - 223.255.255.255                2^21-2
+			D类： 1|1|1|0|          多播组号(28位)                   |                 224.0.0.0 - 239.255.255.255
+			E类： 1|1|1|1|0|        留待后用(27位)                   |                 240.0.0.0 - 247.255.255.255
+
+		点分十进制表示法(Dotted decimal notation): 32位的IP地址通常写成4个十进制的数，每个整数对应一个字节，例如：192.168.99.1 
+
+	1.5 域名系统
+	
+		DNS: 是一个分布的数据库，由它来提供IP地址和主机名之间的映射信息
+
+	1.6 封装
+
+		当应用程序用TCP传送数据时，数据被送入协议栈中，然后逐个通过每一层直到被当作一串比特流送入网络。
+		其中每一层对收到的数据都要增加一些首部信息（有时还要增加尾部信息），比如：
+			TCP传给IP的数据单元称作TCP报文段或简称为TCP段（TCP segment）。
+			IP传给网络接口层的数据单元称作IP数据报(IP datagram)。通过以太网传输的比特流称作帧(Frame)。
+
+	1.7 分用
+	
+		当目的主机收到一个以太网数据帧时，数据就开始从协议栈中由底向上升，同时去掉各层协议加上的报文首部。每层协议盒都要去检查报文首部中的协议标识，以确定接收数据的上层协议。
+
+	1.8 服务器模型
+	
+		重复型：
+			I1: 等待一个客户请求的到来
+			I2: 处理客户请求
+			I3: 发送响应给发送请求的客户
+			I4: 返回I1步
+		并发型：			
+			C1: 等待一个客户请求的到来
+			C2: 启动一个新的服务器来处理这个客户的请求。在这期间可能生成一个新的进程、任务或线程，并依赖底层操作系统的支持。这个步骤如何进行取决于操作系统。生成的新服务器对客户的全部请求进行处理。处理结束后，终止这个新服务器。
+			C3.返回C1步。
+
+	1.9 端口号
+	
+		客户端通常对它所使用的端口号并不关心，只需保证该端口号在本机上是唯一的就可以了。客户端口号又称作临时端口号（即存在时间很短暂）。这是因为它通常只是在用户运行该客户程序时才存在，
+		服务器则只要主机开着的，其服务就运行。		
+
+	1.10 标准化进程
+
+	1.11 RFC
+
+		所有关于Internet的正式标准都以RFC（Request for Comment）文档出版。
+		另外，大量的RFC并不是正式的标准，出版的目的只是为了提供信息。
+
+	1.12 标准的简单服务	
+
+	1.13 互联网
+
+	1.14 实现
+
+	1.15 应用编程接口
+
+		API: socket、TLI
+
+	1.16 测试网络
+	
+	1.17 小结                       			// done 2019-8-20 20:00:35	
+
+第2章 链路层
+第3章 IP:网际协议
+第4章 ARP:地址解析协议
+第5章 RARP:逆地址解析协议
+第6章 ICMP:互联网控制报文协议
+第7章 Ping程序
+第8章 Traceroute程序
+第9章 IP选路
+第10章 动态选路协议
+第11章 UDP:用户数据报协议
+第12章 广播和多播
+第13章 IGMP:互联网组管理协议
+第14章 DNS:域名系统
+第15章 TFTP:简单文件传输协议
+第16章 BOOTP:引导程序协议
+第17章 TCP:传输控制协议
+第18章 TCP连接的建立和终止
+第19章 TCP的交互数据流
+第20章 TCP的成块数据流
+第21章 TCP的超时与重传
+第22章 TCP的坚持定时器
+第23章 TCP的保活定时器
+第24章 TCP的未来和性能
+第25章 SNMP:简单网络管理协议
+第26章 Telnet和Rlogin:远程登录
+第27章 FTP:文件传输协议
+第28章 SMTP:简单邮件传输协议
+第29章 网络文件系统
+第30章 其他的TCP/IP应用程序
+
+
+	
+
+
+
+
+关键词：
+
+	ADSL (Asymmetrical Digtal Subscriber Loop): 非对称数字用户换线
+	API (Application Program Interface): 应用程序接口
+	ARP (Address Resolution Portocal): 地址解析协议
+	BSD (Berkeley Software Distribution): 伯克利软件发行
+	DNS (Domain Name System): 域名服务器
+	FTP (File Transfer Protocal): 文件传输协议
+	IAB (Internet Architecture Board): 互联网架构委员会
+	IANA (Internet Assigned Numbers Authority): 互联网地址编码分配机构
+	ICMP (Internet Control Messages Protocal): 互联网控制报文协议
+	IETF (Internet Engineering Task Force): 互联网工程任务组
+	IGMP (Internet Group Messages Protocal): 互联网组管理协议
+	IP (Internet Protocla): 互联网协议
+	IRTF (Internet Research Task Force): 互联网研究专门工作组
+	ISOC (Internet Society): 互联网协会
+	LAN (Local Area Network): 局域网
+	RARP (Reverse Address Resolution Portocal): 反向地址解析协议
+	RFC (Request For Comment): 请求注解
+	SMTP (Simple Message Transfer Protocal): 简单邮件传输协议
+	SNMP (Simple Network Management Protocal): 简单网络管理协议
+	TCP (Transmmission Control Protocol): 传输控制协议
+	TFTP (Trivial File Transfer Portocal): 简单文件传输协议
+	TLI (Transport Layer Interface): 传输层接口
+	UDP (User Datagram Protocol): 用户数据报协议
+	WAN (Wide Area Network): 广域网
+	Wireless lan: 无线局域网
+
