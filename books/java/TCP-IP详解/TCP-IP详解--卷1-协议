@@ -226,51 +226,89 @@
 	3.11 小结 											// 2019-8-21 00:48:49
 
 第4章 ARP：地址解析协议 
+
 	4.1 引言 
+
+		数据链路如以太网或令牌环网都有自己的寻址机制（常常为48 bit地址），这是使用数据链路的任何网络层都必须遵从的。
+		当一台主机把以太网数据帧发送到位于同一局域网上的另一台主机时，是根据48 bit的以太网地址来确定目的接口的。设备驱动程序从不检查IP数据报中的目的IP地址。
+
 	4.2 一个例子 
+
+		ftp hostname
+
 	4.3 ARP高速缓存 
+
+		ARP高效运行的关键是由于每个主机上都有一个ARP高速缓存。这个高速缓存存放了最近Internet地址到硬件地址之间的映射记录。
+
 	4.4 ARP的分组格式 
+
+		对于一个ARP请求来说，除目的端硬件地址外的所有其他的字段都有填充值。当系统收到一份目的端为本机的ARP请求报文后，它就把硬件地址填进去，然后用两个目的端地址分别替换两个发送端地址，并把操作字段置为2，最后把它发送回去。
+
 	4.5 ARP举例 
-	4.5.1 一般的例子 
-	4.5.2 对不存在主机的ARP请求 
-	4.5.3 ARP高速缓存超时设置 
+
+		tcpdump
+
+		4.5.1 一般的例子 
+
+			arp -a
+			telnet host port
+
+		4.5.2 对不存在主机的ARP请求 
+		4.5.3 ARP高速缓存超时设置 
 	4.6 ARP代理 
+
+		如果ARP请求是从一个网络的主机发往另一个网络上的主机，那么连接这两个网络的路由器就可以回答该请求，这个过程称作委托ARP或ARP代理(Proxy ARP)。这样可以欺骗发起ARP请求的发送端，使它误以为路由器就是目的主机，而事实上目的主机是在路由器的“另一边”。路由器的功能相当于目的主机的代理，把分组从其他主机转发给它。
+
 	4.7 免费ARP 
 	4.8 arp命令 
-	4.9 小结 
+	4.9 小结 											// 2019-8-21 22:44:48
 
 第5章 RARP：逆地址解析协议 
+
 	5.1 引言 
+
+		网络上的每个系统都具有唯一的硬件地址，它是由网络接口生产厂家配置的。无盘系统的RARP实现过程是从接口卡上读取唯一的硬件地址，然后发送一份RARP请求（一帧在网络上广播的数据），请求某个主机响应该无盘系统的IP地址（在RARP应答中）。
+
 	5.2 RARP的分组格式 
 	5.3 RARP举例 
 	5.4 RARP服务器的设计 
-	5.4.1 作为用户进程的RARP服务器 
-	5.4.2 每个网络有多个RARP服务器 
-	5.5 小结 
+		5.4.1 作为用户进程的RARP服务器 
+		5.4.2 每个网络有多个RARP服务器 
+	5.5 小结 											// 2019-8-21 23:28:42
 
 第6章 ICMP：Internet控制报文协议 
+
 	6.1 引言 
+
+		ICMP经常被认为是IP层的一个组成部分。它传递差错报文以及其他需要注意的信息。ICMP报文通常被IP层或更高层协议（TCP或UDP）使用。一些ICMP报文把差错报文返回给用户进程。
+
 	6.2 ICMP报文的类型 
 	6.3 ICMP地址掩码请求与应答 
 	6.4 ICMP时间戳请求与应答 
-	6.4.1 举例 
-	6.4.2 另一种方法 
+		6.4.1 举例 
+		6.4.2 另一种方法 
 	6.5 ICMP端口不可达差错 
 	6.6 ICMP报文的4.4BSD处理 
-	6.7 小结 
+	6.7 小结 											// 2019-8-21 23:52:34
 
 第7章 Ping程序 
+
 	7.1 引言 
+
+		测试另一台主机是否可达。该程序发送一份ICMP回显请求报文给主机，并等待返回ICMP回显应答
+
 	7.2 Ping程序 
-	7.2.1 LAN输出 
-	7.2.2 WAN输出 
-	7.2.3 线路SLIP链接 
-	7.2.4 拨号SLIP链路 
+		7.2.1 LAN输出 
+		7.2.2 WAN输出 
+		7.2.3 线路SLIP链接 
+		7.2.4 拨号SLIP链路 
 	7.3 IP记录路由选项 
-	7.3.1 通常的例子 
-	7.3.2 异常的输出 
+		7.3.1 通常的例子 
+		7.3.2 异常的输出 
 	7.4 IP时间戳选项 
-	7.5 小结 
+	7.5 小结 											// 2019-8-22 00:29:39
+
+		ping程序是对两个TCP/IP系统连通性进行测试的基本工具。它只利用ICMP回显请求和回显应答报文，而不用经过传输层（TCP/UDP）。Ping服务器一般在内核中实现ICMP的功能。
 
 第8章 Traceroute程序 
 	8.1 引言 
@@ -653,6 +691,7 @@
 	CRC (Cyclic Redundancy Check) 循环冗余码校验
 	CSLIP (Compressed Serial Line Internet Protocol): 压缩串行线路网际协议 
 	CSMA (Carrier Sense Multiple Access): 载波侦听多路访问
+	DCE (Distributed Computing Environment): 分布式计算环境
 	DNS (Domain Name System): 域名服务器
 	DSAP (Destination Service Access Point) 目的服务访问点
 	FDDI (Fiber Distributed Data Interface) 光纤分布式数据接口
@@ -671,7 +710,10 @@
 	Loopback Interface: 环回接口
 	MTU (Maximum Transmission Unit): 最大传输单元
 	NCP (Network Control Protocol): 网络控制协议
+	NFS (Network File System): 网络文件系统
+	NTP (Network Time Protocol): 网路时间协定
 	NNTP (Network News Transfer Protocol): 网络新闻传输协议
+	OSF (Open Software Foundation): 开放软体基金会
 	PPP (Point to Point Protocals): 点对点协议
 	RARP (Reverse Address Resolution Portocal): 反向地址解析协议
 	RFC (Request For Comment): 请求注解
@@ -681,9 +723,9 @@
 	SNMP (Simple Network Management Protocal): 简单网络管理协议
 	SSAP (Source Service Access Point): 源服务访问点
 	TCP (Transmmission Control Protocol): 传输控制协议
-	NFS (Network File System): 网络文件系统
 	TFTP (Trivial File Transfer Portocal): 简单文件传输协议
 	TLI (Transport Layer Interface): 传输层接口
+	TTL (Time To Live): 存活时间
 	UDP (User Datagram Protocol): 用户数据报协议
 	WAN (Wide Area Network): 广域网
 	Wireless lan: 无线局域网
