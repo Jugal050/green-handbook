@@ -1,4 +1,4 @@
-《TCP/IP详解 卷1：协议》	--start 2019-8-20 16:43:51 
+《TCP/IP详解 卷1：协议  --网络整理版》	--start 2019-8-20 16:43:51 
 
 英文名 《TCP/IP Illustrated Volume 1: The protocals》
 阅读地址 http://www.52im.net/topic-tcpipvol1.html
@@ -316,45 +316,93 @@
 	8.3 局域网输出 
 	8.4 广域网输出 
 	8.5 IP源站选路选项 
-	8.5.1 宽松的源站选路的traceroute程序示例 
-	8.5.2 严格的源站选路的traceroute程序示例 
-	8.5.3 宽松的源站选路traceroute程序的往返路由 
-	8.6 小结 
+		8.5.1 宽松的源站选路的traceroute程序示例 
+		8.5.2 严格的源站选路的traceroute程序示例 
+		8.5.3 宽松的源站选路traceroute程序的往返路由 
+	8.6 小结 											// 2019-8-22 22:00:52
 
 第9章 IP选路 
 	9.1 引言 
 	9.2 选路的原理 
-	9.2.1 简单路由表 
-	9.2.2 初始化路由表 
-	9.2.3 较复杂的路由表 
-	9.2.4 没有到达目的地的路由 
+
+		IP层进行的选路实际上是一种选路机制，它搜索路由表并决定向哪个网络接口发送分组。这区别于选路策略，它只是一组决定把哪些路由放入路由表的规则。IP执行选路机制，而路由守护程序则一般提供选路策略。
+
+		9.2.1 简单路由表 
+
+			netstat -rn
+
+		9.2.2 初始化路由表 
+
+			route add default sun 1
+			route add slip bsdi 1
+
+		9.2.3 较复杂的路由表 
+		9.2.4 没有到达目的地的路由 
+
+			如果数据报是由本地主机产生的，那么就给发送该数据报的应用程序返回一个差错，或者是“主机不可达差错”或者是“网络不可达差错”。如果是被转发的数据报，那么就给原始发送端发送一份ICMP主机不可达的差错报文。
+
 	9.3 ICMP主机与网络不可达差错 
 	9.4 转发或不转发 
 	9.5 ICMP重定向差错 
-	9.5.1 一个例子 
-	9.5.2 更多的细节 
+		9.5.1 一个例子 
+		9.5.2 更多的细节 
+
+			ICMP重定向报文的接收者必须查看三个IP地址：(1)导致重定向的IP地址（即ICMP重定向报文的数据网络重定向主机重定向位于IP数据报的首部）；(2)发送重定向报文的路由器的IP地址（包含重定向信息的IP数据报中的源地址；(3)应该采用的路由器IP地址
+
 	9.6 ICMP路由器发现报文 
-	9.6.1 路由器操作 
-	9.6.2 主机操作 
-	9.6.3 实现 
-	9.7 小结 
+		9.6.1 路由器操作 
+		9.6.2 主机操作 
+		9.6.3 实现 
+	9.7 小结 											// 2019-8-22 22:49:31
 
 第10章 动态选路协议 
 	10.1 引言 
 	10.2 动态选路 
+
+		当相邻路由器之间进行通信，以告知对方每个路由器当前所连接的网络，这时就出现了动态选路。
+
 	10.3 Unix选路守护程序 
 	10.4 RIP：选路信息协议 
-	10.4.1 报文格式 
-	10.4.2 正常运行 
-	10.4.3 度量 
-	10.4.4 问题 
-	10.4.5 举例 
-	10.4.6 另一个例子 
+		10.4.1 报文格式 
+		10.4.2 正常运行 
+		10.4.3 度量 
+		10.4.4 问题 
+		10.4.5 举例 
+		10.4.6 另一个例子 
 	10.5 RIP版本2 
 	10.6 OSPF：开放最短路径优先 
+
+		作为一种链路状态协议而不是距离向量协议，OSPF还有着一些优于RIP的特点:
+
+			1. OSPF可以对每个IP服务类型（图3-2）计算各自的路由集。这意味着对于任何目的，可以有多个路由表表项，每个表项对应着一个IP服务类型。
+
+			2. 给每个接口指派一个无维数的费用。可以通过吞吐率、往返时间、可靠性或其他性能来进行指派。可以给每个IP服务类型指派一个单独的费用。
+
+			3. 当对同一个目的地址存在着多个相同费用的路由时，OSPF在这些路由上平均分配流量。我们称之为流量平衡。
+
+			4. OSPF支持子网：子网掩码与每个通告路由相连。这样就允许将一个任何类型的IP地址分割成多个不同大小的子网（我们在3.7节中给出了这样的一个例子，称之为变长度子网）。到一个主机的路由是通过全1子网掩码进行通告的。默认路由是以IP地址为0.0.0.0、网络掩码为全0进行通告的。
+
+			5. 路由器之间的点对点链路不需要每端都有一个IP地址，我们称之为无编号网络。这样可以节省IP地址—现在非常紧缺的一种资源。
+
+			6. 采用了一种简单鉴别机制。可以采用类似于RIP-2机制（10.5节）的方法指定一个明文口令。
+
+			7. OSPF采用多播（第12章），而不是广播形式，以减少不参与OSPF的系统负载。随着大部分厂商支持OSPF，在很多网络中OSPF将逐步取代RIP。
+
 	10.7 BGP：边界网关协议 
+
+		BGP是一种不同自治系统的路由器之间进行通信的外部网关协议。
+
+		自治系统分为以下几种类型：
+
+			1. 残桩自治系统(stub AS)，它与其他自治系统只有单个连接。stub AS只有本地流量。
+
+			2. 多接口自治系统(multihomed AS)，它与其他自治系统有多个连接，但拒绝传送通过流量。
+
+			3. 转送自治系统(transit AS)，它与其他自治系统有多个连接，在一些策略准则之下，它可以传送本地流量和通过流量。
+
 	10.8 CIDR：无类型域间选路 
-	10.9 小结 
+
+	10.9 小结 										// 2019-8-22 23:50:04
 
 第11章 UDP：用户数据报协议 
 	11.1 引言 
@@ -687,21 +735,26 @@
 	API (Application Program Interface): 应用程序接口
 	ARP (Address Resolution Portocal): 地址解析协议
 	BSD (Berkeley Software Distribution): 伯克利软件发行
+	BGP (Border Gateway Protocol): 边界网关协议
 	CD (Collision Detection): 碰撞侦测
+	CIDR (Classless Inter-Domain Routing): 无类域内路由选择
 	CRC (Cyclic Redundancy Check) 循环冗余码校验
 	CSLIP (Compressed Serial Line Internet Protocol): 压缩串行线路网际协议 
 	CSMA (Carrier Sense Multiple Access): 载波侦听多路访问
 	DCE (Distributed Computing Environment): 分布式计算环境
 	DNS (Domain Name System): 域名服务器
 	DSAP (Destination Service Access Point) 目的服务访问点
+	EGP (Exterior Gateway Protocol): 外部网关协议
 	FDDI (Fiber Distributed Data Interface) 光纤分布式数据接口
 	FTP (File Transfer Protocal): 文件传输协议
 	IAB (Internet Architecture Board): 互联网架构委员会
 	IANA (Internet Assigned Numbers Authority): 互联网地址编码分配机构
 	ICMP (Internet Control Messages Protocal): 互联网控制报文协议
+	IDRP (InterDomain Routing Protocol): 域间路由协议
 	IEEE (Institute of Electrical and Electronic Engineers): 电气与电子工程师协会
 	IETF (Internet Engineering Task Force): 互联网工程任务组
 	IGMP (Internet Group Messages Protocal): 互联网组管理协议
+	IGP (Interior Gateway Protocol): 内部网关协仪
 	IP (Internet Protocla): 互联网协议
 	IRTF (Internet Research Task Force): 互联网研究专门工作组
 	ISOC (Internet Society): 互联网协会
@@ -714,9 +767,11 @@
 	NTP (Network Time Protocol): 网路时间协定
 	NNTP (Network News Transfer Protocol): 网络新闻传输协议
 	OSF (Open Software Foundation): 开放软体基金会
+	OSPF (Open Shortest Path First Interior Gateway Protocol): 开放式最短路径优先的内部网关协议
 	PPP (Point to Point Protocals): 点对点协议
 	RARP (Reverse Address Resolution Portocal): 反向地址解析协议
 	RFC (Request For Comment): 请求注解
+	RIP (Routing Information Protocol): 选路信息协议
 	SLIP (Serial Line Internet Protocol): 串行线路接口协议
 	SMTP (Simple Message Transfer Protocal): 简单邮件传输协议
 	SNAP (Sub-network Access Protocol): 子网接入协议
