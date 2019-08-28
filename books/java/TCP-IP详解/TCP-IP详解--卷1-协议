@@ -439,7 +439,7 @@
 	12.4.1 多播组地址 
 	12.4.2 多播组地址到以太网地址的转换 
 	12.4.3 FDDI和令牌环网络中的多播 
-	12.5 小结 
+	12.5 小结 										// 2019-8-28 20:39:33
 
 第13章 IGMP：Internet组管理协议 
 	13.1 引言 
@@ -778,6 +778,7 @@
 	SNMP (Simple Network Management Protocal): 简单网络管理协议
 	SSAP (Source Service Access Point): 源服务访问点
 	TCP (Transmmission Control Protocol): 传输控制协议
+	TELNET (Telecommunication Network Protocol): 电信网络协议
 	TFTP (Trivial File Transfer Portocal): 简单文件传输协议
 	TLI (Transport Layer Interface): 传输层接口
 	TTL (Time To Live): 存活时间
