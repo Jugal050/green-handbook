@@ -298,21 +298,42 @@
 
 		5.4 本章小结
 
-第三部分	虚拟机执行子系统
+第三部分	虚拟机执行子系统								// done 2019-9-16 23:35:11
 
 	第6章 类文件结构
 
-		6.1 概述
+		6.1 概述										// done 2019-9-16 21:26:04
 
-		6.2 无关性的基石
+		6.2 无关性的基石								// done 2019-9-16 21:26:10
 		
-		6.3 class类文件的结构
+		6.3 class类文件的结构							// done 2019-9-16 23:00:30
+
+			ClassFile {
+			    u4             magic;
+			    u2             minor_version;
+			    u2             major_version;
+			    u2             constant_pool_count;
+			    cp_info        constant_pool[constant_pool_count-1];
+			    u2             access_flags;
+			    u2             this_class;
+			    u2             super_class;
+			    u2             interfaces_count;
+			    u2             interfaces[interfaces_count];
+			    u2             fields_count;
+			    field_info     fields[fields_count];
+			    u2             methods_count;
+			    method_info    methods[methods_count];
+			    u2             attributes_count;
+			    attribute_info attributes[attributes_count];
+			}		
 
 			6.3.1 魔数与calss文件的版本
 
 			6.3.2 常量池
 
 			6.3.3 访问标识
+
+				javap -verbose TestClass
 
 			6.3.4 类索引、父类索引和接口索引集合
 
@@ -322,7 +343,7 @@
 
 			6.3.7 属性表集合
 
-		6.4 字节码指令简介
+		6.4 字节码指令简介									// done 2019-9-16 23:32:12
 
 			6.4.1 字节码和数据类型
 
@@ -344,11 +365,11 @@
 
 			6.4.10 同步指令
 
-		6.5 公有设计和私有实现
+		6.5 公有设计和私有实现								// done 2019-9-16 23:33:48
 
-		6.6 class文件结构的发展
+		6.6 class文件结构的发展								// done 2019-9-16 23:34:56
 
-		6.7 本章小结
+		6.7 本章小结											// done 2019-9-16 23:35:03
 
 	第7章 虚拟机类加载机制
 
