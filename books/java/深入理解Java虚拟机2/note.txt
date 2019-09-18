@@ -379,15 +379,61 @@
 
 		7.2 类加载的时机
 
+			类从被加载到虚拟机内存中开始，到卸载出内存为止，整个生命周期包括：
+
+				加载Loading、验证Verification、准备Preparation、解析Resolution、初始化Initialization、使用Using、卸载Unloading七个阶段。
+
+			虚拟机规范严格规定了有且只有5种情况必须立即对类进行“初始化”：
+
+				1. 遇到new、getstatic、putstatic和invokestatic这4个字节码指令，如果类没有进行初始化，则需要先触发初始化。
+
+				2. 使用java.lang.reflect包的方法对类进行反射调用的时候，如果类没有进行过初始化，则需要先触发初始化。
+
+				3. 当初始化一个类的时候，如果发现其父类还没进行过初始化，则需要先触发其父类的初始化。
+
+				4. 当虚拟机启动时，用户需要指定一个要执行的主类（包含main()方法的那个类），虚拟机会先初始化这个主类。
+
+				5. 当时用jdk1.7的动态语言支持时，如果一个java.lang.invoke.MethodHandle实例最后的解析结果REF_getStatic、REF_putStatic、REF_invokeStatic的方法句柄，
+				并且这个方法句柄所对应的类没有进行过初始化，则需要先触发初始化。
+
 		7.3 类加载的过程
 
 			7.3.1 加载
 
+				在加载阶段，虚拟机需要完成以下3件事情：
+
+					1. 通过一个类的全限定名来获取定义此类的二进制字节流
+
+					2. 将这个字节流所代表的静态存储结构转换为方法区的运行时数据结构
+
+					3. 在内存中生成一个代表这个类的java.lang.Class对象，作为方法区这个类的各种数据的访问入口。
+
+				一个非数组类的加载阶段，既可以使用系统提供的引导类加载器来完成，也可以使用用户自定义的类加载器去完成。
+
+				对于数组类而言，情况有所不同，数组类本身不通过类加载器创建，它是由Java虚拟机直接创建的。
+				一个数组类创建过程遵循以下规则：
+
+					1. 如果数组的组件类型（Component Type）是引用类型，那就递归采用本节中定义的加载过程去加载这个组件类型，数组C将在加载该组件类型的类加载器的类名称空间上被标识。
+
+					2. 如果数组的组件类型不是引用类型（例如int[]），Java虚拟机将会把数组C标记为与引导类加载器关联。
+
+					3. 数组类的可见性与它的组件类型的可见性一致，如果组件类型不是引用类型，那么数组的可见性将默认为public。
+
 			7.3.2 验证
+
+				验证阶段大致会完成下面4个阶段的校验动作：文件格式验证、元数据验证、字节码验证、符号引用验证
 
 			7.3.3 准备
 
+				正式为类变量分配内存并设置类变量初始值的阶段，这些变量所使用的内存都将在方法区进行分配。
+
 			7.3.4 解析
+
+				虚拟机将常量池内的符号引用替换为直接引用的过程。
+
+					符号引用： 以一组符号来描述所引用的目标，符号可以是任何形式的字面量，只要使用时能无歧义地定位到目标即可。
+
+					直接引用： 可以是直接指向目标的指针、相对偏移量或是一个能间接定位到目标的句柄。
 
 			7.3.5 初始化
 
@@ -395,7 +441,90 @@
 
 			7.4.1 类与类加载器
 
+				对于任意一个类，都需要由加载它的类加载器和这个类本身一同确立其在Java虚拟机中的唯一性，每一个类加载器，都拥有一个独立的类空间名称。
+
 			7.4.2 双亲委派模型
+
+				从Java虚拟机的角度来讲，存在两种不同的类加载器：
+
+					1. 启动类加载器（Bootstrap ClassLoader），使用C++实现，是虚拟机自身的一部分。
+					2. 所有其他的加载器，这些类加载器都有Java实现，独立于虚拟机外部，并且全部继承自抽象类java.lang.ClassLoader。
+
+				从Java开发人员的角度来看，绝大部分程序都会使用以下3种系统提供的类加载器：
+				
+					1. 启动类加载器（Bootstrap ClassLoader）: 
+							由C++语言实现，是虚拟机自身的一部分，
+							负责将存放在%JAVA_HOME%\lib目录中的，或者被-Xbootclasspath参数所指定的路径中的，并且是被虚拟机识别的类库加载到虚拟机内存中，
+							无法被Java程序直接引用，用户在编写自定义类加载器时，如果需要把加载请求委派给引导类加载器，那直接使用null代替即可。
+							e.g:
+							    public ClassLoader getClassLoader() {
+							        ClassLoader cl = getClassLoader0();
+							        if (cl == null)
+							            return null;
+							        SecurityManager sm = System.getSecurityManager();
+							        if (sm != null) {
+							            ClassLoader.checkClassLoaderPermission(cl, Reflection.getCallerClass());
+							        }
+							        return cl;
+							    }
+
+					2. 扩展类加载器（Extension ClassLoader）: 
+							由sun.misc.Launcher$ExtClassLoader实现，
+							负责加载%JAVA_HOME%/lib/ext目录中的，或者被java.ext.dirs系统变量所指定的路径中的所有类库，
+							开发者可以直接使用。
+
+					3. 应用程序类加载器（Application ClassLoader）: 
+							由sun.misc.Launcher$AppClassLoader实现，是ClassLoader.getSystemClassLoader()的返回值，一般也称为系统类加载器，
+							负责加载用户类路径（ClassPath）上所指定的类库，
+							开发者可以直接使用，如果应用程序没有自定义过自己的加载器，一般情况下这个就是程序中默认的类加载器。
+
+				双亲委派模型：
+
+					要求： 除了顶层的启动类加载器，其余的类加载器都应当由自己的父类加载器。
+
+					工作过程： 如果一个类加载器收到了类加载的请求，它首先不会自己去尝试加载这个类，而是把这个请求委派给父类加载器去完成，每一个层次的类加载器都是如此，
+						因此所有的记载请求都应该传送到顶层的启动类加载器中，只有当父类加载器反馈自己无法完成这个加载请求（它的搜索范围中没有找到要加载的类），子类加载器
+						才会尝试去加载。
+
+					实现：
+						protected Class<?> loadClass(String name, boolean resolve)
+					        throws ClassNotFoundException
+					    {
+					        synchronized (getClassLoadingLock(name)) {
+					            // First, check if the class has already been loaded
+					            Class<?> c = findLoadedClass(name);
+					            if (c == null) {
+					                long t0 = System.nanoTime();
+					                try {
+					                    if (parent != null) {
+					                        c = parent.loadClass(name, false);
+					                    } else {
+					                        c = findBootstrapClassOrNull(name);
+					                    }
+					                } catch (ClassNotFoundException e) {
+					                    // ClassNotFoundException thrown if class not found
+					                    // from the non-null parent class loader
+					                }
+
+					                if (c == null) {
+					                    // If still not found, then invoke findClass in order
+					                    // to find the class.
+					                    long t1 = System.nanoTime();
+					                    c = findClass(name);
+
+					                    // this is the defining class loader; record the stats
+					                    sun.misc.PerfCounter.getParentDelegationTime().addTime(t1 - t0);
+					                    sun.misc.PerfCounter.getFindClassTime().addElapsedTimeFrom(t1);
+					                    sun.misc.PerfCounter.getFindClasses().increment();
+					                }
+					            }
+					            if (resolve) {
+					                resolveClass(c);
+					            }
+					            return c;
+					        }
+					    }	
+
 
 			7.4.3 破坏双亲委派模型 
 
