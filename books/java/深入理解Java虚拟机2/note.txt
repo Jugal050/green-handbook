@@ -556,9 +556,195 @@
 
 			8.3.1 解析
 
+				Java虚拟机里面提供了5条调用字节码指令：
+
+					1. invokestatic: 调用静态方法
+					2. invokespecial: 调用实例构造器<init>方法、私有方法和父类方法
+					3. invokevirtual: 调用所有的虚方法
+					4. invokeinterface: 调用接口方法，会在运行时再确定一个实现此接口的对象
+					5. invokedynamic: 现在运行时动态解析出调用点限定符所引用的方法，然后再执行该方法。
+
+					非虚方法：静态方法、私有方法、实例构造器、父类方法
+					虚方法：	除了非虚方法和final方法。
+
 			8.3.2 分派
 
+				1. 静态分派：依赖静态类型来定位方法执行版本的分派动作。典型应用是方法重载。
+
+						public class StaticDispatch {
+
+							static abstract class Human{}
+
+							static class Man extends Human {}
+
+							static class Woman extends Human {}
+
+							public void sayHello(Human guy) {
+								System.out.println("hello, guy");
+							}
+
+							public void sayHello(Man man) {
+								System.out.println("hello, man");
+							}
+
+							public void sayHello(Woman woman) {
+								System.out.println("hello, woman");
+							}
+
+							public static void main(String[] args) {
+								// Human:变量的静态类型 Man:变量的实际类型
+								// 虚拟机（编译器）在重载时是通过参数的静态类型而不是实际类型作为判断依据的。
+								// 在编译阶段，Javac编译器会根据参数的静态类型决定使用哪个重载版本
+								Human man = new Man();
+								Human woman = new Woman();
+								StaticDispatch staticDispatch = new StaticDispatch();
+								staticDispatch.sayHello(man);
+								staticDispatch.sayHello(woman);
+							}
+
+						}
+
+				2. 动态分派：运行期根据实际类型确定方法执行版本的分派过程。典型应用是方法重写。
+
+						public class DynamicDispatch {
+
+							static abstract class Human {
+								protected abstract void sayHello();
+							}
+
+							static class Man extends Human {
+								@Override
+								protected void sayHello() {
+									System.out.println("man say hello");
+								}
+							}
+
+							static class Woman extends Human {
+								@Override
+								protected void sayHello() {
+									System.out.println("woman say hello");
+								}
+							}
+
+							public static void main(String[] args) {
+								Human man = new Man();
+								Human woman = new Woman();
+								man.sayHello();
+								woman.sayHello();
+								man = new Woman();
+								man.sayHello();
+							}
+
+						}
+
+				3. 单分派和多分派：
+
+					宗量：方法的接收者和方法的参数的统称。
+
+					单分派：根据一个宗量对目标方法进行选择。
+
+					多分派：根据多于一个宗量对目标方法进行选择。
+
+						public class Dispatch {
+
+							static class QQ {}
+
+							static class _360 {}
+
+							public static class Father {
+								public void hardChoice(QQ arg) {
+									System.out.println("father choose QQ");
+								}
+
+								public void hardChoice(_360 arg) {
+									System.out.println("father choose 360");
+								}
+							}
+
+							public static class Son extends Father {
+								public void hardChoice(QQ arg) {
+									System.out.println("son choose QQ");
+								}
+
+								public void hardChoice(_360 arg) {
+									System.out.println("son choose 360");
+								}
+							}
+
+							public static void main(String[] args) {
+								Father father = new Father();
+								Father son = new Son();
+								father.hardChoice(new _360());
+								son.hardChoice(new QQ());
+							}
+
+						}
+
+				4. 虚拟机动态分派的实现		
+
 			8.3.3 动态类语言支持
+
+				1. 动态类型语言
+
+				2. JDK1.7与动态类型
+
+				3. java.lang.invoke包
+
+					public class MethodHandleTest {
+
+						static class ClassA {
+							public void println(String s) {
+								System.out.println(s + " from classA");
+							}
+						}
+
+						public static void main(String[] args) throws Throwable {
+							Object obj = System.currentTimeMillis() % 2 == 0 ? System.out : new ClassA();
+							getPrintInMH(obj).invokeExact("hello world");
+						}
+
+						private static MethodHandle getPrintInMH(Object reveiver) throws Throwable {
+							MethodType methodType = MethodType.methodType(void.class, String.class);
+							return MethodHandles.lookup() // 在指定类中查找符合给定的方法名称、方法类型、并且符合调用权限的方法句柄
+									.findVirtual(reveiver.getClass(), "println", methodType)
+									.bindTo(reveiver);
+						}
+
+					}
+
+				4. invokedynamic指令
+				
+					public class InvokeDynamicTest {
+
+						public static void main(String[] args) throws Throwable {
+							INDY_BootstrapMethod().invokeExact("binvi han");
+						}
+
+						public static void testMethod(String s) {
+							System.out.println("hello String: " + s);
+						}
+
+						public static CallSite BootstrapMethod(MethodHandles.Lookup lookup, String name, MethodType mt) throws Throwable {
+							return new ConstantCallSite(lookup.findStatic(InvokeDynamicTest.class, name, mt));
+						}
+
+						private static MethodType MT_BootstrapMethod() {
+							return MethodType.fromMethodDescriptorString("(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;", null);
+						}
+
+						private static MethodHandle MH_BootstrapMethod() throws Throwable {
+							return lookup().findStatic(InvokeDynamicTest.class, "BootstrapMethod", MT_BootstrapMethod());
+						}
+
+						private static MethodHandle INDY_BootstrapMethod() throws Throwable {
+							CallSite callSite = (CallSite) MH_BootstrapMethod().invokeWithArguments(lookup(), "testMethod", MethodType.fromMethodDescriptorString("(Ljava/lang/String;)V", null));
+							return callSite.dynamicInvoker();
+						}
+
+					}	
+
+				5. 掌控方法分派规则	
+
 
 		8.4 基于栈的字节码解释执行引擎							// done 2019-9-18 23:41:10						
 
