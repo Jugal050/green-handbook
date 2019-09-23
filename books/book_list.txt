@@ -1,0 +1,29 @@
+《JavaScript DOM编程艺术 2rd》										// done 2017
+
+《Java语言程序设计 -- 基础篇》										// done 2017
+
+《锋利的JQuery》													// done 2017
+
+《JavaScript高级程序设计 3rd》										// done 2017
+
+《Maven权威置南》													// done 2019
+
+《SpringBoot + Vue全栈开发实战》									// done 2019
+
+《Java并发编程的艺术》												// done 2019
+
+《Struts2+技术内幕————深入解析struts2架构设计与实现原理》				// done 2019
+
+《深入理解Java虚拟机：JVM高级特性与最佳实践》							// done start：2019-8-4 10:33:54 end 2019-9-22 17:03:38
+
+《Redis实战》														// done start：2019-8-6 22:33:23 end 2019-8-20 00:20:00
+
+《TCP/IP详解：卷1》												// doing start: 2019-8-20 16:43:51 now：chapter13 2019-8-28 20:58:41 TODO
+
+	http://docs.52im.net/extend/docs/book/tcpip/vol1/1/
+
+《Effective Java 3rd》												// done start: 2019-8-28 20:59:58 end: 2019-9-8 14:25:18
+
+《How Tomcat Works》												// doing start: 2019-9-23 18:22:45
+
+
