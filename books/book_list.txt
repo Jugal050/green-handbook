@@ -7,6 +7,8 @@ done：
 	《锋利的JQuery》													// done 2017
 
 	《JavaScript高级程序设计 3rd》										// done 2017
+	
+	《加密的艺术》														// done 2018
 
 	《Maven权威置南》													// done 2019
 
