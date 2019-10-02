@@ -7,6 +7,8 @@ done：
 	《锋利的JQuery》													// done 2017
 
 	《JavaScript高级程序设计 3rd》										// done 2017
+
+	《Thinking in Java》 												// done 2018
 	
 	《加密的艺术》														// done 2018
 
@@ -30,13 +32,24 @@ doing：
 
 		http://docs.52im.net/extend/docs/book/tcpip/vol1/1/
 
+	《Core Java Volume I--Fundamentals》								// doing start: 
 
-	《How Tomcat Works》												// doing start: 2019-9-23 18:22:45
+	《How Tomcat Works》												// doing start: 2019-9-23 18:22:45 now: chapter3 2019-10-2 10:41:46
+
+	简历 + 面试题...													// doing start: 2019-10-2 10:41:35
 
 todo:
 
 	《Spring揭秘》
 
 	《重构——改善既有代码的设计》
+
+	《Java 8 in Action》
+
+	《Java Concurrency in Practice | Java并发编程实战》
+
+	《Java Puzzlers | Java解惑》
+
+	《Core Java, Volume II--Advanced Features》
 
 
