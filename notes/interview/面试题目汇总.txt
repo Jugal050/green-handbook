@@ -1,3 +1,236 @@
 面试题目汇总：
 	
-	
+	目录：
+
+		一、https://github.com/0voice/interview_internal_reference
+
+
+
+
+
+一、https://github.com/0voice/interview_internal_reference
+
+	简要说明： 2019年最新总结，阿里，腾讯，百度，美团，头条等技术面试题目，以及答案，专家出题人分析汇总。 
+
+	1.阿里篇：
+
+		1.1.1 如何实现一个高效的单向链表逆序输出？				// done 2019-10-2 15:50:38
+
+			public class ReverseSingleLinkedList {
+
+				private void reverse(Node head) {
+					if (head == null || head.next == null) {
+						return;
+					}
+					Node prev = null;
+					Node curr = head.next;
+					Node next;
+					while (curr != null) {
+						if (curr.next == null) {
+							curr.next = prev;
+							break;
+						}
+						next = curr.next;
+						curr.next = prev;
+						prev = curr;
+						curr = next;
+					}
+					head.next = curr;
+					Node tmp = head.next;
+					while (tmp != null) {
+						Object item = tmp.item;
+						tmp = tmp.next;
+					}
+				}
+
+				static class Node<E> {
+					E item;
+					Node<E> next;
+					Node(E item) {
+						this.item = item;
+					}
+				}
+
+			}
+
+		1.1.2 已知sqrt(2)约等于1.414，要求不用数学库，求sqrt(2)精确到小数点后10位			// done 2019-10-2 17:32:00
+
+			public class SqrtPrecisionTest {
+
+				double EPSILON = 0.0000000001;
+
+				/**
+				 * 二分查找法
+				 * @return
+				 */
+				public double calculateSqrtTwoWithDouble() {
+					double low = 1.4, high = 1.5;
+					double mid = (low + high) / 2;
+					while (high - mid > EPSILON) {
+						if (mid * mid > 2) {
+							high = mid;
+						} else {
+							low = mid;
+						}
+						mid = (low + high) / 2;
+					}
+					return mid;
+				}
+
+				/**
+				 * 牛顿迭代法
+				 * @param c
+				 * @return
+				 */
+				private double sqrtWithNewton(double c) {
+					if ( c < 0 ) {
+						return Double.NaN;
+					}
+					double e = 1e-10;
+					double x = c;
+					double y = (x + c / x) / 2;
+					while (Math.abs(x - y) > e) {
+						x = y;
+						y = (x + c / x) / 2;
+					}
+					return x;
+				}
+
+			}
+
+		1.1.3 给定一个二叉搜索树(BST)，找到树中第 K 小的节点		// done 2019-10-2 17:59:54
+
+			public class FindKthSmallestNodeInBST {
+
+				private ResultType find(TreeNode root, int K) {
+					if (root == null) {
+						return new ResultType(false, 0);
+					}
+					ResultType left = find(root.left, K);
+					if (left.found) {
+						return new ResultType(true, left.val);
+					}
+					if (left.val == K - 1) {
+						return new ResultType(true, root.val);
+					}
+					ResultType right = find(root.right, K - left.val - 1);
+					if (right.found) {
+						return new ResultType(true, right.val);
+					}
+					return new ResultType(false, left.val + 1 + right.val);
+				}
+
+				private class TreeNode {
+					int val;
+					TreeNode left;
+					TreeNode right;
+					TreeNode (int val) {
+						this.val = val;
+					}
+				}
+
+				private class ResultType {
+					boolean found; // 是否找到
+					int val; // 节点数量
+					ResultType(boolean found, int val) {
+						this.found = found;
+						this.val = val;
+					}
+				}
+
+			}
+
+		1.1.4 LRU缓存机制						// done 2019-10-2 18:42:51
+		
+			/**
+			 * @author binvi
+			 * @version 1.0
+			 * @Description: LRU缓存机制
+			 *      需要实现以下
+			 *      1.维护一个双向链表，还有他的头结点和尾结点
+			 *      2.插入数据时，首先判断cache中是否有该结点？如果没有，检查缓存是否还有空间？如果没有空间，清除双线链表的尾部结点。将该结点插入到双向链表的头部
+			 *      3.根据key获得数据的时候，查看cache中是否有key对应的结点？如果有，将该结点插入到头结点前面，返回数据：：如果没有，返回-1。
+			 *
+			 * @date 2019/10/2 18:23
+			 */
+			public class LRUCache {
+
+				private int capacity;
+				private LinkNode first;
+				private LinkNode last;
+				private HashMap<Integer, LinkNode> cache;
+
+				public LRUCache(int capacity) {
+					this.capacity = capacity;
+					this.cache = new HashMap<>(capacity);
+				}
+
+				public int get(int key) {
+					LinkNode node = cache.get(key);
+					if (node == null) {
+						return -1;
+					}
+					moveNodeToFirst(node);
+					return node.val;
+				}
+
+				public void put(int key, int value) {
+					LinkNode node = cache.get(key);
+					if (node == null) {
+						if (cache.size() >= capacity) {
+							removeLastNode();
+						}
+						node = new LinkNode();
+						node.key = key;
+					}
+					node.val = value;
+					moveNodeToFirst(node);
+					cache.put(key, node);
+				}
+
+				private void removeLastNode() {
+					LinkNode node = last;
+					last = last.prev;
+					if (last != null) {
+						last.next = null;
+					} else {
+						first = last = null;
+					}
+					cache.remove(node.key);
+				}
+
+				private void moveNodeToFirst(LinkNode node) {
+					if (first == null) {
+						return;
+					}
+					if (node.prev != null) {
+						node.prev.next = node.next;
+					}
+					if (node.next != null) {
+						node.next.prev = node.prev;
+					}
+					if (node == last) {
+						last = last.prev;
+					}
+					if (last == null) {
+						last = first = node;
+						return;
+					}
+					node.next = first;
+					first.prev = node;
+					node.prev = null;
+					first = node;
+				}
+
+				class LinkNode {
+					LinkNode prev;
+					LinkNode next;
+					int key;
+					int val;
+				}
+
+			}	
+
+
+
+
