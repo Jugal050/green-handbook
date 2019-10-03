@@ -231,6 +231,124 @@
 
 			}	
 
+		1.1.5 关于epoll和select的区别，以下哪些说法是正确的	 		// done 2019-10-3 11:34:05
+
+				A. epoll 和 select 都是 I/O 多路复用的技术，都可以实现同时监听多个 I/O 事件的状态。
+				B. epoll 相比 select 效率更高，主要是基于其操作系统支持的I/O事件通知机制，而 select 是基于轮询机制。
+				C. epoll 支持水平触发和边沿触发两种模式。
+				D. select 能并行支持 I/O 比较小，且无法修改。	
+
+				答案：A B C
+
+			在Linux Socket服务器短编程时，为了处理大量客户的连接请求，需要使用非阻塞I/O和复用，select、poll和epoll是Linux API提供的I/O复用方式
+
+			一.select
+        		
+        		下面是select的函数接口：
+				
+				C代码  
+					int select (int n, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struct timeval *timeout);  
+        		
+        		select 函数监视的文件描述符分3类，分别是writefds、readfds、和exceptfds。调用后select函数会阻塞，直到有描述副就绪（有数据 可读、可写、或者有except），或者超时（timeout指定等待时间，如果立即返回设为null即可），函数返回。当select函数返回后，可以 通过遍历fdset，来找到就绪的描述符。
+        		
+        		select目前几乎在所有的平台上支持，其良好跨平台支持也是它的一个优点。select的一 个缺点在于单个进程能够监视的文件描述符的数量存在最大限制，在Linux上一般为1024，可以通过修改宏定义甚至重新编译内核的方式提升这一限制，但 是这样也会造成效率的降低。
+			
+			二.poll
+				
+				C代码  
+					int poll (struct pollfd *fds, unsigned int nfds, int timeout);  
+        		
+        		不同与select使用三个位图来表示三个fdset的方式，poll使用一个 pollfd的指针实现。
+				
+				C代码  
+					struct pollfd {  
+					int fd; /* file descriptor */  
+					short events; /* requested events to watch */  
+					short revents; /* returned events witnessed */  
+					};  
+        			
+        			pollfd结构包含了要监视的event和发生的event，不再使用select“参数-值”传递的方式。同时，pollfd并没有最大数量限制（但是数量过大后性能也是会下降）。 和select函数一样，poll返回后，需要轮询pollfd来获取就绪的描述符。
+        			
+        			从上面看，select和poll都需要在返回后，通过遍历文件描述符来获取已经就绪的socket。事实上，同时连接的大量客户端在一时刻可能只有很少的处于就绪状态，因此随着监视的描述符数量的增长，其效率也会线性下降。
+				三.epoll
+        			
+        			epoll的接口如下：
+					C代码  
+						int epoll_create(int size)；  
+						int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event)；  
+						            typedef union epoll_data {  
+						                void *ptr;  
+						                int fd;  
+						                __uint32_t u32;  
+						                __uint64_t u64;  
+						            } epoll_data_t;  
+						  
+						            struct epoll_event {  
+						                __uint32_t events;      /* Epoll events */  
+						                epoll_data_t data;      /* User data variable */  
+						            };  
+  
+						int epoll_wait(int epfd, struct epoll_event * events, int maxevents, int timeout);  
+
+        			主要是epoll_create,epoll_ctl和epoll_wait三个函数。epoll_create函数创建epoll文件描述符，参数size并不是限制了epoll所能监听的描述符最大个数，只是对内核初始分配内部数据结构的一个建议。返回是epoll描述符。-1表示创建失败。epoll_ctl 控制对指定描述符fd执行op操作，event是与fd关联的监听事件。op操作有三种：添加EPOLL_CTL_ADD，删除EPOLL_CTL_DEL，修改EPOLL_CTL_MOD。分别添加、删除和修改对fd的监听事件。epoll_wait 等待epfd上的io事件，最多返回maxevents个事件。
+
+        			在 select/poll中，进程只有在调用一定的方法后，内核才对所有监视的文件描述符进行扫描，而epoll事先通过epoll_ctl()来注册一 个文件描述符，一旦基于某个文件描述符就绪时，内核会采用类似callback的回调机制，迅速激活这个文件描述符，当进程调用epoll_wait() 时便得到通知。
+
+				四.epoll的优点主要是一下几个方面
+        		
+        			1. 监视的描述符数量不受限制，它所支持的FD上限是最大可以打开文件的数目，这个数字一般远大于2048,举个例子,在1GB内存的机器上大约是10万左 右，具体数目可以cat /proc/sys/fs/file-max察看,一般来说这个数目和系统内存关系很大。select的最大缺点就是进程打开的fd是有数量限制的。这对 于连接数量比较大的服务器来说根本不能满足。虽然也可以选择多进程的解决方案( Apache就是这样实现的)，不过虽然linux上面创建进程的代价比较小，但仍旧是不可忽视的，加上进程间数据同步远比不上线程间同步的高效，所以也 不是一种完美的方案。
+
+        			2. IO的效率不会随着监视fd的数量的增长而下降。epoll不同于select和poll轮询的方式，而是通过每个fd定义的回调函数来实现的。只有就绪的fd才会执行回调函数。
+
+        			3.支持电平触发和边沿触发（只告诉进程哪些文件描述符刚刚变为就绪状态，它只说一遍，如果我们没有采取行动，那么它将不会再次告知，这种方式称为边缘触发）两种方式，理论上边缘触发的性能要更高一些，但是代码实现相当复杂。
+
+        			4.mmap加速内核与用户空间的信息传递。epoll是通过内核于用户空间mmap同一块内存，避免了无畏的内存拷贝。
+
+		1.1.6 从innodb的索引结构分析，为什么索引的 key 长度不能太长			// done 2019-10-3 12:30:27
+
+			key 太长会导致一个页当中能够存放的 key 的数目变少，间接导致索引树的页数目变多，索引层次增加，从而影响整体查询变更的效率。
+
+			InnoDB索引原理:
+
+				索引实现:
+					MyISAM索引文件和数据文件是分离的，索引文件仅保存数据记录的地址。而在InnoDB中，表数据文件本身就是按B+Tree组织的一个索引结构，这棵树的叶节点data域保存了完整的数据记录。这个索引的key是数据表的主键，因此InnoDB表数据文件本身就是主索引。
+
+				索引类别区分:
+					索引节点按照层级关系，有时又可以分为根节点和中间节点，其本质是一样的，都只包含下一层节点的入口值和入口指针；
+					叶子节点就不同了，它包含数据，这个数据可能是表中真实的数据行(聚集索引)，也有可能是索引列值和行书签(辅助索引)	
+
+					聚集索引：
+						按照每张表的主键构造一棵B+树，树中的叶子节点存放着表中的行记录数据，因此，也将聚集索引的叶子节点称为数据页；非叶子节点中存放着仅仅是键值和指向叶子节点的偏移量。每个叶子节点（数据页）都通过一个双向链表进行连接。 
+						由于实际的数据页只能按照一棵B+树进行排序，因此数据库中每张表只能有一个聚集索引。 
+						聚集索引能够特别快的访问针对范围值的查询。	
+
+						聚集索引的好处： 
+							一、对于主键的排序查找非常的快（因为其叶子节点是用双向链表链接的） 
+							二、对于主键的范围查找非常的快（因为通过叶子节点的上层中间节点，就可以得到叶结点的范围值）
+
+					辅助索引：
+						也是B+树结构，但其在叶子节点中并不包含行记录的全部数据。除了包含键的值（建立辅助索引的列中的值）外，还包含了一个书签，这个书签用来告诉InnoDB引擎从哪里可以找到与索引相对应的行数据。由于InnoDB引擎是索引组织表，因此，这个书签就是相应的行数据的聚集索引键。 
+						因为辅助索引不会对影响数据在聚集索引中的组织，所以可以有多个。
+
+
+
+				两点需要注意的:
+					不建议使用过长的字段作为主键，因为所有辅助索引都引用主索引，过长的主索引会令辅助索引变得过大。
+					由于B+Tree的特性,使用自增字段作为主键则是一个很好的选择。	
+
+				MyISAM与InnoDB索引比较:
+					MyISAM的索引文件, 叶节点的data域存放的是数据记录的地址。
+
+					MyISAM主索引和辅助索引（Secondary key）在结构上没有任何区别，只是主索引要求key是唯一的，而辅助索引的key可以重复。
+
+					而在InnoDB中，表数据文件本身就是按B+Tree组织的一个索引结构，这棵树的叶节点data域保存了完整的数据记录。这个索引的key是数据表的主键，因此InnoDB表数据文件本身就是主索引。
+
+					InnoDB的辅助索引data域存储相应记录主键的值而不是地址。换句话说，InnoDB的所有辅助索引都引用主键作为data域。
+
+					因为InnoDB的数据文件本身要按主键聚集，所以InnoDB要求表必须有主键（MyISAM可以没有	
+
+
+
 
 
 
