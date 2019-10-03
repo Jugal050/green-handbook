@@ -347,6 +347,98 @@
 
 					因为InnoDB的数据文件本身要按主键聚集，所以InnoDB要求表必须有主键（MyISAM可以没有	
 
+		1.1.7 MySQL的数据如何恢复到任意时间点？
+		
+			恢复到任意时间点以定时的做全量备份，以及备份增量的 binlog 日志为前提。恢复到任意时间点首先将全量备份恢复之后，再此基础上回放增加的 binlog 直至指定的时间点。
+
+			以下为博客内容：https://blog.csdn.net/lvshaorong/article/details/80631133
+
+			对于有归档日志的数据库来说，原理上都具备全库回滚到之前某一时刻的能力。在这方面最好用的Orale数据库，使用Oracle数据库的RMAN工具，可以方便的设置全备，增备保留的时间和自动清理，RMAN自己记录之前做过哪些备份操作，有一份备份列表，所以可以全自动的根据全备、增备、归档日志进行回滚，只需一条命令。
+
+			mysql不同于oracle和db2这种企业级数据库，它没有oracle里面的redo日志，也没有db2里面的循环日志。mysql有类似于oracle和db2归档日志的binlog，而这个binlog可以看作是循环日志和归档日志的结合。有一定的大小限制。未完成的事务和已完成的事务都会记录在binlog中，当一个binlog写满之后，就会开启一个新的binlog。binlog还有三种方式，row，statement，mixed。其中row记录量最大，但是对于各种工具支持最好，所以对于安全要求比较高的数据库，推荐使用row格式。
+
+			同时，binlog也是mysql主从复制的依据，所以使用binlog来恢复数据库是比较可靠的。不足的就是mysql并没有内置binlog的清理工具，对于长时间的binlog我们需要去手动清理或者编写脚本清理。mysql也没有提供oracle，db2那样的增量备份方法。所以保证binlog不要丢失就比较重要。虽然手动的操作多了一些，但是这也代表着mysql的恢复更偏向于无状态的，即异地跨平台恢复会比较方便，不需要像oracle那样必须找到控制文件。
+
+			数据库恢复的过程与oracle，db2区别不大。基本都是通过先恢复全备份，再逐个恢复增量备份，再根据归档日志逐条重做事务，一直重做到你需要恢复到的日期为止。mysql由于没有增量备份，所以先恢复全备，再手动找到binlog中全备时间的那一行，从那一行往后开始执行重做事务，直到你需要的停止的那一行。
+
+			下面来介绍一下如何将mysql数据库回滚到某一时刻。大概有如下步骤
+
+				1、找一个现有的mysql数据库，先不打开binlog，插入几条数据
+
+					my.cnf配置：
+
+						#server-id              = 1
+						#log_bin                = /var/log/mysql/mysql-bin.log
+						expire_logs_days        = 10
+						max_binlog_size   = 100M
+
+				2、打开binlog，重启数据库，再插入几条数据
+
+					my.cnf配置：
+
+						server-id               = 1
+						log_bin                 = /var/log/mysql/mysql-bin.log
+						expire_logs_days        = 10
+						max_binlog_size   = 100M
+
+				3、使用mysqldump全备一次数据库
+
+					全备命令：
+						mysqldump --single-transaction --master-data=2 --triggers --routines --all-databases -uroot  -p > /backup/full.sql
+					查看一下数据库里归档日志的位置： 
+						show master status \G
+
+				4、再插入几条数据，模拟全备之后执行成功的事务，记录执行完毕的时间。
+
+				5、模拟数据库崩溃或者误删操作，然后将全备文件和binlog都拷贝到另一台服务器上进行异地恢复。
+
+					全备恢复：
+						mysql -uroot -p < /import/full.sql
+					使用mysql自带的mysqlbinlog工具，将binlog解析成sql，然后用mysql执行这段sql：		
+						mysqlbinlog --no-defaults /import/mysql/mysql-bin.000001 | mysql -uroot -p	
+					binlong指定开始行：
+						mysqlbinlog --no-defaults --start-position=740 /import/mysql/mysql-bin.000001 | mysql -uroot -p	
+					binlong指定开始行，结束时间：
+						mysqlbinlog --no-defaults --start-position=740 --stop-datetime="2018-06-09 01:11:26" /import/mysql/mysql-bin.000001 | mysql -uroot -p
+
+			如何简化日常备份：
+				mysqldump语句中加入--flush-logs这样的话会把当前没有写满的binlog停止，另起一个新的binlog来写，这样就不用在重做binlog的时候添加--start-position语句了
+
+		1.1.8 NFS 和 SMB 是最常见的两种 NAS（Network Attached Storage）协议，当把一个文件系统同时通过 NFS 和 SMB 协议共享给多个主机访问时，以下哪些说法是错误的			
+
+			A. 不可能有这样的操作，即把一个文件系统同时通过 NFS 和 SMB 协议共享给多个主机访问。 
+			B. 主机a的用户通过NFS协议创建的文件或者目录，另一个主机b 的用户不能通过SMB协议将其删除。 
+			C. 在同一个目录下，主机 a 通过 NFS 协议看到文件 file.txt，主机 b通过SMB协议也看到文件file.txt，那么它们是同一个文件。 
+			D. 主机a通过NFS协议，以及主机b通过SMB协议，都可以通过 主机端的数据缓存，提升文件访问性能。			
+					
+			参考答案：A B C
+
+		1.1.9 输入ping IP后敲回车，发包前会发生什么？ 
+
+			首先根据目的IP和路由表决定走哪个网卡，再根据网卡的子网掩码 地址判断目的IP是否在子网内。如果不在则会通过arp缓存查询IP的 网卡地址，不存在的话会通过广播询问目的IP的mac地址，得到后 就开始发包了，同时mac地址也会被arp缓存起来。 	
+
+		1.1.10 请解释下为什么鹿晗发布恋情的时候， 微博系统会崩溃，如何解决？ 	// doen 2019-10-3 17:33:42
+
+			参考思路：
+				 A. 获取微博通过pull方式还是push方式 
+				 B. 发布微博的频率要远小于阅读微博 
+				 C. 流量明星的发微博，和普通博主要区分对待，比如在 sharding 的时候，也要考虑这个因素 
+
+		1.1.11 现有一批邮件需要发送给订阅顾客，且有一个集群（集群的节点数不定，会动态扩容缩容）来 负责具体的邮件发送任务，如何让系统尽快地完成发送？ 请详述技术方案！ 
+
+			参考答案 
+				A. 借助消息中间件，通过发布者订阅者模式来进行任务分配 
+				B. master-slave部署，由master来分配任务 
+				C. 不借助任何中间件，且所有节点均等。通过数据库的 update returning，从而实现节点之间任务的互斥
+
+		1.1.12 有一批气象观测站，现需要获取这些 站点的观测数据，并存储到 Hive 中。但是气象局只提 供了 api 查询，每次只能查询单个观测点。那么如果能 够方便快速地获取到所有的观测点的数据？ 
+		
+			参考答案 
+				A. 通过shell或python等调用api，结果先暂存本地，最后将本地 文件上传到Hive中。 
+				B. 通过 datax 的 httpReader 和 hdfsWriter 插件，从而获取所需 的数据。 
+				C. 比较理想的回答，是在计算引擎的 UDF 中调用查询 api，执行 UDF 的查询结果存储到对应的表中。
+					一方面，不需要同步任务的导出导入；另一方面，计算引擎的分布式框架天生提供了分布式、容错、并发等特性
+
 
 
 
