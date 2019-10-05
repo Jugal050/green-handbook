@@ -38,6 +38,8 @@ doing：
 
 	简历 + 面试题...													// doing start: 2019-10-2 10:41:35
 
+	《数据库系统概念》													// doing start: 2019-10-5 10:00:46
+
 todo:
 
 	《Spring揭秘》
