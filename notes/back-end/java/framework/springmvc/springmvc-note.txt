@@ -1,0 +1,49 @@
+SpringMVC相关
+
+	概述:
+		Spring MVC是Spring提供的一个强大而灵活的web框架。
+
+		Spring MVC主要由DispatcherServlet、处理器映射、处理器(控制器)、视图解析器、视图组成。
+
+	工作原理:
+
+		(1) Http请求：客户端请求提交到DispatcherServlet。 
+		(2) 寻找处理器：由DispatcherServlet控制器查询一个或多个HandlerMapping，找到处理请求的Controller。 
+		(3) 调用处理器：DispatcherServlet将请求提交到Controller。 
+		(4)(5)调用业务处理和返回结果：Controller调用业务逻辑处理后，返回ModelAndView。 
+		(6)(7)处理视图映射并返回模型：DispatcherServlet查询一个或多个ViewResoler视图解析器，找到ModelAndView指定的视图。 
+		(8) Http响应：视图负责将结果显示到客户端。
+
+	实现：
+	
+		类型转换系统：
+
+			Spring2: 
+
+				java.beans.PropertyEditor
+
+			Spring3+:
+
+				类型转换器：提供类型转换的实现支持。
+			
+					org.springframework.core.convert.converter.Converter // 类型转换器，用于转换S类型到T类型，此接口的实现必须是线程安全的且可以被共享。	
+
+					org.springframework.core.convert.converter.ConverterFactory // 实现能在多种类型之间进行转换
+
+					org.springframework.core.convert.converter.ConditionalGenericConverter // 有条件的在多种类型之间进行转换
+
+					org.springframework.core.convert.converter.ConverterFactory // 工厂模式的实现，用于选择将一种S源类型转换为R类型的子类型T的转换器的工厂接口
+					
+				类型转换器注册器、类型转换服务：提供类型转换器注册支持，运行时类型转换API支持。
+
+					org.springframework.core.convert.converter.ConverterRegistry // 类型转换器注册支持，可以注册/删除相应的类型转换器。
+
+					org.springframework.core.convert.ConversionService // 运行时类型转换服务接口，提供运行期类型转换的支持
+
+					org.springframework.core.convert.support.DefaultConversionService // 默认的类型转换服务实现
+
+					org.springframework.format.support.DefaultFormattingConversionService // 带数据格式化支持的类型转换服务实现，一般使用该服务实现即可。	
+
+			入口： org.springframework.core.convert.ConversionService
+
+
