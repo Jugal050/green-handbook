@@ -30,6 +30,11 @@
 
 	# lol 2 games
 
+# 2019-10-23 21:01:46
+
+	# https://docs.spring.io/spring/docs/5.2.0.RELEASE/spring-framework-reference/core.html#beans-factory-class-instance-factory-method
+
+		1.4.1 Dependency Resolution Process // TODO
 
 
 
