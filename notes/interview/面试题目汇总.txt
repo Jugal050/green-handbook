@@ -439,6 +439,105 @@
 				C. 比较理想的回答，是在计算引擎的 UDF 中调用查询 api，执行 UDF 的查询结果存储到对应的表中。
 					一方面，不需要同步任务的导出导入；另一方面，计算引擎的分布式框架天生提供了分布式、容错、并发等特性
 
+## 	面试遇到的面试题：
+
+	## 框架
+
+		## spring
+
+		## springmvc：
+
+			## 处理流程
+
+			## springmvc与struts2的区别？拦截器和过滤器的区别？以及各自的使用场景？
+
+		## mybatis
+		
+			## $和#的区别
+
+			## 怎么在插入一条	数据的同时返回主键
+
+				1. 
+
+					    <insert id="insertStudentCacheId" useGeneratedKeys="true" keyProperty="id" parameterType="Student">
+					        insert into student(name,age,score) values(#{name},#{age},#{score})
+					    </insert>
+
+					    其中：
+					    	  1.useGeneratedKeys=”true”表示设置主键自增 
+							  2.keyProperty=”id”设置主键的字段 
+					    	  3.parameterType=”Student”设置传入的类型 
+						      4.注意：虽然有返回类型，但是我们不需要手动设置返回的类型，这个是由框架帮我们实现的，所以对应的接口方法也是没有返回值的。
+						      5.实体类中id属性字段一定需要set以及get方法
+
+				2. 
+				
+					<insert id="insertStudentCacheId" parameterType="Student">
+				        insert into student(name,age,score) values(#{name},#{age},#{score})
+				        <!-- 指定结果类型resultType，keyProperty是属性，自动返回到属性id中，order是次序，after是指获取id是在于插入后 -->
+				        <selectKey resultType="int" keyProperty="id" order="AFTER">
+				            select @@identity
+				        </selectKey>
+				    </insert>		
+
+				    or
+
+				    <insert id="insertStudentCacheId" parameterType="Student">
+				        insert into student(name,age,score) values(#{name},#{age},#{score})
+				        <!-- 指定结果类型resultType，keyProperty是属性，自动返回到属性id中，order是次序，after是指获取id是在于插入后 -->
+				        <selectKey resultType="int" keyProperty="id" order="AFTER">
+				            select LAST_INSERT_ID()
+				        </selectKey>
+				    </insert>
+
+				    	其中：
+				    		  1.最外层的没有返回属性（resultType），但是里面的是有返回值类型的。 
+							  2.order=”AFTER”表示先执行插入，之后才执行selectkey语句的。 
+							  3.select @@identity和select LAST_INSERT_ID()都表示选出刚刚插入的最后一条数据的id。 
+							  4.实体类中id属性字段一定需要set以及get方法 
+							  5.此时，接口中仍不需要有返回值，框架会自动将值注入到我们insert的那个对象中，我们可以直接使用就可以了。
+
+				3ext：如果想要返回插入条数：
+
+					<insert id="insertStudentCacheIdNoReturn" parameterType="Student">
+				        insert into student(name,age,score) values(#{name},#{age},#{score})
+				        <!-- 指定结果类型resultType，keyProperty是属性，自动返回到属性id中，order是次序，after是指获取id是在于插入后 -->
+				        <selectKey resultType="int" keyProperty="id" order="AFTER">
+				            select LAST_INSERT_ID()
+				        </selectKey>
+				    </insert>
+								  
+
+      
+
+
+
+	## 数据库
+	
+		## 关系型数据库：
+
+			Oracle:
+
+			MySQL:
+
+		## 非关系型数据库：		
+
+			## redis
+
+				为什么使用Redis?
+
+			## Memcached	
+
+			## mongodb		
+
+	## spring cloud相关
+
+	## springboot常用注解
+
+	## spring相关：
+
+
+
 
 
 
