@@ -1,0 +1,618 @@
+第十一章 持有对象
+
+一、泛型与类型安全的容器
+
+	e.g.:
+		class Apple {
+		    private static long counter;
+		    private final long id = counter++;
+		    public long id() { return id; }
+		}
+		class Orange {}
+		class GrannySimit extends Apple {}
+		class Gala extends Apple {}
+		class Fuji extends Apple {}
+		class Braeburn extends Apple {}
+		public class ApplesAndOrangesWithGenerics {
+		    public static void main(String[] args) {
+		        ArrayList<Apple> apples = new ArrayList<Apple>();
+		        for ( int i = 0; i < 4; i++ ) {
+		            apples.add(new Apple());
+		        }
+		        apples.add(new GrannySimit());
+		        apples.add(new Gala());
+		        apples.add(new Fuji());
+		        apples.add(new Braeburn());
+		        // Compile-time error;
+		        // apples.add(new Orange);
+		        for ( int i = 0; i < apples.size(); i++ ) {
+		            System.out.println(apples.get(i).id());
+		        }
+		        // Using foreach
+		        for ( Apple apple : apples ) {
+		            System.out.println(apple);
+		        }
+		    }
+		}
+
+二、基本概念
+	
+	1. Collection
+		一个独立元素的序列，这些元素都服从一条或多条规则。
+			List必须按照插入的顺序保存元素。
+			Set不能有重复元素。
+			Queue按照排队规则来确定对象产生的顺序（通常与他们被插入的顺序相同）。
+
+	2. Map
+		一组成对的“键值对”对象，允许你使用键来查找值。
+
+	所有的Collection都可以用foreach语法遍历。
+	e.g.:
+		public class SimpleCollection {
+		    public static void main(String[] args) {
+		        Collection<Integer> collection = new ArrayList<Integer>();
+		        for ( int i = 0; i < 10; i++ ) {
+		            collection.add(i);
+		        }
+		        for ( Integer i : collection ) {
+		            System.out.println(i + " ");
+		        }
+		        System.out.println("最小值: " + Collections.min(collection));
+		        System.out.println("最大值: " + Collections.max(collection));
+		    }
+		}
+
+
+三、添加一组元素
+	
+	e.g.:
+		public class AddingGroups {
+		    public static void main(String[] args) {
+		        Collection<Integer> collection = new ArrayList<Integer>(Arrays.asList(1, 2, 3, 4, 5));
+		        Integer[] moreInts = {6, 7, 8, 9, 10};
+		        collection.addAll(Arrays.asList(moreInts));
+		        // Runs significantly faster, but you can't construct a Collection this way.
+		        Collections.addAll(collection, 11, 12, 13, 14, 15);
+		        Collections.addAll(collection, moreInts);
+		        // Produces a list "backed by" an array;
+		        List<Integer> list = Arrays.asList(16, 17, 18, 19, 20);
+		        // Modify an element
+		        list.set(1, 99);
+		        // Runtime error because the underlying array cannot be resized;
+		        // ! list.add(21);
+		        for ( Integer i : collection ) {
+		            System.out.println(i);
+		        }
+		    }
+		}
+
+
+		class Snow {}
+		class Powder extends Snow {}
+		class Light extends Powder {}
+		class Heavy extends Powder {}
+		class Crusty extends Snow {}
+		class Slush extends Snow {}
+		public class AsListInterface {
+		    public static void main(String[] args) {
+		        List<Snow> snow1 = Arrays.asList(new Crusty(), new Powder(), new Slush());
+		        // Won't compile
+		        // List<Snow> snow2 = Arrays.asList(new Light(), new Heavy());
+		        List<Powder> snow2 = Arrays.asList(new Light(), new Heavy());
+		        // Collections.addAll() doesn't get confused
+		        List<Snow> snow3 = new ArrayList<Snow>();
+		        Collections.addAll(snow3, new Light(), new Heavy());
+		        // Give a hint using an explicit type argument specification
+		        List<Snow> snow4 = Arrays.<Snow>asList(new Light(), new Heavy());
+		    }
+		}
+
+四、容器的打印
+	
+	e.g.:
+
+		public class PrintingContainers {
+		    static Collection fill(Collection<String> collection) {
+		        collection.add("cat");
+		        collection.add("dog");
+		        collection.add("sheep");
+		        collection.add("lion");
+		        collection.add("dog");
+		        return collection;
+		    }
+		    static Map fill(Map<String, String> map) {
+		        map.put("rat", "Fuzzy");
+		        map.put("cat", "Rags");
+		        map.put("dog", "Bosco");
+		        map.put("dog", "Spot");
+		        return map;
+		    }
+
+		    public static void main(String[] args) {
+		        System.out.println(fill(new ArrayList<String>()));
+		        System.out.println(fill(new LinkedList<String>()));
+		        System.out.println(fill(new HashSet<String>()));
+		        System.out.println(fill(new TreeSet<String>()));
+		        System.out.println(fill(new LinkedHashSet<String>()));
+		        System.out.println(fill(new HashMap<String, String>()));
+		        System.out.println(fill(new TreeMap<String, String>()));
+		        System.out.println(fill(new LinkedHashMap<String, String>()));
+		    }
+		}
+
+五、List
+
+	ArrayList:
+		长于随机访问元素，但是在List的中间插入和移除元素时较慢。
+	LinkedList:
+		通过代价较低的在List中间进行的插入和删除操作，提供了优化的顺序访问。在随机访问方面相对比较慢，但是它的特性集较ArrayList更大。
+
+六、迭代器
+	
+	迭代器是一个对象，它的工作是遍历并选择序列中的对象，而客户端程序员不必知道或关心该序列底层的结构
+	Java中的迭代器：
+		1). 使用方法iterator()要求容器返回一个Iterator。Iterator将准备好返回序列的第一个元素。
+		2). 使用next()获得序列中的下一个元素。
+		3). 使用hasNext()检查序列中是否还有元素。
+		4). 使用remove()将迭代器新近返回的元素删除。
+
+	e.g.:
+		public class SimpleIterator {
+			public static void main(String[] args) {
+				List<Pet> pets = Pets.arrayList(12);
+				Iterator<Pet> it = pets.iterator();
+				while(it.hasNext()) {
+					Pet p = it.next();
+					System.out.print(p.id() + ": " + p + " ");
+				}
+				System.out.println();
+				// A simple approach, when possible;
+				for (Pet p : pets) {
+					System.out.print(p.id() + ": " + p + " ");
+				}
+				System.out.println();
+				// An iterator can also remove elements
+				it = pets.iterator();
+				for (int i = 0; i < 6; i++) {
+					it.next();
+					it.remove();
+				}
+				System.out.println(pets);
+			}
+
+		}
+
+	1. ListIterator
+		更强大的Iterator的子类型，只能用于各种List类的访问。
+			1). 尽管Iterator只能向前移动，但是ListIterator可以双向移动。
+			2). 可以产生相对于迭代器在列表中指向的当前位置的前一个和后一个元素的索引。
+			3). 可以使用set()方法替换它访问过的最后一个元素。
+			4). 可以调用listIterator()方法产生一个指向List开始处的ListIterator
+			5). 可以通过调用listIterator(n)方法创建一个一开始就指向索引为n的元素处的ListIterator。
+
+		e.g.:
+			public class ListIterator {
+				List<Pet> pets = Pets.arrayList(8);
+				ListIterator<Pet> it = pets.listIterator();
+				while(it.hasNext()) {
+					System.out.print(it.next + ", " + it.nextIndex() + ", " + it.previousIndex() + "; ");
+				}
+				System.out.println();
+				// Backwards:
+				while(it.hasPrevious()) {
+					System.out.print(it.previous().id() + " ");
+				}
+				System.out.println();
+				System.out.println(pets);
+				it = pets.listIterator(3);
+				while(it.hasNext()) {
+					it.next();
+					it.set(Pets.randomPet());
+				}
+				System.out.print(pets);
+			}
+
+七、LinkedList和ArrayList
+	
+	LinkedList：
+
+	List 接口的链接列表实现。实现所有可选的列表操作，并且允许所有元素（包括 null）。
+	
+	除了实现 List 接口外，LinkedList 类还为在列表的开头及结尾 get、remove 和 insert元素提供了统一的命名方法。
+	这些操作允许将链接列表用作堆栈、队列或双端队列。
+	
+	此类实现 Deque 接口，为 add、poll 提供先进先出队列操作，以及其他堆栈和双端队列操作。
+	
+	所有操作都是按照双重链接列表的需要执行的。在列表中编索引的操作将从开头或结尾遍历列表（从靠近指定索引的一端）。
+	
+	此实现不是同步的。如果多个线程同时访问一个链接列表，而其中至少一个线程从结构上修改了该列表，则它必须 保持外部同步。
+
+	此类的 iterator 和 listIterator 方法返回的迭代器是快速失败 的：在迭代器创建之后，如果从结构上对列表进行修改，除非通过迭代器自身的 remove 或 add 方法，其他任何时间任何方式的修改，迭代器都将抛出 ConcurrentModificationException。因此，面对并发的修改，迭代器很快就会完全失败，而不冒将来不确定的时间任意发生不确定行为的风险。 
+
+	ArrayList：
+
+	List 接口的大小可变数组的实现。实现了所有可选列表操作，并允许包括 null 在内的所有元素。
+
+	除了实现 List 接口外，此类还提供一些方法来操作内部用来存储列表的数组的大小。（此类大致上等同于 Vector 类，除了此类是不同步的。）
+
+	size、isEmpty、get、set、iterator 和 listIterator 操作都以固定时间运行。add 操作以分摊的固定时间 运行，也就是说，添加 n 个元素需要 O(n) 时间。其他所有操作都以线性时间运行（大体上讲）。与用于 LinkedList 实现的常数因子相比，此实现的常数因子较低。
+
+	每个 ArrayList 实例都有一个容量。该容量是指用来存储列表元素的数组的大小。它总是至少等于列表的大小。随着向 ArrayList 中不断添加元素
+	，其容量也自动增长。并未指定增长策略的细节，因为这不只是添加元素会带来分摊固定时间开销那样简单
+
+	在添加大量元素前，应用程序可以使用 ensureCapacity 操作来增加 ArrayList 实例的容量。这可以减少递增式再分配的数量。
+
+	此实现不是同步的。
+
+	此类的 iterator 和 listIterator 方法返回的迭代器是快速失败的。
+
+八、Stack
+
+	通常是指"先进后出"(LIFO)的容器。
+	e.g.:
+		public class Stack<T> {
+		    private LinkedList<T> storage = new LinkedList<T>();
+		    public void push(T v) {
+		        storage.addFirst(v);
+		    }
+		    public T peek() {
+		        return storage.getFirst();
+		    }
+		    public T pop() {
+		        return storage.removeFirst();
+		    }
+		    public boolean isEmpty() {
+		        return storage.isEmpty();
+		    }
+		    @Override
+		    public String toString() {
+		        return storage.toString();
+		    }
+		}
+
+		public class StackTest {
+		    public static void main(String[] args) {
+		        Stack<String> stack = new Stack<String>();
+		        for ( String str : "My dog has fleas".split(" ") ) {
+		            System.out.println(str);
+		            stack.push(str);
+		        }
+		        while (!stack.isEmpty()) {
+		            System.out.print(stack.pop() + " ");
+		        }
+		    }
+		}
+
+九、Set
+	
+	Set不保存重复的元素。
+
+	HashSet:
+		此类实现 Set 接口，由哈希表（实际上是一个 HashMap 实例）支持。
+		它不保证 set 的迭代顺序；特别是它不保证该顺序恒久不变。
+		此类允许使用 null 元素。
+		此类为基本操作提供了稳定性能，这些基本操作包括 add、remove、contains 和 size。
+		此实现不是同步的。
+		此类的 iterator 方法返回的迭代器是快速失败 的。
+		迭代很可能支出较大，因为它所需迭代时间与其容量成正比。
+
+	TreeSet:
+		基于 TreeMap 的 NavigableSet 实现。
+		使用元素的自然顺序对元素进行排序，或者根据创建 set 时提供的 Comparator 进行排序，具体取决于使用的构造方法。 
+		此实现为基本操作（add、remove 和 contains）提供受保证的 log(n) 时间开销。 
+		如果要正确实现 Set 接口，则 set 维护的顺序（无论是否提供了显式比较器）必须与 equals 一致。
+		此实现不是同步的。
+		此类的 iterator 方法返回的迭代器是快速失败 的。
+
+	LinkedHashSet:
+		具有可预知迭代顺序的 Set 接口的哈希表和链接列表实现。
+		实现可以让客户免遭未指定的、由 HashSet 提供的通常杂乱无章的排序工作，而又不致引起与 TreeSet 关联的成本增加。
+		此类提供所有可选的 Set 操作，并且允许 null 元素。
+		与 HashSet 一样，它可以为基本操作（add、contains 和 remove）提供稳定的性能。
+		LinkedHashSet 迭代所需时间与 set 的大小 成正比，而与容量无关。
+		此实现不是同步的。
+		此类的 iterator 方法返回的迭代器是快速失
+
+	e.g.:
+		public class SetOfInteger {
+		    public static void main(String[] args) {
+		        Random random = new Random(47);
+		        Set<Integer> intHashSet = new HashSet<Integer>();
+		        Set<Integer> intTreeSet = new TreeSet<Integer>();
+		        Set<Integer> intLinkedHashSet = new LinkedHashSet<Integer>();
+		        Set<Integer> intCurrentSkipListSet = new ConcurrentSkipListSet<>();
+
+		        for ( int i = 0; i < 10000; i++ ) {
+		            intHashSet.add(random.nextInt(30));
+		            intTreeSet.add(random.nextInt(30));
+		            intLinkedHashSet.add(random.nextInt(30));
+		            intCurrentSkipListSet.add(random.nextInt(30));
+		        }
+		        System.out.println("HashSet:");
+		        for ( Integer i : intHashSet ) {
+		            System.out.print(i + " ");
+		        }
+		        System.out.println();
+		        System.out.println("TreeSet:");
+		        for ( Integer i : intTreeSet ) {
+		            System.out.print(i + " ");
+		        }
+		        System.out.println();
+		        System.out.println("LinkedHashSet:");
+		        for ( Integer i : intLinkedHashSet ) {
+		            System.out.print(i + " ");
+		        }
+		        System.out.println();
+		        System.out.println("CurrentSkipListSet:");
+		        for ( Integer i : intCurrentSkipListSet ) {
+		            System.out.print(i + " ");
+		        }
+		    }
+		}
+
+十、Map
+	
+	将键映射到值的对象。一个映射不能包含重复的键；每个键最多只能映射到一个值。 
+
+	HashMap:
+		基于哈希表的 Map 接口的实现。
+		此实现提供所有可选的映射操作，并允许使用 null 值和 null 键。（除了非同步和允许使用 null 之外，HashMap 类与 Hashtable 大致相同。）
+		此类不保证映射的顺序，特别是它不保证该顺序恒久不变。 
+		HashMap 的实例有两个参数影响其性能：初始容量 和加载因子。
+		此实现不是同步的。
+		由所有此类的“collection 视图方法”所返回的迭代器都是快速失败的。
+		HashMap 迭代时间很可能开支较大，因为它所需要的时间与其容量成比例。
+
+	HashTable:
+		此类实现一个哈希表，该哈希表将键映射到相应的值。
+		任何非 null 对象都可以用作键或值。
+		为了成功地在哈希表中存储和获取对象，用作键的对象必须实现 hashCode 方法和 equals 方法。
+		Hashtable 的实例有两个参数影响其性能：初始容量 和加载因子。
+		此实现是同步的。
+		由所有类的“collection 视图方法”返回的 collection 的 iterator 方法返回的迭代器都是快速失败的。
+
+	TreeMap:
+		基于红黑树（Red-Black tree）的 NavigableMap 实现。
+		该映射根据其键的自然顺序进行排序，或者根据创建映射时提供的 Comparator 进行排序，具体取决于使用的构造方法。 
+		此实现为 containsKey、get、put 和 remove 操作提供受保证的 log(n) 时间开销。
+		如果要正确实现 Map 接口，则有序映射所保持的顺序（无论是否明确提供了比较器）都必须与 equals 一致。
+		此实现不是同步的。
+		collection（由此类所有的“collection 视图方法”返回）的 iterator 方法返回的迭代器都是快速失败的。
+		此类及其视图中的方法返回的所有 Map.Entry 对都表示生成它们时的映射关系的快照。它们不 支持 Entry.setValue 方法。
+
+	LinkedHashMap:
+		Map 接口的哈希表和链接列表实现，具有可预知的迭代顺序。
+		此实现可以让客户避免未指定的、由 HashMap（及 Hashtable）所提供的通常为杂乱无章的排序工作，同时无需增加与 TreeMap 相关的成本。
+		提供特殊的构造方法来创建链接哈希映射，该哈希映射的迭代顺序就是最后访问其条目的顺序，从近期访问最少到近期访问最多的顺序（访问顺序）。
+		可以重写 removeEldestEntry(Map.Entry) 方法来实施策略，以便在将新映射关系添加到映射时自动移除旧的映射关系。
+		此类提供所有可选的 Map 操作，并且允许 null 元素。
+		与 HashMap 一样，它可以为基本操作（add、contains 和 remove）提供稳定的性能，假定哈希函数将元素正确分布到桶中。
+		LinkedHashMap 的 collection 视图迭代所需时间与映射的大小 成比例。 
+		链接的哈希映射具有两个影响其性能的参数：初始容量和加载因子。
+		此实现不是同步的。
+		结构修改是指添加或删除一个或多个映射关系，或者在按访问顺序链接的哈希映射中影响迭代顺序的任何操作。
+		Collection（由此类的所有 collection 视图方法所返回）的 iterator 方法返回的迭代器都是快速失败的。
+
+	ConcurrentHashMap:
+		支持获取的完全并发和更新的所期望可调整并发的哈希表。
+		此类遵守与 Hashtable 相同的功能规范，并且包括对应于 Hashtable 的每个方法的方法版本。
+		尽管所有操作都是线程安全的，但获取操作不必锁定。
+		不支持以某种防止所有访问的方式锁定整个表。此类可以通过程序完全与 Hashtable 进行互操作，这取决于其线程安全，而与其同步细节无关。 
+		获取操作（包括get）通常不会受阻塞，因此，可能与更新操作交迭（包括 put和remove）。
+		这允许通过可选的concurrencyLevel构造方法参数（默认值为16）来引导更新操作之间的并发，该参数用作内部调整大小的一个提示。
+		此类及其视图和迭代器实现了 Map 和 Iterator 接口的所有可选 方法。 
+		此类与 Hashtable 相似，但与 HashMap 不同，它不 允许将 null 用作键或值
+
+
+	e.g.:
+		public class Statistics {
+		    public static void main(String[] args) {
+		        Random random = new Random(47);
+		        Map<Integer, Integer> map = new HashMap<Integer, Integer>();
+		        for ( int i = 0; i < 10000; i++ ) {
+		            int r = random.nextInt(30);
+		            Integer freq = map.get(r);
+		            map.put(r, freq == null ? 1 : freq + 1);
+		        }
+		        System.out.println(map);
+		        System.out.println("map中包含键1?" + map.containsKey(1));
+		        System.out.println("map中包含键59?" + map.containsKey(59));
+		        System.out.println("map中包含值333?" + map.containsValue(333));
+		        System.out.println("map中包含值444?" + map.containsValue(444));
+		    }
+		}
+
+		public class MapOfList {
+			public static Map<Person, List<? extends Pet>> petPeople = new HashMap<Person, List<? extends Pet>>();
+			static {
+				petPeople.put(new Person("Dawn"), Arrays.asList(new Cymric("Molly"), new Mutt("Spot")));
+				petPeople.put(new Person("Kate"), Arrays.asList(new Cat("Elsie May"), new Dog("Margrett")));
+				petPeople.put(new Person("Marilyn"), Arrays.asList(new Put("Louie"), new Cat("Negro"), new Cat("Pinkola")));
+				petPeople.put(new Person("Luke"), Arrays.asList(new Rat("Fuzzy"), new Rat("Fuzzy")));
+				petPeople.put(new Person("Isaac"), Arrays.asList(new Rat("Freckly")));
+			}
+			public static void main(String[] args) {
+				System.out.println("People: " + petPeople.keySet());
+				System.out.println("Pets: " + petPeople.values());
+				for (Person person : petPeople.keySet()) {
+					System.out.print(person + " has: ");
+					for (Pet pet : petPeople.get(person)) {
+						System.out.print("		" + pet);
+					}
+				}
+			}
+		}
+
+十一、Queue
+	
+	列队是一个典型的先进先出(FIFO)的容器。在处理元素前用于保存元素的collection。
+	除了基本的 Collection操作外，队列还提供其他的插入、提取和检查操作。
+	每个方法都存在两种形式：一种抛出异常（操作失败时），另一种返回一个特殊值（null 或 false，具体取决于操作）。
+
+	PriorityQueue:
+		一个基于优先级堆的无界优先级队列。
+		优先级队列的元素按照其自然顺序进行排序，或者根据构造队列时提供的 Comparator 进行排序，具体取决于所使用的构造方法。
+		优先级队列不允许使用 null 元素。
+		依靠自然顺序的优先级队列还不允许插入不可比较的对象（这样做可能导致 ClassCastException）。 
+		此队列的头 是按指定排序方式确定的最小 元素。如果多个元素都是最小值，则头是其中一个元素——选择方法是任意的。
+		此类及其迭代器实现了 Collection 和 Iterator 接口的所有可选方法。
+		此实现不是同步的。
+
+	e.g.:
+		public class QueueDemo {
+		    public static void printQueue(Queue queue) {
+		        while(queue.peek() != null) {
+		            System.out.print(queue.remove() + " ");
+		        }
+		        System.out.println();
+		    }
+		    public static void main(String[] args) {
+		        Queue<Integer> queue = new LinkedList<Integer>();
+		        Random random = new Random(47);
+		        for ( int i = 0; i < 10; i++ ) {
+		            queue.offer(random.nextInt( i + 10));
+		        }
+		        printQueue(queue);
+		        Queue<Character> queueChar = new LinkedList<Character>();
+		        for ( Character c : "Brontosaurus".toCharArray() ) {
+		            queueChar.offer(c);
+		        }
+		        printQueue(queueChar);
+		    }
+		}
+
+		public class PriorityQueueDemo {
+		    public static void main(String[] args) {
+		        PriorityQueue<Integer> priorityQueue = new PriorityQueue<Integer>();
+		        Random random = new Random(47);
+		        for ( int i = 0; i < 10; i++ ) {
+		            priorityQueue.offer(random.nextInt( i + 10));
+		        }
+		        QueueDemo.printQueue(priorityQueue);
+
+		        List<Integer> ints = Arrays.asList(25, 22, 20, 18, 12, 11, 9 , 8, 7, 6, 3, 23, 24, 25, 2, 1);
+		        priorityQueue = new PriorityQueue<>(ints);
+		        QueueDemo.printQueue(priorityQueue);
+
+		        priorityQueue = new PriorityQueue<>(ints.size(), Collections.<Integer>reverseOrder());
+		        priorityQueue.addAll(ints);
+		        QueueDemo.printQueue(priorityQueue);
+
+		        String fact = "EDUCATION SHOULD ESCHEW OBFUSCATION";
+		        List<String> strings = Arrays.asList(fact.split(""));
+		        PriorityQueue<String> stringPriorityQueue = new PriorityQueue<>(strings);
+		        QueueDemo.printQueue(stringPriorityQueue);
+
+		        stringPriorityQueue = new PriorityQueue<>(strings.size(), Collections.<String>reverseOrder());
+		        stringPriorityQueue.addAll(strings);
+		        QueueDemo.printQueue(stringPriorityQueue);
+
+		        Set<Character> charSet = new HashSet<>();
+		        for ( char c: fact.toCharArray() ) {
+		            charSet.add(c);
+		        }
+		        PriorityQueue<Character> characterPriorityQueue = new PriorityQueue<>(charSet);
+		        QueueDemo.printQueue(characterPriorityQueue);
+		    }
+		}
+
+十二、Collection和Iterator
+	
+	e.g.:
+		public class InterfaceVsIterator {
+			public static void display(Iterator<Pet> iterator) {
+				while(iterator.hasNext()) {
+					Pet p = iterator.next();
+					System.out.print(p.id() + ": " + p + " ");
+				}
+				System.out.println();
+			}
+			public static void display(Collection<Pet> collection) {
+				for (Pet pet : collection) {
+					System.out.print(p.id() + ": " + p + " ");
+				}
+				System.out.println();
+			}
+		}
+
+		public class CollectionSequence extends AbstractCollection<Pet> {
+			private Pet[] pets = Pets.createArray(8);
+			public int size() {
+				return pets.length;
+			}
+			public Iterator<Pet> iterator() {
+				return new Iterator<Pet>() {
+					private int index = 0;
+					public boolean hasNext() {
+						return index < pets.length;
+					}
+					public Pet next() {
+						return pets[index++];
+					}
+					public void remove() {
+						throw new UnsupportedOperationException();
+					}
+				}
+			}
+		}
+
+十三、Foreach和迭代器
+
+	e.g.:
+		class ReversibleArrayList<T> extends ArrayList<T> {
+		    public ReversibleArrayList(Collection<T> collection) {
+		        super(collection);
+		    }
+		    public Iterable<T> reversed() {
+		        return new Iterable<T>() {
+		            @Override
+		            public Iterator<T> iterator() {
+		                return new Iterator<T>() {
+		                    int current = size() -1;
+		                    @Override
+		                    public boolean hasNext() {
+		                        return current > -1;
+		                    }
+		                    @Override
+		                    public T next() {
+		                        return get(current--);
+		                    }
+		                    @Override
+		                    public void remove() {
+		                        throw new UnsupportedOperationException();
+		                    }
+		                };
+		            }
+		        };
+		    }
+		}
+		public class AdapterMethodIdiom {
+		    public static void main(String[] args) {
+		        ReversibleArrayList<String> ral = new ReversibleArrayList<>(Arrays.asList(("To be or not to be").split(" ")));
+		        // Grabs the ordinary iterator via iterator();
+		        for ( String s : ral ) {
+		            System.out.print(s + " ");
+		        }
+		        System.out.println();
+		        // Hand it the Iterable of your choice
+		        for ( String s : ral.reversed()) {
+		            System.out.print(s + " ");
+		        }
+		    }
+		}
+
+
+十四、总结
+	
+	Java中提供了大量持有对象的方式：
+		1. 数组将数字与对象联系起来。它保存类型明确的对象，查询对象时，不需要对结果做类型转换。可以是多维的，可以保存基本类型的数据。
+			但是，数组一旦生成，其容量就不能改变。
+		2. Collection保存单一的元素，而Map保存相关联的键值对。泛型可以指定容器中存放的对象类型。各种Collection与Map都可以自动调整尺寸。
+		3. 像数组一样，List也建立数字索引与对象的关联，因此，数组和List都是排好序的容器。List能自动扩充容量。
+		4. 如果要进行大量的随机访问，就使用ArrayList；如果要经常从表中插入或删除元素，则应该用LinkedList。
+		5. 各种Queue以及栈的行为，由LinkedList提供支持。
+		6. Map是一种将对象（而非数字）与对相关联的设计。HashMap设计用来快速访问；而TreeMap保持“键”始终处于排序状态，所以没有HashMap快。
+			LinkedHashMap保持元素插入的顺序，但是也通过散列提供了快速访问能力。
+		7. Set不接受重复元素。HashSet提供了最快的查询速度，而TreeSet保持元素处于排序状态。LinkedHashSet以插入顺序保存元素。
+		8. 新程序中不应该使用过时的Vector、HashTable和Stack。
+

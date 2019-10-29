@@ -1,0 +1,465 @@
+第九章 接口
+
+一、抽象类和抽象方法
+
+	e.g.：
+		public class Music {
+		    static void tune(Instrument instrument) {
+		        instrument.play(Note.A);
+		    }
+
+		    static void tuneAll (Instrument[] instruments) {
+		        for ( Instrument instument : instruments ) {
+		            tune(instument);
+		        }
+		    }
+
+		    public static void main(String[] args) {
+		        Instrument[] orchestra = {
+		                new Wind(),
+		                new Percussion(),
+		                new Stringed(),
+		                new Brass(),
+		                new Woodwind()
+		        };
+		        tuneAll(orchestra);
+		    }
+		}
+
+		enum Note {
+		    A, B, C, D, E, F, G
+		}
+
+		abstract class Instrument {
+		    private int i;
+		    public abstract void play(Note note);
+		    public String what() {
+		        return "Instrument";
+		    }
+		    public abstract void adjust();
+		}
+
+		class Wind extends Instrument {
+		    @Override
+		    public void play(Note note) {
+		        System.out.println("Wind.play()" + note);
+		    }
+		    public String What() {
+		        return "Wind";
+		    }
+		    @Override
+		    public void adjust() {
+		        System.out.println("Wind.adjust");
+		    }
+		}
+
+		class Percussion extends Instrument {
+		    @Override
+		    public void play(Note note) {
+		        System.out.println("Percussion.play()" + note);
+		    }
+		    public String What() {
+		        return "Percussion";
+		    }
+		    @Override
+		    public void adjust() {
+		        System.out.println("Percussion.adjust");
+		    }
+		}
+
+		class Stringed extends Instrument {
+
+		    @Override
+		    public void play(Note note) {
+		        System.out.println("Stringed.play()" + note);
+		    }
+		    public String What() {
+		        return "Stringed";
+		    }
+		    @Override
+		    public void adjust() {
+		        System.out.println("Stringed.adjust()");
+		    }
+		}
+
+		class Brass extends Wind {
+		    @Override
+		    public void play(Note note) {
+		        System.out.println("Brass.play()" + note);
+		    }
+		    @Override
+		    public void adjust() {
+		        System.out.println("Brass.adjust()");
+		    }
+		}
+
+		class Woodwind extends Wind {
+		    @Override
+		    public void play(Note note) {
+		        System.out.println("Woodwind.play()" + note);
+		    }
+		    @Override
+		    public String what() {
+		        return "Woodwind";
+		    }
+		}
+
+二、接口
+
+	interface接口是一个完全抽象的类，它根本没有提供任何具体实现，它允许创建者确定方法名、参数列表、返回类型，但是没有任何方法体。
+	接口只提供了形式，而未提供任何具体实现。
+
+	interface不仅仅是一个极度抽象的类，因为它允许人们通过创建一个能够向上转型为多种基类的类型，来实现某种类似多重继变种的特性。
+
+	interface接口中的方法隐式地都是public的。
+
+	interface接口可以包含域，但是这些域隐式地是static和final的。
+
+	要让一个类遵循某个特定接口（或者一组接口），需要使用implements关键字。
+
+三、完全解耦
+
+	策略设计模式：能够根据所传递的参数对象的不同而具有不同行为的方法。
+	e.g.:
+		public class Apply {
+		    public static void process(Processor processor, Object object) {
+		        System.out.println("Processor name: " + processor.name());
+		        System.out.println(processor.process(object));
+		    }
+		    public static String str = "Disagreement with beliefs is by definition incorrect";
+
+		    public static void main(String[] args) {
+		        process(new UpCase(), str);
+		        process(new DownCase(), str);
+		        process(new Splitter(), str);
+		    }
+		}
+
+		class Processor {
+		    public String name() {
+		        return getClass().getSimpleName();
+		    }
+		    Object process(Object object) {
+		        return object;
+		    }
+		}
+
+		class UpCase extends Processor {
+		    @Override
+		    String process(Object object) {
+		        return ((String)object).toUpperCase();
+		    }
+		}
+
+		class DownCase extends Processor {
+		    @Override
+		    String process(Object object) {
+		        return ((String)object).toLowerCase();
+		    }
+		}
+
+		class Splitter extends Processor {
+		    @Override
+		    String process(Object object) {
+		        return Arrays.toString(((String) object).split(" "));
+		    }
+		}
+
+	适配器设计模式：适配器中的代码将接受你所拥有的接口，并产生你所需要的接口。
+	e.g.:
+		public class FilterProcessor {
+		    public static void process (Processor2 processor2, Object object) {
+		        System.out.println("Processor2 name: " + processor2.name());
+		        System.out.println(processor2.process(object));
+		    }
+		    public static void main(String[] args) {
+		        WaveForm waveForm = new WaveForm();
+		        process(new FilterAdapter(new UpPass(1.0)), waveForm);
+		        process(new FilterAdapter(new LowPass(2.0)), waveForm);
+		        process(new FilterAdapter(new BandPass(3.0, 4.0)), waveForm);
+		    }
+		}
+
+		interface Processor2 {
+		    public String name();
+		    Object process(Object object);
+		}
+
+		class FilterAdapter implements Processor2 {
+		    Filter filter;
+		    public FilterAdapter(Filter filter) {
+		        this.filter = filter;
+		    }
+		    @Override
+		    public String name() {
+		        return filter.name();
+		    }
+
+		    @Override
+		    public WaveForm process(Object object) {
+		        return filter.process((WaveForm) object);
+		    }
+		}
+
+四、Java中的多重继承
+
+	在导出类中，不强制要求必须有一个是抽象的或者“具体的”（没有任何抽象方法）基类。如果要从一个非接口的类继承，那么只能从一个类去继承。
+	其余的基元素都必须是接口。需要将所有的接口名都置于implements关键字之后，用逗号将他们一一隔开。可以继承任意多个接口，并可以向上转型为每个接口，因为每个接口都是一个独立类型。
+	e.g.:
+		public class Adventure {
+		    public static void ft(CanFight obj) {
+		        obj.fight();
+		    }
+		    public static void fta(ActionCharacter obj) {
+		        obj.fight();
+		    }
+		    public static void fy(CanFly obj) {
+		        obj.fly();
+		    }
+		    public static void s(CanSwim obj) {
+		        obj.swim();
+		    }
+		    public static void r(CanRun obj) {
+		        obj.run();
+		    }
+
+		    public static void main(String[] args) {
+		        Superman superman = new Superman();
+		        ft(superman);
+		        fta(superman);
+		        fy(superman);
+		        s(superman);
+		        r(superman);
+		    }
+		}
+
+		interface CanFight {
+		    void fight();
+		}
+
+		interface CanFly {
+		    void fly();
+		}
+
+		interface CanSwim {
+		    void swim();
+		}
+
+		interface CanRun {
+		    void run();
+		}
+
+		class ActionCharacter {
+		    public void fight(){
+		        System.out.println("ActionCharacter.fight()");
+		    }
+		}
+
+		class Superman extends ActionCharacter implements CanFight, CanFly, CanRun, CanSwim {
+
+		    @Override
+		    public void fly() {
+		        System.out.println("Superman.fly()");
+		    }
+
+		    @Override
+		    public void swim() {
+		        System.out.println("Superman.swim()");
+		    }
+
+		    @Override
+		    public void run() {
+		        System.out.println("Superman.run()");
+		    }
+		}
+
+	使用接口的原因：
+		1. 能够向上转型为多个基类型（以及由此而带来的灵活性）
+		2. 防止客户端程序员创建该类的对象，并确保这仅仅是建立一个接口。（与使用抽象基类相同）
+
+五、通过继承来扩展接口
+	
+	通过继承，可以很容易地在接口中添加新的方法声明，还可以通过继承在新接口中组合多个接口。
+	一般情况下，只可以将extends用于单一类，但是可以引用多个基类接口，只需用逗号将接口名一一隔开即可。
+	e.g.:
+		public class Adventure {
+		    public static void ft(CanFight obj) {
+		        obj.fight();
+		    }
+		    public static void fta(ActionCharacter obj) {
+		        obj.fight();
+		    }
+		    public static void fy(CanFly obj) {
+		        obj.fly();
+		    }
+		    public static void s(CanSwim obj) {
+		        obj.swim();
+		    }
+		    public static void r(CanRun obj) {
+		        obj.run();
+		    }
+
+		    public static void main(String[] args) {
+		        Superman superman = new Superman();
+		        ft(superman);
+		        fta(superman);
+		        fy(superman);
+		        s(superman);
+		        r(superman);
+		    }
+		}
+
+		interface CanFight {
+		    void fight();
+		}
+
+		interface CanFly {
+		    void fly();
+		}
+
+		interface CanSwim {
+		    void swim();
+		}
+
+		interface CanRun {
+		    void run();
+		}
+
+		class ActionCharacter {
+		    public void fight(){
+		        System.out.println("ActionCharacter.fight()");
+		    }
+		}
+
+		class Superman extends ActionCharacter implements CanFight, CanFly, CanRun, CanSwim {
+
+		    @Override
+		    public void fly() {
+		        System.out.println("Superman.fly()");
+		    }
+
+		    @Override
+		    public void swim() {
+		        System.out.println("Superman.swim()");
+		    }
+
+		    @Override
+		    public void run() {
+		        System.out.println("Superman.run()");
+		    }
+		}
+	
+	组合接口时的名字冲突：
+		在打算组合的不同接口中使用相同的方法名通常会造成代码可读性的混乱。请尽量避免这种情况。	
+
+六、适配接口
+	e.g.:
+		public class RandomWords implements Readable {
+		    private static Random random = new Random(47);
+		    private static final char[] capitals = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
+		    private static final char[] lowers = "abcdefghijklmnopqrstuvwxyz".toCharArray();
+		    private static final char[] vowels = "aeiou".toCharArray();
+		    private int count;
+		    public RandomWords(int count) {
+		        this.count = count;
+		    }
+		    @Override
+		    public int read(CharBuffer cb) throws IOException {
+		        if(count-- == 0){
+		            return -1;
+		        }
+		        cb.append(capitals[random.nextInt(capitals.length)]);
+		        for ( int i = 0; i < 4; i++ ) {
+		            cb.append(vowels[random.nextInt(vowels.length)]);
+		            cb.append(lowers[random.nextInt(lowers.length)]);
+		        }
+		        cb.append(" ");
+		        return 10;
+		    }
+
+		    public static void main(String[] args) {
+		        Scanner scanner = new Scanner(new RandomWords(10));
+		        while (scanner.hasNext()) {
+		            System.out.println(scanner.next());
+		        }
+		    }
+		}    	
+		
+七、接口中的域
+
+	在接口中定义的域不能是“空final”，但是可以被非常量表达式初始化。
+
+八、嵌套接口
+
+	
+九、接口与工厂
+
+	工厂模式：
+	e.g.:
+		public class Factory {
+		    public static void serviceConsume(ServiceFactory factory) {
+		        Service service = factory.getService();
+		        service.method1();
+		        service.method2();
+		    }
+
+		    public static void main(String[] args) {
+		        serviceConsume(new Implementation1Factory());
+		        serviceConsume(new Implementation2Factory());
+		    }
+		}
+
+		interface Service {
+		    void method1();
+		    void method2();
+		}
+
+		interface ServiceFactory {
+		    Service getService();
+		}
+
+		class Implementation1 implements Service {
+		    Implementation1() { }
+		    @Override
+		    public void method1() {
+		        System.out.println("Implementation1.method1()");
+		    }
+
+		    @Override
+		    public void method2() {
+		        System.out.println("Implementation1.method2()");
+		    }
+		}
+
+		class Implementation1Factory implements ServiceFactory {
+
+		    @Override
+		    public Service getService() {
+		        return new Implementation1();
+		    }
+		}
+
+		class Implementation2 implements Service {
+		    Implementation2() { }
+
+		    @Override
+		    public void method1() {
+		        System.out.println("Implementation2.method1()");
+		    }
+
+		    @Override
+		    public void method2() {
+		        System.out.println("Implementation2.method2()");
+		    }
+		}
+
+		class Implementation2Factory implements ServiceFactory {
+
+		    @Override
+		    public Service getService() {
+		        return new Implementation2();
+		    }
+		}
+
+
+

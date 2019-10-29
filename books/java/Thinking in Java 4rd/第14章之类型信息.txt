@@ -1,0 +1,441 @@
+第十四章 类型信息
+	
+	在运行时识别对象和类信息的两种方式：1. “传统的”RTTI 2.“反射”机制
+		
+
+一、为什么要用RTTI
+
+	e.g.:
+		public class Shapes {
+			public static void main(String[] args) {
+				List<Shape> shapes = Arrays.asList(new Circle(), new Square(), new Triangle());
+				for ( Shape shape : shapes
+					   ) {
+					shape.draw();
+				}
+			}
+		}
+
+		abstract class Shape {
+			void draw() {
+				System.out.println(this + ".draw");
+			}
+			@Override
+			abstract public String toString();
+		}
+
+		class Circle extends Shape {
+			@Override
+			public String toString() { return "Circle"; }
+		}
+
+		class Square extends Shape {
+			@Override
+			public String toString() { return "Square"; }
+		}
+
+		class Triangle extends Shape {
+			@Override
+			public String toString() { return "Triangle"; }
+		}
+	
+二、Class对象
+	
+	Class加载：
+	e.g.:
+		public class SweetShop {
+			public static void main(String[] args) {
+				System.out.println("inside main method");
+				new Candy();
+				System.out.println("After creating Candy");
+				try {
+					Class.forName("com.book.thinkinginjava.classInfo.Gum");
+				} catch (ClassNotFoundException e) {
+					System.out.println("can not find Gum.class");
+				}
+				System.out.println("After creating Gum with Class.forName(\"Gum\")");
+				new Cookie();
+				System.out.println("After creating Cookie");
+			}
+		}
+
+		class Candy {
+			static {
+				System.out.println("Loading Candy");
+			}
+		}
+
+		class Gum {
+			static {
+				System.out.println("Loading Gum");
+			}
+		}
+
+		class Cookie {
+			static {
+				System.out.println("Loading Cookie");
+			}
+		}
+		
+	Class对象的方法：
+	e.g.:
+		public class ToyTest {
+			public static void printInfo(Class c) {
+				System.out.println("Class Name:" + c.getName());
+				System.out.println("Simple Name:" + c.getSimpleName());
+				System.out.println("Canonical Name:" + c.getCanonicalName());
+				System.out.println("Is interface:" + c.isInterface());
+			}
+			public static void main(String[] args) {
+				Class c = null;
+				try {
+					c = Class.forName("com.book.thinkinginjava.classInfo.FancyToy");
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
+					System.exit(1);
+				}
+				printInfo(c);
+				for ( Class face : c.getInterfaces() ) {
+					printInfo(face);
+				}
+				Class o = c.getSuperclass();
+				Object object = null;
+				try {
+					object = o.newInstance();
+				} catch (InstantiationException e) {
+					e.printStackTrace();
+					System.exit(1);
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+					System.exit(1);
+				}
+				printInfo(object.getClass());
+			}
+		}
+
+		interface HasBatteries { }
+		interface WaterProof { }
+		interface Shoots { }
+		class Toy {
+			Toy() { }
+			Toy(int i) { }
+		}
+		class FancyToy extends Toy implements HasBatteries, WaterProof, Shoots {
+			FancyToy() { super(1);}
+		}
+		
+	1. 类字面常量: 更简单、更安全，因为在编译时就会检查。并且根除了对forName()方法的调用，所以更高效。
+	
+		语法：fancyToy.class
+		
+		.class语法来获得对类的引用不会引发初始化。但是为了Class引用，Class.forName()立即就进行了初始化。
+		
+		e.g.:
+		public class ClassInitialization {
+			public static Random rand = new Random(47);
+
+			public static void main(String[] args) {
+				Class initable = Initable.class;
+				System.out.println("After creating Initable ref");
+				System.out.println(Initable.staticFinal);
+				System.out.println(Initable.staticFinal2);
+				System.out.println(Initable2.staticNotFinal);
+				try {
+					Class initable3 = Class.forName("com.book.thinkinginjava.classInfo.Initable3");
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
+				}
+				System.out.println("After creating Initable3 ref");
+				System.out.println(Initable3.staticNotFinal);
+			}
+		}
+
+		class Initable {
+			static final int staticFinal = 47;
+			static final int staticFinal2 = ClassInitialization.rand.nextInt(1000);
+			static {
+				System.out.println("Initializing Initable");
+			}
+		}
+
+		class Initable2 {
+			static int staticNotFinal = 147;
+			static {
+				System.out.println("Initializing Initable2");
+			}
+		}
+
+		class Initable3 {
+			static int staticNotFinal = 74;
+			static {
+				System.out.println("Initializing Initable3");
+			}
+		}
+		
+	2. 泛化的Class引用
+	
+		先Class引用添加泛型语法的原因仅仅是为了提供编译期类型检查。
+		
+		e.g.:
+		
+		public class GenericClassReferences {
+		
+			public static void main(String[] args) {				
+				Class intClass = int.class;
+				Class<Integer> genericIntClass = int.class; // 泛型语法
+				genericIntClass = Integer.class; // Same thing
+				intClass = double.class;
+				
+				Class<Number> genericNumberClass = int.class; // Integer继承自Number。由于Integer Class对象不是Number Class对象的子类，所以无法工作。
+				
+				Class<?> intClazz = int.class; // 泛型通配符，表示你并非碰巧或者由于疏忽而使用了一个非具体的类引用，你就是主动选择了非具体的版本。
+				intClazz = double.class;
+				
+				Class<? extends Number> bounded = int.class; // 创建限定某种类型或该类型的子类的Class引用，需要通配符与extends关键字结合使用，创建一个范围
+				boundClass = double.class;
+				boundClass = Number.class;
+			}
+		}
+		
+		e.g.:
+		
+		public class FilledList<T> {
+			private Class<T> type;
+			public FilledList(Class<T> type) {
+				this.type = type;
+			}
+			public List<T> create(int nElements) {
+				List<T> list = new ArrayList<T>();
+				try {
+					for ( int i = 0; i < nElements; i++ ) {
+						list.add(type.newInstance());
+					}
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+				return list;
+			}
+			public static void main(String[] args) {
+				FilledList<CountedInteger> fl = new FilledList<>(CountedInteger.class);
+				System.out.println(fl.create(15));
+			}
+		}
+
+		class CountedInteger {
+			private static long counter;
+			private final long id = counter++;
+			@Override
+			public String toString() {
+				return Long.toString(id);
+			}
+		}
+		
+		e.g.:
+		
+		子类获取父类，有可能有多个父类。
+		
+		public class GenericToyTest {
+			public static void main(String[] args) {
+				Class<FancyToy> ft = FancyToy.class;
+				// Produces exact type
+				FancyToy fancyToy = ft.newInstance();
+				Class<? super FancyToy> up = ft.getSuperclass();
+				// This won't compile : Class<Toy> t = ft.getSuperclass();
+				// Only produces Object;
+				Object o = up.getSuperclass();
+			}
+		}
+		
+	3. 新的转型语法: cast();
+	
+		e.g.:
+		
+		public class ClassCast {
+			public static void main(String[] args) {
+				Building b = new House();
+				Class<House> houseType = House.class; 
+				House h = houseType.cast(build);
+				h = (House)b; // ... or just do this.
+			}
+		}
+		
+		class Building{}
+		
+		class House extends Building {}
+		
+三、类型转换前先做检查（// todo: 示例代码）
+
+	RTTI形式:
+	（1）：传统的类型转换，由RTTI确保类型转换的正确性，如果执行一个错误的类型转换，就会抛出一个ClassCastException异常。
+	（2）：代表对象的类型的Class对象。通过查询Class对象可以获取运行时所需的信息。
+	（3）：instanceOf: 只可将其与命名对象进行比较，而不能与Class对象作比较。
+	
+	1. 使用类字面量
+	
+	2. 动态地instanceOf
+	
+	3. 递归计数
+	
+四、注册工厂
+
+五、instanceOf与Class的等价性
+
+	instanceOf保持了类型的概念，它指的是“你是这个类吗？或者你是这个类的派生类吗？” (与.isInstance(o)相同)
+	而如果用==比较实际的Class对象，就没有考虑继承----它或者是这个确切的类型，或者不是。(与.equals(o)相同)
+	
+	e.g.:
+	
+		public class FamilyVsExactType {
+			public static void test(Object o) {
+				System.out.println("Testing x of type: " + o.getClass());
+				System.out.println("o instanceOf Base: " + (o instanceof Base));
+				System.out.println("o instanceOf Derive: " + (o instanceof Derive));
+				System.out.println("Base.isInstance(o): " + Base.class.isInstance(o));
+				System.out.println("Derive.isInstance(o): " + Derive.class.isInstance(o));
+				System.out.println("o.getClass() == Base.class: " + (o.getClass() == Base.class));
+				System.out.println("o.getClass() == Derive.class: " + (o.getClass() == Derive.class));
+				System.out.println("o.getClass().equals(Base.class): " + (o.getClass().equals(Base.class)));
+				System.out.println("o.getClass().equals(Derive.class): " + (o.getClass().equals(Derive.class)));
+			}
+			public static void main(String[] args) {
+				test(new Base());
+				test(new Derive());
+			}
+		}
+
+		class Base {}
+		class Derive extends Base {}
+	
+六、反射：运行时的类型信息
+
+	1. 类方法提取器
+	e.g.:
+		public class ShowMethods {
+			private static String usage =
+					"usage:\n" +
+					"ShowMethods qualified.class.name\n" +
+					"To show all methods in class or:\n" +
+					"To search for methods involving 'word' ";
+			private static Pattern p = Pattern.compile("\\+w\\.");
+			public static void main(String[] args) {
+				System.out.println(Arrays.toString(args));
+				if (args.length < 1) {
+					System.out.println(usage);
+					System.exit(0);
+				}
+				int lines = 0;
+				try {
+					Class<?> c = Class.forName(args[0]);
+					Method[] methods = c.getMethods();
+					Constructor[] ctors = c.getConstructors();
+					if (args.length == 1) {
+						for ( Method method : methods
+							   ) {
+							System.out.println(p.matcher(method.toString()).replaceAll(""));
+						}
+						for ( Constructor ctor : ctors
+							   ) {
+							System.out.println(p.matcher(ctor.toString()).replaceAll(""));
+						}
+						lines = methods.length + ctors.length;
+					} else {
+						for ( Method method : methods
+							   ) {
+							if (method.toString().indexOf(args[1]) != -1) {
+								System.out.println(p.matcher(method.toString()).replaceAll(""));
+								lines++;
+							}
+						}
+						for ( Constructor ctor : ctors
+							   ) {
+							if (ctor.toString().indexOf(args[1]) != -1) {
+								System.out.println(p.matcher(ctor.toString()).replaceAll(""));
+								lines++;
+							}
+						}
+					}
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	
+七、动态代理
+
+	e.g.:
+		public class SimpleProxyDemo {
+			public static void consumer(Interface itf) {
+				itf.doSomething();
+				itf.doSomethingElse("bonobo");
+			}
+			public static void main(String[] args) {
+				RealObject object = new RealObject();
+				consumer(object);
+				// 创建动态代理： 参数：类加载器， 该代理实现的接口列表（不是类或者抽象类），InvocationHandle接口的一个实现
+				// 动态代理可以将所有调用重定向到调用处理器
+				Interface real =(Interface)Proxy.newProxyInstance(
+						Interface.class.getClassLoader(),
+						new Class[]{Interface.class},
+						new DynamicProxyHandler(object));
+				consumer(real);
+			}
+		}
+		interface Interface {
+			void doSomething();
+			void doSomethingElse(String arg);
+		}
+		class RealObject implements Interface {
+
+			@Override
+			public void doSomething() {
+				System.out.println("doSomething");
+			}
+
+			@Override
+			public void doSomethingElse(String arg) {
+				System.out.println("doSomethingElse:" + arg);
+			}
+		}
+		class SimpleProxy implements Interface {
+			private Interface proxied;
+			public SimpleProxy(Interface proxied) {
+				this.proxied = proxied;
+			}
+			@Override
+			public void doSomething() {
+				System.out.println("SimpleProxy doSomething");
+				proxied.doSomething();
+			}
+
+			@Override
+			public void doSomethingElse(String arg) {
+				System.out.println("SimpleProxy doSomethingElse");
+				proxied.doSomethingElse(arg);
+			}
+		}
+
+		class DynamicProxyHandler implements InvocationHandler {
+			private Object proxied;
+			public DynamicProxyHandler(Object proxied) {
+				this.proxied = proxied;
+			}
+			@Override
+			public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+				System.out.println("**** proxy : " + proxy.getClass() + ". method : " + method + ". args : " + args);
+				if (args != null) {
+					for ( Object arg : args
+						   ) {
+						System.out.println("    " + arg);
+					}
+				}
+				return method.invoke(proxied, args);
+			}
+		}
+	
+八、空对象
+
+	空对象最有用之处在于它更靠近数据，因为对象表示的是问题空间内的实体。
+
+九、接口和类型信息
+
+	

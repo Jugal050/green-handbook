@@ -1,0 +1,264 @@
+第八章 多态
+
+	在面向对象的程序语言设计中，多态是继数据抽象和继承之后的第三种基本特征。
+
+一、再论向上转型
+
+	忘记对象类型
+
+二、 转机
+
+	1. 方法调用绑定
+
+		绑定：将一个方法调用和一个方法主体关联起来。
+
+	2. 产生正确的行为
+
+	3. 可扩展性
+
+	4. 缺陷：“覆盖”私有方法
+
+		只有非private的方法才能被覆盖
+		e.g.:
+			public class PrivateOverride {
+			    private void f() {
+			        System.out.println("PrivateOverride private f()");
+			    }
+
+			    public static void main(String[] args) {
+			        PrivateOverride  privateOverride = new Derived();
+			        privateOverride.f();
+			    }
+			}
+
+			class Derived extends PrivateOverride {
+			    public void f() {
+			        System.out.println("Derived public f()");
+			    }
+			}
+
+	5. 缺陷：域与静态方法
+
+		只有普通方法的调用是多态的。如果你直接访问某个域，这个访问就将在编译期进行解析。
+		e.g.:
+			public class FiledAccess {
+			    public static void main(String[] args) {
+			        Super sup = new Sub();
+			        System.out.println("sup.filed:" + sup.filed);
+			        System.out.println("sup.getFiled:" + sup.getFiled());
+
+			        Sub sub = new Sub();
+			        System.out.println("sub.filed:" + sub.filed);
+			        System.out.println("sub.getFiled:" + sub.getFiled());
+			        System.out.println("sub.getSuperFiled:" + sub.getSuperFiled());
+			    }
+			}
+
+			class Super {
+			    public int filed = 0;
+			    public int getFiled() {
+			        return filed;
+			    }
+			}
+
+			class Sub extends Super {
+			    public int filed = 1;
+			    @Override
+			    public int getFiled() {
+			        return filed;
+			    }
+			    public int getSuperFiled() {
+			        return super.filed;
+			    }
+			}
+
+		如果某个方法是静态的，它的行为就不具有多态性。
+		静态方法是与类，而不是与单个对象相关联的。
+		e.g.:
+			public class StaticPolymorphism {
+			    public static void main(String[] args) {
+			        StaticSup sup = new StaticSub();
+			        sup.dynamicGet();
+			        sup.staticGet();
+
+			    }
+			}
+
+			class StaticSup {
+			    public static void staticGet() {
+			        System.out.println("StaticSup staticGet()");
+			    }
+			    public void dynamicGet() {
+			        System.out.println("StaticSup dynamicGet()");
+			    }
+			}
+
+			class StaticSub extends StaticSup {
+			    public static void staticGet() {
+			        System.out.println("StaticSub staticGet()");
+
+			    }
+			    @Override
+			    public void dynamicGet() {
+			        System.out.println("StaticSub dynamicGet()");
+			    }
+			}
+
+
+三、构造器与多态
+	
+	1. 构造器的调用顺序
+
+		基类构造器总是在导出类的构造过程中被调用，而且按照继承层次逐渐向上链接，以使每个基类的构造器都能得到调用。
+		e.g.:
+			public class Sandwich extends PortableLunch {
+			    private Bread bread = new Bread();
+			    private Cheese cheese = new Cheese();
+			    private Lettuce lettuce = new Lettuce();
+			    public Sandwich() {
+			        System.out.println("Sandwich()");
+			    }
+
+			    public static void main(String[] args) {
+			        new Sandwich();
+			    }
+			}
+
+			class PortableLunch extends Lunch {
+			    PortableLunch() {
+			        System.out.println("PortableLunch()");
+			    }
+			}
+
+			class Lunch extends Meal {
+			    Lunch() {
+			        System.out.println("Lunch()");
+			    }
+			}
+
+			class Meal {
+			    Meal() {
+			        System.out.println("Meal()");
+			    }
+			}
+
+			class Bread {
+			    Bread() {
+			        System.out.println("Bread()");
+			    }
+			}
+
+			class Cheese {
+			    Cheese() {
+			        System.out.println("Cheese()");
+			    }
+			}
+
+			class Lettuce {
+			    Lettuce() {
+			        System.out.println("Lettuce");
+			    }
+			}
+
+	2. 继承与清理
+
+		销毁的顺序应该与初始化顺序相反：
+			对于字段：与声明的顺序相反（因为字段的初始化是按照声明的顺序进行的）
+			对于基类：首先对导出类进行清理，然后才是基类。
+
+	3. 构造器内部的多态方法的行为
+
+		初始化的实际过程：
+			① 在其他任何事物发生之前，将分配给对象的存储空间初始化为二进制的零。
+			② 调用基类构造器。
+			③ 按照声明的顺序调用成员的初始化方法。
+			④ 调用导出类的构造主体。
+
+四、协变返回类型
+
+	在导出类中的被覆盖方法可以返回基类方法的返回类型的某种导出类型。
+	e.g.:
+		public class CovariantReturn {
+		    public static void main(String[] args) {
+		        Mill mill = new Mill();
+		        Grain grain = mill.process();
+		        System.out.println(grain);
+
+		        mill = new WheatMill();
+		        grain = mill.process();
+		        System.out.println(grain);
+		    }
+		}
+
+		class Grain {
+		    @Override
+		    public String toString() {
+		        return "Grain";
+		    }
+		}
+
+		class Wheat extends Grain {
+		    @Override
+		    public String toString() {
+		        return "Wheat";
+		    }
+		}
+
+		class Mill {
+		    Grain process() {
+		        return new Grain();
+		    }
+		}
+
+		class WheatMill extends Mill {
+		    @Override
+		    Wheat process() {
+		        return new Wheat();
+		    }
+		}
+
+五、用继承进行设计
+
+	e.g.:
+		public class Transmogrify {
+		    public static void main(String[] args) {
+		        Stage stage = new Stage();
+		        stage.performPlay();
+		        stage.change();
+		        stage.performPlay();
+		    }
+		}
+
+		class Actor {
+		    void act() {
+		        System.out.println("Actor.act()");
+		    }
+		}
+
+		class HappyActor extends Actor {
+		    @Override
+		    void act() {
+		        System.out.println("HappyActor.act()");
+		    }
+		}
+
+		class SadActor extends Actor {
+		    @Override
+		    void act() {
+		        System.out.println("SadActor.act()");
+		    }
+		}
+
+		class Stage {
+		    private Actor actor = new HappyActor();
+		    public void change() {
+		        actor = new SadActor();
+		    }
+		    public void performPlay() {
+		        actor.act();
+		    }
+		}
+
+	1. 纯继承与扩展
+
+	2. 向下转型与运行时类型识别

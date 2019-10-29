@@ -1,0 +1,252 @@
+第七章 复用类
+
+	复用类的两种方式：
+		1. 组合：
+				在新的类中产生现有类的对象。该方法只是复用了现有程序代码的功能，而非它的形式。
+		2. 继承
+				按照现有类的类型创造新类。无需改变现有类的形式，采用现有类的形式并在其中添加新代码。
+
+一、组合语法
+
+	e.g.:
+		public class SprinklerSystem {
+		    private String value1, value2, value3, value4;
+		    private int i;
+		    private float f;
+		    private WaterSource waterSource;
+		    @Override
+		    public String toString() {
+		        return "SprinkleSystem:" + " " +
+		                "value1:" + value1 + " " +
+		                "value2:" + value1 + " " +
+		                "value3:" + value1 + " " +
+		                "value4:" + value1 + " " +
+		                "i:" + i + " " +
+		                "f:" + f + " " +
+		                "WaterSource:" + waterSource;
+		    }
+
+		    public static void main(String[] args) {
+		        System.out.println(new SprinklerSystem());
+		    }
+		}
+
+		class WaterSource {
+		    private String s;
+		    WaterSource() {
+		        System.out.println("WaterSource()");
+		        s = "Constructed";
+		    }
+
+		    @Override
+		    public String toString() {
+		        return s;
+		    }
+		}
+
+二、继承语法
+	
+	当创建一个类时，总是在继承，因此，除非已明确指出要从其他类中继承，否则就是隐式地从Java的标准根类Object进行继承。
+
+	e.g.:
+		public class Detergent  extends Cleanser{
+		    /**
+		     * Change a method
+		     */
+		    @Override
+		    public void scrub() {
+		        append(" Detergent scrub()");
+		        super.scrub();
+		    }
+
+		    /**
+		     * Add a method
+		     */
+		    public void foam() { append(" foam()"); }
+
+		    /**
+		     * Test the base class
+		     */
+		    public static void main(String[] args) {
+		        Detergent detergent = new Detergent();
+		        detergent.dilute();
+		        detergent.apply();
+		        detergent.scrub();
+		        detergent.foam();
+		        System.out.println(detergent);
+		        System.out.println("Test base class");
+		        Cleanser.main(args);
+		    }
+		}
+
+		class Cleanser {
+		    private String s = "Cleanser";
+		    public void append(String a) { s += a; }
+		    public void dilute() { append(" dilute()"); }
+		    public void apply() { append(" apply()"); }
+		    public void scrub() { append(" scrub()"); }
+		    @Override
+		    public String toString() { return s; }
+
+		    public static void main(String[] args) {
+		        Cleanser cleanser = new Cleanser();
+		        cleanser.dilute();
+		        cleanser.apply();
+		        cleanser.scrub();
+		        System.out.println(cleanser);
+		    }
+		}
+
+	1. 初始化基类
+
+		当创建一个导出类的对象时，该对象包含了一个基类的子对象。
+		在构造器中调用基类构造器来执行初始化，而基类构造器具有执行基类初始化所需要的所有认识和能力。Java会自动在导出类的构造器中插入对基类构造器的调用。
+
+		e.g.:
+			public class Cartoon extends Drawing{
+			    Cartoon() {
+			        System.out.println("Cartoon constructor");
+			    }
+
+			    public static void main(String[] args) {
+			        Cartoon cartoon = new Cartoon();
+			    }
+			}
+
+			class Art {
+			    Art() {
+			        System.out.println("Art constructor");
+			    }
+			}
+
+			class Drawing extends Art {
+			    Drawing() {
+			        System.out.println("Drawing constructor");
+			    }
+			}
+
+
+		带参数的构造器：
+			必须在导出类构造器中首先调用基类构造器。否则编译器将报错：无法找到符合基类的构造器。
+
+		e.g.:
+			class Game {
+			    Game(int i) {
+			        System.out.println("Game constructor");
+			    }
+			}
+
+			class BoardGame extends Game{
+			    BoardGame(int i) {
+			        super(i);
+			        System.out.println("BoardGame constructor");
+			    }
+			}
+
+			public class Chess extends BoardGame {
+			    Chess() {
+			        super(11);
+			        System.out.println("Chess constructor");
+			    }
+
+			    public static void main(String[] args) {
+			        Chess chess = new Chess();
+			    }
+			}
+
+三、代理
+
+	使用代理可以拥有更多的控制力，可以选择只提供在成员对象中的方法的某个子集。
+	e.g.:
+		public class SpaceShipDelegation {
+		    private String name;
+		    private SpaceShipControls spaceShipControls = new SpaceShipControls();
+		    public SpaceShipDelegation(String name) {
+		        this.name = name;
+		    }
+		    public void up(int velocity) { spaceShipControls.up(velocity); }
+		    public void down(int velocity) { spaceShipControls.down(velocity); }
+		    public void left(int velocity) { spaceShipControls.left(velocity); }
+		    public void right(int velocity) { spaceShipControls.right(velocity); }
+		    public void forward(int velocity) { spaceShipControls.right(velocity); }
+		    public void back(int velocity) { spaceShipControls.back(velocity); }
+		    public void turboBoost() { spaceShipControls.turboBoost(); }
+
+		    public static void main(String[] args) {
+		        SpaceShipDelegation spaceShipDelegation = new SpaceShipDelegation();
+		        spaceShipDelegation.forward(100);
+		    }
+
+		}
+
+		class SpaceShipControls {
+		    void up(int velocity) {}
+		    void down(int velocity) {}
+		    void left(int velocity) {}
+		    void right(int velocity) {}
+		    void forward(int velocity) {}
+		    void back(int velocity) {}
+		    void turboBoost() {}
+		}
+
+四、结合使用组合和继承
+
+	1. 确保正确清理
+
+		许多情况下，清理并不是问题，仅需让垃圾回收器完成该动作就可以。但当必须亲自处理清理时，就得多做努力并多加小心。因为，一旦涉及垃圾回收，能够信赖的事就不会很多了。垃圾回收器可能永远无法被调用，即使被调用，他也可能以任何它想要的顺序来回收对象。
+
+		最好的办法是除了内存以外，不能信赖垃圾回收器去做任何事，如果需要进行清理，最好是编写你自己的清理方法，但不要使用finalize()。
+
+	2. 名称屏蔽
+
+		@Override注解可以防止你在不想重载时而意外地进行了重载。
+
+五、在组合和继承之间选择
+
+	“is a” or “has a”          “是一个” 还是 “有一个”
+
+六、protected关键字
+
+	proctected域，导出类可以访问其类中的成员和方法。
+
+
+七、向上转型
+
+	“新类是现有类的一种类型”
+
+	导出类（子类）引用转换为基类（父类）引用的动作，我们称之为“向上转型”。
+
+八、final关键字
+
+	1. final数据
+
+		一个永不改变的编译时常量。
+		一个在运行时被初始化的值，而你不希望它被改变。
+
+		对于基本类型，final使数值恒定不变。
+		对于对象引用，final使引用恒定不变。（一旦引用被初始化指向一个对象，就无法再把它改为指向另一个对象，对象自身可以被修改）
+
+		空白final
+			域可以做到根据对象而有所不同，却又保持其恒定不变的特性。
+
+		final参数
+			意味着无法在方法中更改参数引用所指向的对象。
+
+
+	2. final方法
+
+		使用原因：
+			① 把方法锁定，以防任何继承类修改它的含义。确保在继承中使方法行为保持不变，并且不会被覆盖。
+			② 效率。
+
+		final和private关键字
+			类中所有的private方法都隐式地指定为是final的。
+
+	3. final类
+
+		final类不能被继承，final类中所有的方法都隐式地指定为是final的，因为无法覆盖他们。
+
+九、初始化及类的加载
+
+	1. 继承与初始化
+		从导出类开始寻找其上一层的父类，然后向上寻找，直到没有其父类，然后从起点处的父类开始按顺序初始化，直到最后的导出类。

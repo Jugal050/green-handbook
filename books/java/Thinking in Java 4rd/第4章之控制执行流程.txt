@@ -1,0 +1,109 @@
+第四章 控制执行流程
+
+1. if-else
+	格式：
+	if (Boolean-expression) {
+		statement
+	}
+	或者
+	if (Boolean-expression) {
+		statement
+	} else if (Boolean-expression) {
+		statement
+	} else {
+		statement
+	}
+
+2. while
+	格式：
+	while (Boolean-expression) {
+		statement
+	}
+
+3. do-while
+	格式：
+	do {
+		statement
+	} while (Boolean-expression)
+
+4. for
+	格式：
+	//   初始化表达式; 布尔表达式; 步进
+	for (initialization; Bollean-expression; step) {
+		statement
+	}
+
+5. ","逗号操作符
+	e.g.:
+		for (int i = 0, j = 0; i < 10; i++, j = i * 2) {
+			statement	
+		}
+
+	tips:
+		1. ","操作符不同于","分隔符（用作分隔符时用来分隔函数的不同参数）。
+		2. Java里唯一用到逗号操作符的地方就是for循环的控制表达式。
+		3. 在控制表达式的初始化和步进控制部分，可以使用一系列由逗号分隔的语句，而且那些语句均会独立执行。
+
+6. ForEach
+	格式：
+	for (typeOfObj obj: collector) {
+		statement
+	}
+	tips:
+		1. foreach循环用于数组和容器，表示不必创建int变量去对由访问项构成的序列进行技术，foreach将自动产生每一项。
+
+7. return
+	用途：
+		1. 指定一个方法返回什么值（假设它没有void返回值）。
+		2. 导致当前的方法退出，并返回那个值。
+		3. 如果在返回void的方法中没有return语句，那么在该方法的结尾处会有一个隐式的return。
+		4. 如果一个方法声明它将返回void之外的其他东西，那么必须确保每一条代码路径都将返回一个值。
+
+8. break
+	用途：
+		1. 退出循环，不执行循环中剩余的部分。
+
+9. continue
+	用途：
+		1. 停止执行当前的迭代，然后退回循环起始处，开始下一次迭代。
+10. 无限循环
+	形式：
+		1. for (;;) {statement}
+		2. while (true) {statement}	
+
+11. 类goto
+	
+	★Java中没有goto,Java也能完成一些类似跳转的操作，这与break和continue这两个关键词有关。
+	e.g.:
+		label1:
+		outer-iteration {
+			label2:
+			inner-iteration {
+				//...
+				break; // 中断内部迭代，回到外部迭代
+				//...
+				continue; // 使执行点移回内部迭代的起始处
+				//...
+				continue label1; // 同时中断内部迭代以及外部迭代，直接转到label1处（实际上是继续迭代过程，但却从外部迭代开始）
+				//...
+				break label1; // 中断所有迭代，并回到label1处，但并不重新进入迭代。（完全终止了两个迭代）	
+			}
+		}
+ 	tips:
+ 		1. 一般的continue会退回到最内层循环的开头（底部），并继续进行。
+ 		2. 带标签的continue会到达标签的位置，并重新进入紧接在那个标签后面的循环。
+ 		3. 一般的break会中断并跳出当前循环。
+ 		4. 带标签的break会中断并跳出标签所指的循环
+ 		5. Java里需要使用标签的唯一理由就是因为有嵌套循环存在，而且想从多层嵌套中break或者continue。
+
+12. switch
+	格式：
+		switch (integral-selector) {
+			case integral-value1 : statement; break;
+			case integral-value2 : statement; break;
+			case integral-value3 : statement; break;
+			case integral-value4 : statement; break;
+			case integral-value5 : statement; break;
+			// ...
+			default: statement;
+		}

@@ -1,0 +1,399 @@
+第五章 初始化与清理
+
+一、用构造器确保初始化
+	
+	Java中，通过提供构造器，类的设计者可确保每个对象都得到初始化。
+	创建对象时，如果其类有构造器，Java就会在用户有能力操作对象之前自动调用相应的构造器，从而保证了初始化的进行。
+
+二、方法重载
+	
+	1. 区分重载方法:
+		每个重载的方法都必须有一个独一无二的参数类型列表。
+
+	2. 涉及基本类型的重载：
+		① 一般情况： 
+			会根据实际参数的类型调用与形式参数类型相同的方法。
+		② 如果传入的数据类型（实际数据类型）小于方法中声明的形式参数类型：
+			实际数据类型就会被提升。
+			char型略有不同，如果无法找到恰好接受char参数的方法，就会把char直接提升至int型。
+		③ 如果传入的数据类型大于方法中声明的形式参数类型：
+			必须通过类型转换来执行窄化转换，否则，编译器就会报错。	
+
+	3. 以返回值区分重载方法：
+		e.g.:
+			void f() {}
+			int f() {return 1;}
+
+			只要编译器可以根据语境明确判断出语义，如int x = f();那么的确可以据此区分重载方法。
+			不过有时并不关心方法的返回值，你想要的是方法调用的其他效果（“为了副作用而调用”）,如 f(); 则无法区分。
+
+		所以；根据方法的返回值来区分重载方法是行不通的。
+
+三、默认构造器
+	
+	默认构造器（又名“无参构造器”）-作用是创建一个“默认对象”
+
+	如果你的类中没有构造器，则编译器会自动帮你创建一个默认构造器；
+	如果你的类中写了一个构造器，则编译器不会自动创建默认构造器。
+
+四、this关键字
+	
+	this关键字只能在方法内部使用，表示对“调用方法的那个对象”的引用。
+
+	1. 在构造器中调用构造器：
+		在构造器中，如果为this添加了参数列表，将产生对符合此参数列表的某个构造器的明确调用。
+		e.g.:
+			public class TestThisConstructor {
+			    int age = 0;
+			    String name = "lily";
+			    TestThisConstructor(int age) {
+			        this.age = age;
+			        System.out.println("Constructor with int args:" + age);
+			    }
+			    TestThisConstructor(String name) {
+			        this.name = name;
+			        System.out.println("Constructor with string args:" + name);
+			    }
+			    TestThisConstructor(String name, int age) {
+			        this(age);
+			        this.name = name;
+			        System.out.println("String args & int args");
+			    }
+
+			    TestThisConstructor() {
+			        System.out.println("default constructor (no args)");
+			    }
+
+			    void love() {
+			        System.out.println("Hello, " + name + ",I miss u " + age );
+			    }
+
+			    public static void main(String[] args) {
+			        TestThisConstructor lily = new TestThisConstructor("Lily", 1125);
+			        lily.love();
+			    }
+
+			}
+
+		tips:
+			尽管可以使用this调用一个构造器，但却不能调用两个，此外，必须将构造器调用置于最起码处，否则编译器会报错。
+			除构造器之外，编译器禁止在其他任何方法中调用构造器。
+
+
+	2. static的含义
+
+		static方法是没有this的方法。
+		在static方法的内部不能调用非静态方法，反过来可以。（不是完全不可能，如果传递一个对象的引用到静态方法里，然后通过这个引用，可以调用非静态方法和访问非静态成员变量了。但通常要达到这样的效果，你只需写一个非静态方法即可）
+		可以在没有创建任何对象的前提下，仅仅通过类本身来调用static方法。
+
+五、清理：终结处理和垃圾回收
+	
+	★ 对象可能不被垃圾回收
+	★ 垃圾回收并不等于“析构”
+	★ 垃圾回收只与内存有关。(垃圾回收器的唯一原因是为了回收程序不再使用的内存。)
+
+	1. finalize()的用途何在
+		之所以要有finalize()，是由于在分配内存时可能采用了类似C语言中的做法。
+	2. 你必须实施清理
+		无论是“垃圾回收”还是“终结”，都不保证一定会发生。如果JVM并未面临内存耗尽的情形，是不会浪费时间去执行垃圾回收以恢复内存的。
+	3. 终结条件
+		System.gc()用于强制进行终结动作。
+	4. 垃圾回收器如何工作
+
+六、成员初始化
+	
+	1. 指定初始化
+		e.g.: int a = 1; boolean bl = false; char c = 'a'; ......
+
+七、构造器初始化
+
+	1. 初始化顺序
+		再类的内部，变量定义的先后顺序决定了初始化的顺序。即使变量定义散布于方法定义之间，他们仍旧会在任何方法（包括构造器）被调用之前得到初始化。
+
+	2. 静态数据的初始化
+		无论创建多少个对象，静态数据只占用一份存储区域。
+
+		总结一下对象的创建过程，假设有个名为Dog的类：
+			① 即使没有显示地使用static关键字，构造器实际上也是静态方法。因此，当首次创建类型为Dog的对象时，或者Dog类的静态方法/静态域首次被访问时，Java解释器必须查找类路径，以定位Dog.class文件。
+			② 然后载入Dog.class(这将创建一个Class对象)，有关静态初始化的所有动作都会执行。因此，静态初始化只在Class对象首次加载的时候进行一次。
+			③ 当用new Dog()创建对象的时候，首先将在堆上为Dog对象分配足够的存储空间。
+			④ 这块存储空间会被清零，这就自动地将Dog对象中的所有基本数据类型都设置成了默认值，而引用值被设置成了null。
+			⑤ 执行所有出现于字段定义处的初始化动作。
+			⑥ 执行构造器。
+
+
+	3. 显示的静态初始化
+		“静态块”：
+			e.g.:
+				public class TestExplicitStaticInitilization {
+				    public static void main(String[] args) {
+				        System.out.println("Inside main()");
+				        //Cups.cup1.f(1); // 1
+				    }
+				    static Cups cups1 = new Cups();
+				    static Cups cups2 = new Cups();
+				}
+
+				class Cup {
+				    Cup(int marker) {
+				        System.out.println("Cup(" + marker + ")");
+				    }
+				    void f(int marker) {
+				        System.out.println("f(" + marker + ")");
+				    }
+				}
+
+				class Cups {
+				    static Cup cup1;
+				    static Cup cup2;
+				    static {
+				        cup1 = new Cup(1);
+				        cup2 = new Cup(2);
+				    }
+				    Cups() {
+				        System.out.println("Cups()");
+				    }
+				}
+
+	4. 非静态示例初始化
+		e.g.:
+			public class TestMugs {
+			    Mug mug1;
+			    Mug mug2;
+			    {
+			        mug1 = new Mug(1);
+			        mug2 = new Mug(2);
+			        System.out.println("mug1 & mug2 initialized");
+			    }
+			    TestMugs() {
+			        System.out.println("Mugs()");
+			    }
+			    TestMugs(int marker) {
+			        System.out.println("Mugs(" + marker + ")");
+			    }
+
+			    public static void main(String[] args) {
+			        System.out.println("Inside main()");
+			        new TestMugs();
+			        System.out.println("new Mugs() completed");
+			        new TestMugs(2);
+			        System.out.println("new Mugs(int marker) completed");
+			    }
+
+			}
+
+			class Mug {
+			    Mug(int marker) {
+			        System.out.println("Mug(" + marker + ")");
+			    }
+			    void f(int marker) {
+			        System.out.println("f(" + marker + ")");
+			    }
+			}
+	
+八、数组初始化
+	 
+	数组只是相同类型的、用一个标识符名称封装到一起的一个对象序列或者基本数据类型序列。
+	
+	初始化：
+		Object[] objectArray = {object1, object2, object3...};
+
+		Object[] objectArray = new Object[]{object1, object2, object3...};
+
+		Object[] objectArray = new Obejct[length];
+			for(int i = 0; i < length-1; i++){
+				objectArray[i] = object-i;
+			}
+
+	1. 可变参数列表
+		e.g.:
+			public class TestVarArgs {
+			    public static void main(String[] args) {
+			        VarArgs.printArray(new Object[]{"one", "two", "three"});
+			        VarArgs.printArray(new Object[]{new Integer(1), new Integer(2), 3, "4"});
+
+			        NewVarArgs.printArray(new Object[]{"one", "two", "three", "four"});
+			        NewVarArgs.printArray(new Object[]{new Integer(1), new Integer(2), 3, "4"});
+			        NewVarArgs.printArray();
+
+			        OptionalTrailingArgs.f(0);
+			        OptionalTrailingArgs.f(1, new String[] {"Hello", " ", "World", "!"});
+			        OptionalTrailingArgs.f(2,  "are", " you", " ok?");
+
+			        VarArgsType.f('a', 'b');
+			        VarArgsType.f();
+			        VarArgsType.g(1, 2);
+			        VarArgsType.g();
+			        VarArgsType.g(new Integer(123));
+			        VarArgsType.h(1, 2);
+
+			        OverloadingVarArgs.f('o', 'v', 'e', 'r', 'l', 'o', 'a', 'd', 'i', 'n', 'g');
+			        OverloadingVarArgs.f(2,1);
+			        OverloadingVarArgs.f(2);
+			        OverloadingVarArgs.f('3');
+			        OverloadingVarArgs.f(2L);
+
+			        OverloadingVarArgs2.f('a', 'b');
+			        OverloadingVarArgs2.f(1,'b');
+
+			    }
+			}
+
+			/**
+			 * 用数组句法创建可选参数列表
+			 */
+			class VarArgs {
+			    static void printArray(Object[] objects) {
+			        for ( Object object : objects) {
+			            System.out.print(object + " ");
+			        }
+			        System.out.println();
+			    }
+			}
+
+			/**
+			 * 从Java SE5开始起
+			 */
+			class NewVarArgs {
+			    static void printArray(Object... args) {
+			        for ( Object object : args) {
+			            System.out.print(object + " ");
+			        }
+			        System.out.println();
+			    }
+			}
+
+			/**
+			 * 具有可选的尾随参数
+			 */
+			class OptionalTrailingArgs {
+			    static void f(int required, String... trailing) {
+			        System.out.print("required: " + required + " ");
+			        for ( String s : trailing ) {
+			            System.out.print(s + " ");
+			        }
+			        System.out.println();
+			    }
+			}
+
+			/**
+			 * 可变参数列表为数组，如果该列表中没有任何元素，那么转变为的数据的尺寸为0
+			 * 可变参数列表不依赖自动包装机制，而实际上使用的是基本类型
+			 */
+			class VarArgsType {
+			    static void f(Character... characters) {
+			        System.out.print(characters.getClass());
+			        System.out.println(" length:" + characters.length);
+			    }
+
+			    static void g(int... ints) {
+			        System.out.print(ints.getClass());
+			        System.out.println(" length:" + ints.length);
+			    }
+
+			    static void h(Integer... integers) {
+			        System.out.print(integers.getClass());
+			        System.out.println(" length:" + integers.length);
+			    }
+			}
+
+			/**
+			 * 可以在单一的参数列表中将类型混合在一起，而启动包装机制将有选择地将参数类型进行提升，如int类型提升为Integer...
+			 */
+			class OverloadingVarArgs {
+			    static void f(Character... characters) {
+			        System.out.print("first");
+			        for ( Character c: characters
+			               ) {
+			            System.out.print(" " + c);
+			        }
+			        System.out.println();
+			    }
+
+			    static void f(Integer... integers) {
+			        System.out.print("second");
+			        for ( Integer i: integers
+			               ) {
+			            System.out.print(" " + i);
+			        }
+			        System.out.println();
+			    }
+
+			    static void f(Long... longs) {
+			        System.out.print("third");
+			        for ( Long l: longs
+			               ) {
+			            System.out.print(" " + l);
+			        }
+			        System.out.println();
+			    }
+			}
+
+			/**
+			 * {CompileTimeError} Won't compile
+			 * 给两个方法都添加一个非可变参数，就可以解决问题了
+			 */
+			class OverloadingVarArgs2 {
+			    static void f(int i, Character... characters) {
+			        System.out.println("first");
+			    }
+			    /* 编译器的自动包装机制，导致发生了对f的引用不明确， */
+			    /*static void f(Character... characters) {
+			        System.out.println("second");
+			    }*/
+
+			    static void f(char c, Character... characters) {
+			        System.out.println("second");
+			    }
+			}
+
+			
+九、枚举类型
+	e.g.:
+		public enum  Spiciness {
+		    NOT, MILD, MEDIUM, HOT, FLAMING
+		}
+
+		public class TestEnum {
+		    Spiciness degree;
+
+		    public TestEnum(Spiciness degree) {
+		        this.degree = degree;
+		    }
+
+		    public void describe() {
+		        System.out.println("The burrito is: ");
+		        switch (degree) {
+		            case NOT:
+		                System.out.println("not spicy at all");
+		                break;
+		            case MILD:
+		            case MEDIUM:
+		                System.out.println("a little hot");
+		                break;
+		            case HOT:
+		            case FLAMING:
+		                default:
+		                System.out.println("maybe too hot");
+		        }
+		    }
+
+		    public static void main(String[] args) {
+		        Spiciness spiciness = Spiciness.MEDIUM;
+		        System.out.println(spiciness);
+
+		        for ( Spiciness s: Spiciness.values()
+		               ) {
+		            System.out.println(s + ": ordinal-" +  s.ordinal());
+		        }
+
+		        TestEnum plain = new TestEnum(Spiciness.HOT),
+		                greenChile = new TestEnum(Spiciness.MEDIUM),
+		                jalapeno = new TestEnum(Spiciness.FLAMING);
+
+		        plain.describe();
+		        greenChile.describe();
+		        jalapeno.describe();
+		    }
+		}
+

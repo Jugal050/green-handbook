@@ -1,0 +1,273 @@
+Java基础知识：
+
+	** Java的三大特性
+
+		封装：
+			封装把一个对象的属性私有化，同时提供一些可以被外界访问的属性的方法，如果属性不想被外界访问，我们大可不必提供方法给外界访问。但是如果一个类没有提供给外界访问的方法，那么这个类也没有什么意义了。
+
+		继承：
+			继承是使用已存在的类的定义作为基础建立新类的技术，新类的定义可以增加新的数据或新的功能，也可以用父类的功能，但不能选择性地继承父类。通过使用继承我们能够非常方便地复用以前的代码。
+
+			tips：
+				子类拥有父类对象所有的属性和方法（包括私有属性和私有方法），但是父类中的私有属性和方法子类是无法访问，只是拥有。
+				子类可以拥有自己属性和方法，即子类可以对父类进行扩展。
+				子类可以用自己的方式实现父类的方法。（以后介绍）。
+
+		多态：
+
+			多态就是指程序中定义的引用变量所指向的具体类型和通过该引用变量发出的方法调用在编程时并不确定，而是在程序运行期间才确定，即一个引用变量到底会指向哪个类的实例对象，该引用变量发出的方法调用到底是哪个类中实现的方法，必须在由程序运行期间才能决定。
+
+			在Java中有两种形式可以实现多态：继承（多个子类对同一方法的重写）和接口（实现接口并覆盖接口中同一方法）。
+
+	** 重写和重载的区别
+	
+		重载： 
+			发生在同一个类中，方法名必须相同，参数类型不同、个数不同、顺序不同，方法返回值和访问修饰符可以不同，发生在编译时。 　
+
+		重写： 
+			发生在父子类中，方法名、参数列表必须相同，返回值范围小于等于父类，抛出的异常范围小于等于父类，访问修饰符范围大于等于父类；如果父类方法访问修饰符为 private 则子类就不能重写该方法。	
+
+	** String、StringBuffer 和 StringBuilder 的区别
+
+		可变性：
+			简单的来说：String 类中使用 final 关键字修饰字符数组来保存字符串，private　final　char　value[]，所以 String 对象是不可变的。而StringBuilder 与 StringBuffer 都继承自 AbstractStringBuilder 类，在 AbstractStringBuilder 中也是使用字符数组保存字符串char[]value 但是没有用 final 关键字修饰，所以这两种对象都是可变的。
+
+		线程安全性：
+			String 中的对象是不可变的，也就可以理解为常量，线程安全。AbstractStringBuilder 是 StringBuilder 与 StringBuffer 的公共父类，定义了一些字符串的基本操作，如 expandCapacity、append、insert、indexOf 等公共方法。StringBuffer 对方法加了同步锁或者对调用的方法加了同步锁，所以是线程安全的。StringBuilder 并没有对方法进行加同步锁，所以是非线程安全的。
+
+		性能：
+			每次对 String 类型进行改变的时候，都会生成一个新的 String 对象，然后将指针指向新的 String 对象。StringBuffer 每次都会对 StringBuffer 对象本身进行操作，而不是生成新的对象并改变对象引用。相同情况下使用 StringBuilder 相比使用 StringBuffer 仅能获得 10%~15% 左右的性能提升，但却要冒多线程不安全的风险。
+
+		tips：		
+			操作少量的数据: 适用String
+			单线程操作字符串缓冲区下操作大量数据: 适用StringBuilder
+			多线程操作字符串缓冲区下操作大量数据: 适用StringBuffer
+
+	** 接口与抽象类的区别
+	
+		接口的方法默认是 public，所有方法在接口中不能有实现(Java 8 开始接口方法可以有默认实现），而抽象类可以有非抽象的方法。
+
+		接口中除了static、final变量，不能有其他变量，而抽象类中则不一定。
+
+		一个类可以实现多个接口，但只能实现一个抽象类。接口自己本身可以通过extends关键字扩展多个接口。
+
+		接口方法默认修饰符是public，抽象方法可以有public、protected和default这些修饰符（抽象方法就是为了被重写所以不能使用private关键字修饰！）。
+
+		从设计层面来说，抽象是对类的抽象，是一种模板设计，而接口是对行为的抽象，是一种行为的规范。
+
+		tips：
+			在JDK8中，接口也可以定义静态方法，可以直接用接口名调用。实现类和实现是不可以调用的。如果同时实现两个接口，接口中定义了一样的默认方法，则必须重写，不然会报错。
+
+	** 成员变量与局部变量的区别
+	
+		从语法形式上看:成员变量是属于类的，而局部变量是在方法中定义的变量或是方法的参数；成员变量可以被 public,private,static 等修饰符所修饰，而局部变量不能被访问控制修饰符及 static 所修饰；但是，成员变量和局部变量都能被 final 所修饰。
+
+		从变量在内存中的存储方式来看:如果成员变量是使用static修饰的，那么这个成员变量是属于类的，如果没有使用static修饰，这个成员变量是属于实例的。而对象存在于堆内存，局部变量则存在于栈内存
+
+		从变量在内存中的生存时间上看:成员变量是对象的一部分，它随着对象的创建而存在，而局部变量随着方法的调用而自动消失。
+
+		成员变量如果没有被赋初值:则会自动以类型的默认值而赋值（一种情况例外:被 final 修饰的成员变量也必须显式地赋值），而局部变量则不会自动赋值。		
+
+	** == 与 equals的区别
+	
+		== : 它的作用是判断两个对象的地址是不是相等。即，判断两个对象是不是同一个对象(基本数据类型==比较的是值，引用数据类型==比较的是内存地址)。
+
+		equals() : 它的作用也是判断两个对象是否相等。但它一般有两种使用情况：
+			情况1：类没有覆盖 equals() 方法。则通过 equals() 比较该类的两个对象时，等价于通过“==”比较这两个对象。
+			情况2：类覆盖了 equals() 方法。一般，我们都覆盖 equals() 方法来比较两个对象的内容是否相等；若它们的内容相等，则返回 true (即，认为这两个对象相等)。	
+
+	** 为什么重写equals时必须重写hashCode方法？
+	
+		hashCode（）介绍
+
+			hashCode() 的作用是获取哈希码，也称为散列码；它实际上是返回一个int整数。这个哈希码的作用是确定该对象在哈希表中的索引位置。hashCode() 定义在JDK的Object.java中，这就意味着Java中的任何类都包含有hashCode() 函数。
+
+			散列表存储的是键值对(key-value)，它的特点是：能根据“键”快速的检索出对应的“值”。这其中就利用到了散列码！（可以快速找到所需要的对象）		
+
+		为什么要有 hashCode
+		
+			当你把对象加入 HashSet 时，HashSet 会先计算对象的 hashcode 值来判断对象加入的位置，同时也会与其他已经加入的对象的 hashcode 值作比较，如果没有相符的hashcode，HashSet会假设对象没有重复出现。但是如果发现有相同 hashcode 值的对象，这时会调用 equals（）方法来检查 hashcode 相等的对象是否真的相同。如果两者相同，HashSet 就不会让其加入操作成功。如果不同的话，就会重新散列到其他位置。这样我们就大大减少了 equals 的次数，相应就大大提高了执行速度。
+
+			hashCode() 的作用就是获取哈希码，也称为散列码；它实际上是返回一个int整数。这个哈希码的作用是确定该对象在哈希表中的索引位置。**hashCode() 在散列表中才有用，在其它情况下没用。**在散列表中hashCode() 的作用是获取对象的散列码，进而确定该对象在散列表中的位置。
+
+		hashCode（）与equals（）的相关规定
+
+			如果两个对象相等，则hashcode一定也是相同的
+			两个对象相等,对两个对象分别调用equals方法都返回true
+			两个对象有相同的hashcode值，它们也不一定是相等的
+			因此，equals 方法被覆盖过，则 hashCode 方法也必须被覆盖
+			hashCode() 的默认行为是对堆上的对象产生独特值。如果没有重写 hashCode()，则该 class 的两个对象无论如何都不会相等（即使这两个对象指向相同的数据）		
+
+	** Java关键字
+
+		this: 自身的一个对象，代表对象本身，可以理解为：指向对象本身的一个指针。
+
+		super: 指向自己超（父）类对象的一个指针，而这个超类指的是离自己最近的一个父类。
+
+		final:
+
+			final变量： 
+
+				基本类型————数值恒定不变
+				对象引用————引用恒定不变（一旦引用被初始化指向一个对象，就无法再把它改为指向另一个对象。但是对象其自身是可以被修改的）
+
+				空白final： 被声明为final但又为给定初始值的域。（可以做到根据对象而有所不同，却又保持其恒定不变的特性）
+
+				final参数： 在参数列表里以声明的方式指明为final，无法在方法中更改参数引用所指向的对象。
+
+			final方法：	方法锁定，以防任何继承类修改它的含义。
+
+			final类： 表明这个类不能被继承。final类中的所有成员方法都会被隐式地指定为final方法。
+
+		static:
+
+			修饰成员变量和成员方法： 
+				被static修饰的成员属于类，不属于单个这个类的某个对象，被类中所有对象共享，可以并且建议通过类名调用。被static 声明的成员变量属于静态成员变量，静态变量 存放在 Java 内存区域的方法区。调用格式：类名.静态变量名 类名.静态方法名()
+
+			静态代码块: 
+				静态代码块定义在类中方法外, 静态代码块在非静态代码块之前执行(静态代码块—>非静态代码块—>构造方法)。 该类不管创建多少对象，静态代码块只执行一次.
+
+			静态内部类（static修饰类的话只能修饰内部类）：
+				静态内部类与非静态内部类之间存在一个最大的区别: 非静态内部类在编译完成之后会隐含地保存着一个引用，该引用是指向创建它的外围类，但是静态内部类却没有。没有这个引用就意味着：1. 它的创建是不需要依赖外围类的创建。2. 它不能使用任何外围类的非static成员变量和方法。
+
+			静态导包(用来导入类中的静态资源，1.5之后的新特性): 格式为：import static 这两个关键字连用可以指定导入某个类中的指定静态资源，并且不需要使用类名调用类中静态成员，可以直接使用类中静态成员变量和成员方法。		
+
+		volatile:
+
+			保证了不同线程对这个变量进行操作时的可见性，即一个线程修改了某个变量的值，这新值对其他线程来说是立即可见的。（实现可见性）
+			禁止进行指令重排序。（实现有序性）
+			volatile 只能保证对单次读/写的原子性。i++ 这种操作不能保证原子性。
+
+
+		transient: 阻止实例中那些用此关键字修饰的的变量序列化；当对象被反序列化时，被transient修饰的变量值不会被持久化和恢复。transient只能修饰变量，不能修饰类和方法。
+
+			一旦变量被transient修饰，变量将不再是对象持久化的一部分，该变量内容在序列化后无法获得访问。
+			transient关键字只能修饰变量，而不能修饰方法和类。注意，本地变量是不能被transient关键字修饰的。变量如果是用户自定义类变量，则该类需要实现Serializable接口。
+			被transient关键字修饰的变量不再能被序列化，一个静态变量不管是否被transient修饰，均不能被序列化。
+
+	** 获取用键盘输入常用的两种方法
+	
+		方法1：通过 Scanner
+
+			Scanner input = new Scanner(System.in);
+			String s  = input.nextLine();
+			input.close();
+
+		方法2：通过 BufferedReader
+
+			BufferedReader input = new BufferedReader(new InputStreamReader(System.in)); 
+			String s = input.readLine(); 	
+
+	** Java 中的异常处理				
+
+		Throwable: 所有的异常的共同的祖先
+
+			Error: 是程序无法处理的错误
+
+				表示运行应用程序中较严重问题。大多数错误与代码编写者执行的操作无关，而表示代码运行时 JVM（Java 虚拟机）出现的问题。例如，Java虚拟机运行错误（Virtual MachineError），当 JVM 不再有继续执行操作所需的内存资源时，将出现 OutOfMemoryError。这些异常发生时，Java虚拟机（JVM）一般会选择线程终止。
+
+				这些错误表示故障发生于虚拟机自身、或者发生在虚拟机试图执行应用时，如Java虚拟机运行错误（Virtual MachineError）、类定义错误（NoClassDefFoundError）等。这些错误是不可查的，因为它们在应用程序的控制和处理能力之 外，而且绝大多数是程序运行时不允许出现的状况。对于设计合理的应用程序来说，即使确实发生了错误，本质上也不应该试图去处理它所引起的异常状况。在 Java中，错误通过Error的子类描述。
+
+				常见的Error：
+
+					java.lang.VirtualMachineError: JVM错误
+
+						java.lang.InternalError: JVM内部产生的不可预期的错误
+							Thrown to indicate some unexpected internal error has occurred in the Java Virtual Machine.
+
+						java.lang.OutOfMemoryError:  内存不足导致JVM无法给对象内存空间，并且GC也无法释放更多内存空间。
+							Thrown when the Java Virtual Machine cannot allocate an object because it is out of memory, and no more memory could be made available by the garbage collector.
+
+						java.lang.StackOverflowError: 程序递归太深导致堆溢出
+							Thrown when a stack overflow occurs because an application recurses too deeply.
+
+						java.lang.UnknownError:	JVM不可知的严重异常
+							Thrown when an unknown but serious exception has occurred in the Java Virtual Machine.
+
+							java.util.zip.ZipError: 不可恢复的错误的产生信息
+								Signals that an unrecoverable error has occurred.	
+
+
+			Exception: 是程序本身可以处理的异常
+
+				常见的Exception：
+
+					java.lang.RuntimeException：JVM正常运行时抛出的异常的父类，与其子类都是unchecked exception(方法或构造方法执行过程中抛出、传播时，无需声明异常原因).
+
+						java.lang.IndexOutOfBoundsException: 下标越界异常
+							Thrown to indicate that an index of some sort (such as to an array, to a string, or to a vector) is out of range.
+
+							java.lang.ArrayIndexOutOfBoundsException： 数组下标越界
+							java.lang.StringIndexOutOfBoundsException： 字符串下标越界
+
+						java.lang.ClassCastException： 类型转换异常
+						java.lang.NullPointerException： 空指针异常
+						java.lang.ArithmeticException： 算术异常
+						java.lang.ArrayStoreException： 数组保存异常
+						java.lang.IllegalArgumentException： 参数非法
+						java.lang.NumberFormatException： 数字格式异常
+
+						java.time.format.DateTimeParseException： 日期时间转换异常
+
+						java.util.ConcurrentModificationException： 并发修改异常
+
+					java.lang.ReflectiveOperationException： 反射操作异常
+						Common superclass of exceptions thrown by reflective operations in core reflection.		
+
+						java.lang.ClassNotFoundException： 类型查找异常
+						java.lang.NoSuchFieldException： 字段查找异常
+						java.lang.NoSuchMethodException： 方法查找异常
+						java.lang.IllegalAccessException： 反射操作时无权限异常
+						java.lang.InstantiationException： 实例化异常
+						java.lang.reflect.InvocationTargetException：目标调用异常
+
+			异常处理总结：
+			
+				try 块： 用于捕获异常。其后可接零个或多个catch块，如果没有catch块，则必须跟一个finally块。
+				catch 块： 用于处理try捕获到的异常。
+				finally 块： 无论是否捕获或处理异常，finally块里的语句都会被执行。当在try块或catch块中遇到return 语句时，finally语句块将在方法返回之前被执行。	
+
+			在以下4种特殊情况下，finally块不会被执行：
+				
+				在finally语句块第一行发生了异常。 因为在其他行，finally块还是会得到执行
+				在前面的代码中用了System.exit(int)已退出程序。 exit是带参函数 ；若该语句在异常语句之后，finally会执行
+				程序所在的线程死亡
+				关闭CPU
+
+				tips: 当try语句和finally语句中都有return语句时，在方法返回之前，finally语句的内容将被执行，并且finally语句的返回值将会覆盖原始的返回值。
+
+					e.g.: 如果调用 f(2)，返回值将是0，因为finally语句的返回值覆盖了try语句块的返回值。
+
+						    public static int f(int value) {
+						        try {
+						            return value * value;
+						        } finally {
+						            if (value == 2) {
+						                return 0;
+						            }
+						        }
+						    }
+
+
+	** Java 中 IO 流	
+
+		按照流的流向分，可以分为输入流和输出流；
+		按照操作单元划分，可以划分为字节流和字符流；
+		按照流的角色划分为节点流和处理流。
+
+		抽象基类：
+			InputStream/Reader: 所有的输入流的基类，前者是字节输入流，后者是字符输入流。
+			OutputStream/Writer: 所有输出流的基类，前者是字节输出流，后者是字符输出流。
+
+		** 既然有了字节流,为什么还要有字符流?	
+
+			字符流是由 Java 虚拟机将字节转换得到的，问题就出在这个过程还算是非常耗时，并且，如果我们不知道编码类型就很容易出现乱码问题。所以， I/O 流就干脆提供了一个直接操作字符的接口，方便我们平时对字符进行流操作。如果音频文件、图片等媒体文件用字节流比较好，如果涉及到字符的话使用字符流比较好。
+
+		** BIO,NIO,AIO 有什么区别?
+		
+			BIO (Blocking I/O): 同步阻塞I/O模式，数据的读取写入必须阻塞在一个线程内等待其完成。在活动连接数不是特别高（小于单机1000）的情况下，这种模型是比较不错的，可以让每一个连接专注于自己的 I/O 并且编程模型简单，也不用过多考虑系统的过载、限流等问题。线程池本身就是一个天然的漏斗，可以缓冲一些系统处理不了的连接或请求。但是，当面对十万甚至百万级连接的时候，传统的 BIO 模型是无能为力的。因此，我们需要一种更高效的 I/O 处理模型来应对更高的并发量。	
+
+			NIO (New I/O): NIO是一种同步非阻塞的I/O模型，在Java 1.4 中引入了NIO框架，对应 java.nio 包，提供了 Channel , Selector，Buffer等抽象。NIO中的N可以理解为Non-blocking，不单纯是New。它支持面向缓冲的，基于通道的I/O操作方法。 NIO提供了与传统BIO模型中的 Socket 和 ServerSocket 相对应的 SocketChannel 和 ServerSocketChannel 两种不同的套接字通道实现,两种通道都支持阻塞和非阻塞两种模式。阻塞模式使用就像传统中的支持一样，比较简单，但是性能和可靠性都不好；非阻塞模式正好与之相反。对于低负载、低并发的应用程序，可以使用同步阻塞I/O来提升开发速率和更好的维护性；对于高负载、高并发的（网络）应用，应使用 NIO 的非阻塞模式来开发
+			
+			AIO (Asynchronous I/O): AIO 也就是 NIO 2。在 Java 7 中引入了 NIO 的改进版 NIO 2,它是异步非阻塞的IO模型。异步 IO 是基于事件和回调机制实现的，也就是应用操作之后会直接返回，不会堵塞在那里，当后台处理完成，操作系统会通知相应的线程进行后续的操作。AIO 是异步IO的缩写，虽然 NIO 在网络操作中，提供了非阻塞的方法，但是 NIO 的 IO 行为还是同步的。对于 NIO 来说，我们的业务线程是在 IO 操作准备好时，得到通知，接着就由这个线程自行进行 IO 操作，IO操作本身是同步的。查阅网上相关资料，我发现就目前来说 AIO 的应用还不是很广泛，Netty 之前也尝试使用过 AIO，不过又放弃了。	
+	

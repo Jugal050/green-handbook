@@ -1,0 +1,97 @@
+Java高级知识之设计模式篇：
+
+	一、 单例模式
+
+		懒汉模式： 
+
+			线程安全： 最基本的实现方式，这种实现最大的问题就是不支持多线程。因为没有加锁 synchronized，lazy loading 很明显，不要求线程安全，在多线程不能正常工作。
+
+			public class Singleton {  
+			    private static Singleton instance;  
+			    private Singleton (){}  
+			  
+			    public static Singleton getInstance() {  
+				    if (instance == null) {  
+				        instance = new Singleton();  
+				    }  
+				    return instance;  
+			    }  
+			}
+
+			线程不安全：  lazy loading，能够在多线程中很好的工作，但是，效率很低，99% 情况下不需要同步。
+
+			public class Singleton {  
+			    private static Singleton instance;  
+			    private Singleton (){}  
+			    public static synchronized Singleton getInstance() {  
+			    if (instance == null) {  
+			        instance = new Singleton();  
+			    }  
+			    return instance;  
+			    }  
+			}
+
+		饿汉模式： 线程安全，比较常用，但容易产生垃圾，因为一开始就初始化
+		
+			public class Singleton {  
+			    private static Singleton instance = new Singleton();  
+			    private Singleton (){}  
+			    public static Singleton getInstance() {  
+			    	return instance;  
+			    }  
+			}	
+
+
+
+		双重锁模式： 线程安全，延迟初始化。这种方式采用双锁机制，安全且在多线程情况下能保持高性能。
+		
+			public class Singleton {  
+			    private volatile static Singleton singleton;  
+			    private Singleton (){}  
+			    public static Singleton getSingleton() {  
+				    if (singleton == null) {  
+				        synchronized (Singleton.class) {  
+					        if (singleton == null) {  
+					            singleton = new Singleton();  
+					        }  
+				        }  
+				    }  
+				    return singleton;  
+			    }  
+			}	
+
+		静态内部类单例模式：
+			只有第一次调用getInstance方法时，虚拟机才加载 Inner 并初始化instance ，只有一个线程可以获得对象的初始化锁，其他线程无法进行初始化，
+			保证对象的唯一性。目前此方式是所有单例模式中最推荐的模式
+
+			public class Singleton { 
+			    private Singleton(){}
+			    public static Singleton getInstance(){  
+			        return Inner.instance;  
+			    }  
+			    private static class Inner {  
+			        private static final Singleton instance = new Singleton();  
+			    }  
+			} 
+
+		枚举单例模式： 默认枚举实例的创建是线程安全的，并且在任何情况下都是单例。
+
+			枚举类隐藏了私有的构造器。
+			枚举类的域 是相应类型的一个实例对象
+		
+			public enum Singleton {
+			    INSTANCE;
+			}	
+
+			public enum Singleton  {
+			    INSTANCE 
+			 
+			    //doSomething 该实例支持的行为
+			      
+			    //可以省略此方法，通过Singleton.INSTANCE进行操作
+			    public static Singleton get Instance() {
+			        return Singleton.INSTANCE;
+			    }
+			}
+
+	

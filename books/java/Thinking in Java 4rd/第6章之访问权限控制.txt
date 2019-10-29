@@ -1,0 +1,115 @@
+第六章 访问权限控制
+
+一、包：库单元
+	
+	当编写一个Java源文件时，此文件通常被称为编译单元。每个编译单元都必须有一个后缀名.java，而在编译单元内只可以有一个public类，该类的名称必须与文件的名称相同（包括大小写，但不包括文件的后缀名.java），如果在该编译单元内还有额外的类的话，那么在包外的世界是无法看见这些类的，因为他们不是public类。
+
+	1.代码组织
+
+		当编译一个.java文件时，在.java文件中的每个类都会有一个输出文件，而该输出文件的名称与.java文件中每个类的名称相同，只是多了一个后缀名.class。
+
+		Java可运行程序是一组可以打包并压缩为一个Java文档文件（JAR，使用Java的Jar文档生成器）的.class文件。Java解释器负责这些文件的查找、装载和解释。
+
+		类库实际上是一组类文件。其中每个文件都有一个public类，以及任意数量的非public类。因此每个文件都有一个构件。如果希望这些构件从属于同一个群组，就可以使用关键字package。
+			如果使用package语句，它必须是文件中除注释外的第一句程序代码。
+			e.g.:
+				package src.com.tstar.crm.dao;
+				import java.util.*;
+
+	2.创建独一无二的包名
+
+		Java解释器的运行过程如下：
+			首先，找出环境变量CLASSPATH。CLASSPATH包含一个或多个目录，用作查找.class文件的根目录。从根目录开始，解释器获取包的名称并将每个句点替换成反斜杠“\”，以从CLASSPATH根中产生一个路径名称（于是，package src.com.tstar.crm.dao就变成了scr\com\tstar\crm\dao或scr/com/tstar/crm/dao或其他，这一切取决于操作系统）。得到的路径会与CLASSPATH中的每个不同的项连接，解释器就在这些目录中查找与你所要
+			创建的类名称相关的.class文件。（解释器还会去查找某些设计Java解释器所在位置的标准目录）
+
+		Tips:
+			冲突：
+				如果将两个含有相同名称的类库以“*”形式同时导入，
+				如
+					import src.com.tstar.util.*; 
+					import java.util.*;
+				两个util包内都有同一个类Vector，就存在潜在的冲突。但是你不写那个导致冲突的类和方法，就不会出现什么问题，否则就会产生冲突。
+				如 
+					Vector v = new Vector();
+				到底取用的哪个包下的Vector类？编译器不知道，所以必须强制明确指定。可以这样写：
+					java.util.Vector veector = new java.util.Vector();
+
+	3. 定制工具库
+
+		打造自己强大的工具库以备开发使用，提高开发效率。
+
+	4. 用improt改变行为
+
+	5. 对使用包的忠告
+
+		无论何时创建包，都已经在给定包名的时候隐含地指定了目录结构。这个包必须位于其名称指定的目录之中，而该目录必须是在以CLASSPATH开始的目录中可以查询到的。
+
+		编译过的代码通常放置在与源代码的不同目录中，但是必须保证JVM使用CLASSPATH可以找到该路径。
+
+二、Java访问权限修饰词
+
+	public、protected、private这几个Java访问权限修饰符在使用时，是置于类中每个成员的定义之前，的无论它是一个域还是一个方法。每个访问修饰符仅控制它所修饰的特定定义的访问权。
+
+	1.包访问权限
+
+		取得对某成员的访问权的唯一途径是：
+			使该成员称为public。
+			不加任何访问修饰符并将其他类放置于同一个包内。
+			继承访问protected成员。
+			提供访问器（accessor）和变异器（mutator）方法（也称get/set方法），以读取和改变数值。
+
+	2. public：接口访问权限
+
+	3. private：你无法访问
+
+	4. protected：继承访问权限
+
+三、接口与实现
+
+	访问权限的控制常被称为是具体实现的隐藏。把数据和方法包装进类中，以及具体实现的异常，共同被称作是“封装”。其结果是一个同时带有特征和行为的数据类型。
+
+	访问权限控制将权限的边界划在数据类型的内部的原因：
+		1. 要设定客户端程序员可以使用和不可以使用的界限。
+		2. 接口与具体实现分离。
+
+四、类的访问权限
+
+	Tips：
+		1.每个编译单元（文件）都只能有一个public类。
+		2.public类的名称必须完全与含有该编译单元的文件名相匹配，包括大小写。
+		3.编译单元内完全不带public类也是有可能的。在这种情况下，可以随意对文件命名。
+
+	e.g.:
+
+		class Soup1 {
+			private Soup1() {}
+			public static Soup1 makeSoup1() {
+				return new Soup1();
+			}
+		} 
+
+		class Soup2 {
+			private Soup2() {}
+			private static Soup2 soup = new Soup2();
+			public static Soup2 makeSoup2() {
+				return soup;
+			}
+			public void drink() {}
+		}
+
+		public class Lunch {
+			void testPrivate() {
+				//! Soup1 soup1 = new Soup1();
+			}
+			void testStatic() {
+				Soup1 soup1 = Soup1.makeSoup1();
+			}
+			void testSingleton() {
+				Soup2.makeSoup2().drink();
+			}
+		}
+
+
+
+
+

@@ -1,0 +1,1898 @@
+第十七章 容器深入研究
+
+一、完整的容器分类法
+
+二、填充容器
+    class Collections{
+        static <T> List<T> nCopies(int n, T o){}: 返回由指定对象的n个副本组成的不可变列表。
+        static <T> void fill(List<? super T>, T o){}: 使用指定元素替换指定列表中的所有元素。
+    }
+    e.g.:
+        class StringAddress {
+            private String address;
+            public StringAddress(String address) {
+                this.address = address;
+            }
+            @Override
+            public String toString() {
+                return super.toString() + " " + address;
+            }
+        }
+        public class FillingList {
+            public static void main(String[] args) {
+                ArrayList<StringAddress> list = new ArrayList<>(Collections.nCopies(5, new StringAddress("biu")));
+                System.out.println(list);
+                Collections.fill(list, new StringAddress("tu"));
+                System.out.println(list);
+            }
+        }
+    1. 一种Generator解决方案：
+        e.g.:
+            class Government implements Generator<String> {
+                String[] foundation = ("Strange ladies lying in ponds distributing " +
+                        "swords is no basis for a system of government!").split(" ");
+                private int index;
+                @Override
+                public String next() {
+                    return foundation[index++];
+                }
+            }
+            public class CollectionDataTest {
+                public static void main(String[] args) {
+                    LinkedHashSet<String> set = new LinkedHashSet<>(new CollectionData<String>(new Government(), 15));
+                    set.addAll(CollectionData.list(new Government(), 15));
+                    System.out.println(set);
+
+                    System.out.println(new ArrayList<>(CollectionData.list(new RandomGenerator.String(), 10)));
+                    System.out.println(new ArrayList<>(CollectionData.list(new RandomGenerator.Integer(), 10)));
+                }
+            }
+    2. Map生成器
+        e.g.:
+            public class Pair<K, V> {
+                public final K key;
+                public final V value;
+                public Pair(K key, V value){
+                    this.key = key ;
+                    this.value = value;
+                }
+            }
+
+            public class MapData<K, V> extends LinkedHashMap<K, V> {
+                public MapData(Generator<Pair<K, V>> generator, int quantity) {
+                    for ( int i = 0; i < quantity; i++ ) {
+                        Pair<K, V> pair = generator.next();
+                        put(pair.key, pair.value);
+                    }
+                }
+                public MapData(Generator<K> k, Generator<V> v, int quantity) {
+                    for ( int i = 0; i < quantity; i++ ) {
+                        put(k.next(), v.next());
+                    }
+                }
+                public MapData(Generator<K> k, V v, int quantity) {
+                    for ( int i = 0; i < quantity; i++ ) {
+                        put(k.next(), v);
+                    }
+                }
+                public MapData(Iterable<K> iterable, Generator<V> v) {
+                    for (K k : iterable) {
+                        put(k , v.next());
+                    }
+                }
+                public MapData(Iterable<K> iterable, V v) {
+                    for (K k : iterable) {
+                        put(k, v);
+                    }
+                }
+                public static <K, V> MapData<K, V> map(Generator<Pair<K, V>> generator, int quantity) {
+                    return new MapData<>(generator, quantity);
+                }
+                public static <K, V> MapData<K, V> map(Generator<K> k, Generator<V> v, int quantity) {
+                    return new MapData(k, v, quantity);
+                }
+                public static <K, V> MapData<K, V> map(Generator<K> k, V v, int quantity) {
+                    return new MapData(k, v, quantity);
+                }
+                public static <K, V> MapData<K, V> map(Iterable<K> iterable, Generator<V> v) {
+                    return new MapData<>(iterable, v);
+                }
+                public static <K, V> MapData<K, V> map(Iterable<K> iterable, V v) {
+                    return new MapData<>(iterable, v);
+                }
+
+            }
+
+            public class MapDataTest {
+                public static void main(String[] args) {
+                    MapData<Integer, String> map = MapData.map(new Letters(), 10);
+                    System.out.println(map);
+                    System.out.println(MapData.map(new Letters(), "biu"));
+                    System.out.println(MapData.map(new Letters(), "biu", 10));
+                    System.out.println(MapData.map(new CountingGenerator.Integer(), new CountingGenerator.Character(), 26));
+                    System.out.println(MapData.map(new CountingGenerator.Integer(), new RandomGenerator.String(), 10));
+                    System.out.println(MapData.map(new CountingGenerator.Integer(), "biu", 10));
+                    System.out.println(MapData.map(new Letters(), new Letters()));
+                }
+            }
+            class Letters implements Generator<Pair<Integer, String>>, Iterable<Integer> {
+                private int size = 10;
+                private int number = 1;
+                private char letter = 'A';
+                @Override
+                public Pair<Integer, String> next() {
+                    return new Pair<>(number++, "" + letter++);
+                }
+                @Override
+                public Iterator<Integer> iterator() {
+                    return new Iterator<Integer>() {
+                        @Override
+                        public boolean hasNext() {
+                            return number < size;
+                        }
+                        @Override
+                        public Integer next() {
+                            return number++;
+                        }
+                        @Override
+                        public void remove() {
+                            System.out.println("No Such Method!");
+                        }
+                    };
+                }
+            }
+
+    3. 使用Abstract类
+        享元模式：
+        e.g.:
+            public class Countries {
+                public static final String[][] DATA = {
+                        {"ALGERIA", "Algerias"},
+                        {"CHINA", "Beijing"},
+                        {"JAPAN", "Tokyo"}
+                };
+                private static class FlyWeightMap extends AbstractMap<String, String> {
+                    private static class Entry implements Map.Entry<String, String> {
+                        int index;
+                        Entry(int index) { this.index = index; }
+                        @Override
+                        public boolean equals(Object o) { return DATA[index][0].equals(o); }
+                        @Override
+                        public String getKey() { return DATA[index][0]; }
+                        @Override
+                        public String getValue() { return DATA[index][1]; }
+                        @Override
+                        public String setValue(String value) { return null; }
+                        public int HashCode() { return DATA[index][0].hashCode(); }
+                    }
+                    static class EntrySet extends AbstractSet<Map.Entry<String, String>> {
+                        private int size;
+                        EntrySet(int size) {
+                            this.size = size < 0 ? 0 : (size > DATA.length ? DATA.length : size);
+                        }
+                        @Override
+                        public Iterator<Map.Entry<String, String>> iterator() {
+                            return new Iter();
+                        }
+                        @Override
+                        public int size() { return size; }
+                        private class Iter implements Iterator<Map.Entry<String, String>> {
+                            private Entry entry = new Entry(-1);
+                            @Override
+                            public boolean hasNext() { return entry.index < size - 1; }
+                            @Override
+                            public Map.Entry<String, String> next() {
+                                entry.index++;
+                                return entry;
+                            }
+                            @Override
+                            public void remove() { System.out.println("No Such Method"); }
+                        }
+                    }
+                    private static Set<Map.Entry<String, String>> entries = new EntrySet(DATA.length);
+                    @Override
+                    public Set<Map.Entry<String, String>> entrySet() {
+                        return entries;
+                    }
+                    static Map<String, String> select(final int size) {
+                        return new FlyWeightMap() {
+                            @Override
+                            public Set<Map.Entry<String, String>> entrySet() {
+                              return new EntrySet(size);
+                          }
+                        };
+                    }
+                    static Map<String, String> map = new FlyWeightMap();
+                    public static Map<String, String> capitals() {
+                        return map;
+                    }
+                    public static Map<String, String> capitals(int size) {
+                        return select(size);
+                    }
+                    static List<String> names = new ArrayList<>(map.keySet());
+                    public static List<String> names() { return names; }
+                    public static List<String> names(int size) {
+                        return new ArrayList<>(select(size).keySet());
+                    }
+
+                    public static void main(String[] args) {
+                        System.out.println(capitals(10));
+                        System.out.println(names(9));
+                        System.out.println(new HashMap<>(capitals(10)));
+                        System.out.println(new LinkedHashMap<>(capitals(3)));
+                        System.out.println(new TreeMap<>(capitals(3)));
+                        System.out.println(new Hashtable<>(capitals(3)));
+                        System.out.println(new LinkedHashSet<>(names(3)));
+                        System.out.println(new TreeSet<>(names(6)));
+                        System.out.println(new ArrayList<>(names(6)));
+                        System.out.println(new LinkedList<>(names(6)));
+                        System.out.println(capitals().get("CHINA"));
+                    }
+                }
+            }
+        e.g.:
+            public class CountingMapData extends AbstractMap<Integer, String> {
+                private int size;
+                private static String[] chars = ("A, B, C, D, E, F, G, " +
+                        "H, I, J, K, L, M, N, " +
+                        "O, P, Q, R, S, T, " +
+                        "U, V, W, X, Y, Z").split(" ");
+                public CountingMapData(int size) {
+                    this.size = size < 0 ? 0 : size;
+                }
+                private static class Entry implements Map.Entry<Integer, String> {
+                    int index;
+                    Entry(int index) {
+                        this.index = index;
+                    }
+                    public boolean equals(Object o) {
+                        return Integer.valueOf(index).equals(o);
+                    }
+                    @Override
+                    public Integer getKey() {
+                        return index;
+                    }
+
+                    @Override
+                    public String getValue() {
+                        return chars[index % chars.length] + Integer.toString(index / chars.length);
+                    }
+
+                    @Override
+                    public String setValue(String value) {
+                        throw new UnsupportedOperationException();
+                    }
+                    @Override
+                    public int hashCode(){
+                        return Integer.valueOf(index).hashCode();
+                    }
+                }
+                @Override
+                public Set<Map.Entry<Integer, String>> entrySet() {
+                    LinkedHashSet<Map.Entry<Integer, String>> hashSet = new LinkedHashSet<>();
+                    for ( int i = 0; i < size; i++ ) {
+                        hashSet.add(new Entry(i));
+                    }
+                    return hashSet;
+                }
+
+                public static void main(String[] args) {
+                    System.out.println(new CountingMapData(60));
+                }
+            }
+        e.g.:
+            public class CountingIntegerList extends AbstractList<Integer>{
+                private int size;
+                public CountingIntegerList(int size) {
+                    this.size = size < 0 ? 0 : size;
+                }
+                @Override
+                public Integer get(int index) {
+                    return Integer.valueOf(index);
+                }
+                @Override
+                public int size() {
+                    return size;
+                }
+                public static void main(String[] args) {
+                    System.out.println(new CountingIntegerList(15));
+                }
+            }
+
+    3. Collection的功能方法
+        e.g.:
+            public class CollectionMethod {
+                public static void main(String[] args) {
+                    Collection<String> c = new ArrayList<>();
+                    c.addAll(new ArrayList<>(Arrays.asList("hello", "world")));
+                    c.add("biu");
+                    c.add("biu");
+                    System.out.println(c);
+                    Object[] array = c.toArray();
+                    String[] str = c.toArray(new String[0]);
+                    System.out.println(Collections.max(c));
+                    System.out.println(Collections.min(c));
+                    Collection<String> c2 = new ArrayList<>();
+                    c2.addAll(new ArrayList<>(Arrays.asList("hello")));
+                    c.addAll(c2);
+                    System.out.println(c);
+                    c.remove(Countries.DATA[0][0]);
+                    System.out.println(c);
+                    c.remove(Countries.DATA[1][1]);
+                    System.out.println(c);
+                    c.removeAll(c2);
+                    System.out.println(c);
+                    c.addAll(c2);
+                    System.out.println(c);
+                    String val = Countries.DATA[2][0];
+                    System.out.println(c.contains(val));
+                    System.out.println(c.containsAll(c2));
+                    Collection<String> c3 = ((List<String>) c).subList(1, 2);
+                    c2.retainAll(c3);
+                    System.out.println(c2);
+                    c2.removeAll(c3);
+                    System.out.println("c2.isEmpty():" + c2.isEmpty());
+                    c = new ArrayList<>();
+                    int size = 10;
+                    String[] strings = new String[size];
+                    RandomGenerator.String random = new RandomGenerator.String();
+                    for ( int i = 0; i < size; i++ ) {
+                        strings[i] = random.next();
+                    }
+                    c.addAll(new ArrayList<>(Arrays.asList(strings)));
+                    System.out.println(c);
+                    c.clear();
+                    System.out.println("after c.clear()" + c);
+                }
+            }
+    4. 可选操作
+        执行各种不同的添加或移除的方法在Collectino接口中都是可选操作。这意味着实现类并不需要为这些方法提供功能定义。
+
+        e.g.:
+            public class Unsupported {
+                static void test(String msg, List<String> list) {
+                    System.out.println("---" + msg + "---");
+                    Collection<String> c = list;
+                    List<String> subList = list.subList(1, 8);
+                    Collection<String> c2 = new ArrayList<>(subList);
+                    try { c.retainAll(c2); } catch (Exception e){ System.out.println("retainAll(): " + e);}
+                    try { c.removeAll(c2); } catch (Exception e){ System.out.println("removeAll(): " + e);}
+                    try { c.clear(); } catch (Exception e){ System.out.println("clear(): " + e);}
+                    try { c.add("X"); } catch (Exception e){ System.out.println("add(): " + e);}
+                    try { c.addAll(c2); } catch (Exception e){ System.out.println("addAll(): " + e);}
+                    try { c.remove("C"); } catch (Exception e){ System.out.println("remove(): " + e);}
+                    try { list.set(0, "X"); } catch (Exception e){ System.out.println("list.set(): " + e);}
+                }
+
+                public static void main(String[] args) {
+                    List<String> list = Arrays.asList("A B C D E F G H I J K L M N O P Q R S T U V W X Y Z".split(" "));
+                    test("Modifiable Copy", new ArrayList<>(list));
+                    test("Arrays.asList", list);
+                    test("unmodifiableList()", Collections.unmodifiableList(new ArrayList<>(list)));
+                }
+            }
+
+    5. List的功能方法
+        e.g.:
+            public class Lists {
+                private static boolean b;
+                private static String s;
+                private static int i;
+                private static Iterator<String> it;
+                private static ListIterator<String> lit;
+
+                public static void basicTest(List<String> a) {
+                    // Add at location 1
+                    a.add(1, "x");
+                    // Add at end
+                    a.add("x");
+                    // Add a Collection
+                    a.addAll(Countries.names(25));
+                    // Add a Collection starting at location 3
+                    a.addAll(3, Countries.names(25));
+                    // Is it in there
+                    b = a.contains("1");
+                    // Is the entire collection in there
+                    b = a.containsAll(Countries.names(25));
+                    // Lists allow random access, which is cheap
+                    // for ArrayList, expensive for LinkedList
+                    // Get (typed) object at location 1
+                    s = a.get(1);
+                    // Tell index of object
+                    i = a.indexOf("1");
+                    // Any element inside
+                    b = a.isEmpty();
+                    // Ordinary iterator
+                    it = a.iterator();
+                    // ListIterator
+                    lit = a.listIterator();
+                    // ListIterator start at location 3
+                    lit = a.listIterator(3);
+                    // Last match
+                    i = a.lastIndexOf("1");
+                    // Remove location 1
+                    a.remove(1);
+                    // Remove this object
+                    a.remove("1");
+                    // Set location 1 to "y"
+                    a.set(1, "y");
+                    // Key everything that's in the argument
+                    // (The intersection of the two sets)
+                    a.retainAll(Countries.names(25));
+                    // Remove everything that's in the argument
+                    a.removeAll(Countries.names(25));
+                    // How big is it?
+                    i = a.size();
+                    // Remove all elements
+                    a.clear();
+                }
+                public static void iterMotion(List<String> a) {
+                    ListIterator<String> it = a.listIterator();
+                    b = it.hasNext();
+                    b = it.hasPrevious();
+                    s = it.next();
+                    i = it.nextIndex();
+                    s = it.previous();
+                    i = it.previousIndex();
+                }
+                public static void iterManipulation(List<String> a) {
+                    ListIterator<String> it = a.listIterator();
+                    it.add("47");
+                    // Must move to an element after add()
+                    it.next();
+                    // Remove the element after the newly produced one
+                    it.remove();
+                    // Must move to an element after remove()
+                    it.next();
+                    // Change the element after the deleted one
+                    it.set("47");
+                }
+                public static void testVisual(List<String> a) {
+                    System.out.println(a);
+                    List<String> b = Countries.names(25);
+                    System.out.println("b = " + b);
+                    a.addAll(b);
+                    a.addAll(b);
+                    System.out.println(a);
+                    // Insert, remove, and replace elements
+                    // using a ListIterator
+                    ListIterator<String> x = a.listIterator(a.size() / 2);
+                    x.add("one");
+                    System.out.println(a);
+                    System.out.println(x.next());
+                    x.remove();
+                    System.out.println(x.next());
+                    x.set("47");
+                    System.out.println(a);
+                    // Traverse the list backwards
+                    x = a.listIterator(a.size());
+                    while (x.hasPrevious()) {
+                        System.out.print(x.previous() + " ");
+                    }
+                    System.out.println();
+                    System.out.println("testVisual finished");
+                }
+
+                /**
+                 * There are some things that only LinkedLists can do
+                 */
+                public static void testLinkedList() {
+                    LinkedList<String> ll = new LinkedList<>();
+                    ll.addAll(Countries.names(25));
+                    System.out.println(ll);
+                    // Treat it like a stack, pushing
+                    ll.addFirst("one");
+                    ll.addFirst("two");
+                    System.out.println(ll);
+                    // Like "peeking" at the top of a stack
+                    System.out.println(ll.getFirst());
+                    // Like popping a stack
+                    System.out.println(ll.removeFirst());
+                    System.out.println(ll.removeFirst());
+                    // Treat it like a queue, pulling elements
+                    // off the tail end;
+                    System.out.println(ll.removeLast());
+                    System.out.println(ll);
+                }
+                public static void main(String[] args) {
+                    // Make and fill a new list each time
+                    basicTest(new LinkedList<>(Countries.names(25)));
+                    basicTest(new ArrayList<>(Countries.names(25)));
+                    iterMotion(new LinkedList<>(Countries.names(25)));
+                    iterMotion(new ArrayList<>(Countries.names(25)));
+                    iterManipulation(new LinkedList<>(Countries.names(25)));
+                    iterManipulation(new ArrayList<>(Countries.names(25)));
+                    testVisual(new LinkedList<>(Countries.names(25)));
+                    testLinkedList();
+                }
+            }
+
+    6. Set和存储顺序
+        Set: 存入Set的每个元素必须都是唯一的，因为Set不保存重复元素。加入Set的元素必须定义equals()方法以确保对象的唯一性。
+            Set与Collection有完全一样的接口，Set接口不保证维护元素的次序。
+        HashSet*: 为快速查找而设计的Set。存入HashSet的元素必须定义hashCode()。
+        TreeSet: 保持次序的Set，底层为树结构。使用它可以从Set中提取有序的序列。元素必须实现Comparable接口。
+        LinkedHashSet: 具有HashSet的查询速度，且内部使用链表维护元素的顺序(插入的次序)。于是在使用迭代器遍历Set时，结果会
+            按插入的次序显示。元素也必须定义HashCode()方法。
+        e.g.:
+            public class TypesForSets {
+                static <T> Set<T> fill(Set<T> set, Class<T> type) {
+                    try {
+                        for ( int i = 0; i < 10; i++ ) {
+                            set.add(type.getConstructor(int.class).newInstance(i));
+                        }
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                    return set;
+                }
+                static <T> void test(Set<T> set, Class<T> type) {
+                    fill(set, type);
+                    // Try to add duplicates
+                    fill(set, type);
+                    fill(set, type);
+                    System.out.println(set);
+                }
+                public static void main(String[] args) {
+                    test(new HashSet<HashType>(), HashType.class);
+                    test(new LinkedHashSet<HashType>(), HashType.class);
+                    test(new TreeSet<TreeType>(), TreeType.class);
+                    // Things that don't work
+                    test(new HashSet<SetType>(), SetType.class);
+                    test(new HashSet<TreeType>(), TreeType.class);
+                    test(new LinkedHashSet<SetType>(), SetType.class);
+                    test(new LinkedHashSet<TreeType>(), TreeType.class);
+                    try {
+                        test(new TreeSet<SetType>(), SetType.class);
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                    }
+                    try {
+                        test(new TreeSet<HashType>(), HashType.class);
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                    }
+
+                }
+            }
+            class SetType {
+                int i;
+                public SetType(int i) { this.i = i; }
+                @Override
+                public boolean equals(Object o) {
+                    return o instanceof SetType && (i == ((SetType)o).i);
+                }
+                @Override
+                public String toString() { return Integer.toString(i); }
+            }
+            class HashType extends SetType{
+                public HashType(int i) { super(i); }
+                @Override
+                public int hashCode() { return i; }
+            }
+            class TreeType extends SetType implements Comparable<TreeType> {
+                public TreeType(int i) { super(i); }
+                @Override
+                public int compareTo(TreeType o) {
+                    return (o.i < i ? -1 : (o.i == i ? 0 : 1));
+                }
+            }
+
+    1. SortedSet
+        SortedSet中的元素可以保证处于排序状态。这使得他可以通过在SortedSet接口中的下列方法提供附加的功能：
+            Comparator comparator()返回当前Set使用的Comparator;或者返回null，表示以自然方式排序。
+            Object first() 返回容器中的第一个元素。
+            Object last() 返回容器中的最后一个元素。
+            SortedSet subSet(fromElement, toElement) 生成此Set的子集，范围从fromElement（包含）到toElement(不包含)。
+            SortedSet headSet(toElement) 生成此Set的子集，由小于toElement的元素组成。
+            SortedSet tailSet(fromElement) 生成此Set的子集，由大于或等于fromElement的元素组成。
+        e.g.:
+            public class SortedSetDemo {
+                public static void main(String[] args) {
+                    SortedSet<String> sortedSet = new TreeSet<>();
+                    Collections.addAll(sortedSet,
+                        "one tow three four five six seven eight nine ten"
+                            .split(" "));
+                    System.out.println(sortedSet);
+                    String first = sortedSet.first();
+                    String last = sortedSet.last();
+                    System.out.println(first);
+                    System.out.println(last);
+                    Iterator<String> iterator = sortedSet.iterator();
+                    for ( int i = 0; i < 6; i++ ) {
+                        if (i == 3) {
+                            last = iterator.next();
+                        }
+                        if (i == 6) {
+                            first = iterator.next();
+                        } else {
+                            iterator.next();
+                        }
+                    }
+                    System.out.println(first);
+                    System.out.println(last);
+                    Comparator<? super String> comparator = sortedSet.comparator();
+                    System.out.println(comparator);
+                    SortedSet<String> subSet = sortedSet.subSet(first, last);
+                    System.out.println(subSet);
+                    SortedSet<String> headSet = sortedSet.headSet(first);
+                    System.out.println(headSet);
+                    SortedSet<String> tailSet = sortedSet.tailSet(last);
+                    System.out.println(tailSet);
+                }
+            }
+
+    7. 列队
+        e.g.:
+            public class QueneBehavior {
+                private static int count = 10;
+                static <T> void test(Queue<T> queue, Generator<T> gen) {
+                    for ( int i = 0; i < count; i++ ) {
+                        queue.offer(gen.next());
+                    }
+                    while (queue.peek() != null) {
+                        System.out.print(queue.remove() + " ");
+                    }
+                    System.out.println();
+                }
+                static class Gen implements Generator<String> {
+                    String[] s = "one two three four five six seven eight nine ten".split(" ");
+                    int i;
+                    @Override
+                    public String next() { return s[i++]; }
+                }
+                public static void main(String[] args) {
+                    test(new LinkedList<String>(), new Gen());
+                    test(new PriorityQueue<String>(), new Gen());
+                    test(new ArrayDeque<String>(), new Gen());
+                    test(new ArrayBlockingQueue<String>(count), new Gen());
+                    test(new ConcurrentLinkedDeque<String>(), new Gen());
+                    test(new ConcurrentLinkedQueue<String>(), new Gen());
+                    test(new LinkedBlockingDeque<String>(), new Gen());
+                    test(new LinkedTransferQueue<String>(), new Gen());
+                    test(new PriorityBlockingQueue<String>(), new Gen());
+                    test(new SynchronousQueue<String>(), new Gen());
+                }
+            }
+        1. 优先级列队
+            e.g.:
+                public class ToDoList extends PriorityQueue<ToDoList.ToDoItem> {
+                    static class ToDoItem implements Comparable<ToDoItem>{
+                        private char primary;
+                        private int secondary;
+                        private String item;
+                        public ToDoItem(String item, char primary, int secondary) {
+                            this.item = item;
+                            this.primary = primary;
+                            this.secondary = secondary;
+                        }
+                        @Override
+                        public int compareTo(ToDoItem o) {
+                            if (primary > o.primary) { return +1; }
+                            if (primary == o.primary) {
+                                if (secondary > o.secondary) { return +1; }
+                                else if (secondary == o.secondary) { return 0; }
+                            }
+                            return -1;
+                        }
+                        @Override
+                        public String toString() {
+                            return Character.toString(primary) + secondary + ": " + item;
+                        }
+                    }
+                    public void add(String item, char primary, int secondary){
+                        super.add(new ToDoItem(item, primary, secondary));
+                    }
+                    public static void main(String[] args) {
+                        ToDoList toDoList = new ToDoList();
+                        toDoList.add("Empty trash", 'C', 4);
+                        toDoList.add("Feed dog", 'A', 2);
+                        toDoList.add("Feed bird", 'B', 7);
+                        toDoList.add("Mow lawn", 'C', 3);
+                        toDoList.add("Water lawn", 'A', 1);
+                        toDoList.add("Feed cat", 'B', 1);
+                        while (!toDoList.isEmpty()) {
+                            System.out.println(toDoList.remove());
+                        }
+                    }
+                }
+
+        2. 双向列队
+            e.g.:
+                public class DequeTest {
+                    static void fillTest(Deque<Integer> deque) {
+                        for ( int i = 20; i < 27; i++ ) {
+                            deque.addFirst(i);
+                        }
+                        for ( int i = 50; i < 55; i++ ) {
+                            deque.addLast(i);
+                        }
+                    }
+
+                    static void printDeque(Deque<Integer> deque) {
+                        System.out.println("----" + deque.getClass().getName() + "----");
+                        fillTest(deque);
+                        System.out.println(deque);
+                        while (deque.size() != 0) {
+                            System.out.print(deque.removeFirst() + " ");
+                        }
+                        System.out.println();
+                        fillTest(deque);
+                        while (deque.size() != 0) {
+                            System.out.print(deque.removeLast() + " ");
+                        }
+                        System.out.println();
+                    }
+
+                    public static void main(String[] args) {
+                        Deque<Integer> deque = new ArrayDeque<>();
+                        printDeque(deque);
+                        ConcurrentLinkedDeque<Integer> integerDeque = new ConcurrentLinkedDeque<>();
+                        printDeque(integerDeque);
+                        LinkedBlockingDeque<Integer> linkedBlockingDeque = new LinkedBlockingDeque<>();
+                        printDeque(linkedBlockingDeque);
+                        LinkedList<Integer> linkedList = new LinkedList<>();
+                        printDeque(linkedList);
+                    }
+                }
+八. 理解Map
+        类Map的简单实现：
+        e.g.:
+            public class AssociativeArray<K, V> {
+                private Object[][] pairs;
+                private int index;
+                public AssociativeArray(int length) {
+                    pairs = new Object[length][2];
+                }
+                public void put(K k, V v) {
+                    if (index >= pairs.length) {
+                        throw new ArrayIndexOutOfBoundsException();
+                    }
+                    pairs[index++] = new Object[]{k, v};
+                }
+                public V get(K key) {
+                    for ( int i = 0; i < index; i++ ) {
+                        if (key == pairs[i][0]) {
+                            return (V)pairs[i][1];
+                        }
+                    }
+                    return null;
+                }
+                @Override
+                public String toString() {
+                    StringBuilder result = new StringBuilder();
+                    for ( int i = 0; i < index; i++ ) {
+                        result.append(pairs[i][0].toString());
+                        result.append(" : ");
+                        result.append(pairs[i][1].toString());
+                        if (i < index - 1) {
+                            result.append("\n");
+                        }
+                    }
+                    return result.toString();
+                }
+                public static void main(String[] args) {
+                    AssociativeArray<String, String> map = new AssociativeArray<String, String>(6);
+                    map.put("sky", "blue");
+                    map.put("sea", "water");
+                    map.put("bird", "fly");
+                    map.put("dog", "tidy");
+                    map.put("sheep", "mei");
+                    map.put("me","man");
+                    try{
+                      map.put("game", "lol");
+                    } catch (Exception e) {
+                        System.out.println("too many objects");
+                    }
+                    System.out.println(map);
+                    System.out.println(map.get("me"));
+                }
+            }
+    1. 性能：
+        HashMap*: Map基于散列的实现（取代了Hashtable）。插入和查询“键值对”的开销是固定的。可以通过构造器设置容量和
+            负载因子，以调整容器的性能。
+        LinkedHashMap: 类似于HashMap，但是迭代遍历它时，取得“键值对”的顺序是是其插入次序，或者是最近最少使用的（LRU）
+            的次序。只比HashMap慢一点；而在迭代访问时反而更快，因为它使用链表维护内部次序。
+        TreeMap: 基于红黑树的实现。查看“键”或“键值对”时，他们会被排序（次序由Comparable或Comparator决定）。TreeMap的
+            特点在于，所取得的结果都是经过排序的。TreeMap是唯一的带有subMap()的方法，它可以返回一个子树。
+        WeakHashMap: 弱键（weak key）映射，允许释放映射所指向的对象；这是为解决某类特殊问题而设计的。如果映射之外没有引用
+            指向某个“键”，则此“键”可以被垃圾收集器回收。
+        ConcurrentHashMap: 一种线程安全的Map，它不涉及同步加锁。
+        IdentityHashMap：使用==代替equals()对“键”进行比较的散列映射。转为解决特殊问题而设计的。
+
+        e.g.:
+            public class Maps {
+                public static void printMap(Map<Integer, String> map) {
+                    System.out.println("Size = " + map.size());
+                    System.out.println("Keys: ");
+                    System.out.println(map.keySet());
+                }
+                public static void test(Map<Integer, String> map) {
+                    System.out.println(map.getClass().getSimpleName());
+                    map.putAll(new CountingMapData(25));
+                    // Map has 'Set' behavior for keys
+                    map.putAll(new CountingMapData(25));
+                    printMap(map);
+                    // Producing a collection of the values
+                    System.out.println("Values: ");
+                    System.out.println(map.values());
+                    System.out.println(map);
+                    System.out.println("map.containsKey(11): " + map.containsKey(11));
+                    System.out.println("map.get(11):" + map.get(11));
+                    System.out.println("map.containsValue(\"F0\"): " + map.containsValue("F0"));
+                    Integer key = map.keySet().iterator().next();
+                    System.out.println("First key in map: " + key);
+                    map.remove(key);
+                    printMap(map);
+                    map.clear();
+                    System.out.println("map.isEmpty(): " + map.isEmpty());
+                    map.putAll(new CountingMapData(25));
+                    // Operations on the set change the map
+                    map.keySet().removeAll(map.keySet());
+                    System.out.println("map.isEmpty(): " + map.isEmpty());
+                }
+                public static void main(String[] args) {
+                    test(new HashMap<Integer, String>());
+                    test(new TreeMap<Integer, String>());
+                    test(new LinkedHashMap<Integer, String>());
+                    test(new IdentityHashMap<Integer, String>());
+                    test(new ConcurrentHashMap<Integer, String>());
+                    test(new ConcurrentSkipListMap<Integer, String>());
+                    test(new WeakHashMap<Integer, String>());
+                }
+            }
+    2. SortedMap
+        使用SortedMap(TreeMap是其现阶段的唯一实现)，可以确保键处于排序状态。
+        e.g.:
+            public class SortedMapDemo {
+                public static void main(String[] args) {
+                    TreeMap<Integer, String> treeMap = new TreeMap<>(new CountingMapData(10));
+                    System.out.println(treeMap);
+                    Integer low = treeMap.firstKey();
+                    Integer high = treeMap.lastKey();
+                    System.out.println("low: " + low);
+                    System.out.println("high: " + high);
+                    Iterator<Integer> iterator = treeMap.keySet().iterator();
+                    for ( int i = 0; i <= 6; i++ ) {
+                        if (i == 3) {
+                            low = iterator.next();
+                        }
+                        if (i == 6) {
+                            high = iterator.next();
+                        } else {
+                            iterator.next();
+                        }
+                    }
+                    System.out.println(low);
+                    System.out.println(high);
+                    System.out.println(treeMap.subMap(low, high));
+                    System.out.println(treeMap.headMap(high));
+                    System.out.println(treeMap.tailMap(low));
+                }
+            }
+
+    3. LinkedHashMap
+        为了提高速度，LinkedHashMap散列化所有的元素，但是在遍历键值对时，却又以元素的插入顺序返回键值对。
+        此外，可以在构造器中设定LinkedHashMap，使之采用基于访问的最近最少使用（LRU）算法，于是没有被访问过的（可被看做需要删除的）
+        元素就会出现在列队的前面。对于需要定期清理元素以节省空间的程序来说，此功能使用程序很容易得以实现。
+        e.g.:
+            public class LinkedHashMapDemo {
+                public static void main(String[] args) {
+                    LinkedHashMap<Integer, String> demo = new LinkedHashMap<>(new CountingMapData(25));
+                    System.out.println(demo);
+                    demo = new LinkedHashMap<>(16, 0.75f, true);
+                    demo.putAll(new CountingMapData(25));
+                    System.out.println(demo);
+                    for ( int i = 0; i < 6; i++ ) {
+                        demo.get(i);
+                    }
+                    System.out.println(demo);
+                    demo.get(0);
+                    System.out.println(demo);
+                }
+            }
+九、散列与散列码
+    默认的Object.equals(o1, o2)只是比较对象的地址。如果要使用自己的类作为HashMap的键，必须同时重载hashCode()和equals()方法。
+    正确的equals()方法必须满足下列5个条件：
+        ①自反性。对于任意x，x.equals(x)一定返回true。
+        ②对称性。对于任意的x，y。x.equals(y)一定与y.equals(x)的返回相同的值。
+        ③传递性。对于任意的x，y，z。如果x.equals(y) == y.equals(z)，那么也一定=x.equals(z)。
+        ④一致性。对于任意的x，y。如果对象中用于等价比较的信息没有改变，那么无论调用x.equals(y)多少次，返回的结果都应该一致。
+        ⑤对任何不是null的x，x.equals(null)一定返回false。
+    e.g.:
+        public class Groundhog {
+            protected int number;
+            public Groundhog(int number) {
+                this.number = number;
+            }
+            @Override
+            public String toString() {
+                return "Groundhog # " + number;
+            }
+        }
+        public class Prediction {
+            private static Random random = new Random(47);
+            private boolean shadow = random.nextDouble() > 0.5;
+            @Override
+            public String toString() {
+                return shadow ? "Six more weeks of Winter" : "Early Spring";
+            }
+        }
+        public class SpringDetector {
+            public static <T extends Groundhog> void detectSpring(Class<T> type) throws Exception {
+                Constructor<T> constructor = type.getConstructor(int.class);
+                Map<Groundhog, Prediction> map = new HashMap<>();
+                for ( int i = 0; i < 10; i++ ) {
+                    map.put(constructor.newInstance(i), new Prediction());
+                }
+                System.out.println(map);
+                Groundhog groundhog = constructor.newInstance(3);
+                System.out.println("Looking up the prediction for " + groundhog);
+                if (map.containsKey(groundhog)) {
+                    System.out.println(map.get(groundhog));
+                } else {
+                    System.out.println("Key not found: " + groundhog);
+                }
+            }
+            public static void main(String[] args) throws Exception {
+                detectSpring(Groundhog.class);
+            }
+        }
+        public class Groundhog2 extends Groundhog {
+            public Groundhog2(int number) {
+                super(number);
+            }
+            @Override
+            public int hashCode() {
+                return number;
+            }
+            @Override
+            public boolean equals(Object obj) {
+                return (obj instanceof Groundhog) && (((Groundhog) obj).number == number);
+            }
+        }
+        public class SpringDetector2 {
+            public static void main(String[] args) throws Exception {
+                SpringDetector.detectSpring(Groundhog2.class);
+            }
+        }
+    1. 理解hashCode()
+        使用散列的目的在于：想要使用一个对象来查找另一个对象。
+        e.g.:
+            public class SlowMap<K, V> extends AbstractMap<K, V> {
+                private List<K> keys =  new ArrayList<>();
+                private List<V> values =  new ArrayList<>();
+                @Override
+                public V put(K key, V value) {
+                    V oldValue = get(key);
+                    if (!keys.contains(key)) {
+                        keys.add(key);
+                        values.add(value);
+                    } else {
+                        values.set(keys.indexOf(key), value);
+                    }
+                    return oldValue;
+                }
+                public V get(Object key) {
+                    if (!keys.contains(key)) {
+                        return null;
+                    }
+                    return values.get(keys.indexOf(key));
+                }
+                @Override
+                public Set<Map.Entry<K, V>> entrySet() {
+                    Set<Map.Entry<K, V>> set = new HashSet<>();
+                    Iterator<K> ki = keys.iterator();
+                    Iterator<V> vi = values.iterator();
+                    while (ki.hasNext()) {
+                        set.add(new MapEntry<K, V>(ki.next(), vi.next()));
+                    }
+                    return set;
+                }
+
+                public static void main(String[] args) {
+                    SlowMap<String, String> map = new SlowMap<>();
+                    map.putAll(Countries.capitals(15));
+                    System.out.println(map);
+                    System.out.println(map.get("China"));
+                    System.out.println(map.entrySet());
+                }
+            }
+            public class MapEntry<K, V> implements Map.Entry<K, V> {
+                private K key;
+                private V value;
+                public MapEntry(K key, V value) {
+                    this.key = key;
+                    this.value = value;
+                }
+                @Override
+                public K getKey() { return key; }
+                @Override
+                public V getValue() { return value; }
+                @Override
+                public V setValue(V value) {
+                    V result = this.value;
+                    this.value = value;
+                    return result;
+                }
+                @Override
+                public int hashCode() {
+                    return (key == null ? 0 : key.hashCode()) ^ (value == null ? 0 : value.hashCode());
+                }
+                @Override
+                public boolean equals(Object o) {
+                    if (!(o instanceof MapEntry)) {
+                        return false;
+                    }
+                    MapEntry me = (MapEntry)o;
+                    return (key == null ? me.getKey() == null : key.equals(me.getKey()))
+                            && (value == null ? me.getValue() == null : value.equals(me.getValue()));
+                }
+                @Override
+                public String toString() {
+                    return key + " = " + value;
+                }
+            }
+    2. 为速度而散列
+        e.g.:
+            public class SimpleHashMap<K, V> extends AbstractMap<K, V> {
+                static final int SIZE = 997;
+                LinkedList<MapEntry<K, V>>[] buckets = new LinkedList[SIZE];
+                @Override
+                public V put(K key, V value) {
+                    V oleValue = null;
+                    int index = Math.abs(key.hashCode()) % SIZE;
+                    if (buckets[index] == null) {
+                        buckets[index] = new LinkedList<>();
+                    }
+                    LinkedList<MapEntry<K, V>> bucket = buckets[index];
+                    MapEntry<K, V> pair = new MapEntry<>(key, value);
+                    boolean found = false;
+                    ListIterator<MapEntry<K, V>> it = bucket.listIterator();
+                    while (it.hasNext()) {
+                        MapEntry<K, V> iPair = it.next();
+                        if (iPair.getKey().equals(key)) {
+                            oleValue = iPair.getValue();
+                            it.set(pair);
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        buckets[index].add(pair);
+                    }
+                    return oleValue;
+                }
+                @Override
+                public V get(Object o) {
+                    int index = Math.abs(o.hashCode()) % SIZE;
+                    if (buckets[index] == null) {
+                        return null;
+                    }
+                    for (MapEntry<K, V> iPair : buckets[index]) {
+                        if (iPair.getKey().equals(o)) {
+                            return iPair.getValue();
+                        }
+                    }
+                    return null;
+                }
+                    @Override
+                public Set<Map.Entry<K, V>> entrySet() {
+                        HashSet<Entry<K, V>> set = new HashSet<>();
+                        for (LinkedList<MapEntry<K, V>> bucket : buckets) {
+                            if(bucket == null) {
+                                continue;
+                            }
+                            for (MapEntry<K, V> mpair : bucket) {
+                                set.add(mpair);
+                            }
+                        }
+                        return set;
+                }
+
+                public static void main(String[] args) {
+                    SimpleHashMap<String, String> simpleHashMap = new SimpleHashMap<>();
+                    simpleHashMap.putAll(Countries.capitals(15));
+                    System.out.println(simpleHashMap);
+                    System.out.println(simpleHashMap.get("CHINA"));
+                    System.out.println(simpleHashMap.entrySet());
+                }
+            }
+
+    3. 覆盖hashCode()
+        散列码不必是独一无二的（应该更关注生成速度，而不是唯一性），但是通过hashCode()与equals()，必须能够完全确定对象的身份。
+        hashCode()的指示：
+            ①. 给int变量result赋予某个非零值常量；
+            ②. 为对象内每个有意义的域f（每个可以做equals()操作的域）计算出一个int散列码c；
+            ③. 合并计算得到的散列码：result = 37 * result +　c；
+            ④. 返回result；
+            ⑤. 检查hashCode()最后生成的结果，确保相同的对象拥有相同的散列码。
+
+        e.g.:
+            public class CountedString {
+                private static List<String> created = new ArrayList<>();
+                private String s;
+                private int id = 0;
+                public CountedString(String str) {
+                    s =str;
+                    created.add(s);
+                    for ( String s2 : created) {
+                        if (s2.equals(s)) {
+                            id++;
+                        }
+                    }
+                }
+                @Override
+                public String toString() {
+                    return "String:" + s + " id:" + id + " hashCode(): " + hashCode();
+                }
+                @Override
+                public int hashCode() {
+                    int result = 17;
+                    result = 37 * result + s.hashCode();
+                    result = 37 * result + id;
+                    return result;
+                }
+                @Override
+                public boolean equals(Object o) {
+                    return o instanceof CountedString
+                            && s.equals(((CountedString)o).s)
+                            && id == ((CountedString)o).id;
+                }
+                public static void main(String[] args) {
+                    HashMap<CountedString, Integer> map = new HashMap<>();
+                    CountedString[] array = new CountedString[5];
+                    for ( int i = 0; i < array.length; i++ ) {
+                        array[i] = new CountedString("biu");
+                        map.put(array[i], i);
+                    }
+                    System.out.println(map);
+                    for (CountedString str : array) {
+                        System.out.print("Looking up " + str);
+                        System.out.print(map.get(str));
+                        System.out.println();
+                    }
+                }
+            }
+
+        e.g.:
+            public class Individual implements Comparable<Individual> {
+                private static long counter = 0;
+                private final long id = counter++;
+                private String name;
+                public Individual(String name) {
+                    this.name = name;
+                }
+                public Individual() {}
+
+                @Override
+                public String toString() {
+                    return getClass().getSimpleName() + (name == null ? "" : " " + name);
+                }
+                @Override
+                public int hashCode() {
+                    int result = 17;
+                    if (name != null) {
+                        result = result * 37 + name.hashCode();
+                    }
+                    result = result * 37 + (int)id;
+                    return result;
+                }
+                @Override
+                public int compareTo(Individual arg) {
+                    String first = getClass().getSimpleName();
+                    String argFirst = arg.getClass().getSimpleName();
+                    int firstCompare = first.compareTo(argFirst);
+                    if (firstCompare != 0) {
+                        return firstCompare;
+                    }
+                    if (name != null && arg.name != null) {
+                        int secondCompare = name.compareTo(arg.name);
+                        if (secondCompare != 0) {
+                            return secondCompare;
+                        }
+                    }
+                    return (arg.id < id ? -1 : (arg.id == id ? 0 : 1));
+                }
+            }
+
+十、选择接口的不同实现
+    1. 性能测试框架
+        e.g.:
+            public abstract class Test<C> {
+                String name;
+                public Test(String name) {
+                    this.name = name;
+                }
+                abstract int test(C container, TestParam tp);
+            }
+            public class TestParam {
+                public final int size;
+                public final int loops;
+                public TestParam(int size, int loops) {
+                    this.size = size;
+                    this.loops = loops;
+                }
+                public static TestParam[] array(int...values) {
+                    int size =  values.length / 2;
+                    TestParam[] result = new TestParam[size];
+                    int n = 0;
+                    for ( int i = 0; i < size; i++ ) {
+                        result[i] = new TestParam(values[n++], values[n++]);
+                    }
+                    return result;
+                }
+                public static TestParam[] array(String[] values) {
+                    int[] vals = new int[values.length];
+                    for ( int i = 0; i < vals.length; i++ ) {
+                        vals[i] = Integer.decode(values[i]);
+                    }
+                    return array(vals);
+                }
+            }
+            public class Tester<C> {
+                public static int fieldWidth = 8;
+                public static TestParam[] defaultParams
+                        = TestParam.array(10, 5000, 100, 5000, 1000, 5000, 10000, 500);
+                protected C initialize(int size) {
+                    return container;
+                }
+                protected C container;
+                private String headline = "";
+                private List<Test<C>> tests;
+                private static String stringFiled() {
+                    return "%" + fieldWidth + "s";
+                }
+                private static String numberFiled() {
+                    return "%" + fieldWidth + "d";
+                }
+                private static int sizeWidth = 5;
+                private static String sizeFiled = "%" + sizeWidth + "s";
+                private TestParam[] paramList = defaultParams;
+                public Tester(C container, List<Test<C>> tests) {
+                    this.container = container;
+                    this.tests = tests;
+                    if (container != null) {
+                        headline = container.getClass().getSimpleName();
+                    }
+                }
+                public Tester(C container, List<Test<C>> tests, TestParam[] paramList) {
+                    this(container, tests);
+                    this.paramList = paramList;
+                }
+                public void setHeadline(int headLine) {
+                    this.headline = headline;
+                }
+                public static <C> void run(C cntnr, List<Test<C>> tests) {
+                    new Tester<C>(cntnr, tests).timedTest();
+                }
+                public static <C> void run(C cntnr, List<Test<C>> tests, TestParam[] paramList) {
+                    new Tester<C>(cntnr, tests, paramList).timedTest();
+                }
+                public void displayHeader() {
+                    // Calculate width and pad with "-"
+                    int width = fieldWidth * tests.size() + sizeWidth;
+                    int dashLength = width - headline.length() -1;
+                    StringBuilder head = new StringBuilder(width);
+                    for ( int i = 0; i < dashLength / 2; i++ ) {
+                        head.append('-');
+                    }
+                    head.append(' ');
+                    head.append(headline);
+                    head.append(' ');
+                    for ( int i = 0; i < dashLength / 2; i++ ) {
+                        head.append('-');
+                    }
+                    System.out.println(head);
+                    System.out.format(sizeFiled, "size");
+                    for (Test test : tests) {
+                        System.out.format(stringFiled(), test.name);
+                    }
+                    System.out.println();
+                }
+                public void timedTest() {
+                    displayHeader();
+                    for (TestParam param : paramList) {
+                        System.out.format(sizeFiled, param.size);
+                        for (Test<C> test : tests) {
+                            C kontainer = initialize(param.size);
+                            long start = System.nanoTime();
+                            int raps = test.test(kontainer, param);
+                            long duration = System.nanoTime() - start;
+                            long timePerRep = duration / raps;
+                            System.out.format(numberFiled(), timePerRep);
+                        }
+                        System.out.println();
+                    }
+
+                }
+            }
+    2. 对List的选择
+
+        随机数生成器来执行对List的随机访问：
+            对于背后有数组支撑的List和ArrayList，无论列表的大小如何，这些访问都很快速和一致，而对于LinkedList，访问时间对于较大
+        的列表将明显增加。
+        测试迭代器在列表中间插入新的元素：
+            对于ArrayList，当列表变大时，其开销将变得很高昂，但是对于LinkedList，相对来说比较低廉，并且不随列表尺寸而发生变化。
+        这是因为ArrayList在插入时，必须创建空间并将它的所有引用向前移动，这回随ArrayList的尺寸增加而产生高昂的代价。LinkedList
+        只需链接新的元素，而不必修改列表中剩余的元素。
+            LinkedList对List的端点会进行特殊处理-----这使得将LinkedList用作Queue时，速度可以得到提高。在LinkedList中的插入和移除
+        代价相当低廉，并且不随尺寸发生变化，但是对于ArrayList，插入操作代价特别高昂，并且其代价将随列表尺寸的增加而增加。
+            避免使用Vector，它只存在于支持遗留代码的类库中。
+        最佳的作法：
+            将ArrayList作为默认首选，只有你需要使用额外的功能时，或者当程序的性能因为经常从表中间进行插入或删除而变差的时候，才去
+        选择LinkedList。如果使用的是固定数量的元素，那么既可以选择使用背后有数组支持的List（如Arrays.asList()产生的列表），也可以
+        选择真正的数组。
+            CopyOnWriteArrayList是List的一个特殊实现，专门用于并发编程。
+
+
+        e.g.:
+            public class ListPerformance {
+                static Random random = new Random();
+                static int reps = 1000;
+                static List<Test<List<Integer>>> tests = new ArrayList<>();
+                static List<Test<LinkedList<Integer>>> qTests = new ArrayList();
+                static{
+                    tests.add(new Test<List<Integer>>("add") {
+                        @Override
+                        int test(List<Integer> list, TestParam tp) {
+                            int loops = tp.loops;
+                            int listSize = tp.size;
+                            for ( int i = 0; i < loops; i++ ) {
+                                list.clear();
+                                for ( int j = 0; j < listSize; j++ ) {
+                                    list.add(j);
+                                }
+                            }
+                            return loops * listSize;
+                        }
+                    });
+                    tests.add(new Test<List<Integer>>("get"){
+                        @Override
+                        int test(List<Integer> list, TestParam tp) {
+                            int loops = tp.loops;
+                            int listSize = tp.size;
+                            for ( int i = 0; i < loops; i++ ) {
+                                list.get(random.nextInt(listSize));
+                            }
+                            return loops;
+                        }
+                    });
+                    tests.add(new Test<List<Integer>>("iteradd") {
+                        @Override
+                        int test(List<Integer> list, TestParam tp) {
+                            final int LOOPS = 1000000;
+                            int half = list.size() / 2;
+                            ListIterator<Integer> it = list.listIterator(half);
+                            for ( int i = 0; i < LOOPS; i++ ) {
+                                it.add(47);
+                            }
+                            return LOOPS;
+                        }
+                    });
+                    tests.add(new Test<List<Integer>>("insert") {
+                        @Override
+                        int test(List<Integer> list, TestParam tp) {
+                            int loops = tp.loops;
+                            for ( int i = 0; i < loops; i++ ) {
+                                list.add(5, 47);
+                            }
+                            return loops;
+                        }
+                    });
+                    tests.add(new Test<List<Integer>>("remove") {
+                        @Override
+                        int test(List<Integer> list, TestParam tp) {
+                            int loops = tp.loops;
+                            int size = tp.size;
+                            for ( int i = 0; i < loops; i++ ) {
+                                list.clear();
+                                list.addAll(new CountingIntegerList(size));
+                                while(list.size() > 5) {
+                                    list.remove(5);
+                                }
+                            }
+                            return loops * size;
+                        }
+                    });
+                    // Test for queue behavior
+                    qTests.add(new Test<LinkedList<Integer>>("addFirst") {
+                        @Override
+                        int test(LinkedList<Integer> container, TestParam tp) {
+                            int loops = tp.loops;
+                            int size = tp.size;
+                            for ( int i = 0; i < loops; i++ ) {
+                                container.clear();
+                                for ( int j = 0; j < size; j++ ) {
+                                    container.addFirst(47);
+                                }
+                            }
+                            return loops * size;
+                        }
+                    });
+                    qTests.add(new Test<LinkedList<Integer>>("addLast") {
+                        @Override
+                        int test(LinkedList<Integer> container, TestParam tp) {
+                            int loops = tp.loops;
+                            int size = tp.size;
+                            for ( int i = 0; i < loops; i++ ) {
+                                container.clear();
+                                for ( int j = 0; j < size; j++ ) {
+                                    container.addLast(47);
+                                }
+                            }
+                            return loops * size;
+                        }
+                    });
+                    qTests.add(new Test<LinkedList<Integer>>("rmFirst") {
+                        @Override
+                        int test(LinkedList<Integer> container, TestParam tp) {
+                            int loops = tp.loops;
+                            int size = tp.size;
+                            for ( int i = 0; i < loops; i++ ) {
+                                container.clear();
+                                container.addAll(new CountingIntegerList(size));
+                                while (container.size() > 0) {
+                                    container.removeFirst();
+                                }
+                            }
+                            return loops * size;
+                        }
+                    });
+                    qTests.add(new Test<LinkedList<Integer>>("rmLast") {
+                        @Override
+                        int test(LinkedList<Integer> container, TestParam tp) {
+                            int loops = tp.loops;
+                            int size = tp.size;
+                            for ( int i = 0; i < loops; i++ ) {
+                                container.clear();
+                                container.addAll(new CountingIntegerList(size));
+                                while (container.size() > 0) {
+                                    container.removeLast();
+                                }
+                            }
+                            return loops * size;
+                        }
+                    });
+                }
+                static class ListTester extends Tester<List<Integer>> {
+                    public ListTester(List<Integer> container, List<Test<List<Integer>>> tests) {
+                        super(container, tests);
+                    }
+                    @Override
+                    protected List<Integer> initialize(int size) {
+                        container.clear();
+                        container.addAll(new CountingIntegerList(size));
+                        return container;
+                    }
+                    public static void run(List<Integer> list, List<Test<List<Integer>>> tests) {
+                        new ListTester(list, tests).timedTest();
+                    }
+                }
+                public static void main(String[] args) {
+                    if (args.length > 0) {
+                        Tester.defaultParams = TestParam.array(args);
+                    }
+                    Tester<List<Integer>> arrayTest = new Tester<List<Integer>>(null, tests.subList(1, 3)) {
+                        @Override
+                        protected List<Integer> initialize(int size) {
+                            //Integer[] ia = new Integer[size];
+                            CountingIntegerList integers = new CountingIntegerList(size);
+                            return integers;
+                        }
+                    };
+                    arrayTest.setHeadline("Array as List");
+                    arrayTest.timedTest();
+                    Tester.defaultParams = TestParam.array(10, 5000, 100, 5000, 1000, 1000, 10000, 200);
+                    if (args.length > 0) {
+                        Tester.defaultParams = TestParam.array(args);
+                    }
+                    ListTester.run(new ArrayList<Integer>(), tests);
+                    ListTester.run(new LinkedList<Integer>(), tests);
+                    ListTester.run(new Vector<Integer>(), tests);
+                    Tester.fieldWidth = 12;
+                    Tester<LinkedList<Integer>> qTest = new Tester<>(new LinkedList<Integer>(), qTests);
+                    qTest.setHeadline("Queue tests");
+                    qTest.timedTest();
+                }
+            }
+
+
+    3. 微基准测试的危险
+        e.g.:
+            public class RandomBounds {
+                static void usage() {
+                    System.out.print("Usage:");
+                    System.out.print("\tRandomBounds lower");
+                    System.out.print("\tRandomBounds upper");
+                    System.exit(1);
+                }
+                public static void main(String[] args) {
+                    if (args.length != 1) {
+                        usage();
+                    }
+                    if (args[0].equals("lower")) {
+                        while(Math.random() != 0.0) {
+                            System.out.print("Produced 0.0!");
+                        }
+                    } else if (args[0].equals("upper")) {
+                        while (Math.random() != 1.0) {
+                            System.out.print("Produced 1.0!");
+                        }
+                    } else {
+                        usage();
+                    }
+                }
+            }
+    4. 对Set的选择
+        HashSet的性能基本上总是比TreeSet好，特别是在添加和查询元素时，而这两个操作也是最重要的操作。
+        TreeSet存在的唯一原因是它可以维持元素的排序状态，所以，只有当需要一个排好序的Set时，才应该用TreeSet。
+        因为其内部结构支持排序，并且因为迭代是我们更有可能执行的操作，所以，用TreeSet迭代通常比HashSet要快。
+
+        对于插入操作，LinkedHashSet比HashSet的代价更高，这是由维护链表所带来额外开销造成的。
+
+    5. 对Map的选择
+        除了IdentityHashMap，所有的Map实现的插入操作都会随着Map尺寸的变大而明显变慢。但是，查找的代价通常比插入要小得多。
+
+        HashTable的性能大体上与HashMap相当。因为HashMap是用来代替Hashtable的，因此它们使用了相同的底层存储和查找机制。
+
+        TreeMap通常比HashMap要慢。TreeMap是一种创建有序列表的方式。树的行为是：总是保证有序，并且不必进行特殊的排序。
+        一旦填充了一个TreeMap，就可以调用keySet()方法来获取键的Set视图，然后调用toArray()来产生由这些键构成的数组。
+        之后，可以使用静态方法Arrays.binarySearch()在排序数组中快速查找对象。当然，这只有在HashMap的行为不可接受的情况下
+        才有意义，因为HashMap本身就被设计为可以快速查找键。
+
+        当使用Map时，你的第一选择应该是HashMap，只有在要求Map始终保持有序时，才需要使用TreeMap。
+
+        LinkedHashMap再插入时比HashMap慢一点，因为它维护散列数据结构的同时还要维护链表（以保持插入顺序）。正是由于这个列表，
+        使得其迭代速度很快。
+
+        IdentityHashMap则具有完全不同的性能，因为它使用==代替equals()来比较元素。
+
+        WeakHashMap：
+
+        HashMap的性能因子：
+            容量：表中的桶位数。
+            初始容量：表在创建时所拥有的桶位数。HashMap和HashSet都具有允许指定初始容量的构造器。
+            尺寸：表中当前存储的项数。
+            负载因子：尺寸/容量。空表的负载因子是0，而半满表的负载因子是0.5，以此类推。HashMap和HashSet都具有允许是定负载因子
+                的构造器，表示当负载情况达到负载因子的水平时，容器将自动增加其容量，实现方式是使容量大致加倍，并重新将现有的
+                对象分布到新的桶位集中（称为再散列）。
+
+            HashMap的默认负载因子是0.75（当表达到3/4时，进行再散列），这个因子在时间和空间代价之间达到了平衡。更高的负载因子
+            可以降低表所需的空间，但是会增加查找代价。
+
+十一、 实用方法
+    e.g.:
+        public class Utilities {
+            static List<String> list = Arrays.asList(
+                    ("one tow three four five six seven " +
+                            "eight nine ten").split(" "));
+            static List<String> subList = Arrays.asList(
+                    "five six seven".split(" "));
+            public static void main(String[] args) {
+
+                System.out.println(list);
+                System.out.println("'list' disjoint (Four)? " +
+                        Collections.disjoint(list,
+                                Collections.singletonList("four")));
+                System.out.println("max: " + Collections.max(list));
+                System.out.println("min: " + Collections.min(list));
+                System.out.println("max w/ comparator: " +
+                        Collections.max(list, String.CASE_INSENSITIVE_ORDER));
+                System.out.println("min w/ comparator: " +
+                        Collections.min(list, String.CASE_INSENSITIVE_ORDER));
+                System.out.println("index Of subList: " +
+                        Collections.indexOfSubList(list, subList));
+                System.out.println("last index Of subList: " +
+                        Collections.lastIndexOfSubList(list, subList));
+                Collections.replaceAll(list, "one", "zero");
+                System.out.println("replace all: " + list);
+                Collections.reverse(list);
+                System.out.println("reverse: " + list);
+                Collections.rotate(list, 3);
+                System.out.println("rotate: " + list);
+                List<String> source = Arrays.asList("in the matrix".split(" "));
+                Collections.copy(list, source);
+                System.out.println("copy: " + list);
+                Collections.swap(list, 0, list.size() - 1);
+                System.out.println("swap: " + list);
+                Collections.shuffle(list, new Random(47));
+                System.out.println("shuffled: " + list);
+                Collections.fill(list, "pop");
+                System.out.println("fill: " + list);
+                System.out.println("frequency of 'pop': " +
+                        Collections.frequency(list, "pop"));
+                List<String> dups = Collections.nCopies(3, "snap");
+                System.out.println("dups: " + dups);
+                System.out.println("list disjoint 'dups'?: " +
+                        Collections.disjoint(list, dups));
+                // Getting an old-style Enumeration:
+                Enumeration<String> e = Collections.enumeration(list);
+                Vector<String>  v = new Vector<String>();
+                while (e.hasMoreElements()) {
+                    v.addElement(e.nextElement());
+                }
+                // Converting an old-style Vector to a List via in Enumeration
+                ArrayList<String> arrayList = Collections.list(v.elements());
+                System.out.println("arrayList: " + arrayList);
+            }
+        }
+    1. List的排序和查询
+
+    2. 只读容器
+        在将容器设为只读之前，必须填入有意义的数据。装载数据之后，就应该实用“不可修改的”方法返回的引用去替换掉原来的引用。
+        这样就不用担心无意中修改了只读内容。另一方面，此方法允许保留一份可修改的容器，作为类的private成员，然后通过某个方法
+        调用返回对该容器的“只读”的引用。这样一来，就只有你可以修改容器的内容，而别人只能读取。
+        e.g.:
+            public class ReadOnly {
+                static Collection<String> data = new ArrayList<>(Countries.names(6));
+                public static void main(String[] args) {
+                    Collection<String> collection = Collections.unmodifiableCollection(new ArrayList<>(data));
+                    System.out.println(collection);
+                    // Can't change it
+                    collection.add("biu");
+
+                    List<String> list = Collections.unmodifiableList(new ArrayList<>(data));
+                    System.out.println(list);
+                    // Can't change it
+                    list.add("biu");
+
+                    Set<String> set = Collections.unmodifiableSet(new HashSet<>(data));
+                    System.out.println(set);
+                    // Can't change it
+                    set.add("biu");
+
+                    Set<String> treeSet = Collections.unmodifiableSortedSet(new TreeSet<>(data));
+                    System.out.println(treeSet);
+                    // Can't change it
+                    treeSet.add("biu");
+
+                    Map<String, String> map = Collections.unmodifiableMap(new HashMap<>(Countries.capitals(6)));
+                    System.out.println(map);
+                    // Can't change it
+                    map.put("key", "value");
+
+                    Map<String, String> treeMap = Collections.unmodifiableSortedMap(new TreeMap<>(Countries.capitals(6)));
+                    System.out.println(treeMap);
+                    // Can't change it
+                    treeMap.put("key", "value");
+                }
+            }
+    2. Collection或Map的同步控制
+
+十二、持有引用
+     java.lang.ref类库包含了一组类，这些类为垃圾回收提供了更大的灵活性。
+     如果想继续持有对某个对象的引用，希望以后还能够继续访问到该对象，但是也希望能够允许垃圾回收器释放它，这时就应该使用Reference对象。
+        e.g.:
+            public class References {
+                private static ReferenceQueue<VeryBig> rq = new ReferenceQueue<>();
+                public static void checkQueue() {
+                    Reference<? extends VeryBig> inq = rq.poll();
+                    if (inq != null) {
+                        System.out.println("In queue:" + inq.get());
+                    }
+                }
+
+                public static void main(String[] args) {
+                    int size = 10;
+                    if (args.length > 0) {
+                        size = new Integer(args[0]);
+                    }
+                    LinkedList<SoftReference<VeryBig>> sa = new LinkedList<>();
+                    for ( int i = 0; i < size; i++ ) {
+                        sa.add(new SoftReference<VeryBig>(new VeryBig("Soft " + i), rq));
+                        System.out.println("Just created: " + sa.getLast());
+                        checkQueue();
+                    }
+
+                    LinkedList<WeakReference<VeryBig>> wa = new LinkedList<>();
+                    for ( int i = 0; i < size; i++ ) {
+                        wa.add(new WeakReference<VeryBig>(new VeryBig("Weak " + i), rq));
+                        System.out.println("Just created: " + wa.getLast());
+                        checkQueue();
+                    }
+
+                    SoftReference<VeryBig> s = new SoftReference<>(new VeryBig("Soft"));
+                    WeakReference<VeryBig> w = new WeakReference<>(new VeryBig("Weak"));
+                    System.gc();
+
+                    LinkedList<PhantomReference<VeryBig>> pa = new LinkedList<>();
+                    for ( int i = 0; i < size; i++ ) {
+                        pa.add(new PhantomReference<VeryBig>(new VeryBig("Phantom " + i), rq));
+                        System.out.println("Just created: " + pa.getLast());
+                        checkQueue();
+                    }
+                }
+            }
+            class VeryBig {
+                private static final int SIZE = 10000;
+                private long[] la = new long[SIZE];
+                private String ident;
+                public VeryBig(String id) {
+                    this.ident = id;
+                }
+                @Override
+                public String toString() {
+                    return ident;
+                }
+                public void finalize() {
+                    System.out.println("Finalizing " + ident);
+                }
+            }
+    1. WeakHashMap
+        WeakHashMap,用来保存WeakReference.它使得规范映射更易于使用。在这种映射中，每个值只保存一份实例以节省存储空间。当程序
+        需要"值"的时候，便在映射中查询现有的对象，然后使用它（而不是重新再创建）。
+          e.g.:
+            public class CanonicialMapping {
+                public static void main(String[] args) {
+                    int size = 1000;
+                    if (args.length > 0) {
+                        size = new Integer(args[0]);
+                    }
+                    Key[] keys = new Key[size];
+                    Value[] values = new Value[size];
+                    WeakHashMap<Key, Value> map = new WeakHashMap<>();
+                    for ( int i = 0; i < size; i++ ) {
+                        Key k = new Key(Integer.toString(i));
+                        Value v = new Value(Integer.toString(i));
+                        if (i % 3 == 0) {
+                            keys[i] = k;
+                        }
+                        map.put(k, v);
+                    }
+                    System.gc();
+                }
+            }
+            class Element {
+                private String ident;
+                public Element(String id) {
+                    ident = id;
+                }
+                @Override
+                public String toString() {
+                    return ident;
+                }
+                @Override
+                public int hashCode() {
+                    return ident.hashCode();
+                }
+                @Override
+                public boolean equals(Object obj) {
+                    return obj instanceof Element && ident.equals(((Element)obj).ident);
+                }
+                @Override
+                protected void finalize() {
+                    System.out.println("Finalizing " + getClass().getSimpleName() + " " + ident);
+                }
+            }
+            class Key extends Element {
+                public Key(String id) {
+                    super(id);
+                }
+            }
+            class Value extends Element {
+                public Value(String id) {
+                    super(id);
+                }
+            }
+
+十三、Java 1.0/1,1的容器
+    1. Vector和Enumeration
+        e.g.:
+            public class Enumerations {
+                public static void main(String[] args) {
+                    Vector<String> vector = new Vector<>(Countries.names(10));
+                    Enumeration<String> elements = vector.elements();
+                    while (elements.hasMoreElements()) {
+                        System.out.println(elements.nextElement() + " ");
+                    }
+                    // Produce an Enumeration from a Collection
+                    elements = Collections.enumeration(new ArrayList<String>());
+                }
+            }
+    2. Hashtable
+        基本的Hashtable与HashMap很相似，甚至方法名也相似。所以，在新的程序中，没有理由再使用Hashtable而不用HashMap。
+
+    3. Stack
+        e.g.:
+            public class Stacks {
+                public static void main(String[] args) {
+                    Stack<String> stack = new Stack<>();
+                    for (Month month : Month.values()) {
+                        stack.push(month.toString());
+                    }
+                    System.out.println("stack = " + stack);
+
+                    // Treating a stack as a Vector
+                    stack.addElement("DECEMBER");
+                    System.out.println("element[6] = " + stack.elementAt(6));
+                    while (!stack.empty()) {
+                        System.out.print(stack.pop() + " ");
+                    }
+                    System.out.println();
+                    // Using a LinkedList as a Vector
+                    LinkedList<String> linkedList = new LinkedList<>();
+                    for (Month month : Month.values()) {
+                        linkedList.addFirst(month.toString());
+                    }
+                    System.out.println("LinkedList " + linkedList);
+                    while (!linkedList.isEmpty()) {
+                        System.out.print(linkedList.removeFirst() + " ");
+                    }
+                }
+            }
+            enum Month{
+                JANUARY, FEBRUARY, MATCH, APRIL, MAY, JUNE, JULY, AUGUST, SEPTEMBER, OCTOBER, NOVEMBER
+            }
+    4. BitSet
+        如果想高效地存储大量的"开/关"信息，BitSet是很好的选择。不过它的效率仅是对空间而言；如果需要高效的访问时间，BitSet
+        比本地数组稍慢一些。
+        此外，BitSet的最小容量是long：64位。
+        如果拥有一个可以命名的固定的标志集合，那么EnumSet与BitSet相比，通常是一种更好的选择，因为EnumSet允许你按照名字而不是
+        数字位的位置进行操作，因此可以减少错误。EnumSet还可以防止你因为不注意而添加新的标志位置，这种行为能够引发严重的、
+        难以发现的缺陷。
+        e.g.:
+            public class Bits {
+                public static void printBitSet(BitSet bitSet) {
+                    System.out.println("bitSet: " + bitSet);
+                    StringBuilder sb = new StringBuilder();
+                    for ( int j = 0; j < bitSet.size(); j++ ) {
+                        sb.append(bitSet.get(j) ? "1" : "0");
+                    }
+                    System.out.println("bit pattern " + sb);
+                }
+                public static void main(String[] args) {
+                    Random random = new Random(47);
+                    byte b = (byte)random.nextInt();
+                    BitSet bb = new BitSet();
+                    for (int i = 7; i >= 0; i--) {
+                        if (((1 << i) & b) != 0) {
+                            bb.set(i);
+                        } else {
+                            bb.clear(i);
+                        }
+                    }
+                    System.out.println("byte value: " + b);
+                    printBitSet(bb);
+
+                    short s = (short)random.nextInt();
+                    BitSet bs = new BitSet();
+                    for (int i = 15; i >= 0; i--) {
+                        if (((1 << i) & s) != 0) {
+                            bs.set(i);
+                        } else {
+                            bs.clear(i);
+                        }
+                    }
+                    System.out.println("short value: " + s);
+                    printBitSet(bs);
+
+                    int love = random.nextInt();
+                    BitSet bi = new BitSet();
+                    for (int i = 31; i >= 0; i--) {
+                        if (((1 << i) & love) != 0) {
+                            bi.set(i);
+                        } else {
+                            bi.clear(i);
+                        }
+                    }
+                    System.out.println("int value: " + love);
+                    printBitSet(bi);
+
+                    BitSet b127 = new BitSet();
+                    b127.set(127);
+                    System.out.println("set bit 127: " + b127);
+
+                    BitSet b255 = new BitSet(65);
+                    b255.set(255);
+                    System.out.println("set bit 255: " + b255);
+
+                    BitSet b1023 = new BitSet(512);
+                    b1023.set(1023);
+                    b1023.set(1024);
+                    System.out.println("set bit 1023: " + b1023);
+                }
+            }
+
+十四、总结
+    容器类库对于面向对象语言来说是最重要的类库。

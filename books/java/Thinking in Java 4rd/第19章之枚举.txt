@@ -1,0 +1,1057 @@
+第十九章 枚举类型
+
+一、基本enum特性
+
+    e.g.:
+        enum Shrubbery { GROUND, CRAWLING, HANGING }
+        public class EnumClass {
+            public static void main(String[] args) {
+                for (Shrubbery s : Shrubbery.values()) {
+                    System.out.println(s + " ordinal: " + s.ordinal());
+                    System.out.println(s.compileTo(Shrubbery.CRAWLING) + " ");
+                    System.out.println(s == Shrubbery.CRAWLING);
+                    System.out.println(s.getDeclaringClass());
+                    System.out.println(s.name());
+                }
+            }
+        }
+
+    Tips:
+        ordinal()方法返回一个int值，这是每个enum实例在声明时的次序，从0开始。
+        可以使用 == 来比较enum实例，编译器会自动提供equals()和hashCode()方法。
+        Enum实现了Comparable接口，所以具有CompareTo()方法。
+        Enum实现了Serializable接口。
+        在enum实例上调用getDeclaringClass()方法，就能知道其所属的Enum类。
+        name()方法返回enum实例声明时的名字。
+        values()返回enum实例的数组，而且该数组中的元素严格保持在enum中声明时的顺序，可以用来遍历enum实例。
+
+    1. 将静态导入用于enum
+        e.g.:
+            import static enumerated.Spiciness.*;
+            public class Burrito {
+                private Spiciness degree;
+                public Burrito(degree) {
+                    this.degree = degree;
+                }
+                @Override
+                public String toString() {
+                    return "Burrito is " + degree;
+                }
+                public static void main(String[] args) {
+                    System.out.println(new Burrito(NOT));
+                    System.out.println(new Burrito(MEDIUM));
+                }
+            }
+
+            tips:
+                在定义enum的同一个文件中，这种技巧无法使用；如果是默认包中定义enum，这种技巧也无法使用。
+
+二、向enum中添加新方法
+
+    除了不能继承enum之外，基本上可以将enum看作一个常规的类。也就是说，我们可以向enum中添加方法，enum甚至可以有main()方法。
+
+    一般来说，我们希望每个枚举实例都能够返回对自身的描述，而不仅仅只是默认的toString()实现，这只能返回枚举实例的名字，为此，
+    我们可以提供一个构造器，专门负责这个额外的信息，然后添加一个方法，返回这个描述信息。
+
+    e.g.:
+        public enum OzWitch {
+            // Instance must be defined fisrt, before the methods:
+            WEST("Miss Guich, aka the Wicked Witch"),
+            EAST("Wicked Witch of the East, wearer of the Ruby Slippers, crushed by Dorothy's house"),
+            NORTH("Glinda, the Good Witch of the North"),
+            SOUTH("Good by interface, but missing");
+            private String description;
+            // Constructor must be package or private access:
+            private OzWitch(String description) {
+                this.description = description;
+            }
+            public String getDescription() {
+                return description;
+            }
+
+            public static void main(String[] args) {
+                for (OzWitch witch : OzWitch.values()) {
+                    System.out.println(witch + ":" + witch.getDescription());
+                }
+            }
+        }
+
+        tips：
+            1). 如果打算定义自己的方法，那么必须在enum实例序列的最后添加一个分号。同时，java要求必须先定义实例。如果在
+                定义enum实例之前定义了任何方法或属性，那么就会在编译时得到错误信息。
+
+            2). 只能在enum定义的内部使用构造器创建enum实例，一旦enum的定义结束，编译器就不允许再使用构造器来创建任何实例了。
+
+    1. 覆盖enum的方法
+
+        覆盖toString()方法，给我们提供另一种方式来为枚举实例生成不同的字符串描述信息。
+        e.g.:
+            public enum SpaceShip {
+                SCOUT, CARGO, TRANSPORT, CRUISE, BATTLESHIP, MOTHERSHIP;
+                @Override
+                public String toString() {
+                    String id = name();
+                    String lower = id.substring(1).toLowerCase();
+                    return id.charAt(0) + lower;
+                }
+
+                public static void main(String[] args) {
+                    for ( SpaceShip ship : SpaceShip.values()
+                           ) {
+                        System.out.println(ship);
+                    }
+                }
+            }
+
+三、switch语句中的enum
+
+    在switch中使用enum，是enum提供的一项非常便利的功能。case语句中不必使用enum类型来修饰enum实例。
+
+    e.g.:
+        public class TrafficLight {
+            Signal signal = Signal.RED;
+            public void change() {
+                switch (signal) {
+                    case RED:
+                        signal = Signal.GREEN; break;
+                    case YELLOW:
+                        signal = Signal.RED; break;
+                    case GREEN:
+                        signal = Signal.YELLOW; break;
+                    /*default:
+                        break;*/
+                }
+            }
+
+            @Override
+            public String toString() {
+                return "The traffic light is " + signal;
+            }
+
+            public static void main(String[] args) {
+                TrafficLight light = new TrafficLight();
+                for ( int i = 0; i < 7; i++ ) {
+                    System.out.println(light);
+                    light.change();
+                }
+            }
+        }
+
+        enum Signal {
+            RED, YELLOW, GREEN,
+        }
+
+        tips：
+            1). switch中没有default语句，编译器并不会报错，但是如果case语句中调用return，那么就会提示缺少default语句，
+                这与是否覆盖了enum的所有实例无关。
+
+四、values()的神秘之处
+
+    values()是由编译器添加的static方法。
+
+    e.g.:
+        public class Reflection {
+            public static  Set<String> analyze(Class<?> clazz) {
+                System.out.println("------Reflection------" + clazz + "------");
+                System.out.println("getGenericInterfaces:");
+                for ( Type t : clazz.getGenericInterfaces()
+                       ) {
+                    System.out.println(t);
+                }
+                System.out.println("getInterfaces:");
+                for ( Type t : clazz.getInterfaces()
+                        ) {
+                    System.out.println(t);
+                }
+                System.out.println(clazz.getGenericInterfaces());
+                System.out.println(clazz.getInterfaces());
+
+                System.out.println("BaseClass:");
+                System.out.println(clazz.getSuperclass());
+
+                System.out.println("Methods:");
+                Method[] methods = clazz.getMethods();
+                Set<String> methodSet = new TreeSet<String>();
+                for ( Method method : methods
+                       ) {
+                    methodSet.add(method.getName());
+                }
+                System.out.println(methodSet);
+                return methodSet;
+            }
+
+            public static void main(String[] args) {
+                Set<String> exploreMethods = analyze(Explore.class);
+                Set<String> enumMethods = analyze(Enum.class);
+                System.out.println("Explore.containAll(Enum)?" + exploreMethods.containsAll(enumMethods));
+                System.out.println("Explore.removeAll(Enum):");
+                exploreMethods.removeAll(enumMethods);
+                System.out.println(exploreMethods);
+            }
+        }
+        enum Explore {
+            HERE, THERE
+        }
+
+        // 通过Class对象获取enum实例
+        public class NonEnum {
+            public static void main(String[] args) {
+                Search[] searches = Search.values();
+                Enum e = Search.HITHER;
+                // e.values(); no values() in Enum;
+                for ( Enum en : e.getClass().getEnumConstants()
+                       ) {
+                    System.out.println(en);
+                }
+
+                Class<Integer> integerClass = Integer.class;
+                try {
+                    for (Object en : integerClass.getEnumConstants()) {
+                        System.out.println(en);
+                    }
+                } catch (Exception exception) {
+                    exception.printStackTrace();
+                }
+
+            }
+        }
+
+        enum Search {
+            HITHER, YON
+        }
+
+        tips：
+            1). 由于将enum实例向上转型为Enum，那么values()方法就不能继续访问了。不过在Class中有一个getEnumConstants()方法，
+                所以即便Enum接口中没有values()方法，我们仍然可以获取到所有enum实例。
+
+五、实现，而非继承
+    所有的enum都继承自java.lang.Enum类，由于java不能多继承，所以enum不能继承其他类，然而，我们可以在创建新的enum时，同时
+    实现一个或多个接口。
+    e.g.:
+        public class EnumImplementation {
+            public static <T> void printNext(Generator<T> clazz) {
+                System.out.println(clazz.next() + ", ");;
+            }
+
+            public static void main(String[] args) {
+                // Choose any instance
+                CartoonCharactor bob = CartoonCharactor.BOB;
+                for ( int i = 0; i < 10; i++ ) {
+                    printNext(bob);
+                }
+            }
+        }
+
+        enum CartoonCharactor implements Generator<CartoonCharactor> {
+            SLAPPY, SPANKY, PUNCHY, SILLY, BOUNCY, NUTTY, BOB,;
+            private Random random = new Random(47);
+            @Override
+            public CartoonCharactor next() {
+                return values()[random.nextInt(values().length)];
+            }
+        }
+
+六、随机选取
+
+    e.g.:
+        public class Enums {
+            private static Random random = new Random(47);
+            public static <T extends Enum<T>> T random(Class<T> clazz) {
+                return random(clazz.getEnumConstants());
+            }
+            public static <T> T random(T[] clazz) {
+                return clazz[random.nextInt(clazz.length)];
+            }
+
+            public static void main(String[] args) {
+                for ( int i = 0; i < 20; i++ ) {
+                    System.out.println(Enums.random(Activity.class) + " ");
+                }
+            }
+
+        }
+
+        enum Activity {
+            SIITING, LYING, STANDING, HOPPING, RUNNING, DOGGING, JUMPING, FAILING, FLYING
+        }
+
+
+七、使用接口组织枚举
+
+    在一个接口的内部，创建实现该接口的枚举，以此将元素进行分组，可以达到将枚举元素分类组织的目的。
+    e.g.:
+        public enum Meal2 {
+            APPETIZER(Food.Appetizer.class),
+            MAINCOURSE(Food.MainCourse.class),
+            COFFEE(Food.Coffee.class),
+            DESSERT(Food.Dessert.class);
+            private Food[] values;
+            Meal2(Class<? extends Food> kind) {
+                values = kind.getEnumConstants();
+            }
+            public interface Food{
+                enum Appetizer implements Food {
+                    SALAD, SOUP, SPRING_ROLLS;
+                }
+                enum MainCourse implements Food {
+                    LASAGNE, BURRITO, PAD_THAI,
+                    LENTILS, NUMMOUS, VINDALOO;
+                }
+                enum Dessert implements Food {
+                    TIRAMISU, GELATO, BLACK_FOREST_CAKE,
+                    FRUIT, CREME_CARAMEL;
+                }
+                enum Coffee implements Food {
+                    BLACK_COFFEE, DECAF_COFFEE, ESPRESSO,
+                    LATTE, CAPPUCCINO, TEA, HERB_TEA;
+                }
+            }
+            public Food randomSelection() {
+                return Enums.random(values);
+            }
+            public static void main(String[] args) {
+                for ( int i = 0; i < 5; i++ ) {
+                    for ( Meal2 meal : Meal2.values()
+                           ) {
+                        Food food = meal.randomSelection();
+                        System.out.println(food);
+                    }
+                    System.out.println("----------");
+                }
+            }
+        }
+
+八、使用EnumSet代替标志
+    EnumSet，在说明一个二进制位是否存在时，具有更好的表达能力，并且无需担心性能。
+    e.g.:
+        public class EnumSets {
+            public static void main(String[] args) {
+                EnumSet<AlarmPoints> points = EnumSet.noneOf(AlarmPoints.class);
+
+                points.add(AlarmPoints.BATHROOM);
+                System.out.println(points);
+
+                points.addAll(EnumSet.of(AlarmPoints.START1, AlarmPoints.START2, AlarmPoints.KITCHEN));
+                System.out.println(points);
+
+                points = EnumSet.allOf(AlarmPoints.class);
+
+                points.removeAll(EnumSet.of(AlarmPoints.START1, AlarmPoints.START2, AlarmPoints.KITCHEN));
+                System.out.println(points);
+
+                points.removeAll(EnumSet.range(AlarmPoints.OFFICE1, AlarmPoints.OFFICE4));
+                System.out.println(points);
+
+                points = EnumSet.complementOf(points);
+                System.out.println(points);
+            }
+        }
+
+九、使用EnumMap
+    EnumMap是一种特殊的map，它的键key必须来自一个enum。EnumMap的速度很快，可以放心使用，不过，我们只能将enum的实例作为
+    键来调用put()方法，其他操作与使用一般的map差不多。
+    e.g.: （命令模式）
+        public class EnumMaps {
+            public static void main(String[] args) {
+                EnumMap<AlarmPoints, Command> em = new EnumMap<AlarmPoints, Command>(AlarmPoints.class);
+                em.put(AlarmPoints.KITCHEN, new Command(){
+                    @Override
+                    public void action() {
+                        System.out.println("Kitchen fire!");
+                    }
+                });
+                em.put(AlarmPoints.BATHROOM, new Command(){
+                    @Override
+                    public void action() {
+                        System.out.println("Bathroom alert!");
+                    }
+                });
+                for ( Map.Entry<AlarmPoints, Command> e : em.entrySet()
+                       ) {
+                    System.out.print(e.getKey() + ": ");
+                    e.getValue().action();
+                }
+                try {
+                    em.get(AlarmPoints.UTILITY).action();
+                } catch (Exception e) {
+                    System.out.println(e);
+                }
+            }
+        }
+
+        interface Command {
+            void action();
+        }
+十、相关常量的方法
+
+    可以为enum实例编写方法，从而为每个enum实例赋予各种不同的行为。通过enum实例可以调用其上的方法，通常称为“表驱动代码”。
+    由于他们是static实例，无法访问外部类的非static的元素和方法，所以对于内部的enum的实例而言，其行为与一般的内部类并不相同。
+        e.g.:
+        public enum ConstantSpecificMethod {
+            DATE_TIME{
+                @Override
+                String getInfo(){
+                    return DateFormat.getDateInstance().format(new Date());
+            }},
+            CLASS_PATH{
+                @Override
+                String getInfo(){
+                    return System.getenv("CLASSPATH");
+            }},
+            VERSION{
+                @Override
+                String getInfo(){
+                    return System.getProperty("java.version");
+            }};
+            abstract String getInfo();
+
+            public static void main(String[] args) {
+                for ( ConstantSpecificMethod csm : values()
+                       ) {
+                    System.out.println(csm.getInfo());
+                }
+            }
+        }
+    除了实现abstract方法以外，还可以覆盖常量相关的方法。
+    e.g.:
+        public class CarWash {
+            public enum Cycle {
+                UNDERBODY {
+                    @Override
+                    void action() {
+                        System.out.println("Spraying the underbody");
+                    }
+                },
+                WHEELWASH {
+                    @Override
+                    void action() {
+                        System.out.println("Washing the wheels");
+                    }
+                },
+                PREWASH {
+                    @Override
+                    void action() {
+                        System.out.println("Loosening the dirt");
+                    }
+                },
+                BASIC {
+                    @Override
+                    void action() {
+                        System.out.println("The basic wash");
+                    }
+                },
+                HOTWAX {
+                    @Override
+                    void action() {
+                        System.out.println("Applying hot wax");
+                    }
+                },
+                RINSE {
+                    @Override
+                    void action() {
+                        System.out.println("Rinsing");
+                    }
+                },
+                BLOWDRY {
+                    @Override
+                    void action() {
+                        System.out.println("Blowing dry");
+                    }
+                };
+                abstract void action();
+            }
+            EnumSet<Cycle> cycles = EnumSet.of(Cycle.BLOWDRY, Cycle.BASIC);
+            void add(Cycle cycle) {
+                cycles.add(cycle);
+            }
+            void wash() {
+                for ( Cycle cycle : cycles
+                       ) {
+                    cycle.action();
+                }
+            }
+
+            @Override
+            public String toString() {
+                return cycles.toString();
+            }
+
+            public static void main(String[] args) {
+                CarWash carWash = new CarWash();
+                System.out.println(carWash);
+                carWash.wash();
+                carWash.add(Cycle.HOTWAX);
+                carWash.add(Cycle.PREWASH);
+                carWash.add(Cycle.RINSE);
+                carWash.add(Cycle.UNDERBODY);
+                carWash.add(Cycle.WHEELWASH);
+                System.out.println(carWash);
+                carWash.wash();
+            }
+        }
+
+        public enum OverrideConstancSpecific {
+            NUT, BOLT,
+            WASHER {
+                @Override
+                void f() {
+                    System.out.println("Override method");
+                }
+            };
+            void f() {
+                System.out.println("default method");
+            };
+
+            public static void main(String[] args) {
+                for ( OverrideConstancSpecific ocs : values()
+                       ) {
+                    System.out.print(ocs + ": ");
+                    ocs.f();
+                }
+            }
+        }
+
+    1. 使用enum的责任链
+        在责任链设计模式中，我们以多种不同的方式来解决一个问题，然后将他们链接在一起。当一个请求到来时，他遍历这个链，直到
+        链中的某个解决方案能够处理该请求。
+        e.g.:
+            public class PostOffice {
+                enum MailHandle {
+                    GENERAL_DELIVERY {
+                        boolean handle (Mail m) {
+                            switch (m.generalDelievry) {
+                            case YES:
+                                System.out.print("Using general delivery for " + m);
+                                return true;
+                            default:
+                                return false;
+                            }
+                        }
+                    },
+                    MAACHINE_SCAN {
+                        boolean handle (Mail m) {
+                            switch (m.scannability) {
+                            case UNSCANABLE:
+                                return false;
+                            default:
+                                switch (m.address) {
+                                case INCORRECT:
+                                    return false;
+                                default:
+                                    System.out.print("Delivering " + m + " automatically");
+                                    return true;
+                                }
+                            }
+                        }
+                    },
+                    VISUAL_INSPECTION {
+                        boolean handle(Mail m) {
+                            switch (m.readability) {
+                            case ILLEGIBLE:
+                                return false;
+                            default:
+                                switch (m.address) {
+                                case INCORRECT: return false;
+                                default:
+                                    System.out.println("Delivering " + m + " normally");
+                                    return true;
+                                }
+                            }
+                        }
+                    },
+                    RETURN_TO_SENDER {
+                        boolean handle(Mail m) {
+                            switch (m.returnAddress) {
+                            case MISSING:
+                                return false;
+                            default:
+                                System.out.println("Returning " + m + " to sender");
+                                return true;
+                            }
+                        }
+                    };
+                    abstract boolean handle(Mail m);
+                }
+                static void handle(Mail m) {
+                    for ( MailHandle handle : MailHandle.values()
+                           ) {
+                        if (handle.handle(m)) {
+                            return;
+                        }
+                        System.out.println(m + " is a dead letter");
+                    }
+                }
+
+                public static void main(String[] args) {
+                    for ( Mail mail : Mail.generator(10)
+                           ) {
+                        System.out.print(mail.details());
+                        handle(mail);
+                        System.out.print("**********");
+                    }
+                }
+            }
+
+            class Mail{
+                enum GeneralDelievry {YES ,NO1, NO2, NO3, NO4, NO5}
+                enum Scannability {UNSCANABLE, YES1, YES2, YES3, YES4}
+                enum Readability {ILLEGIBLE, YES1, YES2, YES3, YES4}
+                enum Address {INCORRECT, OK1, OK2, OK3, OK4}
+                enum ReturnAddress {MISSING, OK1, OK2, OK3, OK4, OK5}
+                GeneralDelievry generalDelievry;
+                Scannability scannability;
+                Readability readability;
+                Address address;
+                ReturnAddress returnAddress;
+                static long counter = 0;
+                long id = counter++;
+
+                @Override
+                public String toString() {
+                    return "Mail " + id;
+                }
+                public String details() {
+                    return toString() +
+                        " General Delivery: " + generalDelievry +
+                        " Address Scanability: " + scannability +
+                        " Address Readability: " + readability +
+                        " Address address: " + address +
+                        " Return address: " + returnAddress;
+                }
+                public static Mail randomMail() {
+                    Mail m = new Mail();
+                    m.generalDelievry = Enums.random(GeneralDelievry.class);
+                    m.scannability = Enums.random(Scannability.class);
+                    m.readability = Enums.random(Readability.class);
+                    m.address = Enums.random(Address.class);
+                    m.returnAddress = Enums.random(ReturnAddress.class);
+                    return m;
+                }
+                public static Iterable<Mail> generator(final int count) {
+                    return new Iterable<Mail>() {
+                        int n = count;
+                        @Override
+                        public Iterator<Mail> iterator() {
+                            return new Iterator<Mail>() {
+                                @Override
+                                public boolean hasNext() {
+                                    return n-- > 0;
+                                }
+                                @Override
+                                public Mail next() {
+                                    return randomMail();
+                                }
+                                @Override
+                                public void remove() {
+                                    throw new UnsupportedOperationException();
+                                }
+                            };
+                        }
+                    };
+                }
+            }
+
+    2. 使用enum的状态机
+
+        e.g.:
+            public class VendingMechine {
+                private static State state = State.RESTING;
+                private static int amount = 0;
+                private static Input selection = null;
+                enum StateDuration {TRANSIENT}
+                enum State {
+                    RESTING {
+                        @Override
+                        void next(Input input) {
+                            switch (Category.categorize(input)) {
+                                case MONEY:
+                                    amount += input.amount();
+                                    state = ADDING_MONEY;
+                                    break;
+                                case SHUT_DOWN:
+                                    state = TERMINAL;
+                                default:
+                            }
+                        }
+                    },
+                    ADDING_MONEY {
+                        @Override
+                        void next(Input input) {
+                            switch (Category.categorize(input)) {
+                                case MONEY:
+                                    amount += input.amount();
+                                    break;
+                                case ITEM_SELECTION:
+                                    selection = input;
+                                    if (amount < selection.amount()) {
+                                        System.out.println("Insufficient money for " + selection);
+                                    } else {
+                                        state = DISPENSING;
+                                    }
+                                    break;
+                                case QUIT_TRANSACTION:
+                                    state = GIVING_CHANGE;
+                                    break;
+                                case SHUT_DOWN:
+                                    state = TERMINAL;
+                                default:
+                            }
+                        }
+                    },
+                    DISPENSING(StateDuration.TRANSIENT) {
+                        @Override
+                        void next() {
+                            System.out.println("here is your " + selection);
+                            amount -= selection.amount();
+                            state = GIVING_CHANGE;
+                        }
+                    },
+                    GIVING_CHANGE(StateDuration.TRANSIENT) {
+                        @Override
+                        void next() {
+                            if (amount > 0) {
+                                System.out.println("Your change: " + amount);
+                                amount = 0;
+                            }
+                            state = RESTING;
+                        }
+                    },
+                    TERMINAL {
+                        @Override
+                        void output() {
+                            System.out.println("halted");
+                        }
+                    };
+                    private boolean isTransient = false;
+                    State() {}
+                    State(StateDuration trans) {
+                        isTransient = true;
+                    }
+                    void next(Input input) {
+                        throw new RuntimeException("Only call next(Input input) for non-transient states");
+                    }
+                    void next() {
+                        throw new RuntimeException("Only call next() for StateDuration.TRANSIENT class");
+                    }
+                    void output() {
+                        System.out.println(amount);
+                    }
+                }
+                static void run(Generator<Input> generator) {
+                    while (state != State.TERMINAL) {
+                        state.next(generator.next());
+                        while (state.isTransient) {
+                            state.next();
+                        }
+                        state.output();
+                    }
+                }
+
+                public static void main(String[] args) {
+                    Generator<Input> gen = new RandomInputGenerator();
+                    run(gen);
+                }
+            }
+
+            class RandomInputGenerator implements Generator<Input> {
+                @Override
+                public Input next() {
+                    return Input.randomSelection();
+                }
+            }
+
+            class TextFile{
+                String filename;
+                String seprator;
+                public TextFile(String filename, String seprator) {
+                    this.filename = filename;
+                    this.seprator = seprator;
+                }
+                public Iterator<String> iterator() {
+                    File file = new File(filename);
+                    return new Iterator<String>() {
+                        @Override
+                        public boolean hasNext() {
+                            return false;
+                        }
+                        @Override
+                        public String next() {
+                            return null;
+                        }
+                        @Override
+                        public void remove() {
+
+                        }
+                    };
+                }
+            }
+
+            class FileInputGenerator implements Generator<Input> {
+                private Iterator<String> input;
+                public FileInputGenerator(String filename) {
+                    input = new TextFile(filename, ":").iterator();
+                }
+                @Override
+                public Input next() {
+                    if (!input.hasNext()) {
+                        return null;
+                    }
+                    return Enum.valueOf(Input.class, input.next().trim());
+                }
+            }
+
+            enum Category {
+                MONEY(NICKEL, DIME, QUARTER, DOLLAR),
+                ITEM_SELECTION(TOOTHPASTE, SOAP, SODA, CHIPS),
+                QUIT_TRANSACTION(ABORT_TRANSACTION),
+                SHUT_DOWN(STOP);
+                private Input[] values;
+                Category(Input... types) {
+                    values = types;
+                }
+                private static EnumMap<Input, Category> categories = new EnumMap<Input, Category>(Input.class);
+                static {
+                    for ( Category c : Category.class.getEnumConstants()
+                           ) {
+                        for ( Input input : c.values
+                               ) {
+                            categories.put(input, c);
+                        }
+                    }
+                }
+                public static Category categorize (Input input) {
+                    return categories.get(input);
+                }
+            }
+十一、多路分发
+    单路分发：
+    两路分发：
+        必须有两个方法调用：
+            第一个方法调用决定第一个未知类型，第二个方法调用决定第二个未知类型。
+    多路分发：
+        必须为每一个类型提供一个实际的方法调用。
+    Java只支持单路分发，如果要执行的操作包含了不止一个未知类型的对象时，那么Java的动态绑定机制只能处理其中一个的类型。
+        e.g.:
+            public class RoShamBo1 {
+                public static final int SIZE = 20;
+                static Random random = new Random(47);
+                public static Item newItem() {
+                    switch (random.nextInt(3)) {
+                        case 0: return new Scissors();
+                        case 1: return new Paper();
+                        case 2: return new Rock();
+                        default: return null;
+                    }
+                }
+                public static void match(Item item1, Item item2) {
+                    System.out.println(item1 + " vs " + item2 + " : " + item1.compete(item2));;
+                }
+                public static void main(String[] args) {
+                    for ( int i = 0; i < SIZE; i++ ) {
+                        match(newItem(), newItem());
+                    }
+                }
+            }
+            enum OutPut{
+                WIN, LOSE, DRAW
+            }
+            interface Item {
+                OutPut compete(Item item);
+                OutPut eval(Paper paper);
+                OutPut eval(Scissors scissors);
+                OutPut eval(Rock rock);
+            }
+            class Paper implements Item{
+                @Override
+                public OutPut compete(Item item) { return item.eval(this); }
+                @Override
+                public OutPut eval(Paper paper) { return OutPut.DRAW; }
+                @Override
+                public OutPut eval(Scissors scissors) { return OutPut.WIN; }
+                @Override
+                public OutPut eval(Rock rock) { return OutPut.LOSE; }
+                @Override
+                public String toString() { return "Paper"; }
+            }
+            class Scissors implements Item {
+                @Override
+                public OutPut compete(Item item) { return item.eval(this); }
+                @Override
+                public OutPut eval(Paper paper) { return OutPut.LOSE; }
+                @Override
+                public OutPut eval(Scissors scissors) { return OutPut.DRAW; }
+                @Override
+                public OutPut eval(Rock rock) { return OutPut.WIN; }
+                @Override
+                public String toString() { return "Scissors"; }
+            }
+            class Rock implements Item {
+                @Override
+                public OutPut compete(Item item) { return item.eval(this); }
+                @Override
+                public OutPut eval(Paper paper) { return OutPut.WIN; }
+                @Override
+                public OutPut eval(Scissors scissors) { return OutPut.LOSE; }
+                @Override
+                public OutPut eval(Rock rock) { return OutPut.DRAW; }
+                @Override
+                public String toString() { return "Rock"; }
+            }
+
+    1. 使用enum分发
+        e.g.:
+            public class RoShamBo {
+                public static <T extends Competitor<T>> void match(T a, T b){
+                    System.out.println( a + " vs " + b + " : " + a.compete(b));
+                }
+                public static <T extends Enum<T> & Competitor<T>> void play(Class<T> clazz, int size){
+                    for ( int i = 0; i < size; i++ ) {
+                        match(Enums.random(clazz), Enums.random(clazz));
+                    }
+                }
+            }
+            public interface Competitor<T extends Competitor<T>> {
+                OutPut compete(T competitor);
+            }
+            public enum RoShamBo2 implements Competitor<RoShamBo2>{
+                PAPER(DRAW, LOSE, WIN),
+                SCISSORS(WIN, DRAW, LOSE),
+                ROCK(LOSE, WIN, DRAW);
+                private OutPut vPAPER, vSCISSORS, vROCK;
+                RoShamBo2(OutPut paper, OutPut scissors, OutPut rock) {
+                    this.vPAPER = paper;
+                    this.vSCISSORS = scissors;
+                    this.vROCK = rock;
+                }
+                @Override
+                public OutPut compete(RoShamBo2 it) {
+                    switch (it){
+                        default:
+                        case PAPER: return vPAPER;
+                        case SCISSORS: return vSCISSORS;
+                        case ROCK: return vROCK;
+                    }
+                }
+                public static void main(String[] args) {
+                    RoShamBo.play(RoShamBo2.class, 20);
+                }
+            }
+    2. 使用常量相关的方法
+        e.g.:
+            public enum RoShamBo3 implements Competitor<RoShamBo3>{
+                PAPER {
+                    @Override
+                    public OutPut compete(RoShamBo3 it) {
+                        switch (it) {
+                            default:
+                            case PAPER: return OutPut.DRAW;
+                            case SCISSORS: return OutPut.LOSE;
+                            case ROCK: return OutPut.WIN;
+                        }
+                    }
+                },
+                SCISSORS {
+                    @Override
+                    public OutPut compete(RoShamBo3 it) {
+                        switch (it) {
+                            default:
+                            case PAPER: return OutPut.WIN;
+                            case SCISSORS: return OutPut.DRAW;
+                            case ROCK: return OutPut.LOSE;
+                        }
+                    }
+                },
+                ROCK {
+                    @Override
+                    public OutPut compete(RoShamBo3 it) {
+                        switch (it) {
+                            default:
+                            case PAPER: return OutPut.LOSE;
+                            case SCISSORS: return OutPut.WIN;
+                            case ROCK: return OutPut.DRAW;
+                        }
+                    }
+                };
+                @Override
+                public abstract OutPut compete(RoShamBo3 it);
+                public static void main(String[] args) {
+                    RoShamBo.play(RoShamBo3.class, 20);
+                }
+            }
+
+            public enum RoShamBo4 implements Competitor<RoShamBo4>{
+                ROCK {
+                    @Override
+                    public OutPut compete(RoShamBo4 competitor) {
+                        return compete(SCISSORS, competitor);
+                    }
+                },
+                SCISSORS {
+                    @Override
+                    public OutPut compete(RoShamBo4 competitor) {
+                        return compete(PAPER, competitor);
+                    }
+                },
+                PAPER {
+                    @Override
+                    public OutPut compete(RoShamBo4 competitor) {
+                        return compete(ROCK, competitor);
+                    }
+                };
+                OutPut compete(RoShamBo4 loser, RoShamBo4 opponent) {
+                    return ( opponent == this ? OutPut.DRAW
+                        : (opponent == loser ? OutPut.WIN
+                                            : OutPut.LOSE));
+                }
+                public static void main(String[] args) {
+                    RoShamBo.play(RoShamBo4.class, 20);
+                }
+            }
+    3. 使用EnumMap分发
+        e.g.:
+            enum RoShamBo5 implements Competitor<RoShamBo5>{
+                PAPER, SCISSORS, ROCK;
+                static EnumMap<RoShamBo5, EnumMap<RoShamBo5, OutPut>> table = new EnumMap<>(RoShamBo5.class);
+                static {
+                    for ( RoShamBo5 it : values() ) {
+                        table.put(it, new EnumMap<RoShamBo5, OutPut>(RoShamBo5.class));
+                        initRow(PAPER, OutPut.DRAW, OutPut.LOSE, OutPut.WIN);
+                        initRow(SCISSORS, OutPut.WIN, OutPut.DRAW, OutPut.LOSE);
+                        initRow(ROCK, OutPut.LOSE, OutPut.WIN, OutPut.DRAW);
+                    }
+                }
+                static void initRow (RoShamBo5 it, OutPut vPaper, OutPut vScissors, OutPut vRock) {
+                    EnumMap<RoShamBo5, OutPut> enumMap = RoShamBo5.table.get(it);
+                    enumMap.put(RoShamBo5.PAPER, vPaper);
+                    enumMap.put(RoShamBo5.SCISSORS, vScissors);
+                    enumMap.put(RoShamBo5.ROCK, vRock);
+                }
+                @Override
+                public OutPut compete(RoShamBo5 it) {
+                    return table.get(this).get(it);
+                }
+                public static void main(String[] args) {
+                    RoShamBo.play(RoShamBo5.class, 20);
+                }
+            }
+    4. 使用二维数组
+        e.g.:
+            enum RoShamBo6 implements Competitor<RoShamBo6>{
+                PAPPER, SCISSORS, ROCK;
+                private static OutPut[][] table = {
+                    {OutPut.DRAW, OutPut.LOSE, OutPut.WIN}, //PAPER
+                    {OutPut.WIN, OutPut.DRAW, OutPut.LOSE}, //SCISSORS
+                    {OutPut.LOSE, OutPut.WIN, OutPut.DRAW}, //ROCK
+                };
+                @Override
+                public OutPut compete(RoShamBo6 competitor) {
+                    return table[this.ordinal()][competitor.ordinal()];
+                }
+                public static void main(String[] args) {
+                    RoShamBo.play(RoShamBo6.class, 20);
+                }
+            }
+十二、总结
+    我们可以将enum与java语言的其他功能结合使用，比如多态、泛型、反射。
+    使用enum有时候可以使我们的代码更加优雅、清晰。
+

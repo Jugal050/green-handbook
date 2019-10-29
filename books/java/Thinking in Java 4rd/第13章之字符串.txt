@@ -1,0 +1,557 @@
+第十三章 字符串
+
+一、不可变String
+
+	e.g.:
+		public class Immutable {
+			public static String upcase(String s) {
+				return s.toUpperCase();
+			} 
+			public static void main(String[] args) {
+				String q = "howdy";
+				System.out.println(q);
+				String qq = upcase(q);
+				System.out.println(qq);
+				System.out.println(q);
+			}
+		}
+
+二、重载"+"与StringBuilder
+
+	e.g.:
+		public class WitherStringBuilder {
+		    public String implict(String[] fields) {
+		        String result = "";
+		        for ( int i = 0; i < fields.length; i++ ) {
+		            result += fields[i];
+		        }
+		        return result;
+		    }
+		    public String explict(String[] fields) {
+		        StringBuilder result = new StringBuilder();
+		        for ( int i = 0; i < fields.length; i++ ) {
+		            result.append(fields[i]);
+		        }
+		        return result.toString();
+		    }
+		    public static Random random = new Random(47);
+		    @Override
+		    public String toString() {
+		        StringBuilder result = new StringBuilder();
+		        result.append("[");
+		        for ( int i = 0; i < 25; i++ ) {
+		            result.append(random.nextInt(100));
+		            result.append(", ");
+		        }
+		        result.delete(result.length() - 2, result.length());
+		        result.append("]");
+		        return result.toString();
+		    }
+
+		    public static void main(String[] args) {
+		        System.out.println(new WitherStringBuilder());
+		    }
+		}
+
+三、无意识的递归
+
+	e.g.:
+		public class InfiniteRecursion {
+		    @Override
+		    public String toString() {
+		        //return "InfiniteRecursion address" + this + "\n";
+		        return "InfiniteRecursion address" + super.toString() + "\n";
+		    }
+
+		    public static void main(String[] args) {
+		        List<InfiniteRecursion> v = new ArrayList<InfiniteRecursion>();
+		        for ( int i = 0; i < 10; i++ ) {
+		            v.add(new InfiniteRecursion());
+		        }
+		        System.out.println(v);
+		    }
+		}
+
+四、String上的操作
+
+五、格式化输出
+	
+	1. printf()
+
+		System.out.printf("Row 1: [%d %f]", x, y);
+
+	2. format()
+
+		System.out.format("Row 1: [%d %f]", x, y);
+
+	3. Formatter类
+
+	4. 格式化说明符
+
+		public class Turtle {
+		    private String name;
+		    private Formatter formatter;
+		    public Turtle(String name, Formatter formatter) {
+		        this.name = name;
+		        this.formatter = formatter;
+		    }
+		    public void move(int x, int y) {
+		        formatter.format("%s Turtle is at (%d, %d)\n", name, x, y);
+		    }
+
+		    public static void main(String[] args) {
+		        PrintStream printWriter = System.out;
+		        Turtle tonny = new Turtle("tonny", new Formatter(System.out));
+		        Turtle jerry = new Turtle("jerry", new Formatter(printWriter));
+		        tonny.move(2, 3);
+		        jerry.move(3, 4);
+		    }
+		}
+
+		常规类型、字符类型和数值类型的格式说明符：
+				
+			%[argument_index$][flags][width][.precision]conversion
+
+				argument_index: 可选，一个十进制整数，用于表明参数在参数列表的位置。 	
+					第一个参数由"1$"引用，第二个参数由"2$"引用，以此类推。
+				flags: 可选，修改输出格式的字符集。有效标志集取决于转换类型。
+				width: 可选，非负十进制整数，表明要向输出中写入的最少字符数。
+				precision: 可选，非负十进制整数，通常用来限制字符数。特定行为取决于转换类型。
+					应用于String时，表示打印String是输出字符的最大数量。
+					应用于浮点数时，表示小数部分要显示出来的位数(默认是6位小数)，小数位过多则舍入，太少则尾部补零。
+					无法应用于整数，如果对整数应用precision，则会触发异常。
+				conversion: 一个表明应该如何格式化参数的字符。给定参数的有效转换集取决于参数的数据类型。
+
+		日期、时间类型的格式说明符：
+				
+			%[argument_index$][flags][width]conversion
+
+				conversion: 由两字符组成的序列。第一个字符是"t"或"T"，第二个字符表明所使用的格式。
+
+		与参数不对应的格式说明符：
+
+			%[flags][width]conversion
+
+				conversion: 一个表明要在输出中所插入内容的字符。
+
+		e.g.:
+			public class Receipt {
+			    private double total = 0;
+			    private Formatter f = new Formatter(System.out);
+			    public void printTitle() {
+			        f.format("%-15s %5s %10s\n", "Item", "Qty", "Price");
+			        f.format("%-15s %5s %10s\n", "----", "---", "-----");
+			    }
+			    public void print(String item, int qty, double price) {
+			        f.format("%-15.15s %5d %10.2f\n", item, qty, price);
+			        total += price;
+			    }
+			    public void printTotal() {
+			        f.format("%-15s %5s %10.2f\n", "Tax", "", total * 0.06);
+			        f.format("%-15s %5s %10s\n", "", "", "------");
+			        f.format("%-15s %5s %10.2f\n", "Total", "", total * 1.06);
+			    }
+
+			    public static void main(String[] args) {
+			        Receipt receipt = new Receipt();
+			        receipt.printTitle();
+			        receipt.print("Jack's Magic Beans", 4, 4.25);
+			        receipt.print("Princess Peas", 3, 5.1);
+			        receipt.print("Three Bears Porridge", 1, 14.29);
+			        receipt.printTotal();
+			    }
+			}
+
+	5. Formatter转换
+
+		类型转换字符：
+
+			d  整数型（十进制） 
+			c  Unicode字符  
+			b  Boolean值
+			s  String
+			f  浮点数（十进制）
+			e  浮点数（科学计数）
+			x  整数（十六进制）
+			h  散列码（十六进制）
+			%  字符"%"
+
+		e.g.:
+
+			public class Conversion {
+			    public static void main(String[] args) {
+			        Formatter f = new Formatter(System.out);
+
+			        char u = 'a';
+			        System.out.println("u = 'a'");
+			        f.format("s: %s\n", u);
+			        // f.format("d: %d\n", u);
+			        f.format("c: %c\n", u);
+			        f.format("b: %b\n", u);
+			        // f.format("f: %f\n", u);
+			        // f.format("e: %e\n", u);
+			        // f.format("x: %x\n", u);
+			        f.format("h: %h\n", u);
+
+			        int v = 121;
+			        System.out.println("v = 121");
+			        f.format("d: %d\n", v);
+			        f.format("c: %c\n", v);
+			        f.format("s: %s\n", v);
+			        f.format("b: %b\n", v);
+			        // f.format("f: %f\n", v);
+			        // f.format("e: %e\n", v);
+			        f.format("x: %x\n", v);
+			        f.format("h: %h\n", v);
+
+			        BigInteger w = new BigInteger("500000000000000");
+			        System.out.println("w = new BigInteger(\"50000000000000\")");
+			        f.format("d: %d\n", w);
+			        // f.format("c: %c\n", w);
+			        f.format("b: %b\n", w);
+			        f.format("s: %s\n", w);
+			        // f.format("f: %f\n", w);
+			        // f.format("e: %e\n", w);
+			        f.format("h: %h\n", w);
+			        f.format("x: %x\n", w);
+
+			        double x = 179.223;
+			        System.out.println("x = 179.223");
+			        // f.format("d: %d\n", x);
+			        // f.format("c: %c\n", x);
+			        f.format("b: %b\n", x);
+			        f.format("s: %s\n", x);
+			        f.format("f: %f\n", x);
+			        f.format("e: %e\n", x);
+			        f.format("h: %h\n", x);
+			        // f.format("x: %x\n", x);
+
+			        Conversion y = new Conversion();
+			        // f.format("d: %d\n", y);
+			        // f.format("c: %c\n", y);
+			        f.format("b: %b\n", y);
+			        f.format("s: %s\n", y);
+			        // f.format("f: %f\n", y);
+			        // f.format("e: %e\n", y);
+			        f.format("h: %h\n", y);
+			        // f.format("x: %x\n", y);
+
+			        boolean z = false;
+			        // f.format("d: %d\n", z);
+			        // f.format("c: %c\n", z);
+			        f.format("b: %b\n", z);
+			        f.format("s: %s\n", z);
+			        // f.format("f: %f\n", z);
+			        // f.format("e: %e\n", z);
+			        f.format("h: %h\n", z);
+			        // f.format("x: %x\n", z);
+			    }
+			}
+
+	6. String.format()
+
+		e.g.:
+			public class DataBaseException extends Exception{
+			    public DataBaseException(int transactionID, int queryID, String message) {
+			        super(String.format("(t%d, q%d) %s", transactionID, queryID, message));
+			    }
+
+			    public static void main(String[] args) {
+			        try {
+			            throw new DataBaseException(3, 6, "Write faild");
+			        } catch (DataBaseException e) {
+			            System.out.println(e);
+			        }
+			    }
+			}
+
+			public class Hex {
+			    public static String format(byte[] data) {
+			        StringBuilder result = new StringBuilder();
+			        int n = 0;
+			        for ( byte b : data ) {
+			            if (n % 16 == 0) {
+			                result.append(String.format("%05X:", n));
+			            }
+			            result.append(String.format("%02X", b));
+			            n++;
+			            if (n % 16 == 0) {
+			                result.append("\n");
+			            }
+			        }
+			        result.append("\n");
+			        return result.toString();
+			    }
+			}
+
+六、正则表达式
+
+	1. 基础
+
+		e.g.:
+			public class TestRegMatch {
+			    private static String kninghts = "Then, when you have found the shrubbery, you must " +
+			            "cut down the mightiest tree in the forest... with ... a herring!";
+			    public static void split (String regex) {
+			        System.out.println(Arrays.toString(kninghts.split(regex)));
+			    }
+
+			    public static void main(String[] args) {
+			        System.out.println("-1234".matches("-?\\d+"));
+			        System.out.println("1234".matches("-?\\d+"));
+			        System.out.println("+1234".matches("-?\\d+"));
+			        System.out.println("+1234".matches("(-|\\+)?\\d+"));
+
+			        split(" ");
+			        split("\\W+");
+			        split("n\\W+");
+
+			        System.out.println(kninghts.replaceFirst("f\\w+", "located"));
+			        System.out.println(kninghts.replaceAll("shrubbery|tree|herring", "banana"));
+			    }
+			}
+
+	2. 创建正则表达式
+
+		字符：
+			B 			指定字符B           
+			\xhh		十六进制值为oxhh的字符
+			\uhhhh		十六进制表示为oxhhhh的Unicode字符
+			\t 			制表符Tab
+			\n 			换行符
+			\r  		回车
+			\f 			换页
+			\e 			转义（Escape）
+
+		字符类：
+			. 			包含任意字符
+			[abc]		包含a、b和c的任何字符（与a|b|c作用相同）
+			[^abc]		除了a、b和c之外的任何字符（否定）
+			[a-zA-Z]	从a到z或从A到Z的任何字符（范围）
+			[abc[hij]]	任意a、b、c、h、i和j字符（与a|b|c|h|i|j作用相同）（合并）
+			[a-z&&[hij]]任意h、i或j（交）
+			\s 			空白符（空格、tab、换行、换页和回车）
+			\S 			非空白符（[^\s]）
+			\d 			数字[0-9]
+			\D  		非数字[^0-9]
+			\w 			词字符[a-zA-Z0-9]
+			\W 			非词字符[^\w]
+
+		逻辑操作符
+
+			XY 			Y跟在X后面
+			X|Y 		X或Y
+			(X) 		捕获组（capturing group）。可以在表达式中用\i引用第i个捕获组
+
+		边界匹配符
+
+			^			一行的开始
+			$			一行的结束
+			\b 			词的边界
+			\B 			非词的边界
+			\G 			前一个匹配的结束
+
+		e.g.:
+			public class Rudolph {
+			    public static void main(String[] args) {
+			        for (String partten : new String[]{"Rudolph", "[rR]udolph", "[rR][aeiou][a-z]ol.*", "R.*"} ) {
+			            System.out.println("Rudolph".matches(partten));
+			        }
+			    }
+			}
+
+	3. 量词
+
+		量词描述了一个模式吸收输入文本的方式；
+			贪婪型：会为所有可能的模式发现尽可能多的匹配。
+			勉强型：用问号来指定，这个量词匹配满足模式所需的最少字符数。
+			占有型：当正则表达式被应用于字符串时，会产生相当多的状态，以便在匹配失败时可以回溯。
+
+			贪婪型  	 				勉强型 						占有型 						如何匹配
+
+			 X?							  X??						  X?+						零个或一个X
+			 X*							  X*?						  X*+						零个或多个X
+			 X+							  X+?						  X++						一个或多个X
+			 X{n}						 X{n}?						 X{n}+						  恰好n次X
+			 X{n,}						 X{n,}?						 X{n,}+						  至少n次X
+			 X{n,m}						 X{n,m}?					 X{n,m}+				X至少n次，且不超过m次
+
+	4. Pattern和Matcher
+
+		e.g.:
+			public class Finding {
+			    public static void main(String[] args) {
+			        Matcher m = compile("\\w+").matcher("Evening is full of linnet's wings");
+			        while (m.find()) {
+			            System.out.print(m.group() + " ");
+			        }
+			        System.out.println();
+			        int i = 0;
+			        while (m.find(i)) {
+			            System.out.print(m.group() + " ");
+			            i++;
+			        }
+			    }
+			}
+
+	5. split()
+
+		e.g.:
+			public class SplitDemo {
+			    public static void main(String[] args) {
+			        String input = "This!!unusual use!!of exclamation!!points";
+			        System.out.println(Arrays.toString(compile("!!").split(input)));
+			        // Only do the first three
+			        System.out.println(Arrays.toString(compile("!!").split(input, 3)));
+			    }
+			}
+
+	6. 替换操作
+		e.g.:
+			public class TheReplacements {
+			    public static void main(String[] args) {
+			        String s = "a. b. c. d. e. f. g. h. i. j. k. l. m. n. o. p. q. r. s. t. u. v. w. x. y. z. ";
+			        Matcher matcher = compile("/\\*!(.*)!\\*/", DOTALL).matcher(s);
+			        if (matcher.find()) {
+			            s = matcher.group(1);
+			        }
+			        s = s.replaceAll(" {2,}", " ");
+			        s = s.replaceAll("(?m)^+", " ");
+			        System.out.println(s);
+			        s = s.replaceFirst("[aeoui]]", "(VOWEL1)");
+			        StringBuffer sbuf = new StringBuffer();
+			        Pattern p = compile("[aeiou]]");
+			        Matcher m = p.matcher(s);
+			        while (m.find()) {
+			            m.appendReplacement(sbuf, m.group().toUpperCase());
+			        }
+			        m.appendTail(sbuf);
+			        System.out.println(sbuf);
+			    }
+			}
+
+
+	7. reset()
+		e.g.:
+			public class Reseting {
+    			public static void main(String[] args) {
+			        Matcher m = compile("[frb][aiu][gx]").matcher("fix me rug with bags");
+			        while (m.find()) {
+			            System.out.print(m.group() + " ");
+			        }
+			        System.out.println();
+			        m.reset("fix the rig with rags");
+			        while (m.find()) {
+			            System.out.print(m.group() + " ");
+			        }
+			    }
+			}
+
+	8. 正则表达式与Java I/O
+
+		e.g.:
+			public class JGrep {
+			    public static void main(String[] args) {
+			        if (args.length < 2) {
+			            System.out.println("Usage: Java JGrep file regex");
+			            System.exit(0);
+			        }
+			        Pattern p = Pattern.compile(args[0]);
+			        int index = 0;
+			        Matcher m = p.matcher("");
+			        for ( String line : new TextFile(args[0]) ) {
+			            m.reset();
+			            while (m.find()) {
+			                System.out.println(index + ": " + m.group() + ": " + m.start());
+			            }
+			        }
+			    }
+			}
+
+七、扫描输入
+
+	e.g.:
+		public class SimpleRead {
+		    public static BufferedReader input = new BufferedReader(new StringReader("Sir Robin of Camelot\n22 1.61803"));
+
+		    public static void main(String[] args) {
+		        try {
+		            System.out.println("What's your name");
+		            String name = input.readLine();
+		            System.out.println(name);
+		            System.out.println("How old are you? What is your favorite double?");
+		            System.out.println("(input: <age> <double>)");
+		            String numbers = input.readLine();
+		            System.out.println(numbers);
+		            String[] numArray = numbers.split(" ");
+		            int age = Integer.parseInt(numArray[0]);
+		            double favorite = Double.parseDouble(numArray[1]);
+		            System.out.format("Hi %s.\n", name);
+		            System.out.format("In 5 years you will be %d.\n", age + 5);
+		            System.out.format("My favorite double is %f.", favorite / 2);
+		        } catch (IOException e) {
+		            e.printStackTrace();
+		        }
+		    }
+		}
+
+
+	1. Scanner定界符
+
+		Scanner默认根据空白字符对输入进行分词，但是可以使用useDelimiter()来设置定界符，delimiter()返回当前的定界符。
+
+		e.g.:
+			public class ScannerDlimiter {
+			    public static void main(String[] args) {
+			        Scanner input = new Scanner("12, 23, 23, 34, 45");
+			        input.useDelimiter("\\s*,\\s*");
+			        while (input.hasNextInt()) {
+			            System.out.println(input.nextInt());
+			        }
+			    }
+			}
+
+
+	2. 用正则表达式扫描
+		
+		e.g.:
+			public class ThreatAnalyzer {
+			    static String threatData =
+			                "50.27.82.161@02/01/2005\n" +
+			                "51.28.82.161@02/02/2006\n" +
+			                "52.29.82.161@02/03/2007\n" +
+			                "53.30.82.161@02/04/2008\n" +
+			                "54.31.82.161@02/05/2009\n" +
+			                "55.32.82.161@02/06/2018\n" +
+			                "[Next log section with different data format]";
+
+			    public static void main(String[] args) {
+			        Scanner input = new Scanner(threatData);
+			        String pattern = "(\\d+[.]\\d+[.]\\d+[.]\\d+)@(\\d{2}/\\d{2}/\\d{4})";
+			        while (input.hasNext(pattern)) {
+			            input.next(pattern);
+			            MatchResult match = input.match();
+			            String ip = match.group(1);
+			            String date = match.group(2);
+			            System.out.format("Threat on %s from %s\n", date, ip);
+			        }
+			    }
+			}
+	3. StringTokenizer
+		e.g.:
+			public class ReplacingStringTokenizer {
+			    public static void main(String[] args) {
+			        String input = "But I'm not dead yet! I feel happy!";
+			        StringTokenizer stoken = new StringTokenizer(input);
+			        while (stoken.hasMoreElements()) {
+			            System.out.print(stoken.nextToken() + " ");
+			        }
+			        System.out.println();
+			        System.out.println(Arrays.toString(input.split(" ")));
+			        Scanner scanner = new Scanner(input);
+			        while (scanner.hasNext()) {
+			            System.out.print(scanner.next() + " ");
+			        }
+			    }
+			}
+

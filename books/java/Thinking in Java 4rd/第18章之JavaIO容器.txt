@@ -1,0 +1,540 @@
+第十八章、 Java I/O系统
+
+一、 File类
+    1. 目录列表器
+        file.list():获得此File对象包含的全部列表，
+        file.list(new FilenameFilter(String regex)):获得经过"目录过滤器"的受限列表。
+        e.g.:
+            public class DirList {
+                public static void main(String[] args) {
+                    File file = new File("c:\\");
+                    String[] list = file.list(filter("*.java"));
+                    Arrays.sort(list, String.CASE_INSENSITIVE_ORDER);
+                    for (String str : list) {
+                        System.out.println(str);
+                    }
+                }
+
+                public static FilenameFilter filter(final String regex) {
+                    return new FilenameFilter() {
+                        private Pattern pattern = Pattern.compile(regex);
+                        @Override
+                        public boolean accept(File dir, String name) {
+                            return pattern.matcher(name).matches();
+                        }
+                    };
+                }
+            }
+
+            class DirFilter implements FilenameFilter {
+                private Pattern pattern;
+                public DirFilter(String regex) {
+                    this.pattern = Pattern.compile(regex);
+                }
+                @Override
+                public boolean accept(File dir, String name) {
+                    return pattern.matcher(name).matches();
+                }
+            }
+    2. 目录实用工具
+        e.g.:
+            public class Directory {
+                public static File[] local(File dir, final String regex) {
+                    return dir.listFiles(new FilenameFilter() {
+                        private Pattern pattern = Pattern.compile(regex);
+                        @Override
+                        public boolean accept(File dir, String name) {
+                            return pattern.matcher(new File(name).getName()).matches();
+                        }
+                    });
+                }
+                public static File[] local(String path, final String regex) {
+                    return local(new File(path), regex);
+                }
+                public static class TreeInfo implements Iterable<File> {
+                    public List<File> files = new ArrayList<>();
+                    public List<File> dirs = new ArrayList<>();
+                    @Override
+                    public Iterator<File> iterator() {
+                        return files.iterator();
+                    }
+                    void addAll(TreeInfo treeInfo) {
+                        files.addAll(treeInfo.files);
+                        dirs.addAll(treeInfo.dirs);
+                    }
+                    @Override
+                    public String toString() {
+                        return "dirs:" + pformat(dirs) + "\n\nfiles:" + pformat(files);
+                    }
+                }
+
+                public static TreeInfo walk(String start, String regex) {
+                    return recurseDirs(new File(start), regex);
+                }
+                public static TreeInfo walk(File start, String regex) {
+                    return recurseDirs(start, regex);
+                }
+                public static TreeInfo walk(File start) {
+                    return recurseDirs(start, ".*");
+                }
+                public static TreeInfo walk(String start) {
+                    return recurseDirs(new File(start), ".*");
+                }
+                static TreeInfo recurseDirs(File startDir, String regex) {
+                    TreeInfo result = new TreeInfo();
+                    for (File item : startDir.listFiles()) {
+                        if (item.isDirectory()) {
+                            result.dirs.add(item);
+                        } else {
+                            if (item.getName().matches(regex)) {
+                                result.files.add(item);
+                            }
+                        }
+                    }
+                    return result;
+                }
+                static String pformat(Collection<?> c) {
+                    if (c.size() == 0) {
+                        return "[]";
+                    }
+                    StringBuilder result = new StringBuilder("[");
+                    for (Object elem : c) {
+                        if (c.size() != 1) {
+                            result.append("\n");
+                        }
+                        result.append(elem);
+                    }
+                    if (c.size() != 1) {
+                        result.append("\n");
+                    }
+                    result.append("]");
+                    return result.toString();
+                }
+
+                static void pprint(Collection<?> c) {
+                    System.out.println(pformat(c));
+                }
+
+                static void pprint(Object[] o) {
+                    System.out.println(pformat(Arrays.asList(o)));
+                }
+
+                public static void main(String[] args) {
+                    if (args.length == 0) {
+                        System.out.println(walk("."));
+                    } else {
+                        for ( String arg : args
+                               ) {
+                            System.out.println(walk(arg));
+                        }
+                    }
+                    System.out.println("------------------");
+                    pprint(Directory.walk("d:/").dirs);
+                    pprint(Directory.walk("d:/").files);
+                    System.out.println("------------------");
+                    for ( File file : Directory.local("E:\\tsd_project\\JY_Call\\src", ".*")
+                           ) {
+                        System.out.println(file);
+                    }
+                    System.out.println("------------------");
+                    for ( File file : Directory.local("E:\\tsd_project\\JY_Call\\src", ".*\\.xml") ) {
+                        System.out.println(file);
+                    }
+                }
+            }
+
+            public class ProcessFiles {
+                public interface Strategy {
+                    void process(File file);
+                }
+                private Strategy strategy;
+                private String ext;
+                public ProcessFiles(Strategy strategy, String ext) {
+                    this.strategy = strategy;
+                    this.ext = ext;
+                }
+                public void start(String args[]) {
+                    try {
+                        if (args.length == 0) {
+                            processDirectoryTree(new File("."));
+                        } else {
+                            for ( String arg : args
+                                   ) {
+                                File fileArg = new File(arg);
+                                if (fileArg.isDirectory()) {
+                                    processDirectoryTree(fileArg);
+                                } else {
+                                    if (!arg.endsWith("." + ext)) {
+                                        arg += "." + ext;
+                                    }
+                                    strategy.process(new File(arg).getCanonicalFile());
+                                }
+                            }
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                public void processDirectoryTree(File root)  throws IOException{
+                    for ( File file : Directory.walk(root.getAbsolutePath(), ".*\\.")
+                           ) {
+                        strategy.process(file.getCanonicalFile());
+                    }
+                }
+
+                public static void main(String[] args) {
+                    new ProcessFiles(new ProcessFiles.Strategy(){
+                        @Override
+                        public void process(File file) {
+                            System.out.println(file);
+                        }
+                    }, "java").start(args);
+                }
+            }
+
+    3. 目录的检查和创建
+        具体方法查看api文档.
+        e.g.:
+            public class MakeDirectories {
+                private static void usage() {
+                    System.err.println(
+                        "Usage:MakeDirectories path1 ...\n" +
+                        "Creates each path\n" +
+                        "Usage:MakeDirectories -d path1 ...\n" +
+                        "Deletes each path\n" +
+                        "Usage:MakeDirectories -r path1 path2\n" +
+                        "Renames from path1 to path2"
+                    );
+                    System.exit(1);
+                }
+                private static void fileData(File f) throws IOException {
+                    System.out.println(
+                        "Absolute path: " + f.getAbsolutePath() +
+                        "\nCanonical path: " + f.getCanonicalPath() +
+                        "\n Can read: " + f.canRead() +
+                        "\n Can write: " + f.canWrite() +
+                        "\n Can execute: " + f.canExecute() +
+                        "\n getName: " + f.getName() +
+                        "\n getParent: " + f.getParent() +
+                        "\n is directory: " + f.isDirectory() +
+                        "\n is file: " + f.isFile() +
+                        "\n getFreeSpace: " + f.getFreeSpace() +
+                        "\n getTotalSpace: " + f.getTotalSpace() +
+                        "\n getUsableSpace: " + f.getUsableSpace() +
+                        "\n getAbsoluteFile: " + f.getAbsoluteFile() +
+                        "\n is Absolute: " + f.isAbsolute() +
+                        "\n is Hidden: " + f.isHidden() +
+                        "\n last Modified: " + f.lastModified()
+                    );
+                }
+
+                public static void main(String[] args) {
+                    try {
+                        File file = new File("E:\\api\\aliDoc\\AliDouble11.pdf");
+                        fileData(file);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+二、输入和输出
+
+    任何自InputStream和Reader派生而来的类都有名为read()的基本方法，用于读取单个字节或字节数组。
+    任何自OutputStream和Writer派生而来的类都有名为write()的基本方法，用于写单个字节或字节数组。
+
+    1. InputStream
+        InputStream的作用是用来表示那些从不同数据源产生的输入的类。这些数据源包括：
+            1) 字节数组
+            2) String对象
+            3) 文件
+            4) "管道"，工作方式与实际管道相似，即，从一端输入，从另一端输出
+            5) 一个由其他种类的流组成的序列，以便我们可以将它收集合并到一个流内
+            6) 其他数据源，如Internet连接等
+        每一种数据源都有相应的InputStream子类。另外，FilterInputStream也属于一种InputStream，为"装饰器"(decorator)类提供基类，
+        其中，"装饰器"类可以把属性和有用的接口和输入流连接在一起。
+
+    2. OutputStream
+        该类别的类决定了输出所要去往的目标：字节数组、文件或管道。
+
+三、添加属性和有用的接口
+
+    1. 通过FilterInputStream从InputStream读取数据
+
+    2. 通过FilterOutputStream向OutputStream写入
+
+四、Reader和Writer
+
+    1. 数据的来源和去处
+
+    2. 更改流的行为
+
+        无论我们何时使用readLine()，都不应该使用DataInputStream，而应该使用BufferedReader。除了这一点，DataInputStream
+        仍是I/O类库的首选成员。
+
+    3. 未发生变化的类
+        DataOutputStream File RandomAccessFile SequenceInputStream
+
+五、自我独立的类：RandomAccessFile
+
+    RandomAccessFile适用于由大小已知的记录组成的文件，所以我们可以使用seek()将记录从一处转移到另一处，然后读取或修改记录。
+    文件中记录的大小不一定相同，只要我们能够确定那些记录有多大以及他们在文件中的位置即可。
+
+六、I/O流的典型使用方式
+
+    1. 缓冲输入文件
+
+    2. 从内存输入
+
+    3. 格式化的内存输入
+
+    4. 基本的文件输出
+
+    5. 存储和恢复数据
+
+    6. 读写随机访问文件
+
+    7. 管道流
+
+七、文件读写的使用工具
+
+    1. 读写二进制文件
+        public class BinaryFile {
+            public static byte[] read(File file) throws IOException {
+                BufferedInputStream in = new BufferedInputStream(new FileInputStream(file));
+                try {
+                    byte[] data = new byte[in.available()];
+                    in.read(data);
+                    return data;
+                } catch (IOException e) {
+                    e.printStacks();
+                } finally {
+                    in.close();
+                }
+            }
+            public static byte[] read(String filename) throws IOException {
+                return read(new File(filename).getAbsoluteFile());
+            }
+        }
+
+八、标准I/O
+
+    1. 从标准输入中读取
+
+    2. 将System.out转换成PrintWrite
+
+    3. 标准I/O重定向
+
+九、进程控制
+
+    e.g.:
+        public class OSExecute {
+            public static void command(String command) {
+                boolean err = false;
+                try {
+                    Process process = new ProcessBuilder(command.split(" ")).start();
+                    BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                    String s;
+                    while ((s = input.readLine()) != null) {
+                        System.out.println(s);
+                    }
+                    BufferedReader error = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+                    while ((s = error.readLine()) != null) {
+                        System.out.println(s);
+                        err = true;
+                    }
+                } catch (IOException e) {
+                    if (!command.startsWith("CMD /C")) {
+                        command("CMD /C " + command);
+                    } else {
+                        throw new RuntimeException();
+                    }
+                    e.printStackTrace();
+                }
+                if (err) {
+                    throw new OSExecuteException("Errors executing " + command);
+                }
+            }
+        }
+
+十、新I/O
+
+    1. 转换数据
+
+        e.g.:
+            public class AvailableCharSets {
+                public static void main(String[] args) {
+                    SortedMap<String, Charset> charsets = Charset.availableCharsets();
+                    Iterator<String> iterator = charsets.keySet().iterator();
+                    while (iterator.hasNext()) {
+                        String name = iterator.next();
+                        System.out.print(name);
+                        Iterator<String> aliases = charsets.get(name).aliases().iterator();
+                        if (aliases.hasNext()) {
+                            System.out.print(": ");
+                        }
+                        while (aliases.hasNext()) {
+                            System.out.print(aliases.next());
+                            if (aliases.hasNext()) {
+                                System.out.print(", ");
+                            }
+                        }
+                        System.out.println();
+                    }
+                }
+            }
+
+    2. 获取基本类型
+        e.g.:
+            public class GetData {
+                private static final int SIZE = 1024;
+                public static void main(String[] args) {
+                    ByteBuffer buffer = ByteBuffer.allocate(SIZE);
+                    // Allocation automatically zeroes the ByteBuffer
+                    int i = 0;
+                    while (i++ < buffer.limit()) {
+                        if (buffer.get() != 0) {
+                            System.out.print("nonzero");
+                        }
+                    }
+                    System.out.print("i=" + i);
+                    buffer.rewind();
+                    // Store and read a char array:
+                    buffer.asCharBuffer().put("Howdy");
+                    char c;
+                    while ((c = buffer.getChar()) != 0) {
+                        System.out.print(c + " ");
+                    }
+                    System.out.println();
+                    buffer.rewind();
+
+                    // Store and read a short
+                    buffer.asIntBuffer().put(12345);
+                    System.out.println(buffer.getInt());
+                    buffer.rewind();
+
+                    // Store and read a long
+                    buffer.asLongBuffer().put(12345L);
+                    System.out.println(buffer.getLong());
+                    buffer.rewind();
+
+                    // Store and read a float
+                    buffer.asFloatBuffer().put(12344);
+                    System.out.println(buffer.getFloat());
+                    buffer.rewind();
+
+                    // Store and read a double
+                    buffer.asDoubleBuffer().put(12312);
+                    System.out.println(buffer.getDouble());
+                    buffer.rewind();
+                }
+            }
+    3. 视图缓冲器
+        e.g.:
+            public class ViewBuffer {
+                public static void main(String[] args) {
+                    ByteBuffer bb = ByteBuffer.wrap(new byte[]{0, 0, 0, 0, 0, 0, 0, 0, 'a'});
+                    bb.rewind();
+                    System.out.println("Byte Buffer ");
+                    while (bb.hasRemaining()){
+                        System.out.print(bb.position() + " -> " + bb.get() + ", ");
+                    }
+                    System.out.println();
+                    CharBuffer cb = ((ByteBuffer) bb.rewind()).asCharBuffer();
+                    System.out.println("Char Buffer ");
+                    while (cb.hasRemaining()) {
+                        System.out.print(cb.position() + " -> " + cb.get() + ", ");
+                    }
+                    System.out.println();
+                    IntBuffer ib = ((ByteBuffer) bb.rewind()).asIntBuffer();
+                    System.out.println("Int Buffer ");
+                    while (ib.hasRemaining()) {
+                        System.out.print(ib.position() + " -> " + ib.get() + ", ");
+                    }
+                    System.out.println();
+                    LongBuffer lb = ((ByteBuffer) bb.rewind()).asLongBuffer();
+                    System.out.println("Long Buffer ");
+                    while (lb.hasRemaining()) {
+                        System.out.print(lb.position() + " -> " + lb.get() + ", ");
+                    }
+                    System.out.println();
+                    ShortBuffer sb = ((ByteBuffer) bb.rewind()).asShortBuffer();
+                    System.out.println("Short Buffer ");
+                    while (sb.hasRemaining()) {
+                        System.out.print(sb.position() + " -> " + sb.get() + ", ");
+                    }
+                    System.out.println();
+                    DoubleBuffer db = ((ByteBuffer) bb.rewind()).asDoubleBuffer();
+                    System.out.println("Double Buffer ");
+                    while (db.hasRemaining()) {
+                        System.out.print(db.position() + " -> " + db.get() + ", ");
+                    }
+                }
+
+         字节存放顺序：
+         e.g.:
+            public class Endians {
+                public static void main(String[] args) {
+                    ByteBuffer bb = ByteBuffer.wrap(new byte[12]);
+                    bb.asCharBuffer().put("abcdef");
+                    System.out.println(Arrays.toString(bb.array()));
+                    bb.rewind();
+                    bb.order(ByteOrder.BIG_ENDIAN);
+                    bb.asCharBuffer().put("abcdef");
+                    System.out.println(Arrays.toString(bb.array()));
+                    bb.rewind();
+                    bb.order(ByteOrder.LITTLE_ENDIAN);
+                    bb.asCharBuffer().put("abcdef");
+                    System.out.println(Arrays.toString(bb.array()));
+                }
+            }
+
+    4. 用缓冲器操纵数据
+
+            ByteBuffer是将数据移进移出通道的唯一方式，并且我们只能创建一个独立的基本类型缓冲器，或者使用“as”方法从ByteBuffer中
+        获得。也就是说，我们不能把基本类型的缓冲器转换成ByteBuffer。然而，由于我们经由视图缓冲器将基本类型数据移进移出ByteBuffer，
+        所以折页机不是什么真正的限制了。
+
+    5. 缓冲器的细节
+
+        Buffer由数据和可以高效地访问及操作这些数据的四个索引组成，这四个索引是：mark，position，limit，capacity。标志、位置、界限、容量。
+
+
+
+    6. 内存映射文件
+
+    7. 文件加锁
+
+十一、压缩
+
+    1. 用gzip进行简单压缩
+
+    2. 用zip进行多文件保存
+
+    3. java档案文件
+
+十二、对象序列化
+
+    1. 寻找类
+
+    2. 序列化的控制
+
+        translent关键字
+
+        Externalizable的替代方法
+
+    3. 使用"持久性"
+
+十三、XML
+
+十四、Preferences
+
+十五、总结
+
+
+
+
+
+
+
+

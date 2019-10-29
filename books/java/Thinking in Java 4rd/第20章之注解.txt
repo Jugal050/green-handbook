@@ -1,0 +1,641 @@
+第二十章 注解
+
+    注解（也被称为元数据）为我们在代码中添加信息提供了一种形式化的方法，是我们可以在稍后某个时刻非常方便的使用这些数据。
+
+    注解的语法比较简单，除了@符号的使用以外，基本与Java固有的语法一致。
+
+    Java内置的注解：
+        @Override: 表示当前的方法定义将覆盖超类中的方法。
+        @Deprecated: 如果使用了注解为它的元素，那么编译器将会发出警告信息。
+        @SuppressWarnings: 关闭不当的编译器信息。
+
+    注解是真正的语言级别的概念，一旦构造出来，就享有编译器的类型检查保护。
+    注解是在实际的源代码级别保存所有的信息，而不是某种注释性的文字，这使得代码更整洁，且便于维护。
+
+一、基本语法
+
+    被注解的方法和其他方法没什么区别。从语法的角度看，注解的使用方式几乎和修饰符的使用一模一样
+
+    1. 定义注解
+
+        没有元素的注解称为标记注解（marker annotation）
+        e.g.:
+            public class Testable {
+                public void execute() {
+                    System.out.println("Executing...");
+                }
+                @Test void testExecute(){
+                    execute();
+                }
+            }
+
+            @Target(ElementType.METHOD)
+            @Retention(RetentionPolicy.RUNTIME)
+            public @interface Test {}
+
+            @Target(ElementType.METHOD)
+            @Retention(RetentionPolicy.RUNTIME)
+            public @interface UseCase {
+                public int id();
+                public String description() default "no description";
+            }
+
+            public class PasswordUtil {
+                @UseCase(id = 17, description = "Password must contain at least one numeric")
+                public boolean validatePassword(String password) {
+                    return password.matches("\\w*\\d\\w*");
+                }
+                @UseCase(id = 48)
+                public String encryptPassword(String password) {
+                    return new StringBuilder(password).reverse().toString();
+                }
+                @UseCase(id = 49, description = "New passwords can't equal previously used ones")
+                public boolean checkNewPassword(List<String> passwordList, String password) {
+                    return !passwordList.contains(password);
+                }
+            }
+
+    2. 元注解
+
+        @Target 表示该注解可以用于什么地方，可选值:
+           public enum ElementType {
+               /** Class, interface (including annotation type), or enum declaration */
+               TYPE,
+
+               /** Field declaration (includes enum constants) */
+               FIELD,
+
+               /** Method declaration */
+               METHOD,
+
+               /** Parameter declaration */
+               PARAMETER,
+
+               /** Constructor declaration */
+               CONSTRUCTOR,
+
+               /** Local variable declaration */
+               LOCAL_VARIABLE,
+
+               /** Annotation type declaration */
+               ANNOTATION_TYPE,
+
+               /** Package declaration */
+               PACKAGE
+           }
+
+        @Retention 表示需要在什么级别保存该注解信息，可选值：
+            public enum RetentionPolicy {
+                /**
+                 * Annotations are to be discarded by the compiler.
+                 */
+                SOURCE,     // 注解将被编译器丢弃
+
+                /**
+                 * Annotations are to be recorded in the class file by the compiler
+                 * but need not be retained by the VM at run time.  This is the default
+                 * behavior.
+                 */
+                CLASS,      // 注解在class文件中可用，但会被VM丢弃
+
+                /**
+                 * Annotations are to be recorded in the class file by the compiler and
+                 * retained by the VM at run time, so they may be read reflectively.
+                 * @see java.lang.reflect.AnnotatedElement
+                 */
+                RUNTIME     // VM将在运行期也保留注解，因此可以通过反射机制读取注解的信息
+            }
+
+        @Documented 将注解包含在JavaDoc中
+
+        @Inherited  允许子类继承父类中的注解
+
+二、编写注解处理器
+
+    e.g.:
+        public class UseCaseTracker {
+            public static void tracker(List<Integer> idList, Class<?> clazz) {
+                for ( Method method : clazz.getDeclaredMethods() ) {
+                    UseCase annotation = method.getAnnotation(UseCase.class);
+                    if (annotation != null) {
+                        System.out.println("Found the annotation: id=" +  annotation.id() + " description: " + annotation.description());
+                        idList.remove(new Integer(annotation.id()));
+                    }
+                }
+                for (Integer i :  idList ) {
+                    System.out.println("Missing the annotation: id= " + i);
+                }
+            }
+            public static void main(String[] args) {
+                ArrayList<Integer> list = new ArrayList<>();
+                Collections.addAll(list, 47, 48, 49, 50);
+                tracker(list, PasswordUtil.class);
+            }
+        }
+
+    1. 注解元素
+        注解类型可用的类型如下所示：
+            ## 所有基本类型(int, float, boolean等)
+            ## String
+            ## Class
+            ## enum
+            ## Annotation
+            ## 以上所有类型的数组
+        如果你使用了其他类型，编译器就会报错。注解也可以作为元素的类型，也就是说注解可以嵌套。
+
+    2. 默认值限制
+        编译器对元素默认值的限制：
+            ## 元素不能有不确定的值：即元素必须要么具有默认值，要么在使用注解时提供元素的值
+            ## 对于非基本类型的元素，无论是源代码中声明，或者是在注解接口中定义默认值，都不能使用null
+        e.g.:
+            @Target(ElementType.METHOD)
+            @Retention(RetentionPolicy.RUNTIME)
+            public @interface SimulatingNull {
+                public int id() default -1;
+                public String description() default "";
+            }
+
+    3. 生成外部文件
+
+        e.g.:
+            @Target(ElementType.TYPE)
+            @Retention(RetentionPolicy.RUNTIME)
+            public @interface DBTable {
+                public String name() default "";
+            }
+            @Target(ElementType.FIELD)
+            @Retention(RetentionPolicy.RUNTIME)
+            public @interface SQLString {
+                int value() default 0;
+                String name() default "";
+                Constraints constrains() default @Constraints;
+            }
+            @Target(ElementType.FIELD)
+            @Retention(RetentionPolicy.RUNTIME)
+            public @interface SQLInteger {
+                String name() default "";
+                Constraints constraints() default @Constraints;
+            }
+            @Target(ElementType.FIELD)
+            @Retention(RetentionPolicy.RUNTIME)
+            public @interface Constraints {
+                boolean primaryKey() default false;
+                boolean allowNull() default true;
+                boolean unique() default false;
+            }
+            @DBTable(name = "MEMBER") // 表名
+            public class Member {
+                @SQLString(30) String firstName;
+                @SQLString(50) String lastName;
+                @SQLInteger Integer age;
+                @SQLString(value = 30, constrains = @Constraints(primaryKey = true)) String handle;
+                static int memberCount;
+
+                public String getFirstName() { return firstName; }
+                public String getLastName() { return lastName; }
+                public Integer getAge() { return age; }
+                public String getHandle() { return handle; }
+                @Override public String toString() { return handle; }
+            }
+
+    4. 注解不支持继承
+        不能使用关键字extends来继承某个@interface。
+
+    5. 实现处理器
+        e.g.:
+            public class TableCreator {
+                public static void main(String[] args) throws ClassNotFoundException {
+                    List<String> list = new ArrayList<>();
+                    list.add("com.book.thinkinginjava.annotation.Member");
+                    generatorSQL(list);
+                }
+                public static void generatorSQL(List<String> classes) throws ClassNotFoundException {
+                    if (classes == null || classes.size() <= 0) {
+                        System.out.println("Can't generator SQL without not annotation class name");
+                        System.exit(0);
+                    }
+                    for ( String className : classes
+                           ) {
+                        Class<?> clazz = Class.forName(className);
+                        DBTable dbTable = clazz.getAnnotation(DBTable.class);
+                        if (dbTable == null) {
+                            System.out.println("No DBTable annotation in class " + className);
+                            continue;
+                        }
+                        String tableName = dbTable.name();
+                        if (tableName.length() < 1) {
+                            tableName = clazz.getName().toUpperCase();
+                        }
+                        List<String> columnDefs = new ArrayList<>();
+                        for ( Field field : clazz.getDeclaredFields()
+                               ) {
+                            String columnName = null;
+                            Annotation[] annotations = field.getDeclaredAnnotations();
+                            if (annotations.length < 1) {
+                                continue;
+                            }
+                            if (annotations[0] instanceof SQLInteger) {
+                                SQLInteger sqlInteger = (SQLInteger) annotations[0];
+                                if (sqlInteger.name().length() < 1) {
+                                    columnName = field.getName().toUpperCase();
+                                } else {
+                                    columnName = sqlInteger.name();
+                                }
+                                columnDefs.add(columnName + " INT " + getConstraints(sqlInteger.constraints()));
+                            }
+                            if (annotations[0] instanceof SQLString) {
+                                SQLString sqlString = (SQLString) annotations[0];
+                                if (sqlString.name().length() < 1) {
+                                    columnName = field.getName().toUpperCase();
+                                } else {
+                                    columnName = sqlString.name();
+                                }
+                                columnDefs.add(columnName + " VARCHAR(" + sqlString.value() + ")" + getConstraints(sqlString.constrains()));
+                            }
+                            StringBuilder command = new StringBuilder("CREATE TABLE " + tableName + "(");
+                            for ( String columnDef : columnDefs
+                                   ) {
+                                command.append("\n     " + columnDef + "," );
+                            }
+                            String tableCreate = command.substring(0, command.length() - 1 ) + ");";
+                            System.out.println("Table Creating SQL for " + className + " is: \n" + tableCreate);
+                        }
+                    }
+                }
+
+                public static String getConstraints(Constraints constraints) {
+                    String result = "";
+                    if (!constraints.allowNull()){
+                        result += " NOT NULL";
+                    }
+                    if (constraints.primaryKey()) {
+                        result += " PRIMARY KEY";
+                    }
+                    if (constraints.unique()) {
+                        result += " UNIQUE";
+                    }
+                    return result;
+                }
+            }
+
+三、使用apt处理注解
+
+    注解处理工具apt，是Sun为了帮助处理注解而提供的工具。
+
+四、将观察者模式用于apt
+
+    观察者模式：
+        一个访问者会遍历某个数据结构或一个对象的集合，对其中的每一个对象执行一个操作。该数据结构无需有序，对每个对象执行的
+        操作，都是特定于对象的类型。这就将操作与对象解耦，也就是说，你可以添加新的操作，而无需向类的定义中添加方法。
+
+五、基于注解的单元测试
+
+    1. 将@Unit用于泛型
+
+        泛型为@Unit出了个难题，因为我们不可能“泛泛地测试”。我们必须针对某个特定类型的参数或参数集才能进行测试。
+        解决的方法很简单：让测试类继承自泛型的一个特定版本即可。
+            e.g.:
+                堆栈：
+                public class StackL<T> {
+                    private LinkedList<T> list = new LinkedList<>();
+                    public void push(T v) { list.addFirst(v); }
+                    public T top() { return list.getFirst(); }
+                    public T pop() { return list.removeFirst(); }
+                }
+                要测试的String堆栈
+                public class StackStringTest extends StackL<String> {
+                    @Test void _push() {
+                        push("one");
+                        assert top().equals("one");
+                        push("two");
+                        assert top().equals("two");
+                    }
+                    @Test void _pop() {
+                        push("one");
+                        push("two");
+                        assert pop().equals("two");
+                        assert pop().equals("one");
+                    }
+                    @Test void _top() {
+                        push("A");
+                        push("B");
+                        assert top().equals("A");
+                        assert top().equals("B");
+                    }
+                    @Test static void main(String[] args) throws Exception{
+                        OSExecute.command("Java net.mindview.atunit.AtUnit StackStringTest");
+                    }
+                }
+
+    2. 不需要任何“套件”
+
+        与JUnit相比，@Unit有一个比较大的优点，就是不需要“套件”（suites）；
+        在JUnit中，必须告诉测试工具打算测试什么，这就要求用套件来组织测试，以便JUnit能够找到它们，并运行其中包含的测试。
+
+    3. 实现@Unit
+        e.g.:
+            public class AtUnit implements ProcessFiles.Strategy {
+                static Class<?> testClass;
+                static List<String> failedTests = new ArrayList<String>();
+                static long testsRun = 0;
+                static long failures = 0;
+                public static void main(String[] args) throws Exception{
+                    ClassLoader.getSystemClassLoader().setDefaultAssertionStatus(true);
+                    new ProcessFiles(new AtUnit(), "class").start(args);
+                    if (failures == 0) {
+                        System.out.print("OK (" + testsRun + " tests)");
+                    } else {
+                        System.out.print("(" + testsRun + " tests)");
+                        System.out.print("\n >>>" + failures + " FAILURE" + (failures > 1 ? "5" : "") + " <<<");
+                        for ( String failed : failedTests
+                               ) {
+                            System.out.print("\t" + failed);
+                        }
+                    }
+                }
+                @Override
+                public void process(File cFile) {
+                    try {
+                        String cName = ClassNameFinder.thisClass(BinaryFile.read(cFile));
+                        if (!cName.contains(".")) {
+                            return;
+                        }
+                        testClass = Class.forName(cName);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                    TestMethods testMethods = new TestMethods();
+                    Method creator = null;
+                    Method cleanup = null;
+                    for (Method method : testClass.getDeclaredMethods()) {
+                        testMethods.addIfTestMethod(method);
+                        if (creator == null) {
+                            creator = checkForCreatorMethod(method);
+                        }
+                        if (cleanup == null) {
+                            cleanup = checkForCleanupMethod(method);
+                        }
+                    }
+                    if (testMethods.size() > 0) {
+                        if (creator == null) {
+                            try {
+                                if (!Modifier.isPublic(testClass.getDeclaredConstructor().getModifiers())) {
+                                    System.out.println("Error " + testClass + " default constructor must be public");
+                                    System.exit(1);
+                                }
+                            }catch (NoSuchMethodException e) {
+                                // Synthesized default constructor: OK
+                            }
+                            System.out.println(testClass.getName());
+                        }
+
+                        for ( Method method : testMethods
+                               ) {
+                            System.out.println("    .   " + method.getName() + "    ");
+                            try {
+                                Object testObject = createTestObject(creator);
+                                boolean success = false;
+                                try {
+                                    if (method.getReturnType().equals(boolean.class)) {
+                                        success = (Boolean)method.invoke(testObject);
+                                    } else {
+                                        method.invoke(testObject);
+                                        success = true; // If no assert fails
+                                    }
+                                }catch (InvocationTargetException e) {
+                                    System.out.println(e.getCause());
+                                }
+                                System.out.println(success ? "" : "(failed)");
+                                testsRun++;
+                                if (!success) {
+                                    failures++;
+                                    failedTests.add(testClass.getName() + " " + method.getName());
+                                }
+                                if (cleanup != null) {
+                                    cleanup.invoke(testObject, testObject);
+                                }
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                    }
+                }
+
+                static class TestMethods extends ArrayList<Method> {
+                    void addIfTestMethod (Method method) {
+                        if (method.getAnnotation(Test.class) == null) {
+                            return;
+                        }
+                        if (method.getReturnType().equals(boolean.class) || method.getReturnType().equals(void.class)) {
+                            throw new RuntimeException("@Test method must return boolean or void " );
+                        }
+                        // In case it's private. etc.
+                        method.setAccessible(true);
+                        add(method);
+                    }
+                }
+
+                private static Method checkForCreatorMethod(Method method) {
+                    if (method.getAnnotation(TestObjectCreate.class) == null) {
+                        return null;
+                    }
+                    if (!method.getReturnType().equals(testClass)) {
+                        throw new RuntimeException("@TestObjectCreate must return instance of Class to be created");
+                    }
+                    if ((method.getModifiers()&Modifier.STATIC) <  1) {
+                        throw new RuntimeException("@TestObjectCreate must be static");
+                    }
+                    method.setAccessible(true);
+                    return method;
+                }
+
+                private static Method checkForCleanupMethod(Method method) {
+                    if (method.getAnnotation(TestObjectCleanup.class) == null) {
+                        return null;
+                    }
+                    if (!method.getReturnType().equals(void.class)) {
+                        throw new RuntimeException("@TestObjectCleanup must return void");
+                    }
+                    if ((method.getModifiers() & Modifier.STATIC) < 1) {
+                        throw new RuntimeException("@TestObjectCleanup must be static");
+                    }
+                    if (method.getParameterTypes().length == 0 || method.getParameterTypes()[0] != testClass) {
+                        throw new RuntimeException("@TestObjectCleanup must take an argument of the tested type");
+                    }
+                    method.setAccessible(true);
+                    return method;
+                }
+
+                private static Object createTestObject(Method creator) {
+                    if (creator != null) {
+                        try {
+                            return creator.invoke(testClass);
+                        } catch (Exception e) {
+                            throw new RuntimeException("Couldn't run @TestObject (creator) method.");
+                        }
+                    } else {
+                        try {
+                            return testClass.newInstance();
+                        } catch (Exception e) {
+                            throw new RuntimeException("Couldn't create a test Object, Try using a @TestObject method.");
+                        }
+                    }
+                }
+            }
+
+            public class ClassNameFinder {
+                public static String thisClass(byte[] classBytes) {
+                    Map<Integer, Integer> offsetTable = new HashMap<>();
+                    Map<Integer, String> classNameTable = new HashMap<>();
+                    try {
+                        DataInputStream data = new DataInputStream(new ByteArrayInputStream(classBytes));
+                        int magic = data.readInt();
+                        int minorVersion = data.readShort();
+                        int mijorVersion = data.readShort();
+                        int constant_pool_count = data.readShort();
+                        int[] constant_pool = new int[constant_pool_count];
+                        for ( int i = 0; i < constant_pool_count; i++ ) {
+                            int tag = data.read();
+                            int tableSize;
+                            switch (tag) {
+                                // UTF
+                                case 1:
+                                    int length = data.readShort();
+                                    char[] bytes = new char[length];
+                                    for ( int j = 0; j < bytes.length; j++ ) {
+                                        bytes[j] = (char)data.read();
+                                    }
+                                    String className = new String(bytes);
+                                    classNameTable.put(i, className);
+                                    break;
+                                // LONG DOUBLE
+                                case 5:
+                                case 6:
+                                    data.readLong(); // discard 8 bytes
+                                    i++; // Special skip necessary
+                                    break;
+                                // CLASS
+                                case 7:
+                                    int offset = data.readShort();
+                                    offsetTable.put(i, offset);
+                                    break;
+                                // STRING
+                                case 8:
+                                    data.readShort(); // discart 2 bytes
+                                    break;
+                                case 3:
+                                case 4:
+                                case 9:
+                                case 10:
+                                case 11:
+                                case 12:
+                                    data.readInt(); // discard 4 bytes
+                                    break;
+                                default:
+                                    throw new RuntimeException("Bad tag " + tag);
+                            }
+                        }
+                        short access_flags = data.readShort();
+                        int this_class = data.readShort();
+                        int super_class = data.readShort();
+                        return classNameTable.get(offsetTable.get(this_class)).replace("/", ".");
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                public static void main(String[] args) {
+                    if (args.length > 0) {
+                        for ( String arg : args
+                               ) {
+                            System.out.println(thisClass(BinaryFile.read(new File(arg))));
+                        }
+                    } else {
+                        for ( File klass : Directory.walk(".", ".*\\.class")
+                               ) {
+                            System.out.println(thisClass(BinaryFile.read(klass)));
+                        }
+                    }
+                }
+
+            }
+
+            public class BinaryFile {
+                public static byte[] read(File file) {
+                    FileInputStream fis;
+                    try {
+                        FileInputStream fileInputStream = fis = new FileInputStream(file);
+                        BufferedInputStream bis = new BufferedInputStream(fis);
+                        try {
+                            byte[] data = new byte[bis.available()];
+                            bis.read();
+                            return data;
+                        } finally {
+                            bis.close();
+                        }
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                public static byte[] read(String fileName) {
+                    return read(new File(fileName).getAbsoluteFile());
+                }
+            }
+
+    4. 移除测试代码
+        e.g.:
+            public class AtUnitRemover implements ProcessFiles.Strategy {
+                private static boolean remove = false;
+
+                public static void main(String[] args) {
+                    if (args.length > 0 && args[0].equals("-r")) {
+                        remove = true;
+                        String[] nargs = new String[args.length - 1];
+                        System.arraycopy(args, 1, nargs, 0, nargs.length);
+                        args = nargs;
+                    }
+                    new ProcessFiles(new AtUnitRemover(), "class").start(args);
+                }
+                @Override
+                public void process(File file) {
+                    boolean modified = false;
+                    try {
+                        String name = ClassNameFinder.thisClass(BinaryFile.read(file));
+                        if (!name.contains(".")) {
+                            return;
+                        }
+                        ClassPool pool = ClassPool.getDefault();
+                        CtClass ctClass = pool.get(name);
+                        for (CtMethod method : ctClass.getDeclaredMethods()) {
+                            MethodInfo mi = method.getMetodInfo();
+                            AnnotationAttribute attr = (AnnotationAttribute)mi.getAttribute(AnnotationAttribute.visiableTag);
+                            if (attr == null) {
+                                continue;
+                            }
+                            for ( Annotation annotation : attr.getAnnotations()
+                                   ) {
+                                if (annotation.getTypeName().startWith("net.mindview.atunit")) {
+                                    System.out.println(ctClass.getName() + " Method " + mi.getName() + " " + annotation);
+                                    if (remove) {
+                                        ctClass.removeMethod(method);
+                                        modified = true;
+                                    }
+                                }
+                            }
+                        }
+                        // Field are not removed in this version(see text)
+                        if (modified) {
+                            ctClass.toBytecode(new DataOutputStream(new FileOutputStream(file)));
+                        }
+                        ctClass.detach();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+
+六、总结
+
+    注解是Java引入的一项非常受欢迎的补充，它提供了一种结构化的，并且具有类型检查能力的新途径，从而使得程序员能够为代码
+    加入元数据，而不会导致代码杂乱且难以阅读。使用注解能够帮助我们避免编写累赘的部署描述文件，以及其他生成的文件。而Javadoc
+    中的@Deprecated被@Deprecated注解取代的事实也说明，与注释性文件相比，注解绝对更适合用于描述类相关的信息。
