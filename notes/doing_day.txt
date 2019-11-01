@@ -84,7 +84,56 @@
 
 		pm. 京东————某外部
 		
-			只招中高级，pass。			
+			只招中高级，pass。	
+
+	# https://docs.spring.io/spring/docs/5.2.0.RELEASE/spring-framework-reference/core.html#spring-core // todo
+
+# 2019-11-1 23:15:49
+
+	# 面试 
+
+		am. 雅睿捷 昌平区 珠江摩尔公园6号楼 1单元207
+
+				面试问题：
+					** mybatis后台分页
+
+				面试结果：
+					小小小公司，没人负责一个项目，pass。
+
+		pm. 蓝卡 中关村软件园信息中心 1A306	15：00
+
+				面试问题：
+					工作经历...技术相关很少
+		
+				面试结果：
+					新增研发部，面试题多数和linux系统有关，等通知（最晚周一下班前）。		
+
+			阿里影业							20:00
+
+				面试问题：
+
+					** 自我介绍
+					** 离职原因（诟病：做好自己的工作）
+					** 项目相关。自己负责的疑难问题及解决方案。
+					** http协议和udp协议的区别
+					** arraylist和linkedlist的区别
+					** 浏览器url请求的过程
+					** jdk1.8 stream操作
+					** hashmap和concurrenthashmap的区别
+					** 平时学习的方式
+					** springboot中一些starter是怎么加载的
+
+				面试结果：
+
+					差距很大。继续努力。
+
+			
+				
+
+
+
+
+
 
 			 	  
 
