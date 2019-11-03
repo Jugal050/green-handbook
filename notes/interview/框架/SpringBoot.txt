@@ -1,0 +1,130 @@
+SpringBoot相关：
+
+
+	## SpringBoot启动流程：
+
+		启动类：
+			@SpringBootApplication
+			public class Demo03Application {
+			    public static void main(String[] args) {
+			        SpringApplication.run(Demo03Application.class, args);
+			    }
+	    	}
+
+		// SpringApplication启动的静态方法
+		org.springframework.boot.SpringApplication#run(java.lang.Class<?>, java.lang.String...)
+
+			public static ConfigurableApplicationContext run(Class<?> primarySource,
+					String... args) {
+				return run(new Class<?>[] { primarySource }, args);
+			}
+
+		// Spring应用启动的静态方法
+		org.springframework.boot.SpringApplication#run(java.lang.Class<?>[], java.lang.String[])
+
+			public static ConfigurableApplicationContext run(Class<?>[] primarySources,
+					String[] args) {
+				return new SpringApplication(primarySources).run(args);
+			}
+
+
+		// SpringApplication构造器
+		org.springframework.boot.SpringApplication#SpringApplication(java.lang.Class<?>...)
+		org.springframework.boot.SpringApplication#SpringApplication(org.springframework.core.io.ResourceLoader, java.lang.Class<?>...)
+
+			public SpringApplication(ResourceLoader resourceLoader, Class<?>... primarySources) {
+				this.resourceLoader = resourceLoader;
+				Assert.notNull(primarySources, "PrimarySources must not be null");
+				this.primarySources = new LinkedHashSet<>(Arrays.asList(primarySources));
+				this.webApplicationType = WebApplicationType.deduceFromClasspath();
+				setInitializers((Collection) getSpringFactoriesInstances( // 加载并设置应用初始化相关类
+						ApplicationContextInitializer.class)); 
+				setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class)); // 加载并设置应用监听器类
+				this.mainApplicationClass = deduceMainApplicationClass();
+			}	
+
+			// 判断web应用类型（根据已加载的核心处理类判断），默认是Servlet
+			org.springframework.boot.WebApplicationType#deduceFromClasspath
+
+			// 获取Spring工厂实例（参数：interface org.springframework.context.ApplicationContextInitializer, interface org.springframework.context.ApplicationListener）
+			// 加载两次，分别是①应用初始化相关、②应用监听器类
+			org.springframework.boot.SpringApplication#getSpringFactoriesInstances(java.lang.Class<T>)
+			org.springframework.boot.SpringApplication#getSpringFactoriesInstances(java.lang.Class<T>, java.lang.Class<?>[], java.lang.Object...)
+
+				private <T> Collection<T> getSpringFactoriesInstances(Class<T> type,
+						Class<?>[] parameterTypes, Object... args) {
+					ClassLoader classLoader = getClassLoader();
+					// Use names and ensure unique to protect against duplicates
+					Set<String> names = new LinkedHashSet<>(
+							SpringFactoriesLoader.loadFactoryNames(type, classLoader));
+					List<T> instances = createSpringFactoriesInstances(type, parameterTypes,
+							classLoader, args, names);
+					AnnotationAwareOrderComparator.sort(instances);
+					return instances;
+				}
+
+				// 获取工厂名称（入参：org.springframework.context.ApplicationContextInitializer, Launcher$AppClassLoader）
+				org.springframework.core.io.support.SpringFactoriesLoader#loadFactoryNames
+
+					public static List<String> loadFactoryNames(Class<?> factoryClass, @Nullable ClassLoader classLoader) {
+						String factoryClassName = factoryClass.getName();
+						return loadSpringFactories(classLoader).getOrDefault(factoryClassName, Collections.emptyList());
+					}
+
+					// 加载Spring工厂类
+					org.springframework.core.io.support.SpringFactoriesLoader#loadSpringFactories
+
+				// 创建工厂实例
+				org.springframework.boot.SpringApplication#createSpringFactoriesInstances	
+
+		//	run方法
+		org.springframework.boot.SpringApplication#run(java.lang.String...)
+		
+			public ConfigurableApplicationContext run(String... args) {
+				StopWatch stopWatch = new StopWatch();
+				stopWatch.start();
+				ConfigurableApplicationContext context = null;
+				Collection<SpringBootExceptionReporter> exceptionReporters = new ArrayList<>();
+				configureHeadlessProperty();
+				SpringApplicationRunListeners listeners = getRunListeners(args);
+				listeners.starting();
+				try {
+					ApplicationArguments applicationArguments = new DefaultApplicationArguments(
+							args);
+					ConfigurableEnvironment environment = prepareEnvironment(listeners,
+							applicationArguments);
+					configureIgnoreBeanInfo(environment);
+					Banner printedBanner = printBanner(environment);
+					context = createApplicationContext();
+					exceptionReporters = getSpringFactoriesInstances(
+							SpringBootExceptionReporter.class,
+							new Class[] { ConfigurableApplicationContext.class }, context);
+					prepareContext(context, environment, listeners, applicationArguments,
+							printedBanner);
+					refreshContext(context);
+					afterRefresh(context, applicationArguments);
+					stopWatch.stop();
+					if (this.logStartupInfo) {
+						new StartupInfoLogger(this.mainApplicationClass)
+								.logStarted(getApplicationLog(), stopWatch);
+					}
+					listeners.started(context);
+					callRunners(context, applicationArguments);
+				}
+				catch (Throwable ex) {
+					handleRunFailure(context, ex, exceptionReporters, listeners);
+					throw new IllegalStateException(ex);
+				}
+
+				try {
+					listeners.running(context);
+				}
+				catch (Throwable ex) {
+					handleRunFailure(context, ex, exceptionReporters, null);
+					throw new IllegalStateException(ex);
+				}
+				return context;
+			}
+
+
+
