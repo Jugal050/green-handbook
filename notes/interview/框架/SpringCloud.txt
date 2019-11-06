@@ -1,0 +1,90 @@
+
+Spring Cloud相关
+
+一、组件
+
+	1. 注册中心
+
+		## Eureka
+
+			** 搭建注册中心
+
+				>> 引入依赖 spring-cloud-starter-netflix-eureka-server
+				>> 配置EurekaServer
+				>> 通过@EnableEurekaServer激活Eureka Server端配置
+
+			** 服务注册
+			
+				>> 服务提供者引入spring-cloud-starter-netflix-eureka-client依赖
+				>> 通过eureka.client.serverUrl.defaultZone配置注册中心地址
+
+		## consul
+		
+			** 搭建注册中心
+
+				>> 下载安装consul
+				>> 启动consul client agent -dev
+
+			** 服务注册
+			
+				>> 服务提供者引入spring-cloud-starter-consul-discovery依赖
+				>> 通过spring.cloud.consul.host和spring.cloud.consul.port指定Consul Server的请求地址
+
+	2. 服务调用
+
+		## Ribbon
+
+			** 通过Ribbon结合RestTemplate方式进行服务调用只需要声明RestTemplate的方法上添加注解@LoadBlanced即可
+			** 可以通过{服务名称}.ribbon.NFLoadBalanceRuleClassName配置负载均衡策略
+
+		## Feign
+		
+			** 服务器消费者引入spring-cloud-starter-openfeign依赖
+			** 通过@FeignClient声明一个调用远程微服务接口
+			** 启动类上通过@EnableFeignClients激活Feign
+
+
+	3. 服务熔断
+	
+		## Hystrix
+
+			** 服务容错的核心知识
+
+				>> 雪崩效应：服务之间进行调用，若有大量请求涌入，容器的线程资源会消耗完毕，导致服务瘫痪，依赖的服务之间会进行故障传播，造成连锁反应，对整个微服务系统造成灾难性的严重后果。
+				>> 服务隔离：
+				>> 熔断降级：
+				>> 服务限流：
+
+			** Rest实现服务熔断
+
+				>> 配置依赖: org.springframework.cloud.spring-cloud-starter-netflix-hystrix
+				>> 开启熔断: @EnableCircuitBreaker
+
+			** Feign实现服务熔断	
+
+				>> 修改application.yml在Feign中开启hystrix: feign.hystrix.enable: true
+				>> 配置FeignClient的实现类: @Component public class FeignClientCallBack implements FeignClient {}
+
+			** 监控平台	
+
+				>> 搭建Hystrix DashBoard的监控
+				>> 断路器聚合监控Turbine
+
+			** 熔断器
+			
+				>> 状态： 
+						CLOSED(关闭-默认)
+						OPEN(开启)
+						HALF_OPEN(半开)
+				>> 隔离策略：
+						线程池隔离策略：
+							>> 使用一个线程池来存储当前的请求，线程池对请求作处理，设置任务返回处理超时时间，堆积的请求堆积入线程池队列。
+							>> 需要为每个依赖的服务申请线程池，有一定的资源消耗，好处是可以应对突发流量
+						信号量隔离策略：
+							>> 使用一个原子计数器（或信号量）来记录当前有多少个线程在运行，请求来先判断计数器的数值，若超过设置的最大线程个数则丢弃该类型的新请求，若不超过则执行计数操作请求来计数器+1，请求返回计数器-1。
+							>> 严格的控制线程且立即返回模式，无法应对突发流量。
+
+
+
+
+
