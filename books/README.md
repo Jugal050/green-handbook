@@ -10,10 +10,19 @@ without direction and strong interest, reading source is so boring. here start r
  * 《Effective Java》Edition 3
  * 《Java Concurrency in Practice》
  * 《Modern Java in Action》
+ * 《How Tomcat Works 6rd》
+ * 《SpringBoot+Vue实战》
+ * 《Redis 实战》
+ * 《Struts2内幕》
+ * 《深入理解Java虚拟机2》
 
 ### algorithm
 
 ### data structure
 
 ### computer science
+
+- 《TCP-IP详解》
+
+
 
