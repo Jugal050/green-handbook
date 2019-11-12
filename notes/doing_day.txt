@@ -181,6 +181,18 @@
 	
 		1. The IoC Container	// done 2019年11月11日 17点25分
 
+# 2019-11-12 21:53:00
+
+	# 入职相关工作：		
+
+		OA办公系统: http://oa.northking.net
+			登录名: binwei.han
+		邮件系统: http://mail.northking.net 		
+			邮箱地址: binwei.han@northking.net
+		日志系统: http://bpowls.northking.net:7070/pm/
+			登录名: binwei.han
+
+		项目编号： RD-18-1386-03
 
 
 
