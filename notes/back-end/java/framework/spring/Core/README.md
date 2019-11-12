@@ -123,9 +123,296 @@
 
    ​	2.7.2 Wildcards in Application Context Construtor Resource Paths
 
+   ```java
+   ApplicationContext ctx =
+       new ClassPathXmlApplicationContext("classpath*:conf/appContext.xml");
+   ```
+
    ​	2.7.3 FileSystemResource Caveats
 
+   ```java
+   // 相对路径
+   
+   	// 1. 以下两种写法是等价的 
+   	ApplicationContext ctx = new FileSystemXmlApplicationContext("conf/context.xml");
+   	ApplicationContext ctx = new FileSystemXmlApplicationContext("/conf/context.xml");
+   
+   	// 2. 以下两种写法是等价的 
+   	FileSystemXmlApplicationContext ctx = ...;
+   	ctx.getResource("some/resource/path/myTemplate.txt");
+   	ctx.getResource("/some/resource/path/myTemplate.txt");
+   
+   // 绝对路径
+   	ctx.getResource("file:///some/resource/path/myTemplate.txt");
+   	ApplicationContext ctx =
+       	new FileSystemXmlApplicationContext("file:///conf/context.xml");
+   ```
+
 3. Validation, Data Binding, and Type Conversion
+
+   3.1 Validation by Using Spring’s Validator Interface
+
+   ```java
+   /**
+    * 简单类属性校验
+    */
+   public class Person {
+       private String name;
+       private int age;
+       // the usual getters and setters...
+   }
+   public class PersonValidator implements Validator {
+   
+       /**
+        * This Validator validates only Person instances
+        */
+       public boolean supports(Class clazz) {
+           return Person.class.equals(clazz);
+       }
+   
+       public void validate(Object obj, Errors e) {
+           ValidationUtils.rejectIfEmpty(e, "name", "name.empty");
+           Person p = (Person) obj;
+           if (p.getAge() < 0) {
+               e.rejectValue("age", "negativevalue");
+           } else if (p.getAge() > 110) {
+               e.rejectValue("age", "too.darn.old");
+           }
+       }
+   }
+   /**
+    * 嵌套类属性校验
+    *    推荐：每个类均写校验器，如果外层类需要校验内层类，再外层类校验器中调用内层类校验器即可
+    */
+   public class Customer {
+       private String firstName;
+       private String surname;
+       private Address address;
+       // the usual getters and setters...
+   }
+   public class Address {}
+   public class AddressValidator implements Validator {
+       // support() and validate()
+   }
+   public class CustomerValidator implements Validator {
+   
+       private final Validator addressValidator;
+   
+       public CustomerValidator(Validator addressValidator) {
+           if (addressValidator == null) {
+               throw new IllegalArgumentException("The supplied [Validator] is " +
+                   "required and must not be null.");
+           }
+           if (!addressValidator.supports(Address.class)) {
+               throw new IllegalArgumentException("The supplied [Validator] must " +
+                   "support the validation of [Address] instances.");
+           }
+           this.addressValidator = addressValidator;
+       }
+   
+       /**
+        * This Validator validates Customer instances, and any subclasses of Customer too
+        */
+       public boolean supports(Class clazz) {
+           return Customer.class.isAssignableFrom(clazz);
+       }
+   
+       public void validate(Object target, Errors errors) {
+           ValidationUtils.rejectIfEmptyOrWhitespace(errors, "firstName", "field.required");
+           ValidationUtils.rejectIfEmptyOrWhitespace(errors, "surname", "field.required");
+           Customer customer = (Customer) target;
+           try {
+               errors.pushNestedPath("address");
+               ValidationUtils.invokeValidator(this.addressValidator, customer.getAddress(), errors);
+           } finally {
+               errors.popNestedPath();
+           }
+       }
+   }
+   ```
+
+   3.2 Resolving Codes to Error Messages
+
+   ```java
+   /**
+    * 校验测试类
+    */
+   public class ValidateCustomer {
+   
+       public static void main(String[] args) {
+           Customer customer = new ValidateCustomer().generateTestCustomer();
+           AddressValidator addressValidator = new AddressValidator();
+           CustomerValidator customerValidator = new CustomerValidator(addressValidator);
+           BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(customer, "customer");
+           customerValidator.validate(customer, bindingResult);
+           List<ObjectError> allErrors = bindingResult.getAllErrors();
+           allErrors.forEach((error) -> {
+               System.out.println(error.getCode() + " : " + error.getDefaultMessage());
+           });
+       }
+   
+       private Customer generateTestCustomer() {
+           Customer customer = new Customer();
+           customer.setFirstName("");
+           customer.setSurname("");
+           customer.setAddress(generateTestAddress());
+           return customer;
+       }
+   
+       private Address generateTestAddress() {
+           Address address = new Address();
+           address.setId("123456789012345678901234567890");
+           address.setAddress("");
+           return address;
+       }
+   
+   }
+   ```
+
+   3.3 Bean Manipulation and the `BeanWrapper`
+
+   ​	3.3.1 Setting and Getting Basic and Nested Properties
+
+   ```java
+   public class Company {
+   
+       private String name;
+       private Employee managingDirector;
+   
+       public String getName() {
+           return this.name;
+       }
+       public void setName(String name) {
+           this.name = name;
+       }
+       public Employee getManagingDirector() {
+           return this.managingDirector;
+       }
+       public void setManagingDirector(Employee managingDirector) {
+           this.managingDirector = managingDirector;
+       }
+   }
+   
+   public class Employee {
+   
+       private String name;
+       private float salary;
+   
+       public String getName() {
+           return this.name;
+       }
+       public void setName(String name) {
+           this.name = name;
+       }
+       public float getSalary() {
+           return salary;
+       }
+       public void setSalary(float salary) {
+           this.salary = salary;
+       }
+   }
+   
+   public class BeanWrapperTest {
+       private void test() {
+           BeanWrapper company = new BeanWrapperImpl(new Company());
+   		// setting the company name..
+   		company.setPropertyValue("name", "Some Company Inc.");
+   		// ... can also be done like this:
+   		PropertyValue value = new PropertyValue("name", "Some Company Inc.");
+   		company.setPropertyValue(value);
+   
+   		// ok, let's create the director and tie it to the company:
+   		BeanWrapper jim = new BeanWrapperImpl(new Employee());
+   		jim.setPropertyValue("name", "Jim Stravinsky");
+   		company.setPropertyValue("managingDirector", jim.getWrappedInstance());
+   
+   		// retrieving the salary of the managingDirector through the company
+   		Float salary = (Float) company.getPropertyValue("managingDirector.salary");
+       }
+   }
+   
+   ```
+
+   ​	3.3.2 Built-in `PropertyEditor` Implementations
+
+   ```java
+   public class ExoticType {
+   
+       private String name;
+   
+       public ExoticType(String name) {
+           this.name = name;
+       }
+   }
+   
+   public class DependsOnExoticType {
+   
+       private ExoticType type;
+   
+       public void setType(ExoticType type) {
+           this.type = type;
+       }
+   }
+   
+   // converts string representation to ExoticType object
+   public class ExoticTypeEditor extends PropertyEditorSupport {
+   
+       public void setAsText(String text) {
+           setValue(new ExoticType(text.toUpperCase()));
+       }
+   }
+   
+   // Using PropertyEditorRegistrar
+   public final class CustomPropertyEditorRegistrar implements PropertyEditorRegistrar {
+   
+       public void registerCustomEditors(PropertyEditorRegistry registry) {
+   
+           // it is expected that new PropertyEditor instances are created
+           registry.registerCustomEditor(ExoticType.class, new ExoticTypeEditor());
+   
+           // you could register as many custom property editors as are required here...
+       }
+   }
+   
+   // Controller
+   public final class RegisterUserController extends SimpleFormController {
+   
+       private final PropertyEditorRegistrar customPropertyEditorRegistrar;
+   
+       public RegisterUserController(PropertyEditorRegistrar propertyEditorRegistrar) {
+           this.customPropertyEditorRegistrar = propertyEditorRegistrar;
+       }
+   
+       protected void initBinder(HttpServletRequest request,
+               ServletRequestDataBinder binder) throws Exception {
+           this.customPropertyEditorRegistrar.registerCustomEditors(binder);
+       }
+   
+       // other methods to do with registering a User
+   }
+   ```
+
+   ​	`relate package`: `org.springframework.beans.propertyeditors`
+
+   3.4 Spring Type Conversion
+
+   ​	3.4.1 Converter SPI
+
+   ​	3.4.2 Using ConverterFactory
+
+   ​	3.4.3 Using GenericConverter
+
+   ​	3.4.4 The ConversionService API
+
+   ​	3.4.5 Configuring a ConversionService
+
+   ​	3.4.6 Using a ConversionService Programmatically
+
+   3.5 Spring Field Formatting
+
+   3.6 Configuring a Global Date and Time Format
+
+   3.7 Spring Validation
 
 4. Spring Expression Language (SpEL)
 
