@@ -181,6 +181,24 @@
 	
 		1. The IoC Container	// done 2019年11月11日 17点25分
 
+# 2019-11-13 10:14
+
+	# 民生银行入场 
+
+		1. 姓名:  韩斌伟
+		2. 联系电话: 137 5233 0376
+		3. 所在项目组名称: 中国民生银行信息科技部外部开发资源池公共资源框架采购项目
+		4. 所在工作楼层: 6层(工位暂时未定)
+		5. 行方项目经理: 王飞
+		6. 行方经理联系方式: ‭186 0012 9523‬
+		7. 所属地区: 安外
+		8. 公司项目经理: 王飞
+		9. 公司经理练习方式: 156 1410 8346
+
+	# https://docs.spring.io/spring/docs/5.2.0.RELEASE/spring-framework-reference/core.html#core-convert
+
+	  https://docs.spring.io/spring/docs/5.2.0.RELEASE/spring-framework-reference/core.html#validation // done 2019年11月13日 18点50分
+
 
 
 

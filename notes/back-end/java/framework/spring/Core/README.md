@@ -392,27 +392,372 @@
    }
    ```
 
-   ​	`relate package`: `org.springframework.beans.propertyeditors`
+   ​	`related package`: `org.springframework.beans.propertyeditors`
 
    3.4 Spring Type Conversion
 
    ​	3.4.1 Converter SPI
 
+   ```java
+   package org.springframework.core.convert.converter;
+   import org.springframework.lang.Nullable;
+   @FunctionalInterface
+   public interface Converter<S, T> {
+       @Nullable
+       T convert(S s);
+   }
+   ```
+
    ​	3.4.2 Using ConverterFactory
+
+   ```java
+   package org.springframework.core.convert.converter;
+   public interface ConverterFactory<S, R> {
+       <T extends R> Converter<S, T> getConverter(Class<T> targetType);
+   }
+   ```
 
    ​	3.4.3 Using GenericConverter
 
+   ```java
+   package org.springframework.core.convert.converter;
+   public interface GenericConverter {
+       
+       @Nullable
+   	Set<ConvertiblePair> getConvertibleTypes();
+       
+       @Nullable
+   	Object convert(@Nullable Object source, TypeDescriptor sourceType, TypeDescriptor targetType);
+       
+       final class ConvertiblePair {
+   
+   		private final Class<?> sourceType;
+   
+   		private final Class<?> targetType;
+   
+   		/**
+   		 * Create a new source-to-target pair.
+   		 * @param sourceType the source type
+   		 * @param targetType the target type
+   		 */
+   		public ConvertiblePair(Class<?> sourceType, Class<?> targetType) {
+   			Assert.notNull(sourceType, "Source type must not be null");
+   			Assert.notNull(targetType, "Target type must not be null");
+   			this.sourceType = sourceType;
+   			this.targetType = targetType;
+   		}
+   
+   		public Class<?> getSourceType() {
+   			return this.sourceType;
+   		}
+   
+   		public Class<?> getTargetType() {
+   			return this.targetType;
+   		}
+   
+   		@Override
+   		public boolean equals(@Nullable Object other) {
+   			if (this == other) {
+   				return true;
+   			}
+   			if (other == null || other.getClass() != ConvertiblePair.class) {
+   				return false;
+   			}
+   			ConvertiblePair otherPair = (ConvertiblePair) other;
+   			return (this.sourceType == otherPair.sourceType && this.targetType == otherPair.targetType);
+   		}
+   
+   		@Override
+   		public int hashCode() {
+   			return (this.sourceType.hashCode() * 31 + this.targetType.hashCode());
+   		}
+   
+   		@Override
+   		public String toString() {
+   			return (this.sourceType.getName() + " -> " + this.targetType.getName());
+   		}
+   	}
+   
+   }
+   
+   public interface ConditionalConverter {
+       boolean matches(TypeDescriptor sourceType, TypeDescriptor targetType);
+   }
+   
+   public interface ConditionalGenericConverter extends GenericConverter, ConditionalConverter {
+       
+   }
+   ```
+
    ​	3.4.4 The ConversionService API
+
+   ```java
+   package org.springframework.core.convert;
+   
+   public interface ConversionService {
+   
+       boolean canConvert(Class<?> sourceType, Class<?> targetType);
+   
+       <T> T convert(Object source, Class<T> targetType);
+   
+       boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType);
+   
+       Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType);
+   
+   }
+   ```
 
    ​	3.4.5 Configuring a ConversionService
 
+   ```xml
+   <bean id="conversionService"
+           class="org.springframework.context.support.ConversionServiceFactoryBean">
+       <property name="converters">
+           <set>
+               <bean class="example.MyCustomConverter"/>
+           </set>
+       </property>
+   </bean>
+   ```
+
    ​	3.4.6 Using a ConversionService Programmatically
+
+   ```java
+   DefaultConversionService cs = new DefaultConversionService();
+   
+   List<Integer> input = ...
+   cs.convert(input,
+       TypeDescriptor.forObject(input), // List<Integer> type descriptor
+       TypeDescriptor.collection(List.class, TypeDescriptor.valueOf(String.class)));
+   ```
 
    3.5 Spring Field Formatting
 
+   ​	3.5.1 The `Formatter` SPI
+
+   ```java
+   public interface Formatter<T> extends Printer<T>, Parser<T> {
+   
+   }
+   @FunctionalInterface
+   public interface Printer<T> {
+       String print(T object, Locale locale);
+   }
+   @FunctionalInterface
+   public interface Parser<T> {
+       T parse(String text, Locale locale) throws ParseException;
+   }
+   ```
+
+   ​	 3.5.2 Annotation-driven Formatting
+
+   ```java
+   package org.springframework.format;
+   
+   public interface AnnotationFormatterFactory<A extends Annotation> {
+   
+       Set<Class<?>> getFieldTypes();
+   
+       Printer<?> getPrinter(A annotation, Class<?> fieldType);
+   
+       Parser<?> getParser(A annotation, Class<?> fieldType);
+   }
+   ```
+
+   ```java
+   public final class NumberFormatAnnotationFormatterFactory
+           implements AnnotationFormatterFactory<NumberFormat> {
+   
+       public Set<Class<?>> getFieldTypes() {
+           return new HashSet<Class<?>>(asList(new Class<?>[] {
+               Short.class, Integer.class, Long.class, Float.class,
+               Double.class, BigDecimal.class, BigInteger.class }));
+       }
+   
+       public Printer<Number> getPrinter(NumberFormat annotation, Class<?> fieldType) {
+           return configureFormatterFrom(annotation, fieldType);
+       }
+   
+       public Parser<Number> getParser(NumberFormat annotation, Class<?> fieldType) {
+           return configureFormatterFrom(annotation, fieldType);
+       }
+   
+       private Formatter<Number> configureFormatterFrom(NumberFormat annotation, Class<?> fieldType) {
+           if (!annotation.pattern().isEmpty()) {
+               return new NumberStyleFormatter(annotation.pattern());
+           } else {
+               Style style = annotation.style();
+               if (style == Style.PERCENT) {
+                   return new PercentStyleFormatter();
+               } else if (style == Style.CURRENCY) {
+                   return new CurrencyStyleFormatter();
+               } else {
+                   return new NumberStyleFormatter();
+               }
+           }
+       }
+   }
+   ```
+
+   ```java
+   public class MyModel {
+       @NumberFormat(style=Style.CURRENCY)
+       private BigDecimal decimal;
+       
+       @DateTimeFormat(iso=ISO.DATE)
+       private Date date;
+   }
+   ```
+
+   ​	3.5.3 The `FormatterRegistry` SPI
+
+   ```java
+   package org.springframework.format;
+   
+   public interface FormatterRegistry extends ConverterRegistry {
+   
+       void addFormatterForFieldType(Class<?> fieldType, Printer<?> printer, Parser<?> parser);
+   
+       void addFormatterForFieldType(Class<?> fieldType, Formatter<?> formatter);
+   
+       void addFormatterForFieldType(Formatter<?> formatter);
+   
+       void addFormatterForAnnotation(AnnotationFormatterFactory<?> factory);
+   }
+   ```
+
+   ​	3.5.4 The `FormatterRegistrar` SPI
+
+   ```java
+   package org.springframework.format;
+   
+   public interface FormatterRegistrar {
+   
+       void registerFormatters(FormatterRegistry registry);
+   }
+   ```
+
+   ​	3.5.5 Configuring Formatting in Spring MVC
+
    3.6 Configuring a Global Date and Time Format
 
+   ```java
+   @Configuration
+   public class AppConfig {
+   
+       @Bean
+       public FormattingConversionService conversionService() {
+   
+           // Use the DefaultFormattingConversionService but do not register defaults
+           DefaultFormattingConversionService conversionService = new DefaultFormattingConversionService(false);
+   
+           // Ensure @NumberFormat is still supported
+           conversionService.addFormatterForFieldAnnotation(new NumberFormatAnnotationFormatterFactory());
+   
+           // Register date conversion with a specific global format
+           DateFormatterRegistrar registrar = new DateFormatterRegistrar();
+           registrar.setFormatter(new DateFormatter("yyyyMMdd"));
+           registrar.registerFormatters(conversionService);
+   
+           return conversionService;
+       }
+   }
+   ```
+
+   ```xml
+   <?xml version="1.0" encoding="UTF-8"?>
+   <beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans
+           https://www.springframework.org/schema/beans/spring-beans.xsd>
+   
+       <bean id="conversionService" class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+           <property name="registerDefaultFormatters" value="false" />
+           <property name="formatters">
+               <set>
+                   <bean class="org.springframework.format.number.NumberFormatAnnotationFormatterFactory" />
+               </set>
+           </property>
+           <property name="formatterRegistrars">
+               <set>
+                   <bean class="org.springframework.format.datetime.joda.JodaTimeFormatterRegistrar">
+                       <property name="dateFormatter">
+                           <bean class="org.springframework.format.datetime.joda.DateTimeFormatterFactoryBean">
+                               <property name="pattern" value="yyyyMMdd"/>
+                           </bean>
+                       </property>
+                   </bean>
+               </set>
+           </property>
+       </bean>
+   </beans>
+   ```
+
    3.7 Spring Validation
+
+   ​	3.7.1 Overview of the JSR-303 Bean Validation API
+
+   ```java
+   public class PersonForm {
+   
+       @NotNull
+       @Size(max=64)
+       private String name;
+   
+       @Min(0)
+       private int age;
+   }
+   ```
+
+   ​	3.7.2 Configuring a Bean Validation Provider
+
+   ```xml
+   <bean id="validator"
+       class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
+   ```
+
+   ​	3.7.3 Configuring a `DataBinder`
+
+   ```java
+   public class DataBinderValidation {
+   
+       public static void main(String[] args) {
+           Foo foo = new Foo();
+           DataBinder dataBinder = new DataBinder(foo);
+           dataBinder.setValidator(new FooValidator());
+           MutablePropertyValues pvs = new MutablePropertyValues();
+           pvs.add("id", "123").add("name", "binvi");
+           dataBinder.bind(pvs);
+           dataBinder.validate();
+           BindingResult bindingResult = dataBinder.getBindingResult();
+       }
+   
+   }
+   
+   @Data
+   class Foo {
+       @NotNull
+       String id;
+       @Size(min = 10, max = 200)
+       String name;
+   }
+   
+   class FooValidator implements Validator {
+   
+       @Override
+       public boolean supports(Class<?> clazz) {
+           return true;
+       }
+   
+       @Override
+       public void validate(Object target, Errors errors) {
+   
+       }
+   }
+   ```
+
+   ​	3.7.4 Spring MVC 3 Validation
 
 4. Spring Expression Language (SpEL)
 
