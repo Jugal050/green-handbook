@@ -225,6 +225,12 @@
 
 	# https://docs.spring.io/spring/docs/5.2.0.RELEASE/spring-framework-reference/core.html#expressions // done 2019年11月14日 18点51分
 
+# 2019-11-15 09:28:00
+	
+	# https://docs.spring.io/spring/docs/5.2.0.RELEASE/spring-framework-reference/core.html#aop
+
+		5.4 @Aspect support // done 2019年11月15日 18点47分
+
 
 
 			
