@@ -544,6 +544,31 @@ public Object doConcurrentOperation(ProceedingJoinPoint pjp) throws Throwable {
 
 ### 7. Mixing Aspect Type
 ### 8. Proxing Mechanisms
+
+如果代理的目标对象至少实现了一个接口，则使用JDK动态代理，这个实现类实现的所有接口都会被代理。
+
+如果代理的目标对象没有实现任何接口，则使用CGLIB代理。
+
+如果想强制使用CGLIB代理（比如：代理的目标对象的方法不止只是实现接口的方法）。但要考虑如下问题:
+
+- CGLIB通知不到final修饰的方法，因为在运行期生成的子类中不能重写final方法。
+- Spring4.0中，由于CGLIB代理类实例是通过Objenesis类创建的，代理对象的构造器不再会调用两次。只有当JVM不允许绕过构造器时，才可能出现两次调用。
+
+强制使用CGLIB代理的方法：
+
+```xml
+<aop:config proxy-target-class="true">
+    <!-- other beans defined here... -->
+</aop:config>
+
+<!-- 如果使用的是@AspectJ -->
+<aop:aspectj-autoproxy proxy-target-class="true"/>
+```
+
+
+
+
+
 ### 9. Programming Creation of @Aspect Proxies
 ### 10. Using AspectJ with Spring Applications
 ### 11. Further Resources
