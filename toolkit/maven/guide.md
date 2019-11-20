@@ -172,6 +172,31 @@ mvn versions:set -DnewVersion=1.0.1-SNAPSHOT 和 mvn -N versions:update-ch
 * 生命周期 
 
   ```
+  validate： 用于验证项目的有效性和其项目所需要的内容是否具备
+  initialize：初始化操作，比如创建一些构建所需要的目录等。
+  generate-sources：用于生成一些源代码，这些源代码在compile phase中需要使用到
+  process-sources：对源代码进行一些操作，例如过滤一些源代码
+  generate-resources：生成资源文件（这些文件将被包含在最后的输入文件中）
+  process-resources：对资源文件进行处理
+  compile：对源代码进行编译
+  process-classes：对编译生成的文件进行处理
+  generate-test-sources：生成测试用的源代码
+  process-test-sources：对生成的测试源代码进行处理
+  generate-test-resources：生成测试用的资源文件
+  process-test-resources：对测试用的资源文件进行处理
+  test-compile：对测试用的源代码进行编译
+  process-test-classes：对测试源代码编译后的文件进行处理
+  test：进行单元测试
+  prepare-package：打包前置操作
+  package：打包
+  pre-integration-test：集成测试前置操作   
+  integration-test：集成测试
+  post-integration-test：集成测试后置操作
+  install：将打包产物安装到本地maven仓库
+  deploy：将打包产物安装到远程仓库
+  ```
+
+  ```
   resource->compile->process-classes->process-test-resources->test-compile->test->prepare-package->package 
   
   resources:resources 绑定在resource处理阶段, 用来将src/main/resources下或者任何指定其他目录下的文件copy到输出目录中 
@@ -189,12 +214,12 @@ mvn versions:set -DnewVersion=1.0.1-SNAPSHOT 和 mvn -N versions:update-ch
 
     1. 问题描述：
             idea中class文件右上角点击download source时显示"Sources not found for: org.springframework.boot:spring-boot-autoconfigure:2.1.5.RELEASE"
-    
+
        解决方法：
             在项目pom.xml所在的目录下，执行如下命令：mvn dependency:resolve -Dclassifier=source
-            
+
 * 常用命令：
-    
+
     1. springboot项目运行：
             mvn spring-boot:run            
 
