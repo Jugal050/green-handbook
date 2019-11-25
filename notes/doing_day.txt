@@ -199,6 +199,24 @@
 			C:\Users\hbw44\Downloads\员工手册201803版本.doc
 			C:\Users\hbw44\Downloads\办公用品管理规定.docx
 
+# 2019-11-25 23:16:15
+
+	# https://github.com/hibernate/hibernate-demos		
+
+		Hibernate ORM		// done 2019-11-25 23:16:55
+
+		Hibernate OGM		// done just so so 2019-11-25 23:17:37
+
+		Hibernate Search
+
+		Hibernate Validator // done before 
+
+		Java 9				// just soso 2019-11-25 23:17:57
+
+		Other		
+
+
+
 
 
 
