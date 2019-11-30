@@ -181,6 +181,7 @@
 	
 		1. The IoC Container	// done 2019年11月11日 17点25分
 
+<<<<<<< HEAD
 # 2019-11-12 21:53:00
 
 	# 入职相关工作：		
@@ -224,7 +225,63 @@
 		+ mybatis 	// todo
 
 
+=======
+# 2019-11-13 10:14
+>>>>>>> ca1321d1aea08ac61b9d4a76f7a4c9cd9821824c
 
+	# 民生银行入场 
+
+		1. 姓名:  韩斌伟
+		2. 联系电话: 137 5233 0376
+		3. 所在项目组名称: 中国民生银行信息科技部外部开发资源池公共资源框架采购项目
+		4. 所在工作楼层: 6层(工位暂时未定)
+		5. 行方项目经理: 王飞
+		6. 行方经理联系方式: ‭186 0012 9523‬
+		7. 所属地区: 安外
+		8. 公司项目经理: 王飞
+		9. 公司经理练习方式: 156 1410 8346
+
+	# https://docs.spring.io/spring/docs/5.2.0.RELEASE/spring-framework-reference/core.html#core-convert
+
+	  https://docs.spring.io/spring/docs/5.2.0.RELEASE/spring-framework-reference/core.html#validation // done 2019年11月13日 18点50分
+
+# 2019-11-14 09:52:00 
+	
+	# 相关工作内容核实：
+
+		公司这边：
+
+			每天上下班手机APP打卡签到签退；
+			每周四上报周报，行内邮箱发给小组长；
+			每周五上报日志；
+			每月20号左右提交项目外出申请（ito）流程，
+
+			差不多就这些，我都会在群里提醒，关注一下就知道了
+
+			OA系统：http://oa.northking.net
+			邮箱：binwei.han@northking.net  邮箱服务器：mail.northking.net
+
+		行方这边：
+
+			每天上下班打卡，
+			每月月初报预估报工，
+			每月报工，
+
+			主要这些，慢慢熟悉就行，有什么不懂的可以问一下小组长，小组长问一下王飞经理，看看王飞经理给你指派的是哪位小组长
+
+	# https://docs.spring.io/spring/docs/5.2.0.RELEASE/spring-framework-reference/core.html#expressions // done 2019年11月14日 18点51分
+
+# 2019-11-15 09:28:00
+	
+	# https://docs.spring.io/spring/docs/5.2.0.RELEASE/spring-framework-reference/core.html#aop
+
+		5.4 @Aspect support // done 2019年11月15日 18点47分
+
+# 2019-11-18 09:36:00
+
+	# https://docs.spring.io/spring/docs/5.2.0.RELEASE/spring-framework-reference/core.html#aop-schema
+
+		5 Aspect Oriented Programming with Spring // done 2019-11-18 17:10:00	
 
 
 
