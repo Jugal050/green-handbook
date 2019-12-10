@@ -298,6 +298,18 @@
 
 	# activiti 									// todo
 
+# 2019-12-10 21:47:24
+
+	# 公司培训									// 周六TODO
+
+	# 电脑修理店拷贝硬盘资源						// 周末TODO
+
+	# java优秀项目：								// TODO
+
+		开源界“小普元”超越传统商业企业级开发平台: https://github.com/zhangdaiscott/jeecg-boot
+
+		电商系统，包括前台商城系统及后台管理系统: https://github.com/macrozheng/mall
+
 
 			
 				
