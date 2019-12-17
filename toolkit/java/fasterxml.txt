@@ -6,9 +6,15 @@ fasterxml
 
 	## 相关网址：
 
+		[fasterxml](https://www.baeldung.com/jackson)
+
 		[github](https://github.com/FasterXML/jackson-databind)
 
 		[docs](https://github.com/FasterXML/jackson-docs)
+
+		[jackson-annotation](https://www.baeldung.com/jackson-annotations)
+
+		[tutorial](https://www.baeldung.com/jackson)
 
 	## 用法：
 
@@ -306,3 +312,115 @@ fasterxml
 
 				```
 
+			#### Creating Custom Serializer or Deserializer 
+
+
+			
+				```java
+
+					/** an example of custom JSON serializer: */
+					public class CustomCarSerializer extends StdSerializer<Car> {
+     
+					    public CustomCarSerializer() {
+					        this(null);
+					    }
+					 
+					    public CustomCarSerializer(Class<Car> t) {
+					        super(t);
+					    }
+					 
+					    @Override
+					    public void serialize(
+					      Car car, JsonGenerator jsonGenerator, SerializerProvider serializer) {
+					        jsonGenerator.writeStartObject();
+					        jsonGenerator.writeStringField("car_brand", car.getType());
+					        jsonGenerator.writeEndObject();
+					    }
+					}
+
+					/** custom serializer can be invoked like this: */
+					ObjectMapper mapper = new ObjectMapper();
+					SimpleModule module = 
+					  new SimpleModule("CustomCarSerializer", new Version(1, 0, 0, null, null, null));
+					module.addSerializer(Car.class, new CustomCarSerializer());
+					mapper.registerModule(module);
+					Car car = new Car("yellow", "renault");
+					String carJson = mapper.writeValueAsString(car);
+
+
+					// Here's what the Car looks like (as JSON output) on the client side:
+					var carJson = {"car_brand":"renault"}
+
+				```	
+
+				```java
+
+					/** an example of a custom JSON deserializer: */
+
+					public class CustomCarDeserializer extends StdDeserializer<Car> {
+     
+					    public CustomCarDeserializer() {
+					        this(null);
+					    }
+					 
+					    public CustomCarDeserializer(Class<?> vc) {
+					        super(vc);
+					    }
+					 
+					    @Override
+					    public Car deserialize(JsonParser parser, DeserializationContext deserializer) {
+					        Car car = new Car();
+					        ObjectCodec codec = parser.getCodec();
+					        JsonNode node = codec.readTree(parser);
+					         
+					        // try catch block
+					        JsonNode colorNode = node.get("color");
+					        String color = colorNode.asText();
+					        car.setColor(color);
+					        return car;
+					    }
+					}
+
+					/** custom deserializer can be invoked in the following way	*/
+					String json = "{ \"color\" : \"Black\", \"type\" : \"BMW\" }";
+					ObjectMapper mapper = new ObjectMapper();
+					SimpleModule module =
+					  new SimpleModule("CustomCarDeserializer", new Version(1, 0, 0, null, null, null));
+					module.addDeserializer(Car.class, new CustomCarDeserializer());
+					mapper.registerModule(module);
+					Car car = mapper.readValue(json, Car.class);
+
+				```
+
+			#### Handling Date Formats
+			
+				```java
+
+					ObjectMapper objectMapper = new ObjectMapper();
+					DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm a z");
+					objectMapper.setDateFormat(df);
+					String carAsString = objectMapper.writeValueAsString(request);
+					// output: {"car":{"color":"yellow","type":"renault"},"datePurchased":"2016-07-03 11:43 AM CEST"}
+
+				```	
+
+			#### Handling Collections
+			
+				```java
+
+					/** generate the result as an array: */
+					String jsonCarArray = 
+					  "[{ \"color\" : \"Black\", \"type\" : \"BMW\" }, { \"color\" : \"Red\", \"type\" : \"FIAT\" }]";
+					ObjectMapper objectMapper = new ObjectMapper();
+					objectMapper.configure(DeserializationFeature.USE_JAVA_ARRAY_FOR_JSON_ARRAY, true);
+					Car[] cars = objectMapper.readValue(jsonCarArray, Car[].class);
+					// print cars
+
+					/** generate the result as an list: */
+					String jsonCarArray = 
+					  "[{ \"color\" : \"Black\", \"type\" : \"BMW\" }, { \"color\" : \"Red\", \"type\" : \"FIAT\" }]";
+					ObjectMapper objectMapper = new ObjectMapper();
+					List<Car> listCar = objectMapper.readValue(jsonCarArray, new TypeReference<List<Car>>(){});
+					// print cars
+
+				```	
