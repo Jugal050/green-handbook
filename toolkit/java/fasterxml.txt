@@ -424,3 +424,399 @@ fasterxml
 					// print cars
 
 				```	
+
+			#### Annotation
+
+				##### Jackson Serialization Annotations
+
+					-- @JsonAnyGetter
+
+						```java
+
+							public class ExtendableBean {
+							    public String name;
+							    private Map<String, String> properties;
+							 
+							    @JsonAnyGetter
+							    public Map<String, String> getProperties() {
+							        return properties;
+							    }
+							}
+
+						```	
+
+						result：
+
+							{
+							    "name":"My bean",
+							    "attr2":"val2",
+							    "attr1":"val1"
+							}
+
+					-- @JsonGetter
+	
+						```java
+
+							public class MyBean {
+							    public int id;
+							    private String name;
+							 
+							    @JsonGetter("name")
+							    public String getTheName() {
+							        return name;
+							    }
+							}
+
+						```
+
+					-- @JsonPropertyOrder
+
+						```java
+
+							@JsonPropertyOrder({ "name", "id" })
+							public class MyBean {
+							    public int id;
+							    public String name;
+							}
+
+						```	
+
+						result:
+
+							{
+							    "id":1,
+							    "name":"My bean"
+							}
+
+					-- @JsonRawValue
+					
+						```java
+
+								{
+								    "name":"My bean",
+								    "json":{
+								        "attr":false
+								    }
+								}
+
+						```	
+
+						result: 
+
+							{
+							    "name":"My bean",
+							    "json":{
+							        "attr":false
+							    }
+							}
+
+					-- @JsonValue
+					
+						```java
+
+							public enum TypeEnumWithValue {
+							    TYPE1(1, "Type A"), TYPE2(2, "Type 2");
+							 
+							    private Integer id;
+							    private String name;
+							 
+							    // standard constructors
+							 
+							    @JsonValue
+							    public String getName() {
+							        return name;
+							    }
+							}
+
+						```
+
+					-- @JsonRootName
+		
+						```java
+
+							@JsonRootName(value = "user")
+							public class UserWithRoot {
+							    public int id;
+							    public String name;
+							}
+
+						```
+						result:
+
+							{
+							    "id": 1,
+							    "name": "John"
+							}
+							-->
+							{
+							    "User": {
+							        "id": 1,
+							        "name": "John"
+							    }
+							}
+
+						-- @JsonSerialize
+						
+							```java
+
+								public class EventWithSerializer {
+								    public String name;
+								 
+								    @JsonSerialize(using = CustomDateSerializer.class)
+								    public Date eventDate;
+								}
+
+								public class CustomDateSerializer extends StdSerializer<Date> {
+ 
+								    private static SimpleDateFormat formatter 
+								      = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
+								 
+								    public CustomDateSerializer() { 
+								        this(null); 
+								    } 
+								 
+								    public CustomDateSerializer(Class<Date> t) {
+								        super(t); 
+								    }
+								 
+								    @Override
+								    public void serialize(
+								      Date value, JsonGenerator gen, SerializerProvider arg2) 
+								      throws IOException, JsonProcessingException {
+								        gen.writeString(formatter.format(value));
+								    }
+								}
+	
+							```
+
+					##### Jackson Deserialization Annotations
+					
+						-- @JsonCreator
+		
+							```java
+
+								public class BeanWithCreator {
+								    public int id;
+								    public String name;
+								 
+								    @JsonCreator
+								    public BeanWithCreator(
+								      @JsonProperty("id") int id, 
+								      @JsonProperty("theName") String name) {
+								        this.id = id;
+								        this.name = name;
+								    }
+								}
+
+							```		
+
+							result:
+
+								{
+								    "id":1,
+								    "theName":"My bean"
+								}
+
+						-- @JsonAnySetter
+						-- @JsonSetter
+						-- @JsonDeserialize
+						-- @JsonAlias
+							
+							```java
+
+								// Here, we have a POJO and we want to deserialize JSON with values such as fName, f_name, and firstName into the firstName variable of the POJO.
+								public class AliasBean {
+								    @JsonAlias({ "fName", "f_name" })
+								    private String firstName;   
+								    private String lastName;
+								}
+
+							```
+
+					##### Jackson Property Inclusion Annotations
+
+						-- @JsonIgnoreProperties
+
+							```java
+
+								@JsonIgnoreProperties({ "id" })
+								public class BeanWithIgnore {
+								    public int id;
+								    public String name;
+								}
+
+							```		
+
+						-- @JsonIgnore
+
+							```java
+
+								public class BeanWithIgnore {
+								    @JsonIgnore
+								    public int id;
+								 
+								    public String name;
+								}
+
+							```
+
+						-- @JsonIgnoreType
+						
+							```java
+
+								public class User {
+								    public int id;
+								    public Name name;
+								 
+								    @JsonIgnoreType
+								    public static class Name {
+								        public String firstName;
+								        public String lastName;
+								    }
+								}
+
+							```
+
+						-- @JsonInclude
+						
+							```java
+
+								@JsonInclude(Include.NON_NULL)
+								public class MyBean {
+								    public int id;
+								    public String name;
+								}
+
+							```	
+
+						-- @JsonAutoDetect
+
+					##### Jackson Polymorphic Type Handling Annotations
+
+						@JsonTypeInfo – indicates details of what type information to include in serialization
+						@JsonSubTypes – indicates sub-types of the annotated type
+						@JsonTypeName – defines a logical type name to use for annotated class
+
+							```java
+
+								public class Zoo {
+								    public Animal animal;
+								 
+								    @JsonTypeInfo(
+								      use = JsonTypeInfo.Id.NAME, 
+								      include = As.PROPERTY, 
+								      property = "type")
+								    @JsonSubTypes({
+								        @JsonSubTypes.Type(value = Dog.class, name = "dog"),
+								        @JsonSubTypes.Type(value = Cat.class, name = "cat")
+								    })
+								    public static class Animal {
+								        public String name;
+								    }
+								 
+								    @JsonTypeName("dog")
+								    public static class Dog extends Animal {
+								        public double barkVolume;
+								    }
+								 
+								    @JsonTypeName("cat")
+								    public static class Cat extends Animal {
+								        boolean likesCream;
+								        public int lives;
+								    }
+								}
+
+							```
+
+							result:
+
+								{
+								    "animal": {
+								        "type": "dog",
+								        "name": "lacy",
+								        "barkVolume": 0
+								    }
+								}
+
+					##### Jackson General Annotations	
+
+						-- @JsonProperty
+
+							```java
+
+								public class MyBean {
+								    public int id;
+								    private String name;
+								 
+								    @JsonProperty("name")
+								    public void setTheName(String name) {
+								        this.name = name;
+								    }
+								 
+								    @JsonProperty("name")
+								    public String getTheName() {
+								        return name;
+								    }
+								}
+
+							```
+
+						-- @JsonFormat
+						
+							```java
+
+								public class EventWithFormat {
+							    public String name;
+							 
+							    @JsonFormat(
+							      shape = JsonFormat.Shape.STRING,
+							      pattern = "dd-MM-yyyy hh:mm:ss")
+							    public Date eventDate;
+							}
+
+							```
+						-- @JsonUnwrapped ： defines values that should be unwrapped/flattened when serialized/deserialized.
+
+							```java
+
+								public class UnwrappedUser {
+								    public int id;
+								 
+								    @JsonUnwrapped
+								    public Name name;
+								 
+								    public static class Name {
+								        public String firstName;
+								        public String lastName;
+								    }
+								}
+
+							```
+
+							result:
+
+								{
+								    "id":1,
+								    "firstName":"John",
+								    "lastName":"Doe"
+								}
+
+						-- @JsonView： indicates the View in which the property will be included for serialization/deserialization.
+						
+						-- @JsonManagedReference, @JsonBackReference： handle parent/child relationships and work around loops.
+
+						-- @JsonIdentityInfo： indicates that Object Identity should be used when serializing/deserializing values 
+
+						-- @JsonFilter： specifies a filter to use during serialization.
+
+					##### Disable Jackson Annotation
+					
+						```java
+
+							ObjectMapper mapper = new ObjectMapper();
+    						mapper.disable(MapperFeature.USE_ANNOTATIONS);
+
+						```	
+
+
+		
