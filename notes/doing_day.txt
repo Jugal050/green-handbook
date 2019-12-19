@@ -364,8 +364,36 @@
 	
 	# hibernate Validator 				// todo
 
-		条件必输校验；是否可以自定义校验注解	
+		条件必输校验；是否可以自定义校验注解	// done 2019-12-19 22:47:28
 
+			official： 
+
+				5.1.3.Final	https://docs.jboss.org/hibernate/validator/5.1/reference/en-US/html_single/#validator-gettingstarted-uel	// todo
+
+		方案： com.binvi.springboot.demo03.validator.referenceguide.chapter03.validation.ConditionalRequiredTest
+		
+			可以添加，@ScriptAssert可用于List添加多条.i.e:
+
+				@ScriptAssert.List({
+						@ScriptAssert(lang = "javascript", script = "_this.type != 00 || !!_this.flag"),
+						@ScriptAssert(lang = "javascript", script = "_this.type != 00 || !!_this.flag2"),
+						@ScriptAssert(lang = "javascript", script = "_this.type != 00 || !!_this.flag3"),
+						@ScriptAssert(lang = "javascript", script = "_this.type != 00 || !!_this.flag4")
+				})
+				@Data
+				public class DemoRequest {
+
+					private String id;
+					private String name;
+					@Pattern(regexp = "00|01|02|03|04|05")
+					private String type;
+					private String flag;
+					private String flag2;
+					private String flag3;
+					@Pattern(regexp = "11|12|13|14|15")
+					private String flag4;
+
+				}
 
 
 			
