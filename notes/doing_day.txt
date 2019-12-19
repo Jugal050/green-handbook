@@ -360,6 +360,12 @@
 
 	# github 资源浏览						// todo 	
 
+2019-12-19 18:51:00
+	
+	# hibernate Validator 				// todo
+
+		条件必输校验；是否可以自定义校验注解	
+
 
 
 			
