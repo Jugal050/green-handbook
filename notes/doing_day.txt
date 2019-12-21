@@ -451,9 +451,19 @@
 
 	# LOL				 
 
+2019-12-21 12:39:14
 
+	# java 执行其他语言的脚本，如Javascript
+
+		```java
+
+			ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
+			ScriptEngine js = scriptEngineManager.getEngineByName("js");
+			js.put("out", System.out);
+			String script_js = "for (var i = 0; i < 10; i++) { out.println(i) }";
+			System.out.println(js.eval(script_js));
 			
-				
+		```		
 
 
 
