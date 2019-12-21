@@ -375,10 +375,10 @@
 			可以添加，@ScriptAssert可用于List添加多条.i.e:
 
 				@ScriptAssert.List({
-						@ScriptAssert(lang = "javascript", script = "_this.type != 00 || !!_this.flag"),
-						@ScriptAssert(lang = "javascript", script = "_this.type != 00 || !!_this.flag2"),
-						@ScriptAssert(lang = "javascript", script = "_this.type != 00 || !!_this.flag3"),
-						@ScriptAssert(lang = "javascript", script = "_this.type != 00 || !!_this.flag4")
+						@ScriptAssert(lang = "javascript", script = "_this.type != 00 || !!_this.flag", message = "type为00时，flag不能为空"),
+						@ScriptAssert(lang = "javascript", script = "_this.type != 00 || !!_this.flag2", message = "type为00时，flag2不能为空"),
+						@ScriptAssert(lang = "javascript", script = "_this.type != 00 || !!_this.flag3", message = "type为00时，flag3不能为空"),
+						@ScriptAssert(lang = "javascript", script = "_this.type != 00 || !!_this.flag4", message = "type为00时，flag4不能为空")
 				})
 				@Data
 				public class DemoRequest {
@@ -390,10 +390,62 @@
 					private String flag;
 					private String flag2;
 					private String flag3;
-					@Pattern(regexp = "11|12|13|14|15")
+					@Pattern(regexp = "11|12|13|14|15", message = "flag4必须在[{regexp}]之间取值")
 					private String flag4;
 
 				}
+
+		方案2： 自定义校验器。（但是每个request都需要定义自己的校验器）
+
+			i.e:
+
+				@Documented
+				@Constraint(validatedBy = ConditionalRequired.Validator.class)
+				@Target({TYPE})
+				@Retention(RUNTIME)
+				@Repeatable(List.class)
+				public @interface ConditionalRequired {
+
+					String message() default "{com.binvi.springboot.demo03.validator.referenceguide.chapter03.annotation.ConditionalRequired.message}";
+
+					Class<?>[] groups() default { };
+
+					Class<? extends Payload>[] payload() default { };
+
+					class Validator implements ConstraintValidator<ConditionalRequired, DemoRequest> {
+
+						@Override
+						public void initialize(ConditionalRequired constraintAnnotation) {
+
+						}
+
+						@Override
+						public boolean isValid(DemoRequest request, ConstraintValidatorContext context) {
+							if (request == null) {
+								return true;
+							}
+							if (StringUtils.isEmpty(request.getType())) {
+								return true;
+							}
+							return (!StringUtils.equals("01", request.getType()) || StringUtils.isNotEmpty(request.getFlag())) &&
+									(!StringUtils.equals("01", request.getType()) || StringUtils.isNotEmpty(request.getFlag2())) &&
+									(!StringUtils.equals("01", request.getType()) || StringUtils.isNotEmpty(request.getFlag3())) &&
+									(!StringUtils.equals("01", request.getType()) || StringUtils.isNotEmpty(request.getFlag4()));
+						}
+					}
+
+					@Target(TYPE)
+					@Retention(RUNTIME)
+					@Documented
+					@interface List {
+						ConditionalRequired[] value();
+					}
+
+				}
+
+			tips： 
+				
+				If a ValidatorFactory instance is no longer in use, it should be disposed by calling ValidatorFactory#close(). This will free any resources possibly allocated by the factory.	
 
 2019-12-20 21:03:37
 
