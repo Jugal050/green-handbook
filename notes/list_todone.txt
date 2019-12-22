@@ -1,0 +1,46 @@
+framework
+
+	spring:
+
+		spring-reference-guide:
+
+		source-code:
+
+	mybatis:
+
+		mybatis-refrence-guide:
+
+		source-code:
+
+	struts:
+
+		mybatis-reference-guide:
+
+		source-code:
+
+	hibernate:
+
+		hibernate-reference-guide:
+
+		source-code:
+
+	springboot:
+
+		springboot-reference-guide:
+
+		source-code:
+
+json:
+
+	fasterxml:
+
+jbpm:
+
+	activiti:
+
+
+
+
+
+
+

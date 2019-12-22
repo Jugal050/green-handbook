@@ -362,7 +362,7 @@
 
 2019-12-19 18:51:00
 	
-	# hibernate Validator 				// todo
+	# hibernate Validator 				// todo done 2019-12-21 16:11:41
 
 		条件必输校验；是否可以自定义校验注解	// done 2019-12-19 22:47:28
 
