@@ -26,6 +26,8 @@ done：
 
 	《Effective Java 3rd》												// done start: 2019-8-28 20:59:58 end: 2019-9-8 14:25:18
 
+	hibernate-validator-reference-guide		                        // done 2019-12-21 20:52:06
+
 doing：
 
 	《TCP/IP详解：卷1》												// doing start: 2019-8-20 16:43:51 now：chapter13 2019-8-28 20:58:41 TODO
@@ -40,6 +42,10 @@ doing：
 
 	《数据库系统概念》													// doing start: 2019-10-5 10:00:46
 
+	《代码整洁之道》 													// doing start: 2019-12-23 23:50:59 
+
+	spring-framework-reference-guide 								// doing start: 2019-10-24 20:52:56
+
 todo:
 
 	《Spring揭秘》
@@ -53,5 +59,11 @@ todo:
 	《Java Puzzlers | Java解惑》
 
 	《Core Java, Volume II--Advanced Features》
+
+	mybatis-reference-guide 										
+
+	struts-reference-guide 											
+
+	springboot-reference-guide
 
 
