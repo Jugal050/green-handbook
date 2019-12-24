@@ -465,6 +465,32 @@
 			
 		```		
 
+2019-12-24 16:59:00
+
+	# 查看jar包版本号：
+
+		1. 使用UE直接查看class文件字节码
+
+			CA FE BA BE 00 00 00 49
+
+			其中，前8位（CA FE BA BE）为固定标识，后4位（00 00）为次版本号，再后4位（00 49）为jdk版本号
+
+		2. 查看jar包打包信息
+		
+			xxx.jar/META-INF/MANIFEST.MF
+
+			其中，Build-Jdk: 1.5.0_221 为jdk版本信息
+
+		3. 解压jar包，任一class文件目录下执行cmd命令： javap -verbose xxxxx.class
+		
+			其中：major version: 49 为jdk版本信息	
+
+		jdk版本信息：
+		
+			jdk版本号：		jdk1.2 		jdk1.3 		jdk1.4 		jdk1.5 		jdk1.6 		jdk1.7  	jdk1.8 
+
+			十进制表示：	46          47          48          49          50          51          52
+
 
 
 
