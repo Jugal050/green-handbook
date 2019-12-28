@@ -524,7 +524,25 @@
 			  	优点：测试中速度最快的。
 			  	缺点： 代码质量较差，用很多投机取巧的的做法去实现所谓的“快”，而失去了原本应该兼容的java特性，对json标准遵循也不严格。
 
-	# 		  	
+2019-12-28 16:18:05
+
+	# spring-framework-reference 				 				//  2019-12-28 15:30:50	 	start
+
+		https://docs.spring.io/spring/docs/5.2.2.RELEASE/spring-framework-reference/core.html#expressions-ref-functions
+
+			Core Technologies									// done before
+
+				9. Spring Expression Language(SPEL)				// done 2019-12-28 16:20:02
+
+				10. Aspect Oriented Programming with Spring  	// done before
+
+	# lol			
+
+
+
+
+
+
 		  	
 
 	
