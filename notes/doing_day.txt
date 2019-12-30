@@ -536,7 +536,19 @@
 
 				10. Aspect Oriented Programming with Spring  	// done before
 
-	# lol			
+	# lol		
+
+2019-12-30 21:34:31
+
+	# Github > 12306-master										// done 2019-12-31 00:29:34
+
+   		Cookie: 
+   			JSESSIONID=7B15E0AE861C55835389B9457AFA243B; 
+   			tk=Qid5F9W0OiqqJTN_8o-owoszQq7VwRBDTv7n_3xaBdY27h1h0; 
+   			RAIL_DEVICEID=W7dqHWdSt_kBp317OEPJk5-8mZOIKluJ846Xuwf8gctujBV_S2LXppth2W4tcdlvwI-f1OY4bZ-MR14NgiGld9Fy4_VhBGjiRDM9mln-qhDo4geAvbfY5rOP5ZGGXyJkgjatVQP4-l4aZEsmNIFm9ebSYkPxeRIr; 
+   			RAIL_EXPIRATION=1577979460246; 
+   			route=40150bb70f80a8f2cae5d163d847c5e6; 
+   			BIGipServerpool_excater=1273692682.32805.0000		
 
 
 
