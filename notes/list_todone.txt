@@ -1,8 +1,20 @@
+java:
+
+	jdk:
+
+		jdk documentation: https://docs.oracle.com/en/java/javase/13/
+
+	jvm:
+
+		Java Virtual Machine Guide: https://docs.oracle.com/en/java/javase/13/vm/java-virtual-machine-technology-overview.html
+
 framework
 
 	spring:
 
-		spring-reference-guide:
+		spring-reference-guide: https://docs.spring.io/spring/docs/5.2.2.RELEASE/spring-framework-reference/
+
+			1.3. Annotated Controllers		// done
 
 		source-code:
 
