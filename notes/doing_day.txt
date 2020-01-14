@@ -591,6 +591,13 @@
 
 	# LOL
 
+2020-1-14 18:42:00
+
+	# spring-framework-reference-4.3.24.pdf
+
+		Part VI. The Web
+
+			26 WebSocket Support 			// done2010-1-14 18:44
    			
 
 
