@@ -689,6 +689,12 @@
 					@Value("${jdbc.password}")
 					private String password;	
 
+2020-1-22 01:46:13
+
+	# NARUTO download url： thunder://QUFtYWduZXQ6P3h0PXVybjpidGloOjYwRDE3RjFBQzAwNjY1MkZCNjY1QjM4QTE5OTM2QTZGNzdFRDU2RjVaWg==					
+
+							magnet:?xt=urn:btih:60D17F1AC006652FB665B38A19936A6F77ED56F5
+
 
 
 
