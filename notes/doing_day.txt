@@ -599,6 +599,95 @@
 
 			26 WebSocket Support 			// done2010-1-14 18:44
    			
+2020-1-21 16：27：00
+
+	# Spring中，properties文件的两种引入方式：(@Autowired, @Value导入为空时可以从这里进行排查)
+
+		1. <util:properties>
+
+			说明：以声明bean方式来使用，创建了一个bean，通过SpEL表达式#{}获取bean的属性
+
+			示例：
+
+				ApplicationContext.xml
+
+					<util:properties location="classpath:com/foo/jdbc.properties" id="jdbcConfig"/>
+
+				jdbc.properties
+					
+					jdbc.driverClassName=org.hsqldb.jdbcDriver
+					jdbc.url=jdbc:hsqldb:hsql://production:9002
+					jdbc.username=sa
+					jdbc.password=root
+
+				service
+				
+					@Value("#{jdbcConfig["jdbc.url"]}")
+					private String url;
+
+					@Value("#{jdbcConfig["jdbc.driverClassName"]}")
+					private String driverClassName;
+
+					@Value("#{jdbcConfig["jdbc.username"]}")
+					private String username;
+
+					@Value("#{jdbcConfig["jdbc.password"]}")
+					private String password;		
+
+		2. 	<context:property-placeholder>
+
+			说明：将配置文件加载至spring上下文中，通过${}获取值，常用于bean的属性上。
+
+			示例：
+
+				ApplicationContext.xml
+
+					<!-- 多个配置用逗号隔开 -->
+					<context:property-placeholder location="classpath:com/foo/jdbc.properties,classpath:com/foo/env.properties"/>
+
+					<!-- 等价于 -->
+					<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+						<property name="locations" value="classpath:com/foo/jdbc.properties,classpath:com/foo/env.properties">
+					</bean>
+
+					<!-- 等价于 -->
+					<beans:bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+						<beans:properties name="locations">
+							<beans:list>
+								<bean:value>classpath:com/foo/jdbc.properties</bean:value>
+								<bean:value>classpath:com/foo/env.properties</bean:value>
+							</beans:list>
+						</beans:properties>
+					</beans:bean>
+
+					<!-- 运行时使用 -->	
+					<bean id="dataSource" destroy-method="close" class="org.apache.commons.dbcp.BasicDataSource">
+						<property name="driverClassName" value="${jdbc.driverClassName}"/>
+						<property name="url" value="${jdbc.url}"/>
+						<property name="username" value="${jdbc.username}"/>
+						<property name="password" value="${jdbc.password}"/>
+					</bean>
+
+				jdbc.properties
+					
+					jdbc.driverClassName=org.hsqldb.jdbcDriver
+					jdbc.url=jdbc:hsqldb:hsql://production:9002
+					jdbc.username=sa
+					jdbc.password=root
+
+				service
+					
+					@Value("${jdbc.url}")
+					private String url;
+
+					@Value("${jdbc.driverClassName}")
+					private String driverClassName;
+
+					@Value("${jdbc.username}")
+					private String username;
+
+					@Value("${jdbc.password}")
+					private String password;	
 
 
 

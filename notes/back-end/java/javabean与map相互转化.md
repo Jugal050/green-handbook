@@ -110,77 +110,77 @@
   
 - fastjson：使用序列化和反序列化实现
   
-```xml
-  <dependency>
-      <groupId>com.alibaba</groupId>
-      <artifactId>fastjson</artifactId>
-      <version>1.2.62</version>
-  </dependency>
-  ```
-  
-  ```java
-  @Test
-  public void convert_object_to_map_fastjson() {
-  
-      // map -> bean
-      Map<String, Object> map = Maps.newHashMap();
-      map.put("numberOfSheets", "123");
-      map.put("description", "desc");
-      JSONObject jsonObject = new JSONObject(map);
-      NoteBook notebook = jsonObject.toJavaObject(NoteBook.class);
-  
-      // bean -> map
-      map = null;
-      String json = JSON.toJSONString(notebook);
-      map = JSON.parseObject(json, Map.class);
-  
-  }
-  ```
+    ```xml
+    <dependency>
+        <groupId>com.alibaba</groupId>
+        <artifactId>fastjson</artifactId>
+        <version>1.2.62</version>
+        </dependency>
+    ```
+
+      ```java
+      @Test
+      public void convert_object_to_map_fastjson() {
+
+          // map -> bean
+          Map<String, Object> map = Maps.newHashMap();
+          map.put("numberOfSheets", "123");
+          map.put("description", "desc");
+          JSONObject jsonObject = new JSONObject(map);
+          NoteBook notebook = jsonObject.toJavaObject(NoteBook.class);
+
+          // bean -> map
+          map = null;
+          String json = JSON.toJSONString(notebook);
+          map = JSON.parseObject(json, Map.class);
+
+      }
+      ```
 
 测试过程中使用到的demo:
 
-```java
-@Data
-class Demo {
-	private String id;
-	private String name;
-}
+    ```java
+    @Data
+    class Demo {
+        private String id;
+        private String name;
+    }
+    
+    class NoteBook {
+    
+        private double numberOfSheets;
+        private String description;
+    
+            public NoteBook(double numberOfSheets, String description) {
+                super();
+                this.numberOfSheets = numberOfSheets;
+                this.description = description;
+            }
+    
+            public double getNumberOfSheets() {
+                return numberOfSheets;
+            }
+            public String getDescription() {
+                return description;
+            }
+    
+        }
+    ```
 
-class NoteBook {
 
-	private double numberOfSheets;
-	private String description;
-
-	public NoteBook(double numberOfSheets, String description) {
-		super();
-		this.numberOfSheets = numberOfSheets;
-		this.description = description;
-	}
-
-	public double getNumberOfSheets() {
-		return numberOfSheets;
-	}
-	public String getDescription() {
-		return description;
-	}
-
-}
-```
-
-
-  #### 性能对比
-
-| 执行次数(次-毫秒) | apache-common-beanutil | jackson | fastjson |
-| ----------------- | ---------------------- | ------- | -------- |
-| 1                 | 116                    | 188     | 92       |
-| 10                | 3                      | 10      | 1        |
-| 100               | 20                     | 72      | 4        |
-| 1000              | 72                     | 297     | 33       |
-| 10000             | 414                    | 1099    | 53       |
-| 100000            | 4605                   | 3922    | 142      |
-| 1000000           | 927366                 | 25942   | 782      |
-| 10000000          | ???                    | 255503  | 7226     |
-| 100000000         | ???                    | ???     | ???      |
+      #### 性能对比
+    
+    | 执行次数(次-毫秒) | apache-common-beanutil | jackson | fastjson |
+    | ----------------- | ---------------------- | ------- | -------- |
+    | 1                 | 116                    | 188     | 92       |
+	| 10                | 3                      | 10      | 1        |
+	| 100               | 20                     | 72      | 4        |
+	| 1000              | 72                     | 297     | 33       |
+	| 10000             | 414                    | 1099    | 53       |
+	| 100000            | 4605                   | 3922    | 142      |
+	| 1000000           | 927366                 | 25942   | 782      |
+	| 10000000          | ???                    | 255503  | 7226     |
+	| 100000000         | ???                    | ???     | ???      |
 
   #### 总结：
 
