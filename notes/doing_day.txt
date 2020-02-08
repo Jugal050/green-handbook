@@ -708,8 +708,80 @@
 			spring-core					// done 2020-2-6 16:19:33
 			spring-aop					// done 2020-2-7 16:19:41
 			spring-context				// done 2020-2-7 17:14:33
-			spring-task
-			spring-transaction
+			spring-task					// done 2020-2-8 15:00:45
+
+				定时器：
+
+					用法：以XML作为示例，基于注解的也是一样的。
+						xml：
+							<task:scheduler id="scheduler" pool-size="3" />
+							<bean id="task" class="task.Task"/>
+							<task:scheduled-tasks scheduler="scheduler">
+							    <task:scheduled ref="task" method="print" cron="0/5 * * * * ?"/>
+							</task:scheduled-tasks>
+
+						java:
+							public class Task {
+							    public void print() {
+							        System.out.println("print执行");
+							    }
+							}
+
+					解析：		
+
+						注册：
+							org.springframework.scheduling.config.TaskNamespaceHandler
+								@Override
+								public void init() {
+								    this.registerBeanDefinitionParser("annotation-driven", new AnnotationDrivenBeanDefinitionParser());
+								    this.registerBeanDefinitionParser("executor", new ExecutorBeanDefinitionParser());
+								    this.registerBeanDefinitionParser("scheduled-tasks", new ScheduledTasksBeanDefinitionParser());
+								    this.registerBeanDefinitionParser("scheduler", new SchedulerBeanDefinitionParser());
+								}
+
+						scheduler:
+							SchedulerBeanDefinitionParser
+
+						scheduler-tasks:
+							ScheduledTasksBeanDefinitionParser
+
+					调度执行：
+
+						ContextLifecycleScheduledTaskRegistrar
+
+						scheduler初始化:
+							TaskScheduler 				// 同步执行
+							ConcurrentTaskExecutor 		// 异步执行
+
+						任务调度 ：
+							org.springframework.scheduling.config.ScheduledTaskRegistrar#scheduleTriggerTask	
+							org.springframework.scheduling.config.ScheduledTaskRegistrar#scheduleCronTask
+							org.springframework.scheduling.config.ScheduledTaskRegistrar#scheduleFixedRateTask
+							org.springframework.scheduling.config.ScheduledTaskRegistrar#scheduleFixedDelayTask
+
+						Trigger：
+
+						Cron解析：
+							CronTask
+							CronTrigger
+							CronSequenceGenerator
+
+						调度：
+							ReschedulingRunnable.schedule
+
+				异步执行：
+				
+					xml:
+						<task:executor id="executor" pool-size="3"/>
+						<task:annotation-driven executor="executor"/>			
+
+					java:
+						@Async("executor")
+						public void print() {
+						    System.out.println("print执行");
+						}	
+
+			spring-transaction			// 初略看了 2020-2-8 15:20:16
 			spring-mvc
 			guava-cache		
 
