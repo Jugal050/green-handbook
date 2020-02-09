@@ -781,7 +781,75 @@
 						    System.out.println("print执行");
 						}	
 
-			spring-transaction			// 初略看了 2020-2-8 15:20:16
+			spring-transaction			// 初略看了 2020-2-8 15:20:16 done 2020-2-9 16:17:27
+
+				配置：
+
+					<!-- 数据源以Sping自带为例，每次请求均返回一个新的连接 -->
+					<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+					    <property name="driverClassName" value="${jdbc.driverClassName}" />
+					    <property name="url" value="${jdbc.url}" />
+					    <property name="username" value="${jdbc.username}" />
+					    <property name="password" value="${jdbc.password}" />
+					</bean>
+					<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+					    <property name="dataSource" ref="dataSource"/>
+					</bean>
+					<tx:annotation-driven transaction-manager="transactionManager"/>
+
+				解析：
+					
+					TxNamespaceHandler
+						@Override
+						public void init() {
+						    registerBeanDefinitionParser("advice", new TxAdviceBeanDefinitionParser());
+						    registerBeanDefinitionParser("annotation-driven", 
+						        new AnnotationDrivenBeanDefinitionParser());
+						    registerBeanDefinitionParser("jta-transaction-manager", new JtaTransactionManagerBeanDefinitionParser());
+						}	
+
+					AnnotationDrivenBeanDefinitionParser.parse()
+					
+					TransactionalEventListener
+
+					AnnotationTransactionAttributeSource: 解析@Transactional注解的相关属性	
+
+				运行：
+
+					JdkDynamicAopProxy.invoke
+
+					事务拦截器：TransactionInterceptor
+
+					事务管理器：DataSourceTransactionManager等等
+
+					事务开启：TransactionAspectSupport.createTransactionIfNecessary
+
+					是否已存在事务：TransactionSynchronizationManager.doGetResource
+
+						是否存在事务指的是在当前线程、当前数据源(DataSource)中是否存在处于活动状态的事务。
+
+					事务已存在：
+
+						如果检测到已存在事务，那么就要考虑事务的传播特性(行为)：
+
+							AbstractPlatformTransactionManager.handleExistingTransaction
+
+						事务挂起：
+
+							所谓的事务挂起其实就是一个移除当前线程、数据源活动事务对象的过程。
+
+					事务创建：DataSourceTransactionManager.doBegin
+					
+						Spring事务的开启实际上是将数据库的自动提交设为false。
+
+					事务提交 & 回滚：
+						
+						其实就是对jdbc相应方法的封装，不再展开。				
+				
+				总结：		
+
+					事务的本质其实是对数据库自动提交的关闭与开启，传播特性是Spring提出、实现、控制的概念，而隔离级别是对数据库实现的封装。
+
 			spring-mvc
 			guava-cache		
 
