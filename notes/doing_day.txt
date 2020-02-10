@@ -850,7 +850,57 @@
 
 					事务的本质其实是对数据库自动提交的关闭与开启，传播特性是Spring提出、实现、控制的概念，而隔离级别是对数据库实现的封装。
 
-			spring-mvc			// 初略阅读 2020-2-9 16:39:21
+			spring-mvc			// 初略阅读 2020-2-9 16:39:21	done 2020-2-10 11:54:45
+
+				核心：DispatcherServlet
+
+				初始化：HttpServletBean.init
+
+				容器创建：FrameworkServlet.createWebApplicationContext
+
+				配置解析：MvcNamespaceHandler
+
+				MVC初始化：DispatcherServlet.initStrategies
+
+				HandlerMapping初始化：
+
+					RequestMappingHandlerMapping
+
+					DefaultAnnotationHandlerMapping
+
+					BeanNameUrlHandlerMapping
+
+				HandlerAdapter初始化：
+
+					RequestMappingHandlerAdapter
+
+				请求响应：FrameworkServlet.service	
+
+					请求分发: DispatcherServlet.doDispatch
+
+						处理器查找: DispatcherServlet.getHandler
+
+						适配器查找: DispatcherServlet.getHandlerAdapter
+
+					请求处理: RequestMappingHandlerAdapter.handleInternal
+
+						Session同步: 
+
+						参数解析: RequestParamMethodArgumentResolver
+
+							Model解析: ModelMethodProcessor
+
+						返回值解析: ViewNameMethodReturnValueHandler
+
+						视图渲染: DispatcherServlet.processDispatchResult
+
+							渲染: DispatcherServlet.render
+
+					参数绑定: DataBinder
+					
+					参数校验: ModelAttributeMethodProcessor.resolveArgument  DataBinder.validate	
+
+
 			guava-cache			// 初略阅读 2020-2-9 16:39:27
 
 
