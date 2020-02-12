@@ -913,6 +913,213 @@
 
 		** source-code:
 
+			Spring代码风格（Code Style），地址: https://github.com/spring-projects/spring-framework/wiki/Code-Style
+
+				有几点值得关注的：
+
+					## 导入语句 Import statements：
+
+						The import statements are structured as follow:
+
+							import java.* 
+							blank line
+							import javax.* 
+							blank line
+							import all other imports
+							blank line
+							import org.springframework.* 
+							blank line
+							import static all other imports
+
+						静态导入不应该在生产代码中使用，应该用在测试代码中，比如：import static org.assertj.core.api.Assertions.assertThat;
+
+						通配符导入，比如：import java.util.*; or import static org.assertj.core.api.Assertions.*，是禁止的，包括测试代码中。
+
+					## Java源文件结构 Java source file organization：
+
+						1. static fields
+						2. normal fields
+						3. constructors
+						4. (private) methods called from constructors
+						5. static factory methods
+						6. JavaBean properties (i.e., getters and setters)
+						7. method implementations coming from interfaces
+						8. private or protected templates that get called from method implementations coming from interfaces 
+						9. other methods
+						10. equals, hashCode, and toString 
+
+						private和protected方法应该紧跟在调用他们的方法的下方。比如：
+
+							public interface Service {
+								void init();
+								void service();
+								void post();
+							}
+
+							public class ServiceImple implements Service {
+
+								@Override
+								public void init() {
+									aaa();
+								}
+
+								private void aaa() {};
+
+								@Override
+								public void service() {
+									bbb();
+								}
+
+								private void bbb() {};
+
+								@Override
+								public void post() {
+									ccc();
+								}
+
+								private void ccc() {};
+							}
+
+					## Formatting		
+
+						### 花括号 Braces：
+
+							Block-like constructs: K&R style
+
+							Braces mostly follow the Kernighan and Ritchie style (a.k.a., "Egyptian brackets") for nonempty blocks and block-like constructs:
+								No line break before the opening brace but prefixed by a single space
+								Line break after the opening brace
+								Line break before the closing brace
+								Line break after the closing brace if that brace terminates a statement or the body of a method, constructor, or named class
+								Line break before else, catch and finally statements 
+
+							Example:
+
+								return new MyClass() {
+									@Override 
+									public void method() {
+										if (condition()) {
+											something();
+										}
+										else {
+											try {
+												alternative();
+											} 
+											catch (ProblemException ex) {
+												recover();
+											}
+											finally {
+												closeIO();
+											}
+										}
+									}
+								};
+
+							tips:
+
+								第四点和我们平时推荐的不太一样。Spring推荐： else、catch、finallly语句之前换行。
+
+						### 换行 Line wrapping		
+
+							0-90： 推荐
+							90-105: 可以接受
+							105-120: 允许但不鼓励，应该尽可能避免
+							> 120: 不允许
+
+							推荐80字符左右，原因是为了各种文档/设备，包括在Github上、手机等上的格式兼容适配。
+
+							还有，分隔符放在行尾，而不是下一行。比如：
+							
+									if (thisLengthyMethodCall(param1, param2) && anotherCheck() &&
+									        yetAnotherCheck()) {
+
+									    // ....
+									}
+
+						### 空行 Blank Line			
+
+							两个空行 Add two blank lines before the following elements:
+								static {} block
+								Fields
+								Constructors
+								Inner classes
+
+							一个空行：Add one blank line after a method signature that is multiline, i.e.
+
+								@Override
+								protected Object invoke(FooBarOperationContext context, 
+								        AnotherSuperLongName name) {
+
+								    // code here
+								}
+
+					##编码实践 Programming Practices			
+
+						### Ternary Operator 三目运算符
+
+							三目运算符要用圆括号括起来， i.e. return (foo != null ? foo : "default");
+
+							而且非空判断 not null 要在前面。
+
+
+						### Null Checks	
+
+							Use the org.springframework.util.Assert.notNull static method to check that a method argument is not null.
+
+							public void handle(Event event) {
+							    Assert.notNull(event, "Event must not be null");
+							    //...
+							}
+
+						### 通用工具类 Utility classes	
+
+							一个只有static通用方法的类，类名必须以Utils结尾，必须有私有的构造方法，类修饰符需要用abstact。防止使用者尝试实例化。
+
+								public abstract MyUtils {
+
+								    private MyUtils() {
+								        /* prevent instantiation */
+								    }
+
+								    // static utility methods
+								}
+
+						### 对象和方法引用 Field and method references		
+
+							类中的对象引用时使用this.，类中的方法引用时禁止使用this.
+							A field of a class should always be referenced using this. A method of class, however, should never be referenced using this.
+
+					## Javadoc		
+
+						In particular, please note:
+
+							Use an imperative style (i.e. Return and not Returns) for the first sentence.
+
+							// 描述和参数描述之前无需空行
+							No blank lines between the description and the parameter descriptions.
+
+							// 如果有多个段落，每个段落之前使用<p>标签
+							If the description is defined with multiple paragraphs, start each of them with <p>.
+							
+							If a parameter description needs to be wrapped, do not indent subsequent lines (see parserContext).
+
+						其他：
+							
+							** 有代码/null时，使用{@code}包起来。
+							** 如果使用元素{@link}，使用全路径限定名，避免import导入。如：
+								provides access to a {@link org.springframework.beans.factory.support.BeanDefinitionRegistry}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
