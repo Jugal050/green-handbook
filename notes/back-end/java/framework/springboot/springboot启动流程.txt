@@ -1,0 +1,43 @@
+SpringBoot启动流程:
+
+	入口：
+
+		@SpringBootApplication
+		public class Application{
+
+			public static void main(String[] args) {
+				SpringApplication.run(Application.class, args);
+			}
+			
+		}
+
+	调用：
+	
+		public static ConfigurableApplicationContext run(Class<?>[] primarySources, String[] args) {
+			return new SpringApplication(primarySources).run(args);
+		}	
+
+	其中：
+
+		new SpringApplication(primarySources);是构造器：
+
+			public SpringApplication(Class<?>... primarySources) {
+				this(null, primarySources);
+			}
+
+			public SpringApplication(ResourceLoader resourceLoader, Class<?>... primarySources) {
+				this.resourceLoader = resourceLoader;
+				Assert.notNull(primarySources, "PrimarySources must not be null");
+				this.primarySources = new LinkedHashSet<>(Arrays.asList(primarySources));
+				this.webApplicationType = WebApplicationType.deduceFromClasspath();
+				setInitializers((Collection) getSpringFactoriesInstances(
+						ApplicationContextInitializer.class));
+				setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
+				this.mainApplicationClass = deduceMainApplicationClass();
+			}
+
+			
+
+
+
+
