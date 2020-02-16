@@ -169,154 +169,17 @@ Debug执行步骤：
      */
     public abstract class AbstractApplicationContext extends DefaultResourceLoader
     		implements ConfigurableApplicationContext {
-        
-        /** Logger used by this class. Available to subclasses. */
-    	protected final Log logger = LogFactory.getLog(getClass());
-    
-        // ------------------------------- 容器配置 开始 ------------------------------
-        
-    	/** Unique id for this context, if any. */
-    	private String id = ObjectUtils.identityToString(this);
-    
-    	/** Display name. */
-    	private String displayName = ObjectUtils.identityToString(this);
-    
-    	/** Parent context. */
-    	@Nullable
-    	private ApplicationContext parent;
-    
-    	/** Environment used by this context. */
-    	@Nullable
-    	private ConfigurableEnvironment environment;
-    
-    	/** BeanFactoryPostProcessors to apply on refresh. */
-    	private final List<BeanFactoryPostProcessor> beanFactoryPostProcessors = new ArrayList<>();
-    
-    	/** System time in milliseconds when this context started. */
-    	private long startupDate;
-    
-    	/** Flag that indicates whether this context is currently active. */
-    	private final AtomicBoolean active = new AtomicBoolean();
-    
-    	/** Flag that indicates whether this context has been closed already. */
-    	private final AtomicBoolean closed = new AtomicBoolean();
-    
-    	/** Synchronization monitor for the "refresh" and "destroy". */
-    	private final Object startupShutdownMonitor = new Object();
-    
-    	/** Reference to the JVM shutdown hook, if registered. */
-    	@Nullable
-    	private Thread shutdownHook;
-    
-    	/** ResourcePatternResolver used by this context. */
-    	private ResourcePatternResolver resourcePatternResolver;
-    
-    	/** LifecycleProcessor for managing the lifecycle of beans within this context. */
-    	@Nullable
-    	private LifecycleProcessor lifecycleProcessor;
-    
-    	/** MessageSource we delegate our implementation of this interface to. */
-    	@Nullable
-    	private MessageSource messageSource;
-    
-    	/** Helper class used in event publishing. */
-    	@Nullable
-    	private ApplicationEventMulticaster applicationEventMulticaster;
-    
-    	/** Statically specified listeners. */
-    	private final Set<ApplicationListener<?>> applicationListeners = new LinkedHashSet<>();
-    
-    	/** Local listeners registered before refresh. */
-    	@Nullable
-    	private Set<ApplicationListener<?>> earlyApplicationListeners;
-    
-    	/** ApplicationEvents published before the multicaster setup. */
-    	@Nullable
-    	private Set<ApplicationEvent> earlyApplicationEvents;
-        
-        // ------------------------------- 容器配置 结束 ------------------------------
-        
-        public AbstractApplicationContext() {
-    		this.resourcePatternResolver = getResourcePatternResolver();
-    	}
-        
-        public AbstractApplicationContext(@Nullable ApplicationContext parent) {
-    		this();
-    		setParent(parent);
-    	}
-        
-        protected ResourcePatternResolver getResourcePatternResolver() {
-    		return new PathMatchingResourcePatternResolver(this);
-    	}
-        
-        @Override
-    	public void setParent(@Nullable ApplicationContext parent) {
-    		this.parent = parent;
-    		if (parent != null) {
-    			Environment parentEnvironment = parent.getEnvironment();
-    			if (parentEnvironment instanceof ConfigurableEnvironment) {
-    				getEnvironment().merge(
-                        (ConfigurableEnvironment) parentEnvironment);
-    			}
-    		}
-    	}
     }
     ```
-
-    调用父类构造器：
-
-    ```java
-    /**
-     * 资源加载器ResourceLoader默认的实现类
-     */
-    public class DefaultResourceLoader implements ResourceLoader {
-        
-        @Nullable
-    	private ClassLoader classLoader;  // 默认：Launcher$AppClassLoader@441
-        
-        public DefaultResourceLoader() {
-    		this.classLoader = ClassUtils.getDefaultClassLoader();
-    	}
-        
-    }
-    ```
-
-    调用PathMatchingResourcePatternResolver的构造器：
-
-    ```java
-    /**
-     * 资源模式解析器ResourcePatternResolver的实现类，
-     * 可以将指定的资源位置路径解析为一个或多个匹配的资源。
-     */
-    public class PathMatchingResourcePatternResolver implements ResourcePatternResolver {
-        
-        @Nullable
-    	private static Method equinoxResolveMethod;
     
-    	static {
-    		try {
-    			// Detect Equinox OSGi (e.g. on WebSphere 6.1)
-    			Class<?> fileLocatorClass = ClassUtils.forName("org.eclipse.core.runtime.FileLocator",
-    					PathMatchingResourcePatternResolver.class.getClassLoader());
-    			equinoxResolveMethod = fileLocatorClass.getMethod("resolve", URL.class);
-    			logger.trace("Found Equinox FileLocator for OSGi bundle URL resolution");
-    		}
-    		catch (Throwable ex) {
-    			equinoxResolveMethod = null;
-    		}
-    	}
-        
-        public PathMatchingResourcePatternResolver(ResourceLoader resourceLoader) {
-    		Assert.notNull(resourceLoader, "ResourceLoader must not be null");
-    		this.resourceLoader = resourceLoader;
-    	}
-    }
-    ```
-
-    -- super(parent)结束;
-
+    调用父类`DefaultResourceLoader`构造器；
+    
+    调用父类`PathMatchingResourcePatternResolver`的构造器；
+    
+    至此，super(parent)结束;
+    
   - setConfigLocations(configLocations)执行过程：
-
+  
     ```java
     public abstract class AbstractRefreshableConfigApplicationContext extends AbstractRefreshableApplicationContext
     		implements BeanNameAware, InitializingBean {
@@ -340,9 +203,9 @@ Debug执行步骤：
         
     }
     ```
-
+  
     会调用`getEnvironment`，此处`environment`为`null`还未初始化，会继续调用`createEnvironment`
-
+  
     ```java
     public abstract class AbstractApplicationContext extends DefaultResourceLoader
     		implements ConfigurableApplicationContext {
@@ -361,9 +224,9 @@ Debug执行步骤：
         
     }    
     ```
-
+  
     继续调用`org.springframework.core.env.StandardEnvironment`的构造器
-
+  
     ```java
     public class StandardEnvironment extends AbstractEnvironment {}
     ```
@@ -372,419 +235,30 @@ Debug执行步骤：
     
      ![](D:\workspace\green-handbook\notes\back-end\java\framework\spring\Core\StandardEnvironment.png)
           
-
-
-  调用父类`AbstractEnvironment`的构造器
-    public abstract class AbstractEnvironment implements ConfigurableEnvironment {
-        
-            protected static final String RESERVED_DEFAULT_PROFILE_NAME = "default";
-          
-          private final Set<String> activeProfiles = new LinkedHashSet<>();
-      
-      	private final Set<String> defaultProfiles = new LinkedHashSet<>(getReservedDefaultProfiles());
-      
-      	private final MutablePropertySources propertySources = new MutablePropertySources();
-      
-      	private final ConfigurablePropertyResolver propertyResolver =
-      			new PropertySourcesPropertyResolver(this.propertySources);
-          
-          protected Set<String> getReservedDefaultProfiles() {
-      		return Collections.singleton(RESERVED_DEFAULT_PROFILE_NAME);
-      	}
-          
-          public AbstractEnvironment() {
-      		customizePropertySources(this.propertySources);
-      	}
-          
-          @Override
-      	protected void customizePropertySources(MutablePropertySources propertySources) {
-      		propertySources.addLast(
-      				new PropertiesPropertySource(SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME, getSystemProperties()));
-      		propertySources.addLast(
-      				new SystemEnvironmentPropertySource(SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME, getSystemEnvironment()));
-      	}
-          
-          @Override
-      	@SuppressWarnings({"rawtypes", "unchecked"})
-      	public Map<String, Object> getSystemProperties() {
-      		try {
-      			return (Map) System.getProperties();
-      		}
-      		catch (AccessControlException ex) {
-      			return (Map) new ReadOnlySystemAttributesMap() {
-      				@Override
-      				@Nullable
-      				protected String getSystemAttribute(String attributeName) {
-      					try {
-      						return System.getProperty(attributeName);
-      					}
-      					catch (AccessControlException ex) {
-      						if (logger.isInfoEnabled()) {
-      							logger.info("Caught AccessControlException when accessing system property '" +
-      									attributeName + "'; its value will be returned [null]. Reason: " + ex.getMessage());
-      						}
-      						return null;
-      					}
-      				}
-      			};
-      		}
-      	}
-          
-          @Override
-      	@SuppressWarnings({"rawtypes", "unchecked"})
-      	public Map<String, Object> getSystemEnvironment() {
-      		if (suppressGetenvAccess()) {
-      			return Collections.emptyMap();
-      		}
-      		try {
-      			return (Map) System.getenv();
-      		}
-      		catch (AccessControlException ex) {
-      			return (Map) new ReadOnlySystemAttributesMap() {
-      				@Override
-      				@Nullable
-      				protected String getSystemAttribute(String attributeName) {
-      					try {
-      						return System.getenv(attributeName);
-      					}
-      					catch (AccessControlException ex) {
-      						if (logger.isInfoEnabled()) {
-      							logger.info("Caught AccessControlException when accessing system environment variable '" +
-      									attributeName + "'; its value will be returned [null]. Reason: " + ex.getMessage());
-      						}
-      						return null;
-      					}
-      				}
-      			};
-      		}
-      	}
-          
-          protected boolean suppressGetenvAccess() {
-      		return SpringProperties.getFlag(IGNORE_GETENV_PROPERTY_NAME);
-      	}
-          
-      }
     
-      
-      
-
-其中初始化类变量`propertyResolver`时，会调用`PropertySourcesPropertyResolver`构造器
-
-  ```java
-  public class PropertySourcesPropertyResolver extends AbstractPropertyResolver {
-  	
-      @Nullable
-  	private final PropertySources propertySources;
-      
-      public PropertySourcesPropertyResolver(@Nullable PropertySources propertySources) {
-  		this.propertySources = propertySources;
-  	}
-      
-  }
-  ```
-
-  会调用父类`AbstractPropertyResolver`构造器
-
-  ```java
-  /**
-   * 解析相关资源配置的基础抽象类
-   */
-  public abstract class AbstractPropertyResolver implements ConfigurablePropertyResolver {
-  
-      @Nullable
-  	private volatile ConfigurableConversionService conversionService;
-  
-  	@Nullable
-  	private PropertyPlaceholderHelper nonStrictHelper;
-  
-  	@Nullable
-  	private PropertyPlaceholderHelper strictHelper;
-  
-  	private boolean ignoreUnresolvableNestedPlaceholders = false;
-  
-  	private String placeholderPrefix = SystemPropertyUtils.PLACEHOLDER_PREFIX;
-  
-  	private String placeholderSuffix = SystemPropertyUtils.PLACEHOLDER_SUFFIX;
-  
-  	@Nullable
-  	private String valueSeparator = SystemPropertyUtils.VALUE_SEPARATOR;
-  
-  	private final Set<String> requiredProperties = new LinkedHashSet<>();
-      
-}      
-  ```
-
-完成之后继续返回`AbstractEnvironment`构造器，设置系统属性变量、系统环境变量：
-
-- 系统属性类`org.springframework.core.env.PropertiesPropertySource`：
-
-  ```java
-  public class PropertiesPropertySource extends MapPropertySource {
-  
-      protected PropertiesPropertySource(String name, Map<String, Object> source) {
-          super(name, source);
-      }
-  
-  }
-  ```
-
-  继续调用父类`org.springframework.core.env.MapPropertySource`构造器：
-
-  ```java
-      public class MapPropertySource extends EnumerablePropertySource<Map<String, Object>> {
-  
-          public MapPropertySource(String name, Map<String, Object> source) {
-          super(name, source);
-          }
-  
-  }
-  ```
-
-  继续调用父类`org.springframework.core.env.EnumerablePropertySource`构造器：
-
-  ```java
-      public abstract class EnumerablePropertySource<T> extends PropertySource<T> {
-  
-          public EnumerablePropertySource(String name, T source) {
-          super(name, source);
-          }
-  
-  }
-  ```
-
-  最后调用到基础抽象类`org.springframework.core.env.PropertySource`:
-
-  ```java
-      public abstract class PropertySource<T> {
-  
-          protected final Log logger = LogFactory.getLog(getClass());
-  
-          protected final String name;
-  
-          protected final T source;
-          
-          /**
-            * Create a new {@code PropertySource} with the given name and source object.
-            */
-          public PropertySource(String name, T source) {
-              Assert.hasText(name, "Property source name must contain at least one character");
-              Assert.notNull(source, "Property source must not be null");
-              this.name = name;
-              this.source = source;
-          }
-      
-      }
-  ```
-
-- 系统环境类`org.springframework.core.env.SystemEnvironmentPropertySource`：
-  
-  ```java
-  public class SystemEnvironmentPropertySource extends MapPropertySource {
-  
-      public SystemEnvironmentPropertySource(String name, Map<String, Object> source) {
-  		super(name, source);
-  	}
-  
-  }
-  ```
-  
-  继续向上调用各个父类构造器，父类结构与系统属性类相同，可参考系统属性类。
-
-至此，`环境配置`信息设置`getEnvironment()`完成。
-
-继续调用`AbstractEnvironment#resolveRequiredPlaceholders`，解析相关占位符：
-
-```java
-public abstract class AbstractEnvironment implements ConfigurableEnvironment {
+    调用父类`AbstractEnvironment`的构造器
     
-    private final ConfigurablePropertyResolver propertyResolver =
-			new PropertySourcesPropertyResolver(this.propertySources);
+      		其中初始化类变量`propertyResolver`时，会调用`PropertySourcesPropertyResolver`构造器
     
-    @Override
-	public String resolveRequiredPlaceholders(String text) throws IllegalArgumentException {
-		return this.propertyResolver.resolveRequiredPlaceholders(text);
-	}
-
-}
-```
-
-
-
-```java
-public abstract class AbstractPropertyResolver implements ConfigurablePropertyResolver {	
+    再调用父类`AbstractPropertyResolver[解析相关资源配置的基础抽象类]`构造器
     
-	@Override
-	public String resolveRequiredPlaceholders(String text) throws IllegalArgumentException {
-		if (this.strictHelper == null) {
-			this.strictHelper = createPlaceholderHelper(false);
-		}
-		return doResolvePlaceholders(text, this.strictHelper);
-	}
+    完成之后继续返回`AbstractEnvironment`构造器，设置系统变量，包括：
     
-    private PropertyPlaceholderHelper createPlaceholderHelper(boolean ignoreUnresolvablePlaceholders) {
-		return new PropertyPlaceholderHelper(this.placeholderPrefix, this.placeholderSuffix,
-				this.valueSeparator, ignoreUnresolvablePlaceholders);
-	}
+    - 系统属性类`org.springframework.core.env.PropertiesPropertySource`；
+    - 系统环境类`org.springframework.core.env.SystemEnvironmentPropertySource`；
     
-    private String doResolvePlaceholders(String text, PropertyPlaceholderHelper helper) {
-		return helper.replacePlaceholders(text, this::getPropertyAsRawString);
-	}
+    至此，`环境配置`信息设置`getEnvironment()`完成。
     
-}
-```
-
-​    
-
-其中会调用`org.springframework.util.PropertyPlaceholderHelper`构造器：
-
-~~~java
-/**
- * 解析属性占位符通用类；占位符格式为"${name}"，可以使用此类将占位符替换为用户指定的值。
- * 可以通过使用`Properties`或`PlaceholderResolver`实例进行替换。
- *
- * 类中的相关解析方法，有时间在后续test中进行说明
- */
-public class PropertyPlaceholderHelper {
-
-    private static final Map<String, String> wellKnownSimplePrefixes = new HashMap<>(4);
-
-	static {
-		wellKnownSimplePrefixes.put("}", "{");
-		wellKnownSimplePrefixes.put("]", "[");
-		wellKnownSimplePrefixes.put(")", "(");
-	}
+    继续调用`AbstractEnvironment#resolveRequiredPlaceholders`，解析相关占位符：
     
+    ​		其中会调用`org.springframework.util.PropertyPlaceholderHelper`构造器；
     
-    private final String placeholderPrefix;
-
-	private final String placeholderSuffix;
-
-	private final String simplePrefix;
-
-	@Nullable
-	private final String valueSeparator;
-
-	private final boolean ignoreUnresolvablePlaceholders;
-
-    public PropertyPlaceholderHelper(String placeholderPrefix, String placeholderSuffix,
-			@Nullable String valueSeparator, boolean ignoreUnresolvablePlaceholders) {
-
-		Assert.notNull(placeholderPrefix, "'placeholderPrefix' must not be null");
-		Assert.notNull(placeholderSuffix, "'placeholderSuffix' must not be null");
-		this.placeholderPrefix = placeholderPrefix;
-		this.placeholderSuffix = placeholderSuffix;
-		String simplePrefixForSuffix = wellKnownSimplePrefixes.get(this.placeholderSuffix);
-		if (simplePrefixForSuffix != null && this.placeholderPrefix.endsWith(simplePrefixForSuffix)) {
-			this.simplePrefix = simplePrefixForSuffix;
-		}
-		else {
-			this.simplePrefix = this.placeholderPrefix;
-		}
-		this.valueSeparator = valueSeparator;
-		this.ignoreUnresolvablePlaceholders = ignoreUnresolvablePlaceholders;
-	}
+    实例化完成之后，继续执行`doResolvePlaceholders`解析占位符（具体解析过程后续test中说明），解析完成，代表`AbstractRefreshableConfigApplicationContext#setConfigLocations`执行完成。
     
-    public String replacePlaceholders(String value, PlaceholderResolver placeholderResolver) {
-		Assert.notNull(value, "'value' must not be null");
-		return parseStringValue(value, placeholderResolver, null);
-	}
-    
-    protected String parseStringValue(
-			String value, PlaceholderResolver placeholderResolver, @Nullable Set<String> visitedPlaceholders) {
-
-		int startIndex = value.indexOf(this.placeholderPrefix);
-		if (startIndex == -1) {
-			return value;
-		}
-
-		StringBuilder result = new StringBuilder(value);
-		while (startIndex != -1) {
-			int endIndex = findPlaceholderEndIndex(result, startIndex);
-			if (endIndex != -1) {
-				String placeholder = result.substring(startIndex + this.placeholderPrefix.length(), endIndex);
-				String originalPlaceholder = placeholder;
-				if (visitedPlaceholders == null) {
-					visitedPlaceholders = new HashSet<>(4);
-				}
-				if (!visitedPlaceholders.add(originalPlaceholder)) {
-					throw new IllegalArgumentException(
-							"Circular placeholder reference '" + originalPlaceholder + "' in property definitions");
-				}
-				// Recursive invocation, parsing placeholders contained in the placeholder key.
-				placeholder = parseStringValue(placeholder, placeholderResolver, visitedPlaceholders);
-				// Now obtain the value for the fully resolved key...
-				String propVal = placeholderResolver.resolvePlaceholder(placeholder);
-				if (propVal == null && this.valueSeparator != null) {
-					int separatorIndex = placeholder.indexOf(this.valueSeparator);
-					if (separatorIndex != -1) {
-						String actualPlaceholder = placeholder.substring(0, separatorIndex);
-						String defaultValue = placeholder.substring(separatorIndex + this.valueSeparator.length());
-						propVal = placeholderResolver.resolvePlaceholder(actualPlaceholder);
-						if (propVal == null) {
-							propVal = defaultValue;
-						}
-					}
-				}
-				if (propVal != null) {
-					// Recursive invocation, parsing placeholders contained in the
-					// previously resolved placeholder value.
-					propVal = parseStringValue(propVal, placeholderResolver, visitedPlaceholders);
-					result.replace(startIndex, endIndex + this.placeholderSuffix.length(), propVal);
-					if (logger.isTraceEnabled()) {
-						logger.trace("Resolved placeholder '" + placeholder + "'");
-					}
-					startIndex = result.indexOf(this.placeholderPrefix, startIndex + propVal.length());
-				}
-				else if (this.ignoreUnresolvablePlaceholders) {
-					// Proceed with unprocessed value.
-					startIndex = result.indexOf(this.placeholderPrefix, endIndex + this.placeholderSuffix.length());
-				}
-				else {
-					throw new IllegalArgumentException("Could not resolve placeholder '" +
-							placeholder + "'" + " in value \"" + value + "\"");
-				}
-				visitedPlaceholders.remove(originalPlaceholder);
-			}
-			else {
-				startIndex = -1;
-			}
-		}
-		return result.toString();
-	}
-    
-    private int findPlaceholderEndIndex(CharSequence buf, int startIndex) {
-		int index = startIndex + this.placeholderPrefix.length();
-		int withinNestedPlaceholder = 0;
-		while (index < buf.length()) {
-			if (StringUtils.substringMatch(buf, index, this.placeholderSuffix)) {
-				if (withinNestedPlaceholder > 0) {
-					withinNestedPlaceholder--;
-					index = index + this.placeholderSuffix.length();
-				}
-				else {
-					return index;
-				}
-			}
-			else if (StringUtils.substringMatch(buf, index, this.simplePrefix)) {
-				withinNestedPlaceholder++;
-				index = index + this.simplePrefix.length();
-			}
-			else {
-				index++;
-			}
-		}
-		return -1;
-	}
-
-}
-~~~
-
-实例化完成之后，继续执行`doResolvePlaceholders`解析占位符（具体解析过程后续test中说明），解析完成，代表`AbstractRefreshableConfigApplicationContext#setConfigLocations`执行完成。
-
-继续调用`org.springframework.context.support.AbstractApplicationContext#refresh`方法：
+    继续调用`org.springframework.context.support.AbstractApplicationContext#refresh`方法：
 
 ------
-​    
+
 
   - `AbstractApplicationContext.refresh()`执行流程：
   
@@ -1150,9 +624,6 @@ public class PropertyPlaceholderHelper {
       	public void registerBeanDefinition(String beanName, BeanDefinition beanDefinition)
       			throws BeanDefinitionStoreException {
       
-      		Assert.hasText(beanName, "Bean name must not be empty");
-      		Assert.notNull(beanDefinition, "BeanDefinition must not be null");
-      
       		if (beanDefinition instanceof AbstractBeanDefinition) {
       			try {
       				((AbstractBeanDefinition) beanDefinition).validate();
@@ -1168,27 +639,8 @@ public class PropertyPlaceholderHelper {
       			if (!isAllowBeanDefinitionOverriding()) {
       				throw new BeanDefinitionOverrideException(beanName, beanDefinition, existingDefinition);
       			}
-      			else if (existingDefinition.getRole() < beanDefinition.getRole()) {
-      				// e.g. was ROLE_APPLICATION, now overriding with ROLE_SUPPORT or ROLE_INFRASTRUCTURE
-      				if (logger.isInfoEnabled()) {
-      					logger.info("Overriding user-defined bean definition for bean '" + beanName +
-      							"' with a framework-generated bean definition: replacing [" +
-      							existingDefinition + "] with [" + beanDefinition + "]");
-      				}
-      			}
-      			else if (!beanDefinition.equals(existingDefinition)) {
-      				if (logger.isDebugEnabled()) {
-      					logger.debug("Overriding bean definition for bean '" + beanName +
-      							"' with a different definition: replacing [" + existingDefinition +
-      							"] with [" + beanDefinition + "]");
-      				}
-      			}
       			else {
-      				if (logger.isTraceEnabled()) {
-      					logger.trace("Overriding bean definition for bean '" + beanName +
-      							"' with an equivalent definition: replacing [" + existingDefinition +
-      							"] with [" + beanDefinition + "]");
-      				}
+                      // ouput logs
       			}
       			this.beanDefinitionMap.put(beanName, beanDefinition);
       		}
@@ -1249,63 +701,15 @@ public class PropertyPlaceholderHelper {
       
       }
       ```
-    
       
-    
+      
+      
       抽象的可自动装备的Bean工厂`AbstractAutowireCapableBeanFactory`：
-    
+      
       ```java
       public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFactory
       		implements AutowireCapableBeanFactory {
-      
-      	/** Strategy for creating bean instances. */
-      	private InstantiationStrategy instantiationStrategy = new CglibSubclassingInstantiationStrategy();
-      
-      	/** Resolver strategy for method parameter names. */
-      	@Nullable
-      	private ParameterNameDiscoverer parameterNameDiscoverer = new DefaultParameterNameDiscoverer();
-      
-      	/** Whether to automatically try to resolve circular references between beans. */
-      	private boolean allowCircularReferences = true;
-      
-      	/**
-      	 * Whether to resort to injecting a raw bean instance in case of circular reference,
-      	 * even if the injected bean eventually got wrapped.
-      	 */
-      	private boolean allowRawInjectionDespiteWrapping = false;
-      
-      	/**
-      	 * Dependency types to ignore on dependency check and autowire, as Set of
-      	 * Class objects: for example, String. Default is none.
-      	 */
-      	private final Set<Class<?>> ignoredDependencyTypes = new HashSet<>();
-      
-      	/**
-      	 * Dependency interfaces to ignore on dependency check and autowire, as Set of
-      	 * Class objects. By default, only the BeanFactory interface is ignored.
-      	 */
-      	private final Set<Class<?>> ignoredDependencyInterfaces = new HashSet<>();
-      
-      	/**
-      	 * The name of the currently created bean, for implicit dependency registration
-      	 * on getBean etc invocations triggered from a user-specified Supplier callback.
-      	 */
-      	private final NamedThreadLocal<String> currentlyCreatedBean = new NamedThreadLocal<>("Currently created bean");
-      
-      	/** Cache of unfinished FactoryBean instances: FactoryBean name to BeanWrapper. */
-      	private final ConcurrentMap<String, BeanWrapper> factoryBeanInstanceCache = new ConcurrentHashMap<>();
-      
-      	/** Cache of candidate factory methods per factory class. */
-      	private final ConcurrentMap<Class<?>, Method[]> factoryMethodCandidateCache = new ConcurrentHashMap<>();
-      
-      	/** Cache of filtered PropertyDescriptors: bean Class to PropertyDescriptor array. */
-      	private final ConcurrentMap<Class<?>, PropertyDescriptor[]> filteredPropertyDescriptorsCache =
-      			new ConcurrentHashMap<>();
-      
-      
-      	/**
-      	 * Create a new AbstractAutowireCapableBeanFactory.
-      	 */
+          
       	public AbstractAutowireCapableBeanFactory() {
       		super();
       		ignoreDependencyInterface(BeanNameAware.class);
@@ -1313,10 +717,6 @@ public class PropertyPlaceholderHelper {
       		ignoreDependencyInterface(BeanClassLoaderAware.class);
       	}
       
-      	/**
-      	 * Create a new AbstractAutowireCapableBeanFactory with the given parent.
-      	 * @param parentBeanFactory parent bean factory, or {@code null} if none
-      	 */
       	public AbstractAutowireCapableBeanFactory(@Nullable BeanFactory parentBeanFactory) {
       		this();
       		setParentBeanFactory(parentBeanFactory);
@@ -1327,7 +727,7 @@ public class PropertyPlaceholderHelper {
       抽象的Xml的ApplicationContext类`AbstractXmlApplicationContext`：
     
       ```java
-      public abstract class AbstractXmlApplicationContext extends AbstractRefreshableConfigApplicationContext {
+    public abstract class AbstractXmlApplicationContext extends AbstractRefreshableConfigApplicationContext {
       
       	private boolean validating = true;
           
@@ -1361,206 +761,27 @@ public class PropertyPlaceholderHelper {
       
       }
       ```
-    
-      抽象的Bean定义信息读取类`AbstractBeanDefinitionReader`：
-    
-      ```java
-      /**
-       * BeanDefinitionReader接口的抽象的基础实现类。
-       */
-      public abstract class AbstractBeanDefinitionReader implements BeanDefinitionReader, EnvironmentCapable {
-          
-          @Override
-      	public int loadBeanDefinitions(Resource... resources) throws BeanDefinitionStoreException {
-      		Assert.notNull(resources, "Resource array must not be null");
-      		int count = 0;
-      		for (Resource resource : resources) {
-      			count += loadBeanDefinitions(resource);
-      		}
-      		return count;
-      	}
       
-      	@Override
-      	public int loadBeanDefinitions(String location) throws BeanDefinitionStoreException {
-      		return loadBeanDefinitions(location, null);
-      	}
-          
-          public int loadBeanDefinitions(String location, @Nullable Set<Resource> actualResources) throws BeanDefinitionStoreException {
-      		ResourceLoader resourceLoader = getResourceLoader();
-      		if (resourceLoader == null) {
-      			throw new BeanDefinitionStoreException(
-      					"Cannot load bean definitions from location [" + location + "]: no ResourceLoader available");
-      		}
+      抽象的Bean定义信息读取类`AbstractBeanDefinitionReader[BeanDefinitionReader接口的抽象的基础实现类]`：
       
-      		if (resourceLoader instanceof ResourcePatternResolver) {
-      			// Resource pattern matching available.
-      			try {
-      				Resource[] resources = ((ResourcePatternResolver) resourceLoader).getResources(location);
-      				int count = loadBeanDefinitions(resources);
-      				if (actualResources != null) {
-      					Collections.addAll(actualResources, resources);
-      				}
-      				if (logger.isTraceEnabled()) {
-      					logger.trace("Loaded " + count + " bean definitions from location pattern [" + location + "]");
-      				}
-      				return count;
-      			}
-      			catch (IOException ex) {
-      				throw new BeanDefinitionStoreException(
-      						"Could not resolve bean definition resource pattern [" + location + "]", ex);
-      			}
-      		}
-      		else {
-      			// Can only load single resources by absolute URL.
-      			Resource resource = resourceLoader.getResource(location);
-      			int count = loadBeanDefinitions(resource);
-      			if (actualResources != null) {
-      				actualResources.add(resource);
-      			}
-      			if (logger.isTraceEnabled()) {
-      				logger.trace("Loaded " + count + " bean definitions from location [" + location + "]");
-      			}
-      			return count;
-      		}
-      	}
-      
-      	@Override
-      	public int loadBeanDefinitions(String... locations) throws BeanDefinitionStoreException {
-      		Assert.notNull(locations, "Location array must not be null");
-      		int count = 0;
-      		for (String location : locations) {
-      			count += loadBeanDefinitions(location);
-      		}
-      		return count;
-      	}
-      
-      }
-      ```
-    
       Xml配置的Bean定义信息读取类`XmlBeanDefinitionReader`
-    
+      
       ```java
       /**
        * Xml配置的Bean定义信息读取类，xml文件读取为BeanDefinitionDocumentReader接口的实现类
        *
        */
-      public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
-      	
-          protected int doLoadBeanDefinitions(InputSource inputSource, Resource resource)
-      			throws BeanDefinitionStoreException {
-      
-      		try {
-      			Document doc = doLoadDocument(inputSource, resource);
-      			int count = registerBeanDefinitions(doc, resource);
-      			if (logger.isDebugEnabled()) {
-      				logger.debug("Loaded " + count + " bean definitions from " + resource);
-      			}
-      			return count;
-      		}
-      		catch (BeanDefinitionStoreException ex) {
-      			throw ex;
-      		}
-      		catch (SAXParseException ex) {
-      			throw new XmlBeanDefinitionStoreException(resource.getDescription(),
-      					"Line " + ex.getLineNumber() + " in XML document from " + resource + " is invalid", ex);
-      		}
-      		catch (SAXException ex) {
-      			throw new XmlBeanDefinitionStoreException(resource.getDescription(),
-      					"XML document from " + resource + " is invalid", ex);
-      		}
-      		catch (ParserConfigurationException ex) {
-      			throw new BeanDefinitionStoreException(resource.getDescription(),
-      					"Parser configuration exception parsing XML from " + resource, ex);
-      		}
-      		catch (IOException ex) {
-      			throw new BeanDefinitionStoreException(resource.getDescription(),
-      					"IOException parsing XML document from " + resource, ex);
-      		}
-      		catch (Throwable ex) {
-      			throw new BeanDefinitionStoreException(resource.getDescription(),
-      					"Unexpected exception parsing XML document from " + resource, ex);
-      		}
-      	}
-          
-          protected Document doLoadDocument(InputSource inputSource, Resource resource) throws Exception {
-      		return this.documentLoader.loadDocument(inputSource, getEntityResolver(), this.errorHandler,
-      				getValidationModeForResource(resource), isNamespaceAware());
-      	}
-          
-          public int registerBeanDefinitions(Document doc, Resource resource) throws BeanDefinitionStoreException {
-      		BeanDefinitionDocumentReader documentReader = createBeanDefinitionDocumentReader();
-      		int countBefore = getRegistry().getBeanDefinitionCount();
-      		documentReader.registerBeanDefinitions(doc, createReaderContext(resource));
-      		return getRegistry().getBeanDefinitionCount() - countBefore;
-      	}
-      
-      }
+      public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {}
       ```
-    
+      
       默认的文件加载实现类`org.springframework.beans.factory.xml.DefaultDocumentLoader`：
-    
+      
       ```java
-      public class DefaultDocumentLoader implements DocumentLoader {
-          
-      	@Override
-      	public Document loadDocument(InputSource inputSource, EntityResolver entityResolver,
-      			ErrorHandler errorHandler, int validationMode, boolean namespaceAware) throws Exception {
-      
-      		DocumentBuilderFactory factory = createDocumentBuilderFactory(validationMode, namespaceAware);
-      		if (logger.isTraceEnabled()) {
-      			logger.trace("Using JAXP provider [" + factory.getClass().getName() + "]");
-      		}
-      		DocumentBuilder builder = createDocumentBuilder(factory, entityResolver, errorHandler);
-      		return builder.parse(inputSource);
-      	}
-          
-          protected DocumentBuilderFactory createDocumentBuilderFactory(int validationMode, boolean namespaceAware)
-      			throws ParserConfigurationException {
-      
-      		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-      		factory.setNamespaceAware(namespaceAware);
-      
-      		if (validationMode != XmlValidationModeDetector.VALIDATION_NONE) {
-      			factory.setValidating(true);
-      			if (validationMode == XmlValidationModeDetector.VALIDATION_XSD) {
-      				// Enforce namespace aware for XSD...
-      				factory.setNamespaceAware(true);
-      				try {
-      					factory.setAttribute(SCHEMA_LANGUAGE_ATTRIBUTE, XSD_SCHEMA_LANGUAGE);
-      				}
-      				catch (IllegalArgumentException ex) {
-      					ParserConfigurationException pcex = new ParserConfigurationException(
-      							"Unable to validate using XSD: Your JAXP provider [" + factory +
-      							"] does not support XML Schema. Are you running on Java 1.4 with Apache Crimson? " +
-      							"Upgrade to Apache Xerces (or Java 1.5) for full XSD support.");
-      					pcex.initCause(ex);
-      					throw pcex;
-      				}
-      			}
-      		}
-      
-      		return factory;
-      	}
-          
-          protected DocumentBuilder createDocumentBuilder(DocumentBuilderFactory factory,
-      			@Nullable EntityResolver entityResolver, @Nullable ErrorHandler errorHandler)
-      			throws ParserConfigurationException {
-      
-      		DocumentBuilder docBuilder = factory.newDocumentBuilder();
-      		if (entityResolver != null) {
-      			docBuilder.setEntityResolver(entityResolver);
-      		}
-      		if (errorHandler != null) {
-      			docBuilder.setErrorHandler(errorHandler);
-      		}
-      		return docBuilder;
-      	}
-          
-      }
+      public class DefaultDocumentLoader implements DocumentLoader {}
       ```
-    
+      
       默认的bean的文件解析器类`DefaultBeanDefinitionDocumentReader`：
-    
+      
       ```java
       public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocumentReader {
           
@@ -1576,9 +797,9 @@ public class PropertyPlaceholderHelper {
       		// keep track of the current (parent) delegate, which may be null. Create
       		// the new (child) delegate with a reference to the parent for fallback purposes,
       		// then ultimately reset this.delegate back to its original (parent) reference.
-      		// this behavior emulates a stack of delegates without actually necessitating one.
+    		// this behavior emulates a stack of delegates without actually necessitating one.
       		BeanDefinitionParserDelegate parent = this.delegate;
-      		this.delegate = createDelegate(getReaderContext(), root, parent);
+    		this.delegate = createDelegate(getReaderContext(), root, parent);
       
       		if (this.delegate.isDefaultNamespace(root)) {
       			String profileSpec = root.getAttribute(PROFILE_ATTRIBUTE);
@@ -1614,9 +835,9 @@ public class PropertyPlaceholderHelper {
            * 解析root级的元素：import, alias, bean
            */
           protected void parseBeanDefinitions(Element root, BeanDefinitionParserDelegate delegate) {
-      		if (delegate.isDefaultNamespace(root)) {
+    		if (delegate.isDefaultNamespace(root)) {
       			NodeList nl = root.getChildNodes();
-      			for (int i = 0; i < nl.getLength(); i++) {
+    			for (int i = 0; i < nl.getLength(); i++) {
       				Node node = nl.item(i);
       				if (node instanceof Element) {
       					Element ele = (Element) node;
@@ -1676,9 +897,9 @@ public class PropertyPlaceholderHelper {
       
       }    
       ```
-    
+      
       `BeanDefinitionParserDelegate`
-    
+      
       ```java
       public class BeanDefinitionParserDelegate {
       
@@ -1689,9 +910,9 @@ public class PropertyPlaceholderHelper {
       	}
           
           /**
-           * 解析bean元素，解析异常返回null
+         * 解析bean元素，解析异常返回null
            */
-          @Nullable
+        @Nullable
       	public BeanDefinitionHolder parseBeanDefinitionElement(Element ele, @Nullable BeanDefinition containingBean) {
       		String id = ele.getAttribute(ID_ATTRIBUTE);
       		String nameAttr = ele.getAttribute(NAME_ATTRIBUTE);
@@ -1749,9 +970,9 @@ public class PropertyPlaceholderHelper {
       			return new BeanDefinitionHolder(beanDefinition, beanName, aliasesArray);
       		}
       
-      		return null;
+    		return null;
       	}
-          
+        
           /**
            * 解析bean定义信息，不包括name/alias
            */ 
@@ -1808,12 +1029,12 @@ public class PropertyPlaceholderHelper {
       
       }
       ```
-    
+      
       `BeanDefinitionReaderUtils`
-    
-      ```java
+      
+    ```java
       /**
-       * bean定义信息解析器工具类
+     * bean定义信息解析器工具类
        */
       public abstract class BeanDefinitionReaderUtils {
           
@@ -1839,10 +1060,8 @@ public class PropertyPlaceholderHelper {
           
       }
       ```
-    
+      
       最终会调回`DefaultListableBeanFactory#registerBeanDefinition`；
-    
-    
     
     - `prepareBeanFactory(beanFactory)`
     - `postProcessBeanFactory(beanFactory)`
