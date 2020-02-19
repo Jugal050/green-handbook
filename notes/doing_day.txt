@@ -1487,6 +1487,45 @@
 
 				-------------------------------------------------------------
 				至此，容器初始化refresh()执行完成。。。。。
+
+
+2020-2-19 10:24:09
+
+	# ClassPathXmlApplicationContext 源码阅读：
+
+
+			obtainFreshBeanFactory()
+
+				// 加载bean定义信息（通过XmlBeanDefinitionReader）
+				org.springframework.context.support.AbstractXmlApplicationContext#loadBeanDefinitions
+
+				// 解析root级别的元素，包括：import，alias，bean
+				org.springframework.beans.factory.xml.DefaultBeanDefinitionDocumentReader#parseBeanDefinitions
+
+				// 从xml文件中读取Bean元素: 
+				org.springframework.beans.factory.xml.BeanDefinitionParserDelegate#parseBeanDefinitionElement
+
+				// 从xml文件中读取Bean属性: 
+				org.springframework.beans.factory.xml.BeanDefinitionParserDelegate#parseBeanDefinitionAttributes
+
+				// 注册bean定义信息：
+				org.springframework.beans.factory.support.DefaultListableBeanFactory#registerBeanDefinition
+
+
+			finishBeanFactoryInitialization(beanFactory)	
+				
+				// 创建bean实例，创建方法包括：工厂方法，构造器，普通实例化
+				org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#createBeanInstance
+
+
+
+
+
+
+
+
+
+
 			
 
 
