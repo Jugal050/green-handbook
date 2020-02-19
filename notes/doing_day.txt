@@ -1519,6 +1519,18 @@
 
 
 
+				// 根据指定的bean返回一个RootBeanDefinition(如果传入的是子类bean定义信息，将于父类bean定义信息合并)
+				org.springframework.beans.factory.support.AbstractBeanFactory#getMergedBeanDefinition
+
+
+
+
+2020-2-20 08:00:00
+
+	# Happy birthday to mama!  Remember it. Don't Forget.
+
+
+
 
 
 
