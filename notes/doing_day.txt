@@ -1512,7 +1512,17 @@
 				org.springframework.beans.factory.support.DefaultListableBeanFactory#registerBeanDefinition
 
 
+
 			finishBeanFactoryInitialization(beanFactory)	
+
+				// 创建bean（核心方法）：包括创建bean实例，填充bean实例，调用后置处理器，等等
+				org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#createBean
+
+				// 填充bean实例（根据bean定义信息中属性值）
+				org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#populateBean
+				
+				// 更改bean的属性值，解析beanfactory中bean的property值。使用深拷贝，而不永久改变这些property值。
+				org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#applyPropertyValues
 				
 				// 创建bean实例，创建方法包括：工厂方法，构造器，普通实例化
 				org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#createBeanInstance
@@ -1523,11 +1533,15 @@
 				org.springframework.beans.factory.support.AbstractBeanFactory#getMergedBeanDefinition
 
 
-
+	# 妈妈生日（1-26）！！！！！			
 
 2020-2-20 08:00:00
 
 	# Happy birthday to mama!  Remember it. Don't Forget.
+
+		// remake. 1-26日生日，已经过了。。。。。。
+
+	# spring-refrence-guide restart	
 
 
 
