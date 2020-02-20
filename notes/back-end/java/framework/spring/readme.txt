@@ -4,6 +4,8 @@ https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/
 
 	Core				IoC Container, Events, Resources, i18n, Validation, Data Binding, Type Conversion, SpEL, AOP.
 
+							1.4.4. Lazy-initialized Beans	// done 2020-2-20 19:32:33
+
 	Testing				Mock Objects, TestContext Framework, Spring MVC Test, WebTestClient.
 
 	Data Access			Transactions, DAO Support, JDBC, O/R Mapping, XML Marshalling.
