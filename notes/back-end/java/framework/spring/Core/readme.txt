@@ -627,10 +627,190 @@ Core Technologies 			https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-fra
 			</beans>
 
 		1.4.5. Autowiring Collaborators
-		
-			
+
 			// 略读，源码待读 2020-2-20 19:31:51
 
+			Autowiring modes：
+
+				no
+
+				(Default) No autowiring. Bean references must be defined by ref elements. Changing the default setting is not recommended for larger deployments, because specifying collaborators explicitly gives greater control and clarity. To some extent, it documents the structure of a system.
+
+				（默认）无自动注入。 Bean引用必须使用ref元素定义。 大型应用部署时不推荐修改默认值，因为其中会有一些特殊配置需要特别管理和明确。从某种角度来说，它决定了一个系统的结构。
+
+				byName
+
+				Autowiring by property name. Spring looks for a bean with the same name as the property that needs to be autowired. For example, if a bean definition is set to autowire by name and it contains a master property (that is, it has a setMaster(..) method), Spring looks for a bean definition named master and uses it to set the property.
+
+				根据属性名称自动注入。 Spring会查找和需要注入的元素同名的bean。 
+				比如，如果一个bean设置为根据名称注入，其中包含一个master的元素（有setMaster方法），Spring会查找名称为master的bean然后注入到此元素master中。
+
+				byType
+
+				Lets a property be autowired if exactly one bean of the property type exists in the container. If more than one exists, a fatal exception is thrown, which indicates that you may not use byType autowiring for that bean. If there are no matching beans, nothing happens (the property is not set).
+
+				根据属性类型自动注入。 如果容器中存在与属性类型相同的单个bean则注入元素。 如果存在多个，代表根据元素类型无法注入bean，则抛出异常。如果没有匹配的beans，则不进行任何操作。
+
+				constructor
+
+				Analogous to byType but applies to constructor arguments. If there is not exactly one bean of the constructor argument type in the container, a fatal error is raised.
+
+				与byType类似，但是使用构造器参数注入。如果容器中没有与构造器参数相同类型的bean，则程序中止。
+
+			Limitations and Disadvantages of Autowiring
+			
+				Explicit dependencies in property and constructor-arg settings always override autowiring. You cannot autowire simple properties such as primitives, Strings, and Classes (and arrays of such simple properties). This limitation is by-design.
+
+				属性和构造器参数设置的明确依赖往往会覆盖自动注入。 我们不能自动注入简单的属性，比如基本类型，String，Class，以及包含这些类型的数组。 这些属于设计上的限制。
+
+				Autowiring is less exact than explicit wiring. Although, as noted in the earlier table, Spring is careful to avoid guessing in case of ambiguity that might have unexpected results. The relationships between your Spring-managed objects are no longer documented explicitly.
+
+				自动注入比明确注入更加模棱两可，尽管，如原先表格上的笔记所说，Spring已经很谨慎的避免出现，如果有模棱两可的结果时开发者会猜测，但，在spring管理的对象之间关系并不是那么明确
+
+				Wiring information may not be available to tools that may generate documentation from a Spring container.
+
+				对于有些从spring容器中生成文档的工具类，信息注入可能不可用。
+
+				Multiple bean definitions within the container may match the type specified by the setter method or constructor argument to be autowired. For arrays, collections, or Map instances, this is not necessarily a problem. However, for dependencies that expect a single value, this ambiguity is not arbitrarily resolved. If no unique bean definition is available, an exception is thrown.	
+
+				容器中如果有多个bean定义信息，可能会根据setter方法或者构造器参数注入的类型进行匹配。 对于数组array，结合collection，或者映射map实例，这些不是问题。
+				但是对于明确仅有一个值的那些依赖，这种模棱两可并不能简单粗暴地解决。 如果没有唯一的bean定义信息可用，则会抛出异常。
+
+			In the latter scenario, you have several options:
+			
+				Abandon autowiring in favor of explicit wiring.
+				放弃自动注入，使用明确注入。
+
+				Avoid autowiring for a bean definition by setting its autowire-candidate attributes to false, as described in the next section.
+				通过设置<bean autowire-candidate="false" />防止自动注入。 
+
+				Designate a single bean definition as the primary candidate by setting the primary attribute of its <bean/> element to true.
+				设置<bean primary="true" />将此bean设置为注入时的首选。
+
+				Implement the more fine-grained control available with annotation-based configuration, as described in Annotation-based Container Configuration.	
+				使用基于注解的配置实现更细粒度的控制。
+
+			Excluding a Bean from Autowiring		
+
+				<bean autowire-candidate="false" /> （优先级更高）
+
+				<beans default-autowire-candidates="*Repository, *Service, ...">  （比bean中设置优先级低）
+				</beans>
+
+				tips: 
+
+					只对注入类型为byType的有效，不会对byName产生影响。
+
+					当我们不想通过自动注入将此bean注入到其他bean中时，可以用这种方法，但这并不代表此bean本生不能使用自动注入进行配置，而是，注入其他的bean时它不再是一个候选者。
+
+		1.4.6. Method Injection
+		
+			Lookup Method Injection
+
+				xml配置：
+
+					java:
+
+						package fiona.apple;
+
+						// no more Spring imports!
+
+						public abstract class CommandManager {
+
+						    public Object process(Object commandState) {
+						        // grab a new instance of the appropriate Command interface
+						        Command command = createCommand();
+						        // set the state on the (hopefully brand new) Command instance
+						        command.setState(commandState);
+						        return command.execute();
+						    }
+
+						    // okay... but where is the implementation of this method?
+						    protected abstract Command createCommand();
+						}
+
+					xml:
+				
+						<!-- a stateful bean deployed as a prototype (non-singleton) -->
+						<bean id="myCommand" class="fiona.apple.AsyncCommand" scope="prototype">
+						    <!-- inject dependencies here as required -->
+						</bean>
+
+						<!-- commandProcessor uses statefulCommandHelper -->
+						<bean id="commandManager" class="fiona.apple.CommandManager">
+						    <lookup-method name="createCommand" bean="myCommand"/>
+						</bean>		
+
+				注解实现：
+
+					java:
+
+							public abstract class CommandManager {
+
+							    public Object process(Object commandState) {
+							        Command command = createCommand();
+							        command.setState(commandState);
+							        return command.execute();
+							    }
+
+							    @Lookup("myCommand")
+							    protected abstract Command createCommand();
+							}
+
+
+						or 
+						
+							public abstract class CommandManager {
+
+							    public Object process(Object commandState) {
+							        MyCommand command = createCommand();
+							        command.setState(commandState);
+							        return command.execute();
+							    }
+
+							    @Lookup
+							    protected abstract MyCommand createCommand();
+							}	
+							
+			Arbitrary Method Replacement：
+			
+				java
+
+					public class MyValueCalculator {
+
+					    public String computeValue(String input) {
+					        // some real code...
+					    }
+
+					    // some other methods...
+					}
+
+					/**
+					 * meant to be used to override the existing computeValue(String)
+					 * implementation in MyValueCalculator
+					 */
+					public class ReplacementComputeValue implements MethodReplacer {
+
+					    public Object reimplement(Object o, Method m, Object[] args) throws Throwable {
+					        // get the input value, work with it, and return a computed result
+					        String input = (String) args[0];
+					        ...
+					        return ...;
+					    }
+					}
+
+				xml
+				
+					<bean id="myValueCalculator" class="x.y.z.MyValueCalculator">
+					    <!-- arbitrary method replacement -->
+					    <replaced-method name="computeValue" replacer="replacementComputeValue">
+					        <arg-type>String</arg-type>
+					    </replaced-method>
+					</bean>
+
+					<bean id="replacementComputeValue" class="a.b.c.ReplacementComputeValue"/>	
+
+				// done 2020-2-21 20:01:36
 
 	1.5. Bean Scopes			 
 
