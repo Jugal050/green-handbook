@@ -1051,7 +1051,406 @@ Core Technologies 			https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-fra
 
 			// 2020-2-22 11:48:25			
 
-	1.6. Customizing the Nature of a Bean						
+	1.6. Customizing the Nature of a Bean	
+
+		1.6.1. Lifecycle Callbacks	
+
+			使用Spring提供的特殊接口：				
+
+				InitializingBean#afterPropertiesSet
+
+				DisposableBean#destroy
+
+			不使用Spring提供的特殊接口：
+
+				with JSR-250：  @PostConstruct and @PreDestroy
+
+				without JSR-250:  init-method and destroy-method
+
+			Initialization Callbacks	
+
+				case1: 使用注解@PostConstruct
+
+					java:
+
+						public class ExampleBean {
+
+							@PostConstruct
+						    public void init() {
+						        // do some initialization work
+						    }
+						}
+
+				case2: 使用xml配置init-method
+
+					xml:
+
+						<bean id="exampleInitBean" class="examples.ExampleBean" init-method="init"/>
+
+					java:	
+
+						public class ExampleBean {
+
+						    public void init() {
+						        // do some initialization work
+						    }
+						}	
+
+				case3: 实现Spring提供的接口InitializingBean#afterPropertiesSet
+
+					xml:
+
+						<bean id="exampleInitBean" class="examples.AnotherExampleBean"/>
+
+					java:
+					
+						public class AnotherExampleBean implements InitializingBean {
+
+						    @Override
+						    public void afterPropertiesSet() {
+						        // do some initialization work
+						    }
+						}	
+
+			Destruction Callbacks
+			
+				case1: 使用注解 @PreDestroy
+
+					java:
+
+						public class ExampleBean {
+
+							@PreDestroy
+						    public void cleanup() {
+						        // do some destruction work (like releasing pooled connections)
+						    }
+						}
+
+				case2: 使用xml配置destroy-method
+
+					xml:
+
+						<bean id="exampleInitBean" class="examples.ExampleBean" destroy-method="cleanup"/>
+
+					java:	
+
+						public class ExampleBean {
+
+						    public void cleanup() {
+						        // do some destruction work (like releasing pooled connections)
+						    }
+						}	
+
+				case3: 实现Spring提供的接口DisposableBean#destroy
+
+					xml:
+
+						<bean id="exampleInitBean" class="examples.AnotherExampleBean"/>
+
+					java:
+					
+						public class AnotherExampleBean implements DisposableBean {
+
+						    @Override
+						    public void destroy() {
+						        // do some destruction work (like releasing pooled connections)
+						    }
+						}
+
+			Default Initialization and Destroy Methods
+			
+				xml:
+
+					<beans default-init-method="init">
+
+					    <bean id="blogService" class="com.something.DefaultBlogService">
+					        <property name="blogDao" ref="blogDao" />
+					    </bean>
+
+					</beans>
+
+				java:		
+
+					public class DefaultBlogService implements BlogService {
+
+					    private BlogDao blogDao;
+
+					    public void setBlogDao(BlogDao blogDao) {
+					        this.blogDao = blogDao;
+					    }
+
+					    // this is (unsurprisingly) the initialization callback method
+					    public void init() {
+					        if (this.blogDao == null) {
+					            throw new IllegalStateException("The [blogDao] property must be set.");
+					        }
+					    }
+					}	
+
+			Combining Lifecycle Mechanisms
+			
+				As of Spring 2.5, you have three options for controlling bean lifecycle behavior:
+
+					The InitializingBean and DisposableBean callback interfaces
+
+					Custom init() and destroy() methods
+
+					The @PostConstruct and @PreDestroy annotations. You can combine these mechanisms to control a given bean.	
+
+				tips：
+					
+					如果一个bean有多个以上配置信息，如果每个配置的方法名不同，则按下边的顺序依次执行。 如果方法名相同，则该方法只执行一次。
+
+				Multiple lifecycle mechanisms configured for the same bean, with different initialization methods, are called as follows:
+
+					Methods annotated with @PostConstruct
+
+					afterPropertiesSet() as defined by the InitializingBean callback interface
+
+					A custom configured init() method
+
+				Destroy methods are called in the same order:
+
+					Methods annotated with @PreDestroy
+
+					destroy() as defined by the DisposableBean callback interface
+
+					A custom configured destroy() method	
+
+			Startup and Shutdown Callbacks
+
+				Lifecycle 				// 生命周期接口
+
+				LifecycleProcessor 		// 生命周期处理器接口（默认实现 DefaultLifecycleProcessor）
+
+				SmartLifecycle 			// 灵活的生命周期（extends extends Lifecycle, Phased）
+
+				Phased					// 阶段的（可用于生命周期管理）
+			
+			Shutting Down the Spring IoC Container Gracefully in Non-Web Applications	
+
+				如果在Spring非web容器中，可以通过JVM注册ShutdownHook[关闭钩子]来确保优雅的关闭并调用单例bean上的destroy方法释放资源。必须正确配置和实现destroy的回调。
+
+				可以调用接口ConfigurableApplicationContext#registerShutdownHook()来注册ShutdownHook。
+
+				i.e:
+
+					import org.springframework.context.ConfigurableApplicationContext;
+					import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+					public final class Boot {
+
+					    public static void main(final String[] args) throws Exception {
+					        ConfigurableApplicationContext ctx = new ClassPathXmlApplicationContext("beans.xml");
+
+					        // add a shutdown hook for the above context...
+					        ctx.registerShutdownHook();
+
+					        // app runs here...
+
+					        // main method exits, hook is called prior to the app shutting down...
+					    }
+					}
+					
+		1.6.2. ApplicationContextAware and BeanNameAware
+
+		1.6.3. Other Aware Interfaces				
+
+			Table 4. Aware interfaces
+
+			Name									Injected Dependency											Explained in…​
+
+			ApplicationContextAware 				Declaring ApplicationContext. 								ApplicationContextAware and BeanNameAware
+
+			ApplicationEventPublisherAware 			Event publisher of the enclosing ApplicationContext. 		Additional Capabilities of the ApplicationContext
+
+			BeanClassLoaderAware 					Class loader used to load the bean classes. 				Instantiating Beans
+
+			BeanFactoryAware 						Declaring BeanFactory. 										ApplicationContextAware and BeanNameAware
+
+			BeanNameAware 						    Name of the declaring bean. 								ApplicationContextAware and BeanNameAware
+
+			BootstrapContextAware 					Resource adapter BootstrapContext the container runs in. 	JCA CCI
+													Typically available only in JCA-aware ApplicationContext instances.
+
+			LoadTimeWeaverAware 					Defined weaver for processing class definition at load time. Load-time Weaving with AspectJ in the Spring Framework
+
+			MessageSourceAware 						Configured strategy for resolving messages 					Additional Capabilities of the ApplicationContext
+													(with support for parametrization and internationalization).
+
+			NotificationPublisherAware 				Spring JMX notification publisher. 							Notifications
+
+			ResourceLoaderAware 					Configured loader for low-level access to resources. 		Resources
+
+			ServletConfigAware 						Current ServletConfig the container runs in. 				Spring MVC
+													Valid only in a web-aware Spring ApplicationContext.
+
+			ServletContextAware 					Current ServletContext the container runs in. 				Spring MVC
+													Valid only in a web-aware Spring ApplicationContext.
+
+	1.7. Bean Definition Inheritance
+
+		Bean定义信息相关类：
+	
+			ChildBeanDefinition 	子类的Bean定义信息
+
+			RootBeanDefinition		基类的Bean定义信息
+
+			GenericBeanDefinition 	通用的Bean定义信息
+
+		i.e:
+
+			<bean id="inheritedTestBean" abstract="true" class="org.springframework.beans.TestBean">
+			    <property name="name" value="parent"/>
+			    <property name="age" value="1"/>
+			</bean>
+
+			<bean id="inheritsWithDifferentClass" class="org.springframework.beans.DerivedTestBean" parent="inheritedTestBean" init-method="initialize">  
+			    <property name="name" value="override"/>
+			    <!-- the age property value of 1 will be inherited from parent -->
+			</bean>
+
+			<bean id="inheritedTestBeanWithoutClass" abstract="true">
+			    <property name="name" value="parent"/>
+			    <property name="age" value="1"/>
+			</bean>
+
+			<bean id="inheritsWithClass" class="org.springframework.beans.DerivedTestBean" parent="inheritedTestBeanWithoutClass" init-method="initialize">
+			    <property name="name" value="override"/>
+			    <!-- age will inherit the value of 1 from the parent bean definition-->
+			</bean>
+
+		tips:
+
+			这里由于父级bean，只是用于bean模板定义信息，并不能完全初始化，所以必须标记为abstract="true"。这样ApplicationContext容器在预初始化单例bean阶段，才不会去初始化父级bean。
+
+	1.8. Container Extension Points
+
+		1.8.1. Customizing Beans by Using a BeanPostProcessor
+
+			顾名思义： Bean后置处理器，对bean进行后置处理。
+
+			可以通过添加BeanPostProcessor实现类，在容器完成bean的实例化、配置、初始化后，添加特殊的逻辑。
+
+			Example: Hello World, BeanPostProcessor-style
+
+				java:
+
+					package scripting;
+
+					import org.springframework.beans.factory.config.BeanPostProcessor;
+
+					public class InstantiationTracingBeanPostProcessor implements BeanPostProcessor {
+
+					    // simply return the instantiated bean as-is
+					    public Object postProcessBeforeInitialization(Object bean, String beanName) {
+					        return bean; // we could potentially return any object reference here...
+					    }
+
+					    public Object postProcessAfterInitialization(Object bean, String beanName) {
+					        System.out.println("Bean '" + beanName + "' created : " + bean.toString());
+					        return bean;
+					    }
+					}
+
+				xml:
+				
+					<?xml version="1.0" encoding="UTF-8"?>
+					<beans xmlns="http://www.springframework.org/schema/beans"
+					    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+					    xmlns:lang="http://www.springframework.org/schema/lang"
+					    xsi:schemaLocation="http://www.springframework.org/schema/beans
+					        https://www.springframework.org/schema/beans/spring-beans.xsd
+					        http://www.springframework.org/schema/lang
+					        https://www.springframework.org/schema/lang/spring-lang.xsd">
+
+					    <lang:groovy id="messenger" script-source="classpath:org/springframework/scripting/groovy/Messenger.groovy">
+					        <lang:property name="message" value="Fiona Apple Is Just So Dreamy."/>
+					    </lang:groovy>
+
+					    <!--
+					    when the above bean (messenger) is instantiated, this custom
+					    BeanPostProcessor implementation will output the fact to the system console
+					    -->
+					    <bean class="scripting.InstantiationTracingBeanPostProcessor"/>
+
+					</beans>	
+	
+			Example: The RequiredAnnotationBeanPostProcessor
+
+		1.8.2. Customizing Configuration Metadata with a BeanFactoryPostProcessor	
+
+			顾名思义： BeanFactory后置处理器，对beanFactory进行后置处理。
+
+			Spring IOC容器会在实例化bean之前（除了BeanFactoryPostProcessor本身），允许BeanFactoryPostProcessor读取并修改配置信息。
+
+			Example: The Class Name Substitution PropertySourcesPlaceholderConfigurer
+
+				xml:
+
+					<bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
+					    <property name="locations" value="classpath:com/something/jdbc.properties"/>
+					</bean>
+
+					<bean id="dataSource" destroy-method="close" class="org.apache.commons.dbcp.BasicDataSource">
+					    <property name="driverClassName" value="${jdbc.driverClassName}"/>
+					    <property name="url" value="${jdbc.url}"/>
+					    <property name="username" value="${jdbc.username}"/>
+					    <property name="password" value="${jdbc.password}"/>
+					</bean>
+
+				如果使用Spring2.5+的context命名空间：
+
+					<context:property-placeholder location="classpath:com/something/jdbc.properties"/>
+
+			Example: The PropertyOverrideConfigurer
+			
+				format:
+
+					beanName.property=value
+
+				i.e:			
+
+					dataSource.driverClassName=com.mysql.jdbc.Driver
+					dataSource.url=jdbc:mysql:mydb
+
+				如果使用Spring2.5+的context命名空间：	
+
+					<context:property-override location="classpath:override.properties"/>
+
+
+		1.8.3. Customizing Instantiation Logic with a FactoryBean	
+
+			可以通过实现org.springframework.beans.factory.FactoryBean接口，实现一个对象本身的工厂。
+
+			FactoryBean接口可以实现pring容器实例化逻辑的可插拔性。
+
+			如果我们初始化bean的逻辑很复杂，在java中实现要比在xml中配置更好，可以自定义一个FactoryBean，将复杂的逻辑写到class中，然后再将此FactoryBean添加到Spring容器中。
+
+			The FactoryBean interface provides three methods:
+
+				Object getObject(): Returns an instance of the object this factory creates. The instance can possibly be shared, depending on whether this factory returns singletons or prototypes.
+
+				boolean isSingleton(): Returns true if this FactoryBean returns singletons or false otherwise.
+
+				Class getObjectType(): Returns the object type returned by the getObject() method or null if the type is not known in advance.
+
+			假设bean名称为myBean，则
+
+				applicationContext.getBean("&myBean");  // 获取的是容器中创建"myBean"的FactoryBean
+
+				applicationContext.getBean("myBean");   // 获取的是名为"myBean"的bean，也即该factoryBean.getObject()的返回值。
+
+			// done 2020-2-22 19:05:47	
+
+	1.9. Annotation-based Container Configuration			
+
+
+
+			
+
+
+
 
 
 			

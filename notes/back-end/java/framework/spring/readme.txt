@@ -8,6 +8,8 @@ https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/
 
 							1.5. Bean Scopes				// done 2020-2-22 11:48:43
 
+							1.8. Container Extension Points // done 2020-2-22 19:06:10
+
 	Testing				Mock Objects, TestContext Framework, Spring MVC Test, WebTestClient.
 
 	Data Access			Transactions, DAO Support, JDBC, O/R Mapping, XML Marshalling.
