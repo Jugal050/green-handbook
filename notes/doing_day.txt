@@ -1624,6 +1624,39 @@
 
 	# 询问社区是否可以开复工证明 + 盖章。
 
+2020-2-22 10:22:39
+
+	# spring-reference-guide hot point:
+
+		## 	引出问题：（bean scope不一致问题）
+
+				单例bean A中每次调用方法，需要非单例（prototype）的bean B。 容器只会创建A一次，这样只有一次机会来设置属性。 容器无法每次给A提供一个新创建的B。
+
+			解决方案：
+			
+				1. 放弃IOC，让bean A	通过实现接口ApplicationContextAware（既可以设置容器），每次A需要B时，调用applicationContext.getBean("B")。
+
+				2. 使用方法注入Method Injection。
+
+		## Spring代理机制：
+
+				JDK动态代理基于JDK，CGLIB基于AspectJ，已集成在spring-core包下。
+
+				如果代理对象实现了至少一个接口，则使用JDK动态代理，如果没有实现任何接口，则使用CGLIB。
+
+				问题：
+
+					使用CGLIB时，final修饰的方法不能被代理，因为运行时子类无法重写。
+
+					Spring4.0以后，代理对象构造方法不再会调用两次，因为CGLIB代理实例是通过Objenesis创建的。只有当JVM不允许绕过构造器，spring-support才会两次调用并输出日志。
+
+				如果想强制使用CGLIB代理，可以设置：<aop:config proxy-target-class="true"></aop:config>
+
+				使用注解 @AspectJ 自动代理时如果想强制使用CGLIB代理，可以设置：<aop:aspectj-autoproxy proxy-target-class="true"/>	
+
+	# 1.5. Bean Scopes 	// done 2020-2-22 11:48:56				
+
+
 
 
 

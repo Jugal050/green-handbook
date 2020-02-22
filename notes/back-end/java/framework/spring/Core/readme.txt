@@ -704,6 +704,18 @@ Core Technologies 			https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-fra
 					当我们不想通过自动注入将此bean注入到其他bean中时，可以用这种方法，但这并不代表此bean本生不能使用自动注入进行配置，而是，注入其他的bean时它不再是一个候选者。
 
 		1.4.6. Method Injection
+
+			引出问题：
+
+				uppose singleton bean A needs to use non-singleton (prototype) bean B, perhaps on each method invocation on A. The container creates the singleton bean A only once, and thus only gets one opportunity to set the properties. The container cannot provide bean A with a new instance of bean B every time one is needed.
+
+				单例bean A中每次调用方法，需要非单例（prototype）的bean B。 容器只会创建A一次，这样只有一次机会来设置属性。 容器无法每次给A提供一个新创建的B。
+
+			解决方案：
+			
+				1. 放弃IOC，让bean A	通过实现接口ApplicationContextAware（既可以设置容器），每次A需要B时，调用applicationContext.getBean("B")。
+
+				2. 使用方法注入Method Injection。
 		
 			Lookup Method Injection
 
@@ -812,9 +824,240 @@ Core Technologies 			https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-fra
 
 				// done 2020-2-21 20:01:36
 
-	1.5. Bean Scopes			 
+	1.5. Bean Scopes	
+
+
+		Table 3. Bean scopes
+
+		Scope			Description
+		singleton 		(Default) Scopes a single bean definition to a single object instance for each Spring IoC container.
+
+		prototype		Scopes a single bean definition to any number of object instances.
+
+		request			Scopes a single bean definition to the lifecycle of a single HTTP request. That is, each HTTP request has its own instance of a bean created off the back of a single bean definition. Only valid in the context of a web-aware Spring ApplicationContext.
+
+		session 		Scopes a single bean definition to the lifecycle of an HTTP Session. Only valid in the context of a web-aware Spring ApplicationContext.
+
+		application 	Scopes a single bean definition to the lifecycle of a ServletContext. Only valid in the context of a web-aware Spring ApplicationContext.
+
+		WebSocket 		Scopes a single bean definition to the lifecycle of a WebSocket. Only valid in the context of a web-aware Spring ApplicationContext.	
+
+		1.5.1. The Singleton Scope
+
+			<bean id="accountService" class="com.something.DefaultAccountService"/>
+
+			<!-- the following is equivalent, though redundant (singleton scope is the default) -->
+			<bean id="accountService" class="com.something.DefaultAccountService" scope="singleton"/>	 
 
 			
+		1.5.2. The Prototype Scope
+		
+			<bean id="accountService" class="com.something.DefaultAccountService" scope="prototype"/>
+
+		1.5.3. Singleton Beans with Prototype-bean Dependencies
+		
+			Method Injection
+
+		1.5.4. Request, Session, Application, and WebSocket Scopes
+		
+			Initial Web Configuration
+
+				web.xml:
+
+					Servlet 2.5:
+
+						<web-app>
+						    ...
+						    <listener>
+						        <listener-class>
+						            org.springframework.web.context.request.RequestContextListener|ServletRequestListener
+						        </listener-class>
+						    </listener>
+						    ...
+						</web-app>
+
+					Servlet 3.0+:
+					
+						WebApplicationInitializer 
+
+					if there are issues:
+					
+						<web-app>
+						    ...
+						    <filter>
+						        <filter-name>requestContextFilter</filter-name>
+						        <filter-class>org.springframework.web.filter.RequestContextFilter</filter-class>
+						    </filter>
+						    <filter-mapping>
+						        <filter-name>requestContextFilter</filter-name>
+						        <url-pattern>/*</url-pattern>
+						    </filter-mapping>
+						    ...
+						</web-app>		
+
+			Request scope	
+
+				xml:
+
+					<bean id="loginAction" class="com.something.LoginAction" scope="request"/>
+
+				java:
+
+					@RequestScope
+					@Component
+					public class LoginAction {
+					    // ...
+					}		
+
+			Session Scope
+			
+				xml:
+
+					<bean id="userPreferences" class="com.something.UserPreferences" scope="session"/>
+
+				java:
+				
+					@SessionScope
+					@Component
+					public class UserPreferences {
+					    // ...
+					}
+
+			Application Scope
+			
+				xml:
+
+					<bean id="appPreferences" class="com.something.AppPreferences" scope="application"/>
+
+				java:	
+
+					@ApplicationScope
+					@Component
+					public class AppPreferences {
+					    // ...
+					}
+
+			Scoped Beans as Dependencies
+
+				xml:
+
+					<?xml version="1.0" encoding="UTF-8"?>
+					<beans xmlns="http://www.springframework.org/schema/beans"
+					    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+					    xmlns:aop="http://www.springframework.org/schema/aop"
+					    xsi:schemaLocation="http://www.springframework.org/schema/beans
+					        https://www.springframework.org/schema/beans/spring-beans.xsd
+					        http://www.springframework.org/schema/aop
+					        https://www.springframework.org/schema/aop/spring-aop.xsd">
+
+					    <!-- an HTTP Session-scoped bean exposed as a proxy -->
+					    <bean id="userPreferences" class="com.something.UserPreferences" scope="session">
+					        <!-- instructs the container to proxy the surrounding bean -->
+					        <aop:scoped-proxy/> 
+					    </bean>
+
+					    <!-- a singleton-scoped bean injected with a proxy to the above bean -->
+					    <bean id="userService" class="com.something.SimpleUserService">
+					        <!-- a reference to the proxied userPreferences bean -->
+					        <property name="userPreferences" ref="userPreferences"/>
+					    </bean>
+					</beans>
+
+			Choosing the Type of Proxy to create
+
+				JDK动态代理、CGLIB动态代理详见：5.8. Proxying Mechanisms
+
+					Spring代理机制：
+
+						JDK动态代理基于JDK，CGLIB基于AspectJ，已集成在spring-core包下。
+
+						如果代理对象实现了至少一个接口，则使用JDK动态代理，如果没有实现任何接口，则使用CGLIB。
+
+						问题：
+
+							使用CGLIB时，final修饰的方法不能被代理，因为运行时子类无法重写。
+
+							Spring4.0以后，代理对象构造方法不再会调用两次，因为CGLIB代理实例是通过Objenesis创建的。只有当JVM不允许绕过构造器，spring-support才会两次调用并输出日志。
+
+						如果想强制使用CGLIB代理，可以设置：<aop:config proxy-target-class="true"></aop:config>
+
+						使用注解 @AspectJ 自动代理时如果想强制使用CGLIB代理，可以设置：<aop:aspectj-autoproxy proxy-target-class="true"/>
+			
+				xml:
+
+					<!-- DefaultUserPreferences implements the UserPreferences interface -->
+					<bean id="userPreferences" class="com.stuff.DefaultUserPreferences" scope="session">
+					    <aop:scoped-proxy proxy-target-class="false"/>
+					</bean>
+
+					<bean id="userManager" class="com.stuff.UserManager">
+					    <property name="userPreferences" ref="userPreferences"/>
+					</bean>		
+
+		1.5.5. Custom Scopes
+
+			Creating a Custom Scope
+
+				实现接口org.springframework.beans.factory.config.Scope， 
+
+				i.e:
+
+					public class SimpleThreadScope implements Scope {}
+
+			Using a Custom Scope
+
+				注册：
+
+					Scope threadScope = new SimpleThreadScope();
+					beanFactory.registerScope("thread", threadScope);
+			
+				使用：
+
+					xml:
+
+						<bean id="..." class="..." scope="thread">
+
+					i.e:
+
+						<?xml version="1.0" encoding="UTF-8"?>
+						<beans xmlns="http://www.springframework.org/schema/beans"
+						    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+						    xmlns:aop="http://www.springframework.org/schema/aop"
+						    xsi:schemaLocation="http://www.springframework.org/schema/beans
+						        https://www.springframework.org/schema/beans/spring-beans.xsd
+						        http://www.springframework.org/schema/aop
+						        https://www.springframework.org/schema/aop/spring-aop.xsd">
+
+						    <bean class="org.springframework.beans.factory.config.CustomScopeConfigurer">
+						        <property name="scopes">
+						            <map>
+						                <entry key="thread">
+						                    <bean class="org.springframework.context.support.SimpleThreadScope"/>
+						                </entry>
+						            </map>
+						        </property>
+						    </bean>
+
+						    <bean id="thing2" class="x.y.Thing2" scope="thread">
+						        <property name="name" value="Rick"/>
+						        <aop:scoped-proxy/>
+						    </bean>
+
+						    <bean id="thing1" class="x.y.Thing1">
+						        <property name="thing2" ref="thing2"/>
+						    </bean>
+
+						</beans>			
+
+			// 2020-2-22 11:48:25			
+
+	1.6. Customizing the Nature of a Bean						
+
+
+			
+
+			
+
 
 
 

@@ -6,6 +6,8 @@ https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/
 
 							1.4.4. Lazy-initialized Beans	// done 2020-2-20 19:32:33
 
+							1.5. Bean Scopes				// done 2020-2-22 11:48:43
+
 	Testing				Mock Objects, TestContext Framework, Spring MVC Test, WebTestClient.
 
 	Data Access			Transactions, DAO Support, JDBC, O/R Mapping, XML Marshalling.
