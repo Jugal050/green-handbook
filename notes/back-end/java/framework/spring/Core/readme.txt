@@ -1443,7 +1443,317 @@ Core Technologies 			https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-fra
 
 			// done 2020-2-22 19:05:47	
 
-	1.9. Annotation-based Container Configuration			
+	1.9. Annotation-based Container Configuration		
+
+		tips:
+
+			注解注入会在XML注入前执行，这样就导致，如果一个属性配置同时使用了这两种途径进行注入，那XML中的配置会覆盖注解的配置信息。
+
+		注解开启方式：
+
+			1. 以特殊的bean定义信息进行注册。
+
+			2. xml中添加如下配置：
+
+				<?xml version="1.0" encoding="UTF-8"?>
+				<beans xmlns="http://www.springframework.org/schema/beans"
+				    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				    xmlns:context="http://www.springframework.org/schema/context"
+				    xsi:schemaLocation="http://www.springframework.org/schema/beans
+				        https://www.springframework.org/schema/beans/spring-beans.xsd
+				        http://www.springframework.org/schema/context
+				        https://www.springframework.org/schema/context/spring-context.xsd">
+
+				    <context:annotation-config/>
+
+				</beans>
+
+			同时会注册的后置处理器包括：
+				AutowiredAnnotationBeanPostProcessor, 
+				CommonAnnotationBeanPostProcessor, 
+				PersistenceAnnotationBeanPostProcessor,
+				RequiredAnnotationBeanPostProcessor.
+
+		1.9.1. @Required
+		
+			作用于bean属性的setter方法，标识该属性必须在配置期间进行填充，如果没有通过明确或注入属性值，容器会抛出异常。
+
+			推荐的做法是在bean类中自行添加断言进行必输判断/初始化，这样即时在容器外部程序也可以正常运行。
+
+			Spring Framework 5.1之后 @Requied 不再推荐使用，更推荐使用构造器注入形式注入必输属性（或者通过实现InitializingBean.afterPropertiesSet()来注入属性）
+
+		1.9.2. Using @Autowired
+		
+			@Autowired[Spring] == @Inject[JSR 330]
+
+			构造器：
+
+				public class MovieRecommender {
+
+				    private final CustomerPreferenceDao customerPreferenceDao;
+
+				    @Autowired
+				    public MovieRecommender(CustomerPreferenceDao customerPreferenceDao) {
+				        this.customerPreferenceDao = customerPreferenceDao;
+				    }
+
+				    // ...
+				}
+
+			setter方法：
+			
+				public class SimpleMovieLister {
+
+				    private MovieFinder movieFinder;
+
+				    @Autowired
+				    public void setMovieFinder(MovieFinder movieFinder) {
+				        this.movieFinder = movieFinder;
+				    }
+
+				    // ...
+				}
+
+			任意方法：
+			
+				public class MovieRecommender {
+
+				    private MovieCatalog movieCatalog;
+
+				    private CustomerPreferenceDao customerPreferenceDao;
+
+				    @Autowired
+				    public void prepare(MovieCatalog movieCatalog,
+				            CustomerPreferenceDao customerPreferenceDao) {
+				        this.movieCatalog = movieCatalog;
+				        this.customerPreferenceDao = customerPreferenceDao;
+				    }
+
+				    // ...
+				}		
+
+			多种方式混合使用：	
+
+				public class MovieRecommender {
+
+				    private final CustomerPreferenceDao customerPreferenceDao;
+
+				    @Autowired
+				    private MovieCatalog movieCatalog;
+
+				    @Autowired
+				    public MovieRecommender(CustomerPreferenceDao customerPreferenceDao) {
+				        this.customerPreferenceDao = customerPreferenceDao;
+				    }
+
+				    // ...
+				}
+
+			数组类型（容器会注入该类型的所有bean）： 
+
+				public class MovieRecommender {
+
+				    @Autowired
+				    private MovieCatalog[] movieCatalogs;
+
+				    // ...
+				}
+
+			集合Set（同数组）：	
+
+				public class MovieRecommender {
+
+				    private Set<MovieCatalog> movieCatalogs;
+
+				    @Autowired
+				    public void setMovieCatalogs(Set<MovieCatalog> movieCatalogs) {
+				        this.movieCatalogs = movieCatalogs;
+				    }
+
+				    // ...
+				}
+
+			Map映射（注入该类型的所有bean，key: bean names, value: bean type）：
+
+				public class MovieRecommender {
+
+				    private Map<String, MovieCatalog> movieCatalogs;
+
+				    @Autowired
+				    public void setMovieCatalogs(Map<String, MovieCatalog> movieCatalogs) {
+				        this.movieCatalogs = movieCatalogs;
+				    }
+
+				    // ...
+				}
+
+			使用request属性标识该bean非必需：
+
+				public class SimpleMovieLister {
+
+				    private MovieFinder movieFinder;
+
+				    @Autowired(required = false)
+				    public void setMovieFinder(MovieFinder movieFinder) {
+				        this.movieFinder = movieFinder;
+				    }
+
+				    // ...
+				}
+
+			Java 8’s java.util.Optional：
+
+				public class SimpleMovieLister {
+
+				    @Autowired
+				    public void setMovieFinder(Optional<MovieFinder> movieFinder) {
+				        ...
+				    }
+				}
+
+			注解	@Nullable：
+
+				public class SimpleMovieLister {
+
+				    @Autowired
+				    public void setMovieFinder(@Nullable MovieFinder movieFinder) {
+				        ...
+				    }
+				}
+
+			tips:
+			
+				可以使用@Autowired注入容器内部的一些公开bean，以及他们的扩展接口，如：
+
+					BeanFactory, ApplicationContext, Environment, ResourceLoader, ApplicationEventPublisher, and MessageSource	
+
+					ConfigurableApplicationContext or ResourcePatternResolver
+
+				Autowired, @Inject, @Value, and @Resource在容器中由BeanPostProcessor实现类来处理，即不可以在自定义的BeanPostProcessor或者BeanFactoryPostProcessor上使用这些注解。
+
+
+		1.9.3. Fine-tuning Annotation-based Autowiring with @Primary
+
+			根据类型注入时，可能会有多个同类型的候选bean，所以有时候需要进行优先级的排列，此时，可以通过@Primary注解来实现。
+
+				java：
+
+					@Configuration
+					public class MovieConfiguration {
+
+					    @Bean
+					    @Primary
+					    public MovieCatalog firstMovieCatalog() { ... }
+
+					    @Bean
+					    public MovieCatalog secondMovieCatalog() { ... }
+
+					    // ...
+					}	
+
+					public class MovieRecommender {
+
+					    @Autowired
+					    private MovieCatalog movieCatalog;		// 此时，注入时使用的是上边的firstMovieCatalog方法。
+
+					    // ...
+					}
+			
+				xml：			
+
+					<?xml version="1.0" encoding="UTF-8"?>
+					<beans xmlns="http://www.springframework.org/schema/beans"
+					    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+					    xmlns:context="http://www.springframework.org/schema/context"
+					    xsi:schemaLocation="http://www.springframework.org/schema/beans
+					        https://www.springframework.org/schema/beans/spring-beans.xsd
+					        http://www.springframework.org/schema/context
+					        https://www.springframework.org/schema/context/spring-context.xsd">
+
+					    <context:annotation-config/>
+
+					    <bean class="example.SimpleMovieCatalog" primary="true">
+					        <!-- inject any dependencies required by this bean -->
+					    </bean>
+
+					    <bean class="example.SimpleMovieCatalog">
+					        <!-- inject any dependencies required by this bean -->
+					    </bean>
+
+					    <bean id="movieRecommender" class="example.MovieRecommender"/>
+
+					</beans>
+
+		1.9.4. Fine-tuning Annotation-based Autowiring with Qualifiers		
+
+			根据类型注入时，如果可以确定只有一个主候选bean时，使用@Primary是可以实现注入的。 如果需要对候选bean进行进一步筛选时，可以使用@Qualifier注解，
+			可以给qualifier的value值设置一个参数，从而在根据类型注入时，实现从从多个候选bean中根据设置的参数来进行选择注入。
+
+			i.e:
+
+				java:
+
+					public class MovieRecommender {
+
+					    @Autowired
+					    @Qualifier("main")
+					    private MovieCatalog movieCatalog;
+
+					    // ...
+					}
+
+				xml:
+				
+					<?xml version="1.0" encoding="UTF-8"?>
+					<beans xmlns="http://www.springframework.org/schema/beans"
+					    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+					    xmlns:context="http://www.springframework.org/schema/context"
+					    xsi:schemaLocation="http://www.springframework.org/schema/beans
+					        https://www.springframework.org/schema/beans/spring-beans.xsd
+					        http://www.springframework.org/schema/context
+					        https://www.springframework.org/schema/context/spring-context.xsd">
+
+					    <context:annotation-config/>
+
+					    <bean class="example.SimpleMovieCatalog">
+					        <qualifier value="main"/> 
+
+					        <!-- inject any dependencies required by this bean -->
+					    </bean>
+
+					    <bean class="example.SimpleMovieCatalog">
+					        <qualifier value="action"/> 
+
+					        <!-- inject any dependencies required by this bean -->
+					    </bean>
+
+					    <bean id="movieRecommender" class="example.MovieRecommender"/>
+
+					</beans>	
+
+			@Autowired applies to fields, constructors, and multi-argument methods, allowing for narrowing through qualifier annotations at the parameter level.  
+			In contrast, @Resource is supported only for fields and bean property setter methods with a single argument. 
+			As a consequence, you should stick with qualifiers if your injection target is a constructor or a multi-argument method.	
+
+			@Autowired作用于字段，构造器，多参数方法，可以通过在参数上添加@Qualifier注解来缩小注入范围。
+			相比，@Resource只用于字段，单个参数的setter方法。
+			因此，当注入的对象是一个构造器或者多参数方法时，须使用@Qualifier
+
+			// done 2020-2-23 12:24:37
+
+		1.9.5. Using Generics as Autowiring Qualifiers	
+
+
+
+
+
+
+
+
+
+
+		
+
 
 
 
