@@ -1660,7 +1660,85 @@
 
 2020-2-23 10:52:41
 
-	# 1.9.4. Fine-tuning Annotation-based Autowiring with Qualifiers	// done 2020-2-23 12:25:03	
+	# 1.9.4. Fine-tuning Annotation-based Autowiring with Qualifiers	// done 2020-2-23 12:25:03
+
+		@Autowired注解注入流程：（后置处理器： AutowiredAnnotationBeanPostProcessor[在spring-bean包下]）
+
+			AbstractBeanFactory.getBean()
+			AbstractBeanFactory.doGetBean()
+			AbstractAutowireCapableBeanFactory.createBean()
+			AbstractAutowireCapableBeanFactory.doCreateBean()
+			AbstractAutowireCapableBeanFactory.populateBean()
+			AutowiredAnnotationBeanPostProcessor.postProcessProperties()
+			InjectionMetadata.inject()
+			AutowiredFieldElement.inject() 		// 如果注解@Autowired加在字段上，使用此方法注入
+			AutowiredMethodElement.inject()		// 如果注解@Autowired加在方法上，使用此方法注入
+
+			其中：
+
+				// 属性后置处理
+				AutowiredAnnotationBeanPostProcessor.postProcessProperties
+
+					// 查找相关注解（包括：org.springframework.beans.factory.annotation.Autowired， org.springframework.beans.factory.annotation.Value, javax.inject.Inject）
+					AutowiredAnnotationBeanPostProcessor.findAutowiringMetadata
+
+					// 属性注入
+					InjectionMetadata.inject
+						AutowiredFieldElement.inject() 		// 如果注解加在字段上，使用此方法注入
+						AutowiredMethodElement.inject()		// 如果注解加在方法上，使用此方法注入
+
+
+
+
+
+		@Resource注解注入流程：（后置处理器： CommonAnnotationBeanPostProcessor[在spring-context包下]）	
+
+			AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
+			AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:321)
+			DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:222)
+			AbstractBeanFactory$$Lambda$269.1401702503.getObject(Unknown Source:-1)
+			AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:323)
+			AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:517)
+			AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:594)
+			AbstractAutowireCapableBeanFactory.populateBean(AbstractAutowireCapableBeanFactory.java:1422)
+			CommonAnnotationBeanPostProcessor.postProcessProperties(CommonAnnotationBeanPostProcessor.java:334)
+			InjectionMetadata.inject(InjectionMetadata.java:133)
+			InjectionMetadata.InjectedElement#inject(InjectionMetadata.java:233)
+
+			
+			其中：
+
+				// 属性后置处理
+				CommonAnnotationBeanPostProcessor.postProcessProperties
+
+					// 查找相关注解(包括：javax.xml.ws.WebServiceRef, javax.ejb.EJB, javax.annotation.Resource):
+					CommonAnnotationBeanPostProcessor.findResourceMetadata
+
+					// 属性注入
+					InjectionMetadata.inject
+						InjectionMetadata.InjectedElement.inject
+
+	# 1.9. Annotation-based Container Configuration	// done 2020-2-23 18:42:11				
+
+	
+
+
+
+
+
+
+
+
+
+			
+
+
+
+
+
+
+
+
 
 
 

@@ -1737,11 +1737,225 @@ Core Technologies 			https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-fra
 
 			@Autowired作用于字段，构造器，多参数方法，可以通过在参数上添加@Qualifier注解来缩小注入范围。
 			相比，@Resource只用于字段，单个参数的setter方法。
-			因此，当注入的对象是一个构造器或者多参数方法时，须使用@Qualifier
+			因此，当注入的对象是一个构造器或者多参数方法时，须使用@Qualifier（+@Autowired）
 
 			// done 2020-2-23 12:24:37
 
+			@Autowired注解注入流程：（后置处理器： AutowiredAnnotationBeanPostProcessor[在spring-bean包下]）
+
+				AbstractBeanFactory.getBean()
+				AbstractBeanFactory.doGetBean()
+				AbstractAutowireCapableBeanFactory.createBean()
+				AbstractAutowireCapableBeanFactory.doCreateBean()
+				AbstractAutowireCapableBeanFactory.populateBean()
+				AutowiredAnnotationBeanPostProcessor.postProcessProperties()
+				InjectionMetadata.inject()
+				AutowiredFieldElement.inject() 		// 如果注解@Autowired加在字段上，使用此方法注入
+				AutowiredMethodElement.inject()		// 如果注解@Autowired加在方法上，使用此方法注入
+
+				其中：
+
+					// 属性后置处理
+					AutowiredAnnotationBeanPostProcessor.postProcessProperties
+
+						// 查找相关注解（包括：org.springframework.beans.factory.annotation.Autowired， org.springframework.beans.factory.annotation.Value, javax.inject.Inject）
+						AutowiredAnnotationBeanPostProcessor.findAutowiringMetadata
+
+						// 属性注入
+						InjectionMetadata.inject
+							AutowiredFieldElement.inject() 		// 如果注解加在字段上，使用此方法注入
+							AutowiredMethodElement.inject()		// 如果注解加在方法上，使用此方法注入
+
+
+			@Resource注解注入流程：（后置处理器： CommonAnnotationBeanPostProcessor[在spring-context包下]）	
+
+				AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
+				AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:321)
+				DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:222)
+				AbstractBeanFactory$$Lambda$269.1401702503.getObject(Unknown Source:-1)
+				AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:323)
+				AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:517)
+				AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:594)
+				AbstractAutowireCapableBeanFactory.populateBean(AbstractAutowireCapableBeanFactory.java:1422)
+				CommonAnnotationBeanPostProcessor.postProcessProperties(CommonAnnotationBeanPostProcessor.java:334)
+				InjectionMetadata.inject(InjectionMetadata.java:133)
+				InjectionMetadata.InjectedElement#inject(InjectionMetadata.java:233)
+
+				
+				其中：
+
+					// 属性后置处理
+					CommonAnnotationBeanPostProcessor.postProcessProperties
+
+						// 查找相关注解(包括：javax.xml.ws.WebServiceRef, javax.ejb.EJB, javax.annotation.Resource):
+						CommonAnnotationBeanPostProcessor.findResourceMetadata
+
+						// 属性注入
+						InjectionMetadata.inject
+							InjectionMetadata.InjectedElement.inject
+
 		1.9.5. Using Generics as Autowiring Qualifiers	
+
+		1.9.6. Using CustomAutowireConfigurer
+
+			<bean id="customAutowireConfigurer" class="org.springframework.beans.factory.annotation.CustomAutowireConfigurer">
+			    <property name="customQualifierTypes">
+			        <set>
+			            <value>example.CustomQualifier</value>
+			        </set>
+			    </property>
+			</bean>	
+
+			The AutowireCandidateResolver determines autowire candidates by:
+
+				The autowire-candidate value of each bean definition
+
+				Any default-autowire-candidates patterns available on the <beans/> element
+
+				The presence of @Qualifier annotations and any custom annotations registered with the CustomAutowireConfigurer
+
+		1.9.7. Injection with @Resource
+		
+			如果指定了name，Spring会根据名称查找相关bean并注入。
+
+			如果未指定name，则与@Autowried相似，Spring会先根据名称（字段/参数/setter方法名称）查找，如果查找不到，则会根据类型查找。
+
+			i.e:
+
+				public class SimpleMovieLister {
+
+				    private MovieFinder movieFinder;
+
+				    @Resource(name="myMovieFinder") 
+				    public void setMovieFinder(MovieFinder movieFinder) {
+				        this.movieFinder = movieFinder;
+				    }
+				}
+
+				public class MovieRecommender {
+
+				    @Resource
+				    private CustomerPreferenceDao customerPreferenceDao;  // 先查找名称为"customerPreferenceDao"的bean，查不到则查找类型为"CustomerPreferenceDao"的bean
+
+				    @Resource
+				    private ApplicationContext context; 
+
+				    public MovieRecommender() {
+				    }
+
+				    // ...
+				}
+
+		1.9.8. Using @Value
+
+			作用：用于注入外部的配置属性
+
+			相关：
+
+				-- 属性源通配符配置类：PropertySourcesPlaceholderConfigurer 
+
+					可以通过setPlaceholderPrefix, setPlaceholderSuffix等方法设置通配符前缀、后缀等。
+
+					@Configuration
+					public class AppConfig {
+
+					     @Bean
+					     public static PropertySourcesPlaceholderConfigurer propertyPlaceholderConfigurer() {
+					           return new PropertySourcesPlaceholderConfigurer();
+					     }
+					}
+
+					tips: 
+
+						When configuring a PropertySourcesPlaceholderConfigurer using JavaConfig, the @Bean method must be static.
+						使用JavaConfi的形式配置PropertySourcesPlaceholderConfigurer，@Bean必须是static的
+
+				-- 支持简单类型转换（如 Integer -> int, 逗号分隔的值 转换为 数组）
+				
+				-- 支持添加默认值，如：
+
+					@Component
+					public class MovieRecommender {
+
+					    private final String catalog;
+
+					    public MovieRecommender(@Value("${catalog.name:defaultCatalog}") String catalog) {
+					        this.catalog = catalog;
+					    }
+					}
+
+				-- 类型转换接口[BeanPostProcessor处理阶段]： ConversionService 
+
+					@Configuration
+					public class AppConfig {
+
+					    @Bean
+					    public ConversionService conversionService() {
+					        DefaultFormattingConversionService conversionService = new DefaultFormattingConversionService();
+					        conversionService.addConverter(new MyCustomConverter());
+					        return conversionService;
+					    }
+					}
+
+				-- 支持SpEL表达式，如：
+
+					 @Value("#{systemProperties['user.catalog'] + 'Catalog' }") String catalog
+
+					 @Value("#{{'Thriller': 100, 'Comedy': 300}}") Map<String, Integer> countOfMoviesPerCatalog
+
+
+			i.e:
+
+				java:	
+
+					@Component
+					public class MovieRecommender {
+
+					    private final String catalog;
+
+					    public MovieRecommender(@Value("${catalog.name}") String catalog) {
+					        this.catalog = catalog;
+					    }
+					}
+
+					@Configuration
+					@PropertySource("classpath:application.properties")
+					public class AppConfig { }
+
+				properties:
+				
+					catalog.name=MovieCatalog
+
+
+		1.9.9. Using @PostConstruct and @PreDestroy
+
+			与@Resource一样，也是通过CommonAnnotationBeanPostProcessor接口来处理。
+
+			tips:
+
+				这些注解为JDK6-8提供的，JDK9中整个javax.annotation包从核心模块中隔离，在JDK11中已完全移除，如果使用的时候，如果jdk版本不一致，可以像maven管理其他包一样手动导入注解包。
+
+			i.e:
+
+				public class CachingMovieLister {
+
+				    @PostConstruct
+				    public void populateMovieCache() {
+				        // populates the movie cache upon initialization...
+				    }
+
+				    @PreDestroy
+				    public void clearMovieCache() {
+				        // clears the movie cache upon destruction...
+				    }
+				}
+
+		// done 2020-2-23 18:41:42
+		
+	1.10. Classpath Scanning and Managed Components			
+
+		
+
 
 
 

@@ -12,6 +12,8 @@ https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/
 
 							1.9.4. Fine-tuning Annotation-based Autowiring with Qualifiers	// done 2020-2-23 12:25:07
 
+							1.9. Annotation-based Container Configuration	// done 2020-2-23 18:42:11
+
 	Testing				Mock Objects, TestContext Framework, Spring MVC Test, WebTestClient.
 
 	Data Access			Transactions, DAO Support, JDBC, O/R Mapping, XML Marshalling.
