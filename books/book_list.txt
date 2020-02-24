@@ -56,6 +56,10 @@ doing：
 
 			1.10.4. Using Filters to Customize Scanning		// done 2020-2-24 12:38:14
 
+			1.10. Classpath Scanning and Managed Components	// done 2020-2-24 18:52:25
+
+			1.11. Using JSR 330 Standard Annotations 		// done 2020-2-24 19:23:38
+
 			26 WebSocket Support 				 // start 2020-1-14 13:40:00    done 2010-1-14 18:44
 
 		

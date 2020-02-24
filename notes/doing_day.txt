@@ -1743,7 +1743,11 @@
 				可以在任何组件上添加注解@Component，但是，使用其他注解如@Repository，@Service，@Controller，能更准确地标识该组件的意图，
 				而且，Spring Framework以后有可能为这些注解添加更多的附加功能，比如，@Respository已经支持持久层的异常自动转换。
 
-	# 1.10.4. Using Filters to Customize Scanning		// done 2020-2-24 12:38:14		
+	# 1.10.4. Using Filters to Customize Scanning		// done 2020-2-24 12:38:14	
+	
+	# 1.10. Classpath Scanning and Managed Components	// done 2020-2-24 18:52:25	
+
+	# 1.11. Using JSR 330 Standard Annotations 			// done 2020-2-24 19:23:38
 
 
 

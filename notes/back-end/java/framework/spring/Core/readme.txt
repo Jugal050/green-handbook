@@ -2069,8 +2069,346 @@ Core Technologies 			https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-fra
 			// done 2020-2-24 12:38:00		
 
 		1.10.5. Defining Bean Metadata within Components
-		
+
+			Spring组件可以为容器提供Bean定义信息。 可以通过在有配置注解（如Component, Comfiguration, Service, Repository, Controller..）的类上添加注解@Bean实现，如：
+
+				java:
+
+					@Component
+					public class FactoryMethodComponent {
+
+					    @Bean
+					    @Qualifier("public")
+					    public TestBean publicInstance() {
+					        return new TestBean("publicInstance");
+					    }
+
+					    public void doWork() {
+					        // Component method implementation omitted
+					    }
+					}
+
+			@Bean修饰的自动注入方法，同样支持字段/方法的自动注入。如：
+
+				java:
+
+					@Component
+					public class FactoryMethodComponent {
+
+					    private static int i;
+
+					    @Bean
+					    @Qualifier("public")
+					    public TestBean publicInstance() {
+					        return new TestBean("publicInstance");
+					    }
+
+					    // use of a custom qualifier and autowiring of method parameters
+					    @Bean
+					    protected TestBean protectedInstance(
+					            @Qualifier("public") TestBean spouse,
+					            @Value("#{privateInstance.age}") String country) {
+					        TestBean tb = new TestBean("protectedInstance", 1);
+					        tb.setSpouse(spouse);
+					        tb.setCountry(country);
+					        return tb;
+					    }
+
+					    @Bean
+					    private TestBean privateInstance() {
+					        return new TestBean("privateInstance", i++);
+					    }
+
+					    @Bean
+					    @RequestScope
+					    public TestBean requestScopedInstance() {
+					        return new TestBean("requestScopedInstance", 3);
+					    }
+					}
+
+			Spring4.3之后，可以通过在参数中声明类型为InjectionPoint(或者其子类DependencyDescriptor)	，获取触发当前bean创建的的请求注入节点。
+			但是，这只适用于普通的bean创建过程，并不适用于已存在的实例注入。所以，适用于大多数scope为prototype的bean，对于其他scope类型，只会在其scope范围内有效。
+
+				java:
+
+					@Component
+					public class FactoryMethodComponent {
+
+					    @Bean @Scope("prototype")
+					    public TestBean prototypeInstance(InjectionPoint injectionPoint) {
+					        return new TestBean("prototypeInstance for " + injectionPoint.getMember());
+					    }
+					}
+
+
+			tips:
+
+				@Component与@Configuration修饰的类中，@Bean修饰的方法执行方式有区别。
+
+				@Component修饰的类中，@Bean修饰的方法/字段被调用时，只是简单的java程序中的直接调用，不会被CGLIB拦截。
+
+				@Comfiguration修饰的类中，@Bean修饰的方法/字段被调用时，为了生命周期管理以及Spring Bean的代理，会通过Spring容器中CGLIB为其生成的代理对象执行。
+
+				当@Bean修饰的方法是static类型时，由于CGLIB子类只能重载非static方法，所以此时即时是在@Configuration修饰的类中，该方法调用也不会被Spring容器拦截。
+
+				因为@Bean方法的可见性修饰符对Spring容器在处理bean定义信息不会有直接影响，所以我们可以在任何地方（如static方法，没有@Configuration注解的类中）添加@Bean注解，
+				但是，常规的@Configuration中的@Bean方法需要被重载，也就不能被声明为private或者是final类型的。
+
+				@Conponent/@Configuration修饰的类的基类/父类中，@Bean方法也会被检测到，包括Java8中接口的默认default实现方法（如果该接口被@Component/@Configuraiton修饰的类实现）。
+
+				一个类中可能有一个bean有多个@Bean修饰的方法，类似贪心算法/有多个@Autowired修饰的构造器的情况，在构造bean时，同样条件下参数最多的方法会被调用。
+
 		1.10.6. Naming Autodetected Components
+
+			BeanName生成规则接口： BeanNameGenerator
+
+			相关实现类：
+
+				默认实现： org.springframework.beans.factory.support.DefaultBeanNameGenerator
+
+				注解组件相关实现类： org.springframework.context.annotation.AnnotationBeanNameGenerator
+
+				全限定注解组件相关实现类（AnnotationBeanNameGenerator子类）：org.springframework.context.annotation.FullyQualifiedAnnotationBeanNameGenerator
+
+			如果需要自定义beanName的生成规则。则可以实现接口BeanNameGenerator，确保包含一个默认的无参构造方法，然后配置扫描scanner时提供该配置类的完整全称即可。
+
+				java:
+
+					@Configuration
+					@ComponentScan(basePackages = "org.example", nameGenerator = MyNameGenerator.class)
+					public class AppConfig {
+					    // ...
+					}
+
+				xml:
+
+					<beans>
+					    <context:component-scan base-package="org.example"
+					        name-generator="org.example.MyNameGenerator" />
+					</beans>
+
+		1.10.7. Providing a Scope for Autodetected Components
+		
+			Component组件默认scope是singleton，如果想设置为其他范围，可以使用@Scope组件，如：
+
+				@Scope("prototype")
+				@Repository
+				public class MovieFinderImpl implements MovieFinder {
+				    // ...
+				}
+
+			也可以自定义scope（比较容易，用法与现有的一直），或者自定义scope解析器：	
+
+				java:
+
+					@Configuration
+					@ComponentScan(basePackages = "org.example", scopeResolver = MyScopeResolver.class)
+					public class AppConfig {
+					    // ...
+					}
+
+				xml:
+					
+					<beans>
+					    <context:component-scan base-package="org.example" scope-resolver="org.example.MyScopeResolver"/>
+					</beans>
+
+			如果使用的scope范围不是singleton类型，有必要设置对象生成的代理类型scopeProxy，可选值为：no(不使用代理), interfaces（JDK代理）, targetClass（CGLIB），如：
+
+				java:
+
+					@Configuration
+					@ComponentScan(basePackages = "org.example", scopedProxy = ScopedProxyMode.INTERFACES)
+					public class AppConfig {
+					    // ...
+					}
+
+				xml:
+
+					<beans>
+					    <context:component-scan base-package="org.example" scoped-proxy="interfaces"/>
+					</beans>
+
+
+		1.10.8. Providing Qualifier Metadata with Annotations		
+
+			与xml配置对应：
+
+				@Component
+				@Qualifier("Action")
+				public class ActionMovieCatalog implements MovieCatalog {
+				    // ...
+				}
+
+				@Component
+				@Genre("Action")
+				public class ActionMovieCatalog implements MovieCatalog {
+				    // ...
+				}
+
+				@Component
+				@Offline
+				public class CachingMovieCatalog implements MovieCatalog {
+				    // ...
+				}
+
+		1.10.9. Generating an Index of Candidate Components		
+
+			由于类路径扫描很快，可以通过在编译期创建一个静态的候选名单来提升启动性能。 此模式下，所有组件扫描的模块都将被应用到。
+
+			maven配置:
+
+				<dependencies>
+				    <dependency>
+				        <groupId>org.springframework</groupId>
+				        <artifactId>spring-context-indexer</artifactId>
+				        <version>5.2.3.RELEASE</version>
+				        <optional>true</optional>
+				    </dependency>
+				</dependencies>
+
+			如果类路径下存在：META-INF/spring.components，索引会自动启用，可以通过设置spring.index.ignore = true关闭（spring.properties/system property）。
+
+			// done 2020-2-24 18:52:02
+
+	1.11. Using JSR 330 Standard Annotations
+
+		maven:
+
+			<dependency>
+			    <groupId>javax.inject</groupId>
+			    <artifactId>javax.inject</artifactId>
+			    <version>1</version>
+			</dependency>
+	
+		1.11.1. Dependency Injection with @Inject and @Named	
+
+			== @Autowired
+
+			java:
+
+				import javax.inject.Inject;
+
+				public class SimpleMovieLister {
+
+				    private MovieFinder movieFinder;
+
+				    @Inject
+				    public void setMovieFinder(MovieFinder movieFinder) {
+				        this.movieFinder = movieFinder;
+				    }
+
+				    public void listMovies() {
+				        this.movieFinder.findMovies(...);
+				        // ...
+				    }
+				}	
+
+				import javax.inject.Inject;
+				import javax.inject.Provider;
+
+				public class SimpleMovieLister {
+
+				    private Provider<MovieFinder> movieFinder;
+
+				    @Inject
+				    public void setMovieFinder(Provider<MovieFinder> movieFinder) {
+				        this.movieFinder = movieFinder;
+				    }
+
+				    public void listMovies() {
+				        this.movieFinder.get().findMovies(...);
+				        // ...
+				    }
+				}
+
+				import javax.inject.Inject;
+				import javax.inject.Named;
+
+				public class SimpleMovieLister {
+
+				    private MovieFinder movieFinder;
+
+				    @Inject
+				    public void setMovieFinder(@Named("main") MovieFinder movieFinder) {
+				        this.movieFinder = movieFinder;
+				    }
+
+				    // ...
+				}
+
+				public class SimpleMovieLister {
+
+				    @Inject
+				    public void setMovieFinder(Optional<MovieFinder> movieFinder) {
+				        // ...
+				    }
+				}
+
+				public class SimpleMovieLister {
+
+				    @Inject
+				    public void setMovieFinder(@Nullable MovieFinder movieFinder) {
+				        // ...
+				    }
+				}
+
+		1.11.2. @Named and @ManagedBean: Standard Equivalents to the @Component Annotation	
+
+			java:
+
+				import javax.inject.Inject;
+				import javax.inject.Named;
+
+				@Named("movieListener")  // @ManagedBean("movieListener") could be used as well
+				public class SimpleMovieLister {
+
+				    private MovieFinder movieFinder;
+
+				    @Inject
+				    public void setMovieFinder(MovieFinder movieFinder) {
+				        this.movieFinder = movieFinder;
+				    }
+
+				    // ...
+				}
+
+				@Configuration
+				@ComponentScan(basePackages = "org.example")
+				public class AppConfig  {
+				    // ...
+				}
+
+			tips:
+			
+				与@Component不同，@Named和ManagedBean不能组合使用。如果想自定义组件注解，需要使用Spring的结构模型。
+
+		1.11.3. Limitations of JSR-330 Standard Annotations
+		
+			Spring				javax.inject.*				javax.inject restrictions / comments		
+
+			@Autowired 			@Inject 					@Inject没有'required'属性. 在Java8中可以使用Optional代替
+
+			@Components 		@Named / @ManagedBean		JSR-330没有提供一个可组合的模型, 只有一种方法区标识带名称的组件
+
+			@Scope("singleton") @Singleton        			JSR-330默认的scope类似Spring的prototype。 
+															所以为了完整添加了@Singleton注解。虽然也提供了@Scope注解，但是，仅使用与创建自己的组件时使用。
+
+			@Qualifier 			@Qualifier / @Named 		javax.inject.Qualifier只是为了创建标识的元注解，可以通过javax.inject.Named添加标识字符。
+
+			@Value 				-							no equivalent
+
+			@Required 			-							no equivalent
+
+			@Lazy				-							no equivalent
+
+			ObjectFactory 		Provider 					javax.inject.Provider是ObjectFactory的变形, 只提供了get()方法。
+															可以和@Autowired组合使用或者在没有注解的构造器/setter方法上使用。
+
+			// done 2020-2-24 19:14:38												
+			
+
+
 
 				
 

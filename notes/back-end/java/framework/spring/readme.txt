@@ -16,6 +16,10 @@ https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/
 
 							1.10.4. Using Filters to Customize Scanning		// done 2020-2-24 12:38:14
 
+							1.10. Classpath Scanning and Managed Components	// done 2020-2-24 18:52:25
+
+							1.11. Using JSR 330 Standard Annotations 		// done 2020-2-24 19:23:38
+
 	Testing				Mock Objects, TestContext Framework, Spring MVC Test, WebTestClient.
 
 	Data Access			Transactions, DAO Support, JDBC, O/R Mapping, XML Marshalling.
