@@ -1646,13 +1646,17 @@
 
 				问题：
 
-					使用CGLIB时，final修饰的方法不能被代理，因为运行时子类无法重写。
+					使用CGLIB时，final修饰的方法不能被代理，因为运行时子类无法重写。 
 
 					Spring4.0以后，代理对象构造方法不再会调用两次，因为CGLIB代理实例是通过Objenesis创建的。只有当JVM不允许绕过构造器，spring-support才会两次调用并输出日志。
 
 				如果想强制使用CGLIB代理，可以设置：<aop:config proxy-target-class="true"></aop:config>
 
-				使用注解 @AspectJ 自动代理时如果想强制使用CGLIB代理，可以设置：<aop:aspectj-autoproxy proxy-target-class="true"/>	
+				使用注解 @AspectJ 自动代理时如果想强制使用CGLIB代理，可以设置：<aop:aspectj-autoproxy proxy-target-class="true"/>
+
+				CGLIB代理机制：
+
+					代理是通过构造一个和委托类有同样行为的对象，cglib代理是通过字节码技术来生成一个继承该委托类的一个代理类。代理类重写包含委托对象中所有方法（除private修饰的不能继承）。 注：可以使用代理类调用final，static修饰的方法，但是代理类中没有重写该方法，所以会调用委托类中的该方法（增强的代码不会执行）。	
 
 	# 1.5. Bean Scopes 	// done 2020-2-22 11:48:56
 
@@ -1718,7 +1722,31 @@
 					InjectionMetadata.inject
 						InjectionMetadata.InjectedElement.inject
 
-	# 1.9. Annotation-based Container Configuration	// done 2020-2-23 18:42:11				
+	# 1.9. Annotation-based Container Configuration	// done 2020-2-23 18:42:11	
+
+2020-2-24 11:26:38
+
+	# spring-reference-guide hot point:
+
+		# @Component，@Repository，@Service，@Controller注解的区别？
+
+			@Component 任何Spring管理的组件都可以使用的通用构造型注解。
+
+			@Repository 即平常所说的DAO，用于与数据库访问相关的持久层
+
+			@Service 服务层
+
+			@Controller 视图层
+
+			tips:
+
+				可以在任何组件上添加注解@Component，但是，使用其他注解如@Repository，@Service，@Controller，能更准确地标识该组件的意图，
+				而且，Spring Framework以后有可能为这些注解添加更多的附加功能，比如，@Respository已经支持持久层的异常自动转换。
+
+	# 1.10.4. Using Filters to Customize Scanning		// done 2020-2-24 12:38:14		
+
+
+
 
 	
 

@@ -1954,6 +1954,139 @@ Core Technologies 			https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-fra
 		
 	1.10. Classpath Scanning and Managed Components			
 
+		1.10.1. @Component and Further Stereotype Annotations
+
+			@Component 任何Spring管理的组件都可以使用的通用构造型注解。
+
+			@Repository 即平常所说的DAO，用于与数据库访问相关的持久层
+
+			@Service 服务层
+
+			@Controller 视图层
+
+			tips:
+
+				可以在任何组件上添加注解@Component，但是，使用其他注解如@Repository，@Service，@Controller，能更准确地标识该组件的意图，
+				而且，Spring Framework以后有可能为这些注解添加更多的附加功能，比如，@Respository已经支持持久层的异常自动转换。
+
+		1.10.2. Using Meta-annotations and Composed Annotations
+
+			Spring提供的很多注解都可以看做是元注解（即可以在别的注解上进行注解使用）。比如：
+
+			@Service
+
+				@Target(ElementType.TYPE)
+				@Retention(RetentionPolicy.RUNTIME)
+				@Documented
+				@Component 
+				public @interface Service {
+
+				    // ...
+				}
+
+			@SessionScope	
+
+				@Target({ElementType.TYPE, ElementType.METHOD})
+				@Retention(RetentionPolicy.RUNTIME)
+				@Documented
+				@Scope(WebApplicationContext.SCOPE_SESSION)
+				public @interface SessionScope {
+
+				    /**
+				     * Alias for {@link Scope#proxyMode}.
+				     * <p>Defaults to {@link ScopedProxyMode#TARGET_CLASS}.
+				     */
+				    @AliasFor(annotation = Scope.class)
+				    ScopedProxyMode proxyMode() default ScopedProxyMode.TARGET_CLASS;
+
+				}
+
+		1.10.3. Automatically Detecting Classes and Registering Bean Definitions
+		
+			自动扫描配置：		
+
+				java:
+
+					@Configuration
+					@ComponentScan(basePackages = "org.example")
+					public class AppConfig  {
+					    // ...
+					}
+
+					tips:
+
+						如果有多个package，可以用逗号，分号，空格分隔。
+
+				xml:
+				
+					<?xml version="1.0" encoding="UTF-8"?>
+					<beans xmlns="http://www.springframework.org/schema/beans"
+					    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+					    xmlns:context="http://www.springframework.org/schema/context"
+					    xsi:schemaLocation="http://www.springframework.org/schema/beans
+					        https://www.springframework.org/schema/beans/spring-beans.xsd
+					        http://www.springframework.org/schema/context
+					        https://www.springframework.org/schema/context/spring-context.xsd">
+
+					    <context:component-scan base-package="org.example"/>
+
+					</beans>	
+
+					tips:
+
+						<context:component-scan>配置会自动启用<context:annotation-config>的功能，所以有<context:component-scan>时，可以省略<context:annotation-config>
+
+						当使用<context:component-scan>时，容器会自动注册AutowiredAnnotationBeanPostProcessor和CommonAnnotationBeanPostProcessor，即使没有进行相关配置。
+						不过可以通过配置<context:annotation-config value="false">，来取消这两个后置处理器的注册。
+
+		1.10.4. Using Filters to Customize Scanning			
+
+			默认情况下， 包括@Component, @Repository, @Service, @Controller, @Configuration以及自定义的注解，这些注解修饰的类容器会自动检测并注册为对应的bean。
+			但是，我们可以自定义过滤规则来修改或者扩展默认行为。
+			可以使用@ComponentScan(useDefaultFilters = "false") | <context:component-scan use-default-filters="false">来取消这些注解的自动检测和注册行为。
+
+			i.e：（改配置会使容器忽略@Repository，而使用stub包下的repository）
+
+				java:
+
+					@Configuration
+					@ComponentScan(basePackages = "org.example",
+					        includeFilters = @Filter(type = FilterType.REGEX, pattern = ".*Stub.*Repository"),
+					        excludeFilters = @Filter(Repository.class))
+					public class AppConfig {
+					    ...
+					}
+
+				xml:
+
+					<beans>
+					    <context:component-scan base-package="org.example">
+					        <context:include-filter type="regex" expression=".*Stub.*Repository"/>
+					        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Repository"/>
+					    </context:component-scan>
+					</beans>
+
+			// done 2020-2-24 12:38:00		
+
+		1.10.5. Defining Bean Metadata within Components
+		
+		1.10.6. Naming Autodetected Components
+
+				
+
+
+
+
+
+
+
+
+		
+
+
+
+
+
 		
 
 
