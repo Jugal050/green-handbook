@@ -2405,8 +2405,747 @@ Core Technologies 			https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-fra
 			ObjectFactory 		Provider 					javax.inject.Provider是ObjectFactory的变形, 只提供了get()方法。
 															可以和@Autowired组合使用或者在没有注解的构造器/setter方法上使用。
 
-			// done 2020-2-24 19:14:38												
+			// done 2020-2-24 19:14:38
+
+	1.12. Java-based Container Configuration
+	
+		1.12.1. Basic Concepts: @Bean and @Configuration
+
+			java：
+
+				@Configuration
+				public class AppConfig {
+
+				    @Bean
+				    public MyService myService() {
+				        return new MyServiceImpl();
+				    }
+				}
+
+			xml：
 			
+				<beans>
+				    <bean id="myService" class="com.acme.services.MyServiceImpl"/>
+				</beans>	
+
+			tips：
+			
+				@Configuration修饰的类中，@Bean修饰的方法会被Spring容器进行生命周期管理，同时会被CGLIB代理。
+
+				@Component等其他修饰的类中，@Bean修饰的方法参数不能使用Spring容器中的bean，也不能调用别的@Bean方法，只充当一个轻量级的创建bean的工厂方法，不会被Spring容器进行生命周期管理，也不会被CGLIB代理，所以也没有代理的一些限制（比如类可以是final等等）。
+
+		1.12.2. Instantiating the Spring Container by Using AnnotationConfigApplicationContext
+
+			Simple Construction
+
+				xml文件配置时，可以使用ClassPathXmlApplicationContext初始化容器。
+
+				@Configuration注解配置时，可以使用AnnotationConfigApplicationContext初始化容器。
+
+				java:
+
+					public static void main(String[] args) {
+					    ApplicationContext ctx = new AnnotationConfigApplicationContext(AppConfig.class, MyServiceImpl.class, Dependency1.class, Dependency2.class);
+					    MyService myService = ctx.getBean(MyService.class);
+					    myService.doStuff();
+					}
+
+			Building the Container Programmatically by Using register(Class<?>…​)
+			
+				java:
+
+					public static void main(String[] args) {
+					    AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+					    ctx.register(AppConfig.class, OtherConfig.class);
+					    ctx.register(AdditionalConfig.class);
+					    ctx.refresh();
+					    MyService myService = ctx.getBean(MyService.class);
+					    myService.doStuff();
+					}	
+
+			Enabling Component Scanning with scan(String…​)
+			
+				java:
+
+					// 注解
+					@Configuration
+					@ComponentScan(basePackages = "com.acme") 
+					public class AppConfig  {
+					    ...
+					}	
+
+					// 编码
+					public static void main(String[] args) {
+					    AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+					    ctx.scan("com.acme");
+					    ctx.refresh();
+					    MyService myService = ctx.getBean(MyService.class);
+					}
+
+
+				xml:
+				
+					<beans>
+					    <context:component-scan base-package="com.acme"/>
+					</beans>
+
+				java	
+
+			Support for Web Applications with AnnotationConfigWebApplicationContext
+			
+				web.xml(Spring mvc的典型配置):
+
+					<web-app>
+					    <!-- Configure ContextLoaderListener to use AnnotationConfigWebApplicationContext
+					        instead of the default XmlWebApplicationContext -->
+					    <context-param>
+					        <param-name>contextClass</param-name>
+					        <param-value>
+					            org.springframework.web.context.support.AnnotationConfigWebApplicationContext
+					        </param-value>
+					    </context-param>
+
+					    <!-- Configuration locations must consist of one or more comma- or space-delimited
+					        fully-qualified @Configuration classes. Fully-qualified packages may also be
+					        specified for component-scanning -->
+					    <context-param>
+					        <param-name>contextConfigLocation</param-name>
+					        <param-value>com.acme.AppConfig</param-value>
+					    </context-param>
+
+					    <!-- Bootstrap the root application context as usual using ContextLoaderListener -->
+					    <listener>
+					        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+					    </listener>
+
+					    <!-- Declare a Spring MVC DispatcherServlet as usual -->
+					    <servlet>
+					        <servlet-name>dispatcher</servlet-name>
+					        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+					        <!-- Configure DispatcherServlet to use AnnotationConfigWebApplicationContext
+					            instead of the default XmlWebApplicationContext -->
+					        <init-param>
+					            <param-name>contextClass</param-name>
+					            <param-value>
+					                org.springframework.web.context.support.AnnotationConfigWebApplicationContext
+					            </param-value>
+					        </init-param>
+					        <!-- Again, config locations must consist of one or more comma- or space-delimited
+					            and fully-qualified @Configuration classes -->
+					        <init-param>
+					            <param-name>contextConfigLocation</param-name>
+					            <param-value>com.acme.web.MvcConfig</param-value>
+					        </init-param>
+					    </servlet>
+
+					    <!-- map all requests for /app/* to the dispatcher servlet -->
+					    <servlet-mapping>
+					        <servlet-name>dispatcher</servlet-name>
+					        <url-pattern>/app/*</url-pattern>
+					    </servlet-mapping>
+					</web-app>				
+
+		1.12.3. Using the @Bean Annotation
+
+			Declaring a Bean
+
+				java:
+
+					@Configuration
+					public class AppConfig {
+
+					    @Bean
+					    public TransferServiceImpl transferService() {
+					        return new TransferServiceImpl();
+					    }
+					}
+
+					@Configuration
+					public class AppConfig {
+
+					    @Bean
+					    public TransferService transferService() {
+					        return new TransferServiceImpl();
+					    }
+					}
+
+				xml:
+					
+					<beans>
+					    <bean id="transferService" class="com.acme.TransferServiceImpl"/>
+					</beans>
+
+				context view:
+
+					transferService -> com.acme.TransferServiceImpl
+
+				tips:
+					
+					虽然可以声明@Bean方法的返回类型为接口类型，但是这会限制该接口	的提前的类型预测可见性。结果就是，只有当该单例bean实例化之后，容器才会知道它的具体类型。
+					非懒加载的单例bean是根据他们的声明类型来实例化的，所以当另外的组件试图匹配的bean不是声明的类型（如@Autowired TransferServiceImpl），可能会得到不同的类型匹配结果。
+
+					如果执意倾向于声明返回类型为接口类型，请慎重考虑@Bean返回类型。 对于实现了不同接口的组件和可能引用了他们实现类型的组件，尽可能明确地声明返回类型更安全。
+
+			Bean Dependencies
+
+				java:
+			
+					@Configuration
+					public class AppConfig {
+
+					    @Bean
+					    public TransferService transferService(AccountRepository accountRepository) {
+					        return new TransferServiceImpl(accountRepository);
+					    }
+					}
+
+			Receiving Lifecycle Callbacks
+			
+				java:
+
+					public class BeanOne {
+
+					    public void init() {
+					        // initialization logic
+					    }
+					}
+
+					public class BeanTwo {
+
+					    public void cleanup() {
+					        // destruction logic
+					    }
+					}
+
+					@Configuration
+					public class AppConfig {
+
+					    @Bean(initMethod = "init")
+					    public BeanOne beanOne() {
+					        return new BeanOne();
+					    }
+
+					    @Bean(destroyMethod = "cleanup")
+					    public BeanTwo beanTwo() {
+					        return new BeanTwo();
+					    }
+					}
+
+				tips:
+				
+					默认情况下，如果bean中有public的close/shutdown方法，会自动匹配为容器销毁的回调方法。 如果不想在容器销毁时close/shutdown被调用，可以设置@Bean(destroyMethod="")
+
+						java:
+
+							@Bean(destroyMethod="")
+							public DataSource dataSource() throws NamingException {
+							    return (DataSource) jndiTemplate.lookup("MyDS");
+							}
+					
+			Specifying Bean Scope
+			
+				Using the @Scope Annotation
+
+					java:
+
+						@Configuration
+						public class MyConfiguration {
+
+						    @Bean
+						    @Scope("prototype")
+						    public Encryptor encryptor() {
+						        // ...
+						    }
+						}
+
+				@Scope and scoped-proxy
+
+					java:
+
+						// an HTTP Session-scoped bean exposed as a proxy
+						@Bean
+						@SessionScope
+						public UserPreferences userPreferences() {
+						    return new UserPreferences();
+						}
+
+						@Bean
+						public Service userService() {
+						    UserService service = new SimpleUserService();
+						    // a reference to the proxied userPreferences bean
+						    service.setUserPreferences(userPreferences());
+						    return service;
+						}
+
+			Customizing Bean Naming	
+
+				java:
+
+					@Configuration
+					public class AppConfig {
+
+					    @Bean(name = "myThing")
+					    public Thing thing() {
+					        return new Thing();
+					    }
+					}		
+
+			Bean Aliasing
+			
+				java:
+
+					@Configuration
+					public class AppConfig {
+
+					    @Bean({"dataSource", "subsystemA-dataSource", "subsystemB-dataSource"})
+					    public DataSource dataSource() {
+					        // instantiate, configure and return DataSource bean...
+					    }
+					}	
+
+			Bean Description
+			
+				java:
+
+					@Configuration
+					public class AppConfig {
+
+					    @Bean
+					    @Description("Provides a basic example of a bean")
+					    public Thing thing() {
+					        return new Thing();
+					    }
+					}				
+
+		1.12.4. Using the @Configuration annotation														
+
+			Injecting Inter-bean Dependencies
+
+				java:
+
+					@Configuration
+					public class AppConfig {
+
+					    @Bean
+					    public BeanOne beanOne() {
+					        return new BeanOne(beanTwo());
+					    }
+
+					    @Bean
+					    public BeanTwo beanTwo() {
+					        return new BeanTwo();
+					    }
+					}
+
+					tips:
+
+						@Configuration可以这样使用，@Component等注解的不可以。
+
+			Lookup Method Injection		
+
+				java:
+
+					public abstract class CommandManager {
+					    public Object process(Object commandState) {
+					        // grab a new instance of the appropriate Command interface
+					        Command command = createCommand();
+					        // set the state on the (hopefully brand new) Command instance
+					        command.setState(commandState);
+					        return command.execute();
+					    }
+
+					    // okay... but where is the implementation of this method?
+					    protected abstract Command createCommand();
+					}
+
+
+					---------------------
+
+					@Bean
+					@Scope("prototype")
+					public AsyncCommand asyncCommand() {
+					    AsyncCommand command = new AsyncCommand();
+					    // inject dependencies here as required
+					    return command;
+					}
+
+					@Bean
+					public CommandManager commandManager() {
+					    // return new anonymous implementation of CommandManager with createCommand()
+					    // overridden to return a new prototype Command object
+					    return new CommandManager() {
+					        protected Command createCommand() {
+					            return asyncCommand();
+					        }
+					    }
+					}
+			
+			Further Information About How Java-based Configuration Works Internally
+
+				java:
+
+					@Configuration
+					public class AppConfig {
+
+					    @Bean
+					    public ClientService clientService1() {
+					        ClientServiceImpl clientService = new ClientServiceImpl();
+					        clientService.setClientDao(clientDao());
+					        return clientService;
+					    }
+
+					    @Bean
+					    public ClientService clientService2() {
+					        ClientServiceImpl clientService = new ClientServiceImpl();
+					        clientService.setClientDao(clientDao());
+					        return clientService;
+					    }
+
+					    @Bean
+					    public ClientDao clientDao() {
+					        return new ClientDaoImpl();
+					    }
+					}
+
+				tips:
+				
+					上边的例子中，clientDao()被调用两次，正常认为会有两个实例。但是在Spring中，默认bean是单例的，在容器启动时，所有的@Configuration修饰类都会被CGLIB代理生成子类，
+					在子类中，子类方法会在调用父类方法新建实例之前先检查是否已有缓存的bean实例（第二次调用时已有缓存，则会从缓存中直接获取而不再新建bean实例）。（只针对bean为单例时）
+
+		1.12.5. Composing Java-based Configurations		
+
+			Using the @Import Annotation
+
+				java:
+
+					@Configuration
+					public class ConfigA {
+
+					    @Bean
+					    public A a() {
+					        return new A();
+					    }
+					}
+
+					@Configuration
+					@Import(ConfigA.class)
+					public class ConfigB {
+
+					    @Bean
+					    public B b() {
+					        return new B();
+					    }
+					}
+
+					public static void main(String[] args) {
+					    ApplicationContext ctx = new AnnotationConfigApplicationContext(ConfigB.class);
+
+					    // now both beans A and B will be available...
+					    A a = ctx.getBean(A.class);
+					    B b = ctx.getBean(B.class);
+					}
+
+				tips:	
+
+					Spring4.2以后，@Import同样支持component组件，和AnnotationConfigApplicationContext.register类似。可以使用此方法来避免全包扫描。
+
+
+				Injecting Dependencies on Imported @Bean Definitions	
+
+					java:
+
+						@Configuration
+						public class ServiceConfig {
+
+						    @Bean
+						    public TransferService transferService(AccountRepository accountRepository) {
+						        return new TransferServiceImpl(accountRepository);
+						    }
+						}
+
+						@Configuration
+						public class RepositoryConfig {
+
+						    @Bean
+						    public AccountRepository accountRepository(DataSource dataSource) {
+						        return new JdbcAccountRepository(dataSource);
+						    }
+						}
+
+						@Configuration
+						@Import({ServiceConfig.class, RepositoryConfig.class})
+						public class SystemTestConfig {
+
+						    @Bean
+						    public DataSource dataSource() {
+						        // return new DataSource
+						    }
+						}
+
+						public static void main(String[] args) {
+						    ApplicationContext ctx = new AnnotationConfigApplicationContext(SystemTestConfig.class);
+						    // everything wires up across configuration classes...
+						    TransferService transferService = ctx.getBean(TransferService.class);
+						    transferService.transfer(100.00, "A123", "C456");
+						}
+
+						---------------------------
+
+						@Configuration
+						public class ServiceConfig {
+
+						    @Autowired
+						    private AccountRepository accountRepository;
+
+						    @Bean
+						    public TransferService transferService() {
+						        return new TransferServiceImpl(accountRepository);
+						    }
+						}
+
+						@Configuration
+						public class RepositoryConfig {
+
+						    private final DataSource dataSource;
+
+						    public RepositoryConfig(DataSource dataSource) {
+						        this.dataSource = dataSource;
+						    }
+
+						    @Bean
+						    public AccountRepository accountRepository() {
+						        return new JdbcAccountRepository(dataSource);
+						    }
+						}
+
+						@Configuration
+						@Import({ServiceConfig.class, RepositoryConfig.class})
+						public class SystemTestConfig {
+
+						    @Bean
+						    public DataSource dataSource() {
+						        // return new DataSource
+						    }
+						}
+
+						public static void main(String[] args) {
+						    ApplicationContext ctx = new AnnotationConfigApplicationContext(SystemTestConfig.class);
+						    // everything wires up across configuration classes...
+						    TransferService transferService = ctx.getBean(TransferService.class);
+						    transferService.transfer(100.00, "A123", "C456");
+						}
+
+						--------------------------
+
+						@Configuration
+						public class ServiceConfig {
+
+						    @Autowired
+						    private RepositoryConfig repositoryConfig;
+
+						    @Bean
+						    public TransferService transferService() {
+						        // navigate 'through' the config class to the @Bean method!
+						        return new TransferServiceImpl(repositoryConfig.accountRepository());
+						    }
+						}
+
+						--------------------------
+
+						@Configuration
+						public class ServiceConfig {
+
+						    @Autowired
+						    private RepositoryConfig repositoryConfig;
+
+						    @Bean
+						    public TransferService transferService() {
+						        return new TransferServiceImpl(repositoryConfig.accountRepository());
+						    }
+						}
+
+						@Configuration
+						public interface RepositoryConfig {
+
+						    @Bean
+						    AccountRepository accountRepository();
+						}
+
+						@Configuration
+						public class DefaultRepositoryConfig implements RepositoryConfig {
+
+						    @Bean
+						    public AccountRepository accountRepository() {
+						        return new JdbcAccountRepository(...);
+						    }
+						}
+
+						@Configuration
+						@Import({ServiceConfig.class, DefaultRepositoryConfig.class})  // import the concrete config!
+						public class SystemTestConfig {
+
+						    @Bean
+						    public DataSource dataSource() {
+						        // return DataSource
+						    }
+
+						}
+
+						public static void main(String[] args) {
+						    ApplicationContext ctx = new AnnotationConfigApplicationContext(SystemTestConfig.class);
+						    TransferService transferService = ctx.getBean(TransferService.class);
+						    transferService.transfer(100.00, "A123", "C456");
+						}
+
+			Conditionally Include @Configuration Classes or @Bean Methods	
+
+				java:
+
+					@Override
+					public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+					    // Read the @Profile annotation attributes
+					    MultiValueMap<String, Object> attrs = metadata.getAllAnnotationAttributes(Profile.class.getName());
+					    if (attrs != null) {
+					        for (Object value : attrs.get("value")) {
+					            if (context.getEnvironment().acceptsProfiles(((String[]) value))) {
+					                return true;
+					            }
+					        }
+					        return false;
+					    }
+					    return true;
+					}
+
+			Combining Java and XML Configuration
+
+				Spring配置信息，往往既包含xml文件的配置，也有注解的配置。初始化容器时有两种选择:
+
+					1. 使用XML为主的容器，如 ClassPathXmlApplicationContext
+
+					2. 使用Java为主的容器，如 AnnotationConfigApplicationContext，相关的XML配置文件可以使用@ImportResource来导入。
+
+				XML-centric Use of @Configuration Classes
+
+					Declaring @Configuration classes as plain Spring <bean/> elements
+
+						java:
+
+							@Configuration
+							public class AppConfig {
+
+							    @Autowired
+							    private DataSource dataSource;
+
+							    @Bean
+							    public AccountRepository accountRepository() {
+							        return new JdbcAccountRepository(dataSource);
+							    }
+
+							    @Bean
+							    public TransferService transferService() {
+							        return new TransferService(accountRepository());
+							    }
+							}
+
+							----------------------
+
+							public static void main(String[] args) {
+							    ApplicationContext ctx = new ClassPathXmlApplicationContext("classpath:/com/acme/system-test-config.xml");
+							    TransferService transferService = ctx.getBean(TransferService.class);
+							    // ...
+							}
+
+						system-test-config.xml
+
+							<beans>
+							    <!-- enable processing of annotations such as @Autowired and @Configuration -->
+							    <context:annotation-config/>
+							    <context:property-placeholder location="classpath:/com/acme/jdbc.properties"/>
+
+							    <bean class="com.acme.AppConfig"/>
+
+							    <bean class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+							        <property name="url" value="${jdbc.url}"/>
+							        <property name="username" value="${jdbc.username}"/>
+							        <property name="password" value="${jdbc.password}"/>
+							    </bean>
+							</beans>
+
+
+						jdbc.properties
+						
+							jdbc.url=jdbc:hsqldb:hsql://localhost/xdb
+							jdbc.username=sa
+							jdbc.password=	
+
+					Using <context:component-scan/> to pick up @Configuration classes	
+
+						system-test-config.xml
+					
+							<beans>
+							    <!-- picks up and registers AppConfig as a bean definition -->
+							    <context:component-scan base-package="com.acme"/>
+							    <context:property-placeholder location="classpath:/com/acme/jdbc.properties"/>
+
+							    <bean class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+							        <property name="url" value="${jdbc.url}"/>
+							        <property name="username" value="${jdbc.username}"/>
+							        <property name="password" value="${jdbc.password}"/>
+							    </bean>
+							</beans>
+
+				@Configuration Class-centric Use of XML with @ImportResource
+					
+					java:
+
+						@Configuration
+						@ImportResource("classpath:/com/acme/properties-config.xml")
+						public class AppConfig {
+
+						    @Value("${jdbc.url}")
+						    private String url;
+
+						    @Value("${jdbc.username}")
+						    private String username;
+
+						    @Value("${jdbc.password}")
+						    private String password;
+
+						    @Bean
+						    public DataSource dataSource() {
+						        return new DriverManagerDataSource(url, username, password);
+						    }
+						}	
+
+						---------------
+
+						public static void main(String[] args) {
+						    ApplicationContext ctx = new AnnotationConfigApplicationContext(AppConfig.class);
+						    TransferService transferService = ctx.getBean(TransferService.class);
+						    // ...
+						}
+
+					properties-config.xml
+					
+						<beans>
+						    <context:property-placeholder location="classpath:/com/acme/jdbc.properties"/>
+						</beans>				
+
+					jdbc.properties
+					
+						jdbc.url=jdbc:hsqldb:hsql://localhost/xdb
+						jdbc.username=sa
+						jdbc.password=	
+
+		// done 2020-2-25 17:42:24				
+
+	1.13. Environment Abstraction	
+
+
+
+
+
+
 
 
 

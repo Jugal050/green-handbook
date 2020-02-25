@@ -32,6 +32,10 @@ framework
 
 			1.10. Classpath Scanning and Managed Components	// done 2020-2-24 18:52:25
 
+			1.11. Using JSR 330 Standard Annotations 		// done 2020-2-24 19:23:38
+
+			1.12. Java-based Container Configuration		// done 2020-2-25 17:42:54
+
 			26 WebSocket Support 			// done 2010-1-14 18:44
 
 		source-code:

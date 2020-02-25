@@ -1749,6 +1749,14 @@
 
 	# 1.11. Using JSR 330 Standard Annotations 			// done 2020-2-24 19:23:38
 
+2020-2-25 14:59:26
+
+	# 郑各庄村委会【建科大厦】 办理 出入证 2020-2-25 11:00:20
+
+	# spring-reference-guide hot point:
+
+	# 1.12. Java-based Container Configuration		// done 2020-2-25 17:42:54
+
 
 
 

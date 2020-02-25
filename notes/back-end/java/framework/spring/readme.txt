@@ -20,6 +20,8 @@ https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/
 
 							1.11. Using JSR 330 Standard Annotations 		// done 2020-2-24 19:23:38
 
+							1.12. Java-based Container Configuration		// done 2020-2-25 17:42:54
+
 	Testing				Mock Objects, TestContext Framework, Spring MVC Test, WebTestClient.
 
 	Data Access			Transactions, DAO Support, JDBC, O/R Mapping, XML Marshalling.
