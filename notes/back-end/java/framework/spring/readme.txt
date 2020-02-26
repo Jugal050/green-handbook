@@ -22,7 +22,13 @@ https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/
 
 							1.12. Java-based Container Configuration		// done 2020-2-25 17:42:54
 
-							1.13.1. Bean Definition Profiles 			// done 2020-2-26 12:19:23
+							1.13.1. Bean Definition Profiles 				// done 2020-2-26 12:19:23
+
+							1.13. Environment Abstraction					// done 2020-2-26 16:53:53
+
+							1.14. Registering a LoadTimeWeaver 				// done 2020-2-26 16:54:09
+
+							1.15.1. Internationalization using MessageSource // done 2020-2-26 18:29:43
 
 	Testing				Mock Objects, TestContext Framework, Spring MVC Test, WebTestClient.
 

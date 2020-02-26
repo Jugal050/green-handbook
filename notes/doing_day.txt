@@ -1759,9 +1759,13 @@
 
 2020-2-26 10:41:23
 
-	# 1.13. Environment Abstraction
+	# 1.13. Environment Abstraction 				// done 2020-2-26 16:53:53
 
 		1.13.1. Bean Definition Profiles 			// done 2020-2-26 12:19:23	
+
+	# 1.14. Registering a LoadTimeWeaver 			// done 2020-2-26 16:54:09	
+
+	# 1.15.1. Internationalization using MessageSource // done 2020-2-26 18:29:43
 
 
 

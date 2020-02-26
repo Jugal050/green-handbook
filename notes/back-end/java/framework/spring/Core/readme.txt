@@ -3360,7 +3360,212 @@ Core Technologies 			https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-fra
 
 			// done 2020-2-26 12:19:13
 
-		1.13.2. PropertySource Abstraction				
+		1.13.2. PropertySource Abstraction		
+
+			java:	
+
+				ApplicationContext ctx = new GenericApplicationContext();
+				Environment env = ctx.getEnvironment();
+				boolean containsMyProperty = env.containsProperty("my-property");
+				System.out.println("Does my environment contain the 'my-property' property? " + containsMyProperty);	
+
+			StandardServletEnvironment中属性优先层级：
+
+				1. ServletConfig parameters (if applicable — for example, in case of a DispatcherServlet context)
+				2. ServletContext parameters (web.xml context-param entries)
+				3. JNDI environment variables (java:comp/env/ entries)
+				4. JVM system properties (-D command-line arguments)
+				5. JVM system environment (operating system environment variables)
+
+			优先级配置调整：
+			
+				ConfigurableApplicationContext ctx = new GenericApplicationContext();
+				MutablePropertySources sources = ctx.getEnvironment().getPropertySources();
+				sources.addFirst(new MyPropertySource());	
+
+		1.13.3. Using @PropertySource
+		
+			java:
+
+				@Configuration
+				@PropertySource("classpath:/com/myco/app.properties")
+				public class AppConfig {
+
+				    @Autowired
+				    Environment env;
+
+				    @Bean
+				    public TestBean testBean() {
+				        TestBean testBean = new TestBean();
+				        testBean.setName(env.getProperty("testbean.name"));
+				        return testBean;
+				    }
+				}
+
+				-------------- 支持SpEL表达式
+
+				@Configuration
+				@PropertySource("classpath:/com/${my.placeholder:default/path}/app.properties")
+				public class AppConfig {
+
+				    @Autowired
+				    Environment env;
+
+				    @Bean
+				    public TestBean testBean() {
+				        TestBean testBean = new TestBean();
+				        testBean.setName(env.getProperty("testbean.name"));
+				        return testBean;
+				    }
+				}
+
+		1.13.4. Placeholder Resolution in Statements
+
+			xml:
+		
+				<beans>
+				    <import resource="com/bank/service/${customer}-config.xml"/>
+				</beans>		
+
+			tips:
+			
+				因为Environment使用Spring容器管理，所以占位符customer不管定义在系统变量，环境变量还是自定义的属性文件中，只要存在即可。	
+
+	1.14. Registering a LoadTimeWeaver
+	
+		java:
+
+			@Configuration
+			@EnableLoadTimeWeaving
+			public class AppConfig {
+			}		
+
+		xml:
+		
+			<beans>
+			    <context:load-time-weaver/>
+			</beans>		
+
+	1.15. Additional Capabilities of the ApplicationContext
+	
+		1.15.1. Internationalization using MessageSource
+
+			容器启动时，如果没有专门配置"messageSource"，会默认注册一个名为"messageSource"，类型为"DelegatingMessageSource"的bean。
+
+			messageSource实现类：
+
+				ResourceBundleMessageSource 
+
+				StaticMessageSource
+
+				ReloadableResourceBundleMessageSource
+
+			使用：
+
+				常规使用：
+			
+					xml:
+
+						<beans>
+						    <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+						        <property name="basenames">
+						            <list>
+						                <value>format</value>
+						                <value>exceptions</value>
+						                <value>windows</value>
+						            </list>
+						        </property>
+						    </bean>
+						</beans>	
+
+					properties:
+					
+						format.properties
+
+							message=Alligators rock!
+
+						exceptions.properties
+						
+							argument.required=The {0} argument is required.
+
+						windows.properties
+						
+							xxx = xxx
+
+					java:
+					
+						public static void main(String[] args) {
+						    MessageSource resources = new ClassPathXmlApplicationContext("beans.xml");
+						    String message = resources.getMessage("message", null, "Default", Locale.ENGLISH);
+						    System.out.println(message);
+						}		
+
+						// result: Alligators rock!		
+
+				高级用法：
+
+					--（包含占位符 + 参数）
+
+						xml:
+
+							<beans>
+
+							    <!-- this MessageSource is being used in a web application -->
+							    <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+							        <property name="basename" value="exceptions"/>
+							    </bean>
+
+							    <!-- lets inject the above MessageSource into this POJO -->
+							    <bean id="example" class="com.something.Example">
+							        <property name="messages" ref="messageSource"/>
+							    </bean>
+
+							</beans>
+
+						java:
+						
+							public class Example {
+
+							    private MessageSource messages;
+
+							    public void setMessages(MessageSource messages) {
+							        this.messages = messages;
+							    }
+
+							    public void execute() {
+							        String message = this.messages.getMessage("argument.required",
+							            new Object [] {"userDao"}, "Required", Locale.ENGLISH);
+							        System.out.println(message);
+							    }
+							}
+
+							// result: The userDao argument is required.
+
+					-- 国际化
+					
+						exceptions_en_GB.properties
+						
+							argument.required=Ebagum lad, the ''{0}'' argument is required, I say, required.		
+
+						java:
+						
+							public static void main(final String[] args) {
+							    MessageSource resources = new ClassPathXmlApplicationContext("beans.xml");
+							    String message = resources.getMessage("argument.required",
+							        new Object [] {"userDao"}, "Required", Locale.UK);
+							    System.out.println(message);
+							}	
+
+							// result: Ebagum lad, the 'userDao' argument is required, I say, required.
+							
+				tips:				
+
+					bean("messageSource")创建的时候，如果容器ApplicationContext中有任意MessageSourceAware接口的实现类，都会进行合并再创建。
+
+			// doen 2020-2-26 18:29:33	
+
+		1.15.2. Standard and Custom Events			
+
 
 
 
