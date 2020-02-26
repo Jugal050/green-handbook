@@ -1757,6 +1757,12 @@
 
 	# 1.12. Java-based Container Configuration		// done 2020-2-25 17:42:54
 
+2020-2-26 10:41:23
+
+	# 1.13. Environment Abstraction
+
+		1.13.1. Bean Definition Profiles 			// done 2020-2-26 12:19:23	
+
 
 
 

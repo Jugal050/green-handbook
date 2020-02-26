@@ -22,6 +22,8 @@ https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/
 
 							1.12. Java-based Container Configuration		// done 2020-2-25 17:42:54
 
+							1.13.1. Bean Definition Profiles 			// done 2020-2-26 12:19:23
+
 	Testing				Mock Objects, TestContext Framework, Spring MVC Test, WebTestClient.
 
 	Data Access			Transactions, DAO Support, JDBC, O/R Mapping, XML Marshalling.

@@ -3141,6 +3141,226 @@ Core Technologies 			https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-fra
 
 	1.13. Environment Abstraction	
 
+		1.13.1. Bean Definition Profiles
+
+			environment: 对不同用户意味着是不同的，包括：
+
+				- 开发环境中使用内存数据库，测试/生产环境中通过JNDI寻找相同数据库。
+				- 只有高性能环境中发布应用时，注册监控平台。
+				- 用户A，用户B部署应用时注册各自的bean实现。
+
+			比如：
+			
+				测试环境：
+
+					@Bean
+					public DataSource dataSource() {
+					    return new EmbeddedDatabaseBuilder()
+					        .setType(EmbeddedDatabaseType.HSQL)
+					        .addScript("my-schema.sql")
+					        .addScript("my-test-data.sql")
+					        .build();
+					}
+
+				生产环境：		
+
+					@Bean(destroyMethod="")
+					public DataSource dataSource() throws Exception {
+					    Context ctx = new InitialContext();
+					    return (DataSource) ctx.lookup("java:comp/env/jdbc/datasource");
+					}
+
+			Using @Profile
+			
+				java:
+
+					@Configuration
+					@Profile("development")
+					public class StandaloneDataConfig {
+
+					    @Bean
+					    public DataSource dataSource() {
+					        return new EmbeddedDatabaseBuilder()
+					            .setType(EmbeddedDatabaseType.HSQL)
+					            .addScript("classpath:com/bank/config/sql/schema.sql")
+					            .addScript("classpath:com/bank/config/sql/test-data.sql")
+					            .build();
+					    }
+					}	
+
+					-----------------
+
+					@Configuration
+					@Profile("production")
+					public class JndiDataConfig {
+
+					    @Bean(destroyMethod="")
+					    public DataSource dataSource() throws Exception {
+					        Context ctx = new InitialContext();
+					        return (DataSource) ctx.lookup("java:comp/env/jdbc/datasource");
+					    }
+					}	
+
+					
+
+				profile表达式：
+
+					!: A logical “not” of the profile
+
+					&: A logical “and” of the profiles
+
+					|: A logical “or” of the profiles
+
+					tips:
+
+						不能没有分隔直接搭配&和|，比如"production & us-east | eu-central"是无效的，但是可以"production & (us-east | eu-central)"
+
+						表达式表示配置激活状态，比如"production & (us-east | eu-central)"表示：只有production激活 和 us-east/eu-central其中之一激活，才注册该bean。
+
+				自定义Profile注解：
+				
+					@Target(ElementType.TYPE)
+					@Retention(RetentionPolicy.RUNTIME)
+					@Profile("production")
+					public @interface Production {
+					}	
+
+				可以在同一个类中声明：
+				
+					java:
+
+						@Configuration
+						public class AppConfig {
+
+						    @Bean("dataSource")
+						    @Profile("development") 
+						    public DataSource standaloneDataSource() {
+						        return new EmbeddedDatabaseBuilder()
+						            .setType(EmbeddedDatabaseType.HSQL)
+						            .addScript("classpath:com/bank/config/sql/schema.sql")
+						            .addScript("classpath:com/bank/config/sql/test-data.sql")
+						            .build();
+						    }
+
+						    @Bean("dataSource")
+						    @Profile("production") 
+						    public DataSource jndiDataSource() throws Exception {
+						        Context ctx = new InitialContext();
+						        return (DataSource) ctx.lookup("java:comp/env/jdbc/datasource");
+						    }
+						}	
+
+					tips:
+
+						如果方法同时被@Profile和@Bean修饰，会出现一种情况：@Bean修饰的方法是有重载方法，那么所有重载方法都要添加@Profile注解。这样如果条件不满足，只有第一个重载方法会受影响。因此，同一个bean的工厂方法排在构造方法之后，@Profile并不能有效查找可用的重载方法。
+						
+						如果想在不同环境中，定义不同实现但是相同名称的bean，可以使用不同的方法名，然后再@Bean中的name属性上配置相同名称。	
+
+			XML Bean Definition Profiles
+			
+				<beans xmlns="http://www.springframework.org/schema/beans"
+				    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				    xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+				    xmlns:jee="http://www.springframework.org/schema/jee"
+				    xsi:schemaLocation="...">
+
+				    <!-- other bean definitions -->
+
+				    <beans profile="development">
+				        <jdbc:embedded-database id="dataSource">
+				            <jdbc:script location="classpath:com/bank/config/sql/schema.sql"/>
+				            <jdbc:script location="classpath:com/bank/config/sql/test-data.sql"/>
+				        </jdbc:embedded-database>
+				    </beans>
+
+				    <beans profile="production">
+				        <jee:jndi-lookup id="dataSource" jndi-name="java:comp/env/jdbc/datasource"/>
+				    </beans>
+				</beans>		
+
+				tips:
+
+					可以在不同的文件中配置。也可以在一个文件中，嵌套beans进行配置。但是不支持上边的profile表达式。如果需要，可以使用!或者嵌套beans来配置。如：
+
+						xml:
+
+							<beans xmlns="http://www.springframework.org/schema/beans"
+							    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+							    xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+							    xmlns:jee="http://www.springframework.org/schema/jee"
+							    xsi:schemaLocation="...">
+
+							    <!-- other bean definitions -->
+
+							    <beans profile="production">
+							        <beans profile="us-east">
+							            <jee:jndi-lookup id="dataSource" jndi-name="java:comp/env/jdbc/datasource"/>
+							        </beans>
+							    </beans>
+							</beans>
+
+			Activating a Profile
+			
+				java:
+
+					AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+					ctx.getEnvironment().setActiveProfiles("development");
+					ctx.register(SomeConfig.class, StandaloneDataConfig.class, JndiDataConfig.class);
+					ctx.refresh();				
+
+					ctx.getEnvironment().setActiveProfiles("profile1", "profile2");
+
+				@Annotation	
+					
+					@ActiveProfiles
+
+						@ExtendWith(SpringExtension.class)
+						// ApplicationContext will be loaded from "classpath:/app-config.xml"
+						@ContextConfiguration("/app-config.xml")
+						@ActiveProfiles("dev")
+						class TransferServiceTest {
+
+						    @Autowired
+						    TransferService transferService;
+
+						    @Test
+						    void testTransferService() {
+						        // test the transferService
+						    }
+						}
+
+				properties:(env, jvm, web.xml, jndi...)
+				
+					spring.profiles.active	
+
+				JVM start:	
+
+					-Dspring.profiles.active="profile1,profile2"
+
+			Default Profile
+
+				java:
+			
+					@Configuration
+					@Profile("default")
+					public class DefaultDataConfig {
+
+					    @Bean
+					    public DataSource dataSource() {
+					        return new EmbeddedDatabaseBuilder()
+					            .setType(EmbeddedDatabaseType.HSQL)
+					            .addScript("classpath:com/bank/config/sql/schema.sql")
+					            .build();
+					    }
+					}	
+
+					tips:
+
+						可以通过Environment.setDefaultProfiles()	，或者spring.profiles.default对default进行设置。
+
+			// done 2020-2-26 12:19:13
+
+		1.13.2. PropertySource Abstraction				
 
 
 
