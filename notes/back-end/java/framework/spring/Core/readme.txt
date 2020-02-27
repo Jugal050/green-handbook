@@ -3765,7 +3765,87 @@ Core Technologies 			https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-fra
 			// done 2020-2-27 11:55:25
 
 
-		1.15.3. Convenient Access to Low-level Resources		
+		1.15.3. Convenient Access to Low-level Resources	
+
+			资源相关类：
+
+				/**
+				 * 为输入流对象提供的简单接口
+				 * Spring中资源类@Resource的基础接口
+				 * 对于简用的流，任意输入流都可以使用InputStreamResource。
+				 * 其实现类如Spring中的ByteArrayResource，基于文件的Resource，都可以用于实例化，多次读取基础的内容流。比如，可以用于邮件附件。
+				 */ 
+				interface InputStreamSource {}
+
+				/**
+				 * 为了从潜在资源的实际类型（如文件资源、类路径资源）中抽象资源描述信息的接口。
+ 				 * 有具体形态的输入流可以被任意资源类读取，比如一个URL、文件操作之后返回的特定的资源，具体实现各有区别。
+ 				 */	
+				interface Resource extends InputStreamSource {}
+
+
+				/**
+				 * 加载资源的策略接口。 ApplicationContext继承了该类的子类ResourcePatternResolver。
+				 * DefaultResourceLoader是一个单独实现类，可以在容器外使用，如ResourceEditor。
+				 * 在ApplicationContext中，可以通过不同的资源加载策略，从字符串中读取并填充Bean属性，包括类型资源和资源数组。
+				 */
+				interface ResourceLoader {}
+
+				/**
+				 * 可以将路径模式解析为资源对象的策略接口。
+				 * ResourceLoader子类，ApplicationContext继承该类以及其相关功能。
+				 * PathMatchingResourcePatternResolver是一个单独实现类，可以在容器外使用，如ResourceArrayPropertyEditor。
+				 * 可以用于任意路径模式（如: "WEB-INF/*-context.xml"）: 输入样式必须与相关实现类匹配（该接口只提供了转换方法，并没有制定模式样式）
+				 * 该接口同样支持新的资源前缀（"classpath*:"）来加载类路径下的资源。这种情况尽量不要添加路径占位符（如: "/beans.xml"）。
+				 * Jar包或者类目录可以包含多个相同名称的文件。
+				 */
+				interface ResourcePatternResolver extends ResourceLoader {}
+
+				/**
+				 * 资源加载器通知接口。
+				 */
+				interface ResourceLoaderAware extends Aware {}
+
+		1.15.4. Convenient ApplicationContext Instantiation for Web Applications
+		
+			xml:
+
+				<context-param>
+				    <param-name>contextConfigLocation</param-name>
+				    <param-value>/WEB-INF/daoContext.xml /WEB-INF/applicationContext.xml</param-value>
+				</context-param>
+
+				<listener>
+				    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+				</listener>		
+
+		1.15.5. Deploying a Spring ApplicationContext as a Java EE RAR File
+		
+			如果应用不需要http请求，比如只包含消息端点和定时任务，可以部署为RAR压缩包。详细信息可参考：SpringContextResourceAdapter
+
+		// done 2020-2-27 17:33:44	
+
+	1.16. The BeanFactory
+
+		1.16.1. BeanFactory or ApplicationContext?
+
+			优先选择ApplicationContext，因为：
+
+			Feature													BeanFactory			ApplicationContext
+
+			Bean instantiation/wiring 								Yes 				Yes
+			Integrated lifecycle management 						No 					Yes
+			Automatic BeanPostProcessor registration  				No 					Yes
+			Automatic BeanFactoryPostProcessor registration 		No 					Yes
+			Convenient MessageSource access (for internalization) 	No 					Yes
+			Built-in ApplicationEvent publication mechanism 		No 					Yes
+
+		// done 2020-2-27 18:03:02
+		
+2. Resources
+
+				
+
 
 
 

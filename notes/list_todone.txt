@@ -46,6 +46,8 @@ framework
 
 			1.15.2. Standard and Custom Events				// done 2020-2-27 11:55:41
 
+			1. The IoC Container 							// done 2020-2-27 18:03:46
+
 			26 WebSocket Support 			// done 2010-1-14 18:44
 
 		source-code:
