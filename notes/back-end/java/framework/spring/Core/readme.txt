@@ -3564,7 +3564,208 @@ Core Technologies 			https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-fra
 
 			// doen 2020-2-26 18:29:33	
 
-		1.15.2. Standard and Custom Events			
+		1.15.2. Standard and Custom Events	
+
+			如果容器中存在一个bean，其实现了接口ApplicationListener，那么每次容器ApplicationContext发布事件ApplicationEvent时，该bean都会收到通知。（典型的观察者模式）
+
+			Spring提供的标准事件：
+
+				ContextRefreshedEvent
+
+					Published when the ApplicationContext is initialized or refreshed (for example, by using the refresh() method on the ConfigurableApplicationContext interface). Here, “initialized” means that all beans are loaded, post-processor beans are detected and activated, singletons are pre-instantiated, and the ApplicationContext object is ready for use. As long as the context has not been closed, a refresh can be triggered multiple times, provided that the chosen ApplicationContext actually supports such “hot” refreshes. For example, XmlWebApplicationContext supports hot refreshes, but GenericApplicationContext does not.
+
+				ContextStartedEvent
+
+					Published when the ApplicationContext is started by using the start() method on the ConfigurableApplicationContext interface. Here, “started” means that all Lifecycle beans receive an explicit start signal. Typically, this signal is used to restart beans after an explicit stop, but it may also be used to start components that have not been configured for autostart (for example, components that have not already started on initialization).
+
+				ContextStoppedEvent
+
+					Published when the ApplicationContext is stopped by using the stop() method on the ConfigurableApplicationContext interface. Here, “stopped” means that all Lifecycle beans receive an explicit stop signal. A stopped context may be restarted through a start() call.
+
+				ContextClosedEvent
+
+					Published when the ApplicationContext is being closed by using the close() method on the ConfigurableApplicationContext interface or via a JVM shutdown hook. Here, "closed" means that all singleton beans will be destroyed. Once the context is closed, it reaches its end of life and cannot be refreshed or restarted.
+
+				RequestHandledEvent
+
+					A web-specific event telling all beans that an HTTP request has been serviced. This event is published after the request is complete. This event is only applicable to web applications that use Spring’s DispatcherServlet.
+
+				ServletRequestHandledEvent
+
+					A subclass of RequestHandledEvent that adds Servlet-specific context information.
+
+			也可以创建发布自定义事件：
+			
+				java:
+
+					// 创建事件: 继承ApplicationEvent
+					public class BlackListEvent extends ApplicationEvent {
+
+					    private final String address;
+					    private final String content;
+
+					    public BlackListEvent(Object source, String address, String content) {
+					        super(source);
+					        this.address = address;
+					        this.content = content;
+					    }
+
+					    // accessor and other methods...
+					}
+
+					// 发布事件: 实现ApplicationEventPublisherAware
+					public class EmailService implements ApplicationEventPublisherAware {
+
+					    private List<String> blackList;
+					    private ApplicationEventPublisher publisher;
+
+					    public void setBlackList(List<String> blackList) {
+					        this.blackList = blackList;
+					    }
+
+					    public void setApplicationEventPublisher(ApplicationEventPublisher publisher) {
+					        this.publisher = publisher;
+					    }
+
+					    public void sendEmail(String address, String content) {
+					        if (blackList.contains(address)) {
+					            publisher.publishEvent(new BlackListEvent(this, address, content));
+					            return;
+					        }
+					        // send email...
+					    }
+					}
+
+					// 接收事件: 实现ApplicationListener
+					public class BlackListNotifier implements ApplicationListener<BlackListEvent> {
+
+					    private String notificationAddress;
+
+					    public void setNotificationAddress(String notificationAddress) {
+					        this.notificationAddress = notificationAddress;
+					    }
+
+					    public void onApplicationEvent(BlackListEvent event) {
+					        // notify appropriate parties via notificationAddress...
+					    }
+					}
+
+				xml:
+				
+					<bean id="emailService" class="example.EmailService">
+					    <property name="blackList">
+					        <list>
+					            <value>known.spammer@example.org</value>
+					            <value>known.hacker@example.org</value>
+					            <value>john.doe@example.org</value>
+					        </list>
+					    </property>
+					</bean>
+
+					<bean id="blackListNotifier" class="example.BlackListNotifier">
+					    <property name="notificationAddress" value="blacklist@example.org"/>
+					</bean>	
+
+				tips:
+				
+					Spring的事件主要用于一些简单的容器内部beans之间的通信，如果有更复杂的企业级组件需求，可以使用spring-integration模块，它支持轻量级，设计模式，事件驱动原理（建立在熟知的Spring编程模块基础上）。
+
+
+			Annotation-based Event Listeners
+
+				4.2以后，可以使用注解@EventLister监听事件
+
+					java:
+
+						// 监听事件
+						public class BlackListNotifier {
+
+						    private String notificationAddress;
+
+						    public void setNotificationAddress(String notificationAddress) {
+						        this.notificationAddress = notificationAddress;
+						    }
+
+						    @EventListener
+						    public void processBlackListEvent(BlackListEvent event) {
+						        // notify appropriate parties via notificationAddress...
+						    }
+						}
+
+						// 指定事件类型
+						@EventListener({ContextStartedEvent.class, ContextRefreshedEvent.class})
+						public void handleContextStart() {
+						    // ...
+						}
+
+						// 条件筛选（SpEL表达式）
+						@EventListener(condition = "#blEvent.content == 'my-event'")
+						public void processBlackListEvent(BlackListEvent blEvent) {
+						    // notify appropriate parties via notificationAddress...
+						}
+
+						// 发布其他事件（方法返回值设置为事件类型即可，如果是多个事件，可以返回List）
+						@EventListener
+						public ListUpdateEvent handleBlackListEvent(BlackListEvent event) {
+						    // notify appropriate parties via notificationAddress and
+						    // then publish a ListUpdateEvent...
+						}
+
+			Asynchronous Listeners
+			
+				java:
+
+					// 异步事件
+					@EventListener
+					@Async
+					public void processBlackListEvent(BlackListEvent event) {
+					    // BlackListEvent is processed in a separate thread
+					}			
+
+					tips:
+
+						异步事件如果执行期间抛出异常，不会返回给调用方
+
+						异步事件如果想发布其他事件，可以通过添加ApplicationEventPublisher手动发布，不支持通过（添加方法返回事件类型）来发布其他事件。
+
+			Ordering Listeners
+			
+				java:
+
+					// 事件执行顺序
+					@EventListener
+					@Order(42)
+					public void processBlackListEvent(BlackListEvent event) {
+					    // notify appropriate parties via notificationAddress...
+					}	
+
+			Generic Events
+
+				java:
+
+					// 添加泛型，直接收指定类型事件的监听器（class PersonCreatedEvent extends EntityCreatedEvent<Person> { …​ } 类似的事件才会被监听）
+					@EventListener
+					public void onPersonCreated(EntityCreatedEvent<Person> event) {
+					    // ...
+					}	
+
+					// 如果都是用上边的泛型结构，就会变复杂，可以通过实现ResolvableTypeProvider接口来获取事件驱动类型（对applicationContext，以及任意其他事件对象都可以感知）
+					public class EntityCreatedEvent<T> extends ApplicationEvent implements ResolvableTypeProvider {
+
+					    public EntityCreatedEvent(T entity) {
+					        super(entity);
+					    }
+
+					    @Override
+					    public ResolvableType getResolvableType() {
+					        return ResolvableType.forClassWithGenerics(getClass(), ResolvableType.forInstance(getSource()));
+					    }
+					}			
+
+			// done 2020-2-27 11:55:25
+
+
+		1.15.3. Convenient Access to Low-level Resources		
 
 
 

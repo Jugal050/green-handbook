@@ -30,6 +30,8 @@ https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/
 
 							1.15.1. Internationalization using MessageSource // done 2020-2-26 18:29:43
 
+							1.15.2. Standard and Custom Events				// done 2020-2-27 11:55:41
+
 	Testing				Mock Objects, TestContext Framework, Spring MVC Test, WebTestClient.
 
 	Data Access			Transactions, DAO Support, JDBC, O/R Mapping, XML Marshalling.

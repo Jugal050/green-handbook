@@ -1767,6 +1767,10 @@
 
 	# 1.15.1. Internationalization using MessageSource // done 2020-2-26 18:29:43
 
+2020-2-27 11:55:58
+
+	# 1.15.2. Standard and Custom Events			// done 2020-2-27 11:55:41	
+
 
 
 
