@@ -3844,6 +3844,43 @@ Core Technologies 			https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-fra
 		
 2. Resources
 
+	2.1. Introduction
+
+		URL： Uniform Resource Locator 统一资源定位符
+
+		URI： Uniform Resource Identifier 统一资源标识符
+
+		URLEncoder： HTML表单编码通用组件
+
+		URLDecoder： HTML表单解码通用组件
+
+	2.2. The Resource Interface
+
+		java:
+
+			public interface Resource extends InputStreamSource {
+
+			    boolean exists();
+
+			    boolean isOpen();
+
+			    URL getURL() throws IOException;
+
+			    File getFile() throws IOException;
+
+			    Resource createRelative(String relativePath) throws IOException;
+
+			    String getFilename();
+
+			    String getDescription();
+			}
+
+			public interface InputStreamSource {
+
+			    InputStream getInputStream() throws IOException;
+			}
+
+	2.3. Built-in Resource Implementations		
 				
 
 

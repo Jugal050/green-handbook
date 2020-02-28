@@ -74,6 +74,8 @@ doing：
 
 			1. The IoC Container 							// done 2020-2-27 18:03:46
 
+			2.2. The Resource Interface 					// done 2020-2-28 12:00:27
+
 			26 WebSocket Support 				 // start 2020-1-14 13:40:00    done 2010-1-14 18:44
 
 		

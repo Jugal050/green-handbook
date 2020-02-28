@@ -34,6 +34,8 @@ https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/
 
 							1. The IoC Container 							// done 2020-2-27 18:03:46
 
+							# 2.2. The Resource Interface 					// done 2020-2-28 12:00:27
+
 	Testing				Mock Objects, TestContext Framework, Spring MVC Test, WebTestClient.
 
 	Data Access			Transactions, DAO Support, JDBC, O/R Mapping, XML Marshalling.
