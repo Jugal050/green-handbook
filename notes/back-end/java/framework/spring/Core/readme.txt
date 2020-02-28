@@ -3880,7 +3880,172 @@ Core Technologies 			https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-fra
 			    InputStream getInputStream() throws IOException;
 			}
 
-	2.3. Built-in Resource Implementations		
+	2.3. Built-in Resource Implementations	
+
+		2.3.1. UrlResource
+
+			UrlResource封装了URL，可以获取任何URL可以获取的对象，比如文件（file:）、HTTP对象（https:）、FTP对象（ftp:）或者其他。
+
+		2.3.2. ClassPathResource
+		
+			代表可以从类路径获取的资源。（使用容器上下文加载器，或者指定类加载器，或者指定资源加载类），支持解析File（文件系统中的，JAR包内不支持）。
+
+		2.3.3. FileSystemResource
+		
+			处理java.io.File 和 java.nio.file.Path 的实现类。 可以解析File和URL。
+
+		2.3.4. ServletContextResource
+
+			处理ServletContext资源的实现类。 支持处理流stream，URL，文件（web应用程序存档已扩展的并且存在于文件系统中的）
+
+		2.3.5. InputStreamResource
+		
+			其他Resource实现类（比如ByteArrayResource以及其他基于文件的资源实现类）不可用时可以考虑此类。
+
+			与其他实现类不同，它代表一个已经打开的资源（即isOpen() == true）。如果想保留资源描述符或者需要多次读取流stream时，不要使用此类。
+
+		2.3.6. ByteArrayResource
+		
+			指定字节数组的资源实现类。
+
+	2.4. The ResourceLoader
+	
+		java:
+
+			public interface ResourceLoader {
+
+			    Resource getResource(String location);
+			}			
+
+		不同的容器返回不同的资源类型：
+
+			// ctx = ClassPathXmlApplicationContext 时返回 ClassPathResource
+			// ctx = FileSystemXmlApplicationContext 时返回 FileSystemResource
+			// ctx = WebApplicationContext 时返回 ServletContextResource
+			Resource template = ctx.getResource("some/resource/path/myTemplate.txt");
+
+		也可以通过修改不同的前缀来指定不同的资源实现类:
+
+			// 添加前缀classpath:，template为ClassPathResource 
+			Resource template = ctx.getResource("classpath:some/resource/path/myTemplate.txt");
+			// 添加前缀file:或者https:, template为UrlResource 
+			Resource template = ctx.getResource("file:///some/resource/path/myTemplate.txt");
+			Resource template = ctx.getResource("https://myhost.com/resource/path/myTemplate.txt");
+
+		String -> Resource 转换策略：
+		
+			Prefix					Example										Explanation
+
+			classpath: 				classpath:com/myapp/config.xml 				Loaded from the classpath.
+			file: 					file:///data/config.xml 					Loaded as a URL from the filesystem. See also FileSystemResource Caveats.
+			http: 					https://myserver/logo.png 					Loaded as a URL.
+			(none) 					/data/config.xml 							Depends on the underlying ApplicationContext.	
+
+	2.5. The ResourceLoaderAware interface
+
+		接口定义：
+
+			java:
+
+				public interface ResourceLoaderAware {
+
+				    void setResourceLoader(ResourceLoader resourceLoader);
+				}		
+
+		如果在Spring容器环境中，想提供一个ResourceLoader对象引用，可以:
+			1. 实现接口ResourceLoaderAware
+			2. 实现接口ApplicationContextAware（如果只需要资源加载器，优先用第一种方法）
+			3. 容器组件中，注入ResourceLoader
+
+	2.6. Resources as Dependencies
+	
+		xml:
+
+			<bean id="myBean" class="...">
+				// 默认注入类型：ResourceLoader
+			    <property name="template" value="some/resource/path/myTemplate.txt"/>
+
+			    // 添加前缀classpath:，则注入ClassPathResource
+			    <property name="template" value="classpath:some/resource/path/myTemplate.txt">
+
+			    // 添加前缀file:，则注入UrlResource
+			    <property name="template" value="file:///some/resource/path/myTemplate.txt"/>
+			</bean>		
+
+	2.7. Application Contexts and Resource Paths
+	
+		2.7.1. Constructing Application Contexts
+
+			Constructing ClassPathXmlApplicationContext Instances — Shortcuts
+
+				dir:
+
+					com/
+					  foo/
+					    services.xml
+					    daos.xml
+					    MessengerService.class		
+
+				java:
+				
+					ApplicationContext ctx = new ClassPathXmlApplicationContext(new String[] {"services.xml", "daos.xml"}, MessengerService.class);	 
+
+		2.7.2. Wildcards in Application Context Constructor Resource Paths
+		
+			Ant-style Patterns
+
+				i.e:
+
+					/WEB-INF/*-context.xml
+					com/mycompany/**/applicationContext.xml
+					file:C:/some/path/*-context.xml
+					classpath:com/mycompany/**/applicationContext.xml			
+
+			Implications on Portability		
+
+			The classpath*: Prefix
+
+				ApplicationContext ctx = new ClassPathXmlApplicationContext("classpath*:conf/appContext.xml");	
+
+			Other Notes Relating to Wildcards
+			
+		2.7.3. FileSystemResource Caveats
+
+			相对路径（relative paths）： 相对于当前目录。
+
+			绝对路径（absolute paths）： 相对于根目录。
+		
+			java:
+
+				相对路径，以下几种写法都是类似的：
+
+					ApplicationContext ctx = new FileSystemXmlApplicationContext("conf/context.xml");		
+
+					ApplicationContext ctx = new FileSystemXmlApplicationContext("/conf/context.xml");
+
+					FileSystemXmlApplicationContext ctx = ...;
+					ctx.getResource("some/resource/path/myTemplate.txt");
+
+					FileSystemXmlApplicationContext ctx = ...;
+					ctx.getResource("/some/resource/path/myTemplate.txt");
+
+				绝对路径，可以使用以下写法：	
+
+					// actual context type doesn't matter, the Resource will always be UrlResource
+					ctx.getResource("file:///some/resource/path/myTemplate.txt");
+
+					// force this FileSystemXmlApplicationContext to load its definition via a UrlResource
+					ApplicationContext ctx = new FileSystemXmlApplicationContext("file:///conf/context.xml");
+
+		// doen 2020-2-28 18:30:25
+		
+3. Validation, Data Binding, and Type Conversion					
+
+
+
+
+
+
 				
 
 
