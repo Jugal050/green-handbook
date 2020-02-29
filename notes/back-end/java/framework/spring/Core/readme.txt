@@ -4155,7 +4155,231 @@ Core Technologies 			https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-fra
 
 		// done 2020-2-29 12:07:18
 
-	3.3. Bean Manipulation and the BeanWrapper			
+	3.3. Bean Manipulation and the BeanWrapper	
+
+		相关类：
+
+			/**
+			 * Spring底层JavaBeans的核心接口。
+			 *   
+			 *    提供解析or操作Java对象的功能（如属性的get/set，获取属性描述，判断属性是否可读/科协）。
+			 *    支持嵌套属性，并且没有嵌套次数的限制
+			 *    为了避免get方法调用引起的副作用，extractOldValueForEditor默认为false，设置为true时，则当前属性会暴露给自定义编辑器。
+			 */ 
+			public interface BeanWrapper extends ConfigurablePropertyAccessor {}
+
+			/**
+			 * 封装三个接口的功能：PropertyAccessor（属性访问）、PropertyEditorRegistry（属性编辑器注册表）、TypeConverter（类型转换）
+			 */
+			public interface ConfigurablePropertyAccessor extends PropertyAccessor, PropertyEditorRegistry, TypeConverter {}
+
+			/**
+			 * 名称属性访问的通用接口（名称属性： 对象属性、字段）。 基础实现类： AbstractPropertyAccessor
+			 */
+			public interface PropertyAccessor {}
+
+			/**
+			 * JavaBeans属性编辑器的注册接口。 基础实现类： PropertyEditorRegistrySupport
+			 */
+			public interface PropertyEditorRegistry {}
+
+			/**
+			 * 定义类型转换方法的接口。 基础实现类： TypeConverterSupport
+			 */
+			public interface TypeConverter {}
+
+			/**
+			 * 用户可以通过此类对指定类型的属性值进行编辑。
+			 * 
+			 * 包含多种不同的获取/设置属性值的方法，大部分属性编辑器只需要实现部分方法即可。
+			 */
+			public interface PropertyEditor {}
+
+			/**
+			 * BeanWrapper的默认实现类（可以满足所有的常用场景，其中为了更高效使用了自省缓存）
+			 */
+			public class BeanWrapperImpl extends AbstractNestablePropertyAccessor implements BeanWrapper {}
+
+			/**
+			 * 包含单独bean属性的信息和值。 使用object而非map，可以更加灵活，在处理有索引的属性时也更有优势。
+			 */ 
+			public class PropertyValue extends BeanMetadataAttributeAccessor implements Serializable {}
+
+			/**
+			 * 支持访问和设置任意对象属性。 基础实现类： AttributeAccessorSupport
+			 */			
+			public interface AttributeAccessor {}
+
+			/**
+			 * 包含一个配置源对象的bean数据源接口
+			 */
+			public interface BeanMetadataElement {}
+
+
+		3.3.1. Setting and Getting Basic and Nested Properties
+
+			java:
+
+				public class Company {
+
+				    private String name;
+				    private Employee managingDirector;
+
+				    public String getName() {
+				        return this.name;
+				    }
+
+				    public void setName(String name) {
+				        this.name = name;
+				    }
+
+				    public Employee getManagingDirector() {
+				        return this.managingDirector;
+				    }
+
+				    public void setManagingDirector(Employee managingDirector) {
+				        this.managingDirector = managingDirector;
+				    }
+				}
+
+				public class Employee {
+
+				    private String name;
+
+				    private float salary;
+
+				    public String getName() {
+				        return this.name;
+				    }
+
+				    public void setName(String name) {
+				        this.name = name;
+				    }
+
+				    public float getSalary() {
+				        return salary;
+				    }
+
+				    public void setSalary(float salary) {
+				        this.salary = salary;
+				    }
+				}
+
+				-----------------------
+
+				usage:
+
+					BeanWrapper company = new BeanWrapperImpl(new Company());
+					// setting the company name..
+					company.setPropertyValue("name", "Some Company Inc.");
+					// ... can also be done like this:
+					PropertyValue value = new PropertyValue("name", "Some Company Inc.");
+					company.setPropertyValue(value);
+
+					// ok, let's create the director and tie it to the company:
+					BeanWrapper jim = new BeanWrapperImpl(new Employee());
+					jim.setPropertyValue("name", "Jim Stravinsky");
+					company.setPropertyValue("managingDirector", jim.getWrappedInstance());
+
+					// retrieving the salary of the managingDirector through the company
+					Float salary = (Float) company.getPropertyValue("managingDirector.salary");
+
+		3.3.2. Built-in PropertyEditor Implementations		
+
+			Spring已实现的属性编辑器目录： org/springframework/beans/propertyeditors
+
+			Registering Additional Custom PropertyEditor Implementations
+
+				i.e:
+
+					java:
+
+						public class ExoticType {
+
+						    private String name;
+
+						    public ExoticType(String name) {
+						        this.name = name;
+						    }
+						}
+
+						public class DependsOnExoticType {
+
+						    private ExoticType type;
+
+						    public void setType(ExoticType type) {
+						        this.type = type;
+						    }
+						}
+
+						public class ExoticTypeEditor extends PropertyEditorSupport {
+
+						    public void setAsText(String text) {
+						        setValue(new ExoticType(text.toUpperCase()));
+						    }
+						}
+
+					xml:
+					
+						<bean id="sample" class="example.DependsOnExoticType">
+						    <property name="type" value="aNameForExoticType"/>
+						</bean>
+
+						<bean class="org.springframework.beans.factory.config.CustomEditorConfigurer">
+					    	<property name="customEditors">
+						        <map>
+						            <entry key="example.ExoticType" value="example.ExoticTypeEditor"/>
+						        </map>
+						    </property>
+						</bean>	
+
+				Using PropertyEditorRegistrar
+
+					java:
+
+						public final class CustomPropertyEditorRegistrar implements PropertyEditorRegistrar {
+
+						    public void registerCustomEditors(PropertyEditorRegistry registry) {
+
+						        // it is expected that new PropertyEditor instances are created
+						        registry.registerCustomEditor(ExoticType.class, new ExoticTypeEditor());
+
+						        // you could register as many custom property editors as are required here...
+						    }
+						}
+
+						public final class RegisterUserController extends SimpleFormController {
+
+						    private final PropertyEditorRegistrar customPropertyEditorRegistrar;
+
+						    public RegisterUserController(PropertyEditorRegistrar propertyEditorRegistrar) {
+						        this.customPropertyEditorRegistrar = propertyEditorRegistrar;
+						    }
+
+						    protected void initBinder(HttpServletRequest request,
+						            ServletRequestDataBinder binder) throws Exception {
+						        this.customPropertyEditorRegistrar.registerCustomEditors(binder);
+						    }
+
+						    // other methods to do with registering a User
+						}
+
+					xml:
+					
+						<bean class="org.springframework.beans.factory.config.CustomEditorConfigurer">
+						    <property name="propertyEditorRegistrars">
+						        <list>
+						            <ref bean="customPropertyEditorRegistrar"/>
+						        </list>
+						    </property>
+						</bean>
+
+						<bean id="customPropertyEditorRegistrar" class="com.foo.editors.spring.CustomPropertyEditorRegistrar"/>	
+
+			// done 2020-2-29 19:14:49
+			
+	3.4. Spring Type Conversion				
+
 
 
 

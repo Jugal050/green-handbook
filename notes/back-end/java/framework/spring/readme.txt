@@ -40,6 +40,8 @@ https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/
 
 							3.2. Resolving Codes to Error Messages			// done 2020-2-29 12:06:58
 
+							3.3. Bean Manipulation and the BeanWrapper 		// done 2020-2-29 19:15:23
+
 	Testing				Mock Objects, TestContext Framework, Spring MVC Test, WebTestClient.
 
 	Data Access			Transactions, DAO Support, JDBC, O/R Mapping, XML Marshalling.

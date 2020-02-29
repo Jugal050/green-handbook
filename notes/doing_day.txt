@@ -1785,6 +1785,7 @@
 
 	# 3.2. Resolving Codes to Error Messages		// done 2020-2-29 12:06:58	
 
+	# 3.3. Bean Manipulation and the BeanWrapper 	// done 2020-2-29 19:15:23
 
 
 

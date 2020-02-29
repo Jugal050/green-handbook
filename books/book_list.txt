@@ -80,6 +80,8 @@ doing：
 
 			3.2. Resolving Codes to Error Messages			// done 2020-2-29 12:06:58
 
+			3.3. Bean Manipulation and the BeanWrapper 		// done 2020-2-29 19:15:23
+
 			26 WebSocket Support 				 // start 2020-1-14 13:40:00    done 2010-1-14 18:44
 
 		
