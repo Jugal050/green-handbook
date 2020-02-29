@@ -4039,8 +4039,123 @@ Core Technologies 			https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-fra
 
 		// doen 2020-2-28 18:30:25
 		
-3. Validation, Data Binding, and Type Conversion					
+3. Validation, Data Binding, and Type Conversion	
 
+	3.1. Validation by Using Spring’s Validator Interface
+
+		相关类：
+			
+			// 对象校验器接口
+			public interface Validator
+
+			// 提供存储和获取对象绑定和对象校验的错误信息（单线程）
+			public interface Errors
+
+			// 通用工具类：提供调用校验器和空值校验的方法
+			public abstract class ValidationUtils
+
+		i.e:
+
+			java:
+
+				public class Person {
+
+				    private String name;
+				    private int age;
+
+				    // the usual getters and setters...
+				}
+
+				---------------
+
+				public class PersonValidator implements Validator {
+
+				    /**
+				     * This Validator validates only Person instances
+				     */
+				    public boolean supports(Class clazz) {
+				        return Person.class.equals(clazz);
+				    }
+
+				    public void validate(Object obj, Errors e) {
+				        ValidationUtils.rejectIfEmpty(e, "name", "name.empty");
+				        Person p = (Person) obj;
+				        if (p.getAge() < 0) {
+				            e.rejectValue("age", "negativevalue");
+				        } else if (p.getAge() > 110) {
+				            e.rejectValue("age", "too.darn.old");
+				        }
+				    }
+				}
+
+				-----------------
+
+				public class CustomerValidator implements Validator {
+
+				    private final Validator addressValidator;
+
+				    public CustomerValidator(Validator addressValidator) {
+				        if (addressValidator == null) {
+				            throw new IllegalArgumentException("The supplied [Validator] is " +
+				                "required and must not be null.");
+				        }
+				        if (!addressValidator.supports(Address.class)) {
+				            throw new IllegalArgumentException("The supplied [Validator] must " +
+				                "support the validation of [Address] instances.");
+				        }
+				        this.addressValidator = addressValidator;
+				    }
+
+				    /**
+				     * This Validator validates Customer instances, and any subclasses of Customer too
+				     */
+				    public boolean supports(Class clazz) {
+				        return Customer.class.isAssignableFrom(clazz);
+				    }
+
+				    public void validate(Object target, Errors errors) {
+				        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "firstName", "field.required");
+				        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "surname", "field.required");
+				        Customer customer = (Customer) target;
+				        try {
+				            errors.pushNestedPath("address");
+				            ValidationUtils.invokeValidator(this.addressValidator, customer.getAddress(), errors);
+				        } finally {
+				            errors.popNestedPath();
+				        }
+				    }
+				}	
+
+	3.2. Resolving Codes to Error Messages					
+
+		相关类：
+
+			// 从校验错误码中构建消息码的策略接口（数据绑定中可以用于构建对象错误、字段错误信息）
+			public interface MessageCodesResolver
+
+			// MessageCodesResolver的默认实现类
+			public class DefaultMessageCodesResolver implements MessageCodesResolver, Serializabl
+
+		i.e:
+			
+			java:
+
+				private DefaultMessageCodesResolver resolver = new DefaultMessageCodesResolver();
+
+				@Test
+				public void shouldResolveFieldMessageCode() throws Exception {
+					String[] codes = resolver.resolveMessageCodes("errorCode", "objectName", "field",
+							TestBean.class);
+					assertThat(codes).containsExactly(
+							"errorCode.objectName.field",
+							"errorCode.field",
+							"errorCode.org.springframework.beans.testfixture.beans.TestBean",
+							"errorCode");
+				}
+
+		// done 2020-2-29 12:07:18
+
+	3.3. Bean Manipulation and the BeanWrapper			
 
 
 

@@ -38,6 +38,8 @@ https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/
 
 							2. Resources 									// done 2020-2-28 18:30:45
 
+							3.2. Resolving Codes to Error Messages			// done 2020-2-29 12:06:58
+
 	Testing				Mock Objects, TestContext Framework, Spring MVC Test, WebTestClient.
 
 	Data Access			Transactions, DAO Support, JDBC, O/R Mapping, XML Marshalling.
