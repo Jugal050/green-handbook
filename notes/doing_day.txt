@@ -1789,7 +1789,68 @@
 
 2020-3-1 10:50:00
 
-	# 3.4. Spring Type Conversion 					// done 2020-3-1 12:15:38	
+	# 3.4. Spring Type Conversion 					// done 2020-3-1 12:15:38
+
+		用法： 可参考测试类org/springframework/core/convert/converter/DefaultConversionServiceTests.java
+
+			private final DefaultConversionService conversionService = new DefaultConversionService();
+
+			conversionService.convert("1", Character.class);
+
+			conversionService.convert("true", Boolean.class);
+
+			conversionService.convert("1", Byte.class);
+
+			conversionService.convert("1", Short.class);
+
+			conversionService.convert("1", Integer.class);
+
+			conversionService.convert(Float.valueOf("1.0"), String.class);
+
+			conversionService.convert("1.0", Double.class);
+
+			conversionService.convert(3L, String.class);
+
+			conversionService.convert("1", BigInteger.class);
+			conversionService.convert(new BigDecimal("100.00"), String.class)
+			conversionService.convert("1.0", Number.class)
+			conversionService.convert("BAR", Foo.class)
+			conversionService.convert("BAZ", SubFoo.BAR.getClass())
+
+			conversionService.convert("en-US", Locale.class)
+
+			conversionService.convert("UTF-8", Charset.class)
+
+			conversionService.convert(Currency.getInstance("USD"), String.class)
+
+			conversionService.convert(new String[] {"1", "2", "3"}, List.class);
+
+			List<Integer> result = (List<Integer>) conversionService.convert(new String[] {"1", "2", "3"}, TypeDescriptor
+				.valueOf(String[].class), new TypeDescriptor(getClass().getDeclaredField("genericList")));
+
+			List<Color> colors = (List<Color>) conversionService.convert(new String[] {"ffffff", "#000000"},
+				TypeDescriptor.valueOf(String[].class),
+				new TypeDescriptor(new MethodParameter(getClass().getMethod("handlerMethod", List.class), 0)));
+				
+			LinkedList<?> result = conversionService.convert(new String[] {"1", "2", "3"}, LinkedList.class);
+			
+			String result = conversionService.convert(new String[] {"1", "2", "3"}, String.class);		
+
+			String[] result = conversionService.convert("1,2,3", String[].class);
+			Integer[] result = conversionService.convert("1,2,3", Integer[].class);
+			int[] result = conversionService.convert("1,2,3", int[].class);
+
+			List<?> result = (List<?>) conversionService.convert("1,2,3", TypeDescriptor.valueOf(String.class),
+				new TypeDescriptor(getClass().getField("genericList")));
+
+			Properties result = conversionService.convert("a=b\nc=2\nd=", Properties.class);
+			Properties result = conversionService.convert("   foo=bar\n   bar=baz\n    baz=boop", Properties.class);
+
+			conversionService.convert(1L, TestEntity.class);
+			TestEntity entity = (TestEntity) conversionService.convert(null,
+				TypeDescriptor.valueOf(String.class), TypeDescriptor.valueOf(TestEntity.class));
+
+
 
 
 
