@@ -82,6 +82,8 @@ doing：
 
 			3.3. Bean Manipulation and the BeanWrapper 		// done 2020-2-29 19:15:23
 
+			3.4. Spring Type Conversion 					// done 2020-3-1 12:15:47
+
 			26 WebSocket Support 				 // start 2020-1-14 13:40:00    done 2010-1-14 18:44
 
 		

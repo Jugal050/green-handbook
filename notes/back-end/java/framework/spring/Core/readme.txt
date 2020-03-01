@@ -4378,7 +4378,243 @@ Core Technologies 			https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-fra
 
 			// done 2020-2-29 19:14:49
 			
-	3.4. Spring Type Conversion				
+	3.4. Spring Type Conversion
+
+		package目录： core.convert 
+
+		3.4.1. Converter SPI
+
+			java: 
+
+				package org.springframework.core.convert.converter;
+
+				public interface Converter<S, T> {
+
+				    T convert(S source);
+				}
+
+				-------------------
+
+				package org.springframework.core.convert.support;
+
+				final class StringToInteger implements Converter<String, Integer> {
+
+				    public Integer convert(String source) {
+				        return Integer.valueOf(source);
+				    }
+				}
+
+		3.4.2. Using ConverterFactory
+		
+			当需要集中化一个类及其所有子类的转换逻辑，可以实现ConverterFactory
+
+				java:
+
+					package org.springframework.core.convert.converter;
+
+					public interface ConverterFactory<S, R> {
+
+					    <T extends R> Converter<S, T> getConverter(Class<T> targetType);
+					}	
+
+					-------------------
+
+					package org.springframework.core.convert.support;
+
+					final class StringToEnumConverterFactory implements ConverterFactory<String, Enum> {
+
+					    public <T extends Enum> Converter<String, T> getConverter(Class<T> targetType) {
+					        return new StringToEnumConverter(targetType);
+					    }
+
+					    private final class StringToEnumConverter<T extends Enum> implements Converter<String, T> {
+
+					        private Class<T> enumType;
+
+					        public StringToEnumConverter(Class<T> enumType) {
+					            this.enumType = enumType;
+					        }
+
+					        public T convert(String source) {
+					            return (T) Enum.valueOf(this.enumType, source.trim());
+					        }
+					    }
+					}
+
+		3.4.3. Using GenericConverter
+		
+			如果需要更复杂的转换实现类，可以实现GenericConverter接口。它比Convertor更灵活，强转更少。 （该接口时最复杂的，所以优先考虑使用Converter和ConverterFactory）
+
+				java:
+
+					package org.springframework.core.convert.converter;
+
+					public interface GenericConverter {
+
+					    public Set<ConvertiblePair> getConvertibleTypes();
+
+					    Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType);
+					}	
+
+					---------------------
+
+					final class ArrayToCollectionConverter implements ConditionalGenericConverter {
+
+					private final ConversionService conversionService;
+
+
+					public ArrayToCollectionConverter(ConversionService conversionService) {
+						this.conversionService = conversionService;
+					}
+
+
+					@Override
+					public Set<ConvertiblePair> getConvertibleTypes() {
+						return Collections.singleton(new ConvertiblePair(Object[].class, Collection.class));
+					}
+
+					@Override
+					public boolean matches(TypeDescriptor sourceType, TypeDescriptor targetType) {
+						return ConversionUtils.canConvertElements(
+								sourceType.getElementTypeDescriptor(), targetType.getElementTypeDescriptor(), this.conversionService);
+					}
+
+					@Override
+					@Nullable
+					public Object convert(@Nullable Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+						if (source == null) {
+							return null;
+						}
+
+						int length = Array.getLength(source);
+						TypeDescriptor elementDesc = targetType.getElementTypeDescriptor();
+						Collection<Object> target = CollectionFactory.createCollection(targetType.getType(),
+								(elementDesc != null ? elementDesc.getType() : null), length);
+
+						if (elementDesc == null) {
+							for (int i = 0; i < length; i++) {
+								Object sourceElement = Array.get(source, i);
+								target.add(sourceElement);
+							}
+						}
+						else {
+							for (int i = 0; i < length; i++) {
+								Object sourceElement = Array.get(source, i);
+								Object targetElement = this.conversionService.convert(sourceElement,
+										sourceType.elementTypeDescriptor(sourceElement), elementDesc);
+								target.add(targetElement);
+							}
+						}
+						return target;
+					}
+
+				}
+
+			Using ConditionalGenericConverter
+
+				如果想要在特定条件下才进行转换时（比如有某些特定注解，特定方法）。可以考虑ConditionalGenericConverter（）
+
+				java:
+
+					public interface ConditionalConverter {
+
+					    boolean matches(TypeDescriptor sourceType, TypeDescriptor targetType);
+					}
+
+					public interface ConditionalGenericConverter extends GenericConverter, ConditionalConverter {
+					}
+
+		3.4.4. The ConversionService API
+
+			ConversionService为类型转换定义了一个统一的接口。（其他转换类一般在该门面接口中执行）
+
+			java:
+
+				package org.springframework.core.convert;
+
+				public interface ConversionService {
+
+				    boolean canConvert(Class<?> sourceType, Class<?> targetType);
+
+				    <T> T convert(Object source, Class<T> targetType);
+
+				    boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType);
+
+				    Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType);
+
+				}
+
+				-------------------------
+
+				GenericConversionService 适用于大多数情况的常规实现类
+
+				ConversionServiceFactory 创建常用conversionService配置的工厂类
+
+		3.4.5. Configuring a ConversionService
+		
+			注册：
+
+				xml:
+
+					<bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean"/>
+
+					<bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
+					    <property name="converters">
+					        <set>
+					            <bean class="example.MyCustomConverter"/>
+					        </set>
+					    </property>
+					</bean>
+
+		3.4.6. Using a ConversionService Programmatically
+		
+			java:
+
+				@Service
+				public class MyService {
+
+				    public MyService(ConversionService conversionService) {
+				        this.conversionService = conversionService;
+				    }
+
+				    public void doIt() {
+				        this.conversionService.convert(...)
+				    }
+				}	
+
+				-------------------
+
+				DefaultConversionService cs = new DefaultConversionService();
+
+				List<Integer> input = ...
+				cs.convert(input,
+				    TypeDescriptor.forObject(input), // List<Integer> type descriptor
+				    TypeDescriptor.collection(List.class, TypeDescriptor.valueOf(String.class)));
+
+			tips:
+				
+				DefaultConversionService会环境中大多数转换器。包括集合，scalar，基本的对象->string。
+
+				我们可以通过DefaultConversionService.addDefaultConverters添加自定义的转换器。
+
+				对于数组/集合中的值类型，转换器是可以复用的，所以无需单独创建一个从Collection<S>到Collection<T>的转换器。
+
+		// done 2020-3-1 12:15:17	
+
+	3.5. Spring Field Formatting
+	
+		
+
+
+
+		
+
+		
+
+
+
+
+
 
 
 

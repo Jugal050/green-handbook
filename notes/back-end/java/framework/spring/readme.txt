@@ -42,6 +42,8 @@ https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/
 
 							3.3. Bean Manipulation and the BeanWrapper 		// done 2020-2-29 19:15:23
 
+							3.4. Spring Type Conversion 					// done 2020-3-1 12:15:47
+
 	Testing				Mock Objects, TestContext Framework, Spring MVC Test, WebTestClient.
 
 	Data Access			Transactions, DAO Support, JDBC, O/R Mapping, XML Marshalling.

@@ -1787,6 +1787,10 @@
 
 	# 3.3. Bean Manipulation and the BeanWrapper 	// done 2020-2-29 19:15:23
 
+2020-3-1 10:50:00
+
+	# 3.4. Spring Type Conversion 					// done 2020-3-1 12:15:38	
+
 
 
 	
