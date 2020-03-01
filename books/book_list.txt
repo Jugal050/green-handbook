@@ -84,6 +84,8 @@ doing：
 
 			3.4. Spring Type Conversion 					// done 2020-3-1 12:15:47
 
+			3. Validation, Data Binding, and Type Conversion// done 2020-3-1 19:05:38
+
 			26 WebSocket Support 				 // start 2020-1-14 13:40:00    done 2010-1-14 18:44
 
 		

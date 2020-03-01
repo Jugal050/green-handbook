@@ -4603,7 +4603,620 @@ Core Technologies 			https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-fra
 
 	3.5. Spring Field Formatting
 	
+		3.5.1. The Formatter SPI
+
+			接口定义：
+
+				java:
+
+					public interface Formatter<T> extends Printer<T>, Parser<T> {}	
+
+					@FunctionalInterface
+					public interface Printer<T> {
+
+						String print(T object, Locale locale);
+
+					}
+
+					@FunctionalInterface
+					public interface Parser<T> {
+
+						T parse(String text, Locale locale) throws ParseException;
+
+					}
+
+			实现类：
+
+				java:
+
+					public final class DateFormatter implements Formatter<Date> {
+
+					    private String pattern;
+
+					    public DateFormatter(String pattern) {
+					        this.pattern = pattern;
+					    }
+
+					    public String print(Date date, Locale locale) {
+					        if (date == null) {
+					            return "";
+					        }
+					        return getDateFormat(locale).format(date);
+					    }
+
+					    public Date parse(String formatted, Locale locale) throws ParseException {
+					        if (formatted.length() == 0) {
+					            return null;
+					        }
+					        return getDateFormat(locale).parse(formatted);
+					    }
+
+					    protected DateFormat getDateFormat(Locale locale) {
+					        DateFormat dateFormat = new SimpleDateFormat(this.pattern, locale);
+					        dateFormat.setLenient(false);
+					        return dateFormat;
+					    }
+					}
+						
+		3.5.2. Annotation-driven Formatting
 		
+			字段格式化可以通过字段类型或注解进行配置。 可以通过AnnotationFormatterFactory接口来绑定格式化注解。	
+
+			接口定义：
+
+				public interface AnnotationFormatterFactory<A extends Annotation> {
+
+				    Set<Class<?>> getFieldTypes();
+
+				    Printer<?> getPrinter(A annotation, Class<?> fieldType);
+
+				    Parser<?> getParser(A annotation, Class<?> fieldType);
+				}			
+
+			实现类:
+
+				public class DateTimeFormatAnnotationFormatterFactory  extends EmbeddedValueResolutionSupport
+						implements AnnotationFormatterFactory<DateTimeFormat> {
+
+					private static final Set<Class<?>> FIELD_TYPES;
+
+					static {
+						Set<Class<?>> fieldTypes = new HashSet<>(4);
+						fieldTypes.add(Date.class);
+						fieldTypes.add(Calendar.class);
+						fieldTypes.add(Long.class);
+						FIELD_TYPES = Collections.unmodifiableSet(fieldTypes);
+					}
+
+
+					@Override
+					public Set<Class<?>> getFieldTypes() {
+						return FIELD_TYPES;
+					}
+
+					@Override
+					public Printer<?> getPrinter(DateTimeFormat annotation, Class<?> fieldType) {
+						return getFormatter(annotation, fieldType);
+					}
+
+					@Override
+					public Parser<?> getParser(DateTimeFormat annotation, Class<?> fieldType) {
+						return getFormatter(annotation, fieldType);
+					}
+
+					protected Formatter<Date> getFormatter(DateTimeFormat annotation, Class<?> fieldType) {
+						DateFormatter formatter = new DateFormatter();
+						String style = resolveEmbeddedValue(annotation.style());
+						if (StringUtils.hasLength(style)) {
+							formatter.setStylePattern(style);
+						}
+						formatter.setIso(annotation.iso());
+						String pattern = resolveEmbeddedValue(annotation.pattern());
+						if (StringUtils.hasLength(pattern)) {
+							formatter.setPattern(pattern);
+						}
+						return formatter;
+					}
+
+				}
+
+			------------------------
+
+			Format Annotation API	
+
+				@Documented
+				@Retention(RetentionPolicy.RUNTIME)
+				@Target({ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER, ElementType.ANNOTATION_TYPE})
+				public @interface DateTimeFormat {
+
+					String style() default "SS";
+
+					ISO iso() default ISO.NONE;
+
+					String pattern() default "";
+
+					enum ISO {
+
+						DATE,
+
+						TIME,
+
+						DATE_TIME,
+
+						NONE
+
+					}
+
+				}	
+
+			用法：
+			
+				public static class DateTimeBean {
+
+					private LocalDate localDate;
+
+					@DateTimeFormat(style = "M-")
+					private LocalDate localDateAnnotated;
+
+					private LocalTime localTime;
+
+					@DateTimeFormat(style = "-M")
+					private LocalTime localTimeAnnotated;
+
+					private LocalDateTime localDateTime;
+
+					@DateTimeFormat(style = "MM")
+					private LocalDateTime localDateTimeAnnotated;
+
+					@DateTimeFormat(pattern = "M/d/yy h:mm a")
+					private LocalDateTime dateTimeAnnotatedPattern;
+
+					@DateTimeFormat(iso = ISO.DATE)
+					private LocalDate isoDate;
+
+					@DateTimeFormat(iso = ISO.TIME)
+					private LocalTime isoTime;
+
+					@DateTimeFormat(iso = ISO.DATE_TIME)
+					private LocalDateTime isoDateTime;
+
+					private Instant instant;
+
+					private Period period;
+
+					private Duration duration;
+
+					private Year year;
+
+					private Month month;
+
+					private YearMonth yearMonth;
+
+					private MonthDay monthDay;
+
+				}	
+
+		3.5.3. The FormatterRegistry SPI
+		
+			接口定义： 
+
+				// 字段格式化规则的注册器
+				public interface FormatterRegistry extends ConverterRegistry {
+
+					void addPrinter(Printer<?> printer);
+
+					void addParser(Parser<?> parser);
+
+					void addFormatter(Formatter<?> formatter);
+
+					void addFormatterForFieldType(Class<?> fieldType, Formatter<?> formatter);
+
+					void addFormatterForFieldType(Class<?> fieldType, Printer<?> printer, Parser<?> parser);
+
+					void addFormatterForFieldAnnotation(AnnotationFormatterFactory<? extends Annotation> annotationFormatterFactory);
+
+				}
+
+				// 类型转换器的注册器
+				public interface ConverterRegistry {
+
+					void addConverter(Converter<?, ?> converter);
+
+					<S, T> void addConverter(Class<S> sourceType, Class<T> targetType, Converter<? super S, ? extends T> converter);
+
+					void addConverter(GenericConverter converter);
+
+					void addConverterFactory(ConverterFactory<?, ?> factory);
+
+					void removeConvertible(Class<?> sourceType, Class<?> targetType);
+
+				}
+
+		3.5.4. The FormatterRegistrar SPI	
+
+			接口定义：
+
+				// 通过FormatterRegistry接口，使用FormattingConversionService注册Converters类型转换器和Formatters格式化工具
+				public interface FormatterRegistrar {
+
+				    void registerFormatters(FormatterRegistry registry);
+				}
+
+			实现类：
+			
+				public class DateFormatterRegistrar implements FormatterRegistrar {
+
+					@Nullable
+					private DateFormatter dateFormatter;
+
+					public void setFormatter(DateFormatter dateFormatter) {
+						Assert.notNull(dateFormatter, "DateFormatter must not be null");
+						this.dateFormatter = dateFormatter;
+					}
+
+					@Override
+					public void registerFormatters(FormatterRegistry registry) {
+						addDateConverters(registry);
+						// In order to retain back compatibility we only register Date/Calendar
+						// types when a user defined formatter is specified (see SPR-10105)
+						if (this.dateFormatter != null) {
+							registry.addFormatter(this.dateFormatter);
+							registry.addFormatterForFieldType(Calendar.class, this.dateFormatter);
+						}
+						registry.addFormatterForFieldAnnotation(new DateTimeFormatAnnotationFormatterFactory());
+					}
+
+					/**
+					 * Add date converters to the specified registry.
+					 * @param converterRegistry the registry of converters to add to
+					 */
+					public static void addDateConverters(ConverterRegistry converterRegistry) {
+						converterRegistry.addConverter(new DateToLongConverter());
+						converterRegistry.addConverter(new DateToCalendarConverter());
+						converterRegistry.addConverter(new CalendarToDateConverter());
+						converterRegistry.addConverter(new CalendarToLongConverter());
+						converterRegistry.addConverter(new LongToDateConverter());
+						converterRegistry.addConverter(new LongToCalendarConverter());
+					}
+
+
+					private static class DateToLongConverter implements Converter<Date, Long> {
+
+						@Override
+						public Long convert(Date source) {
+							return source.getTime();
+						}
+					}
+
+
+					private static class DateToCalendarConverter implements Converter<Date, Calendar> {
+
+						@Override
+						public Calendar convert(Date source) {
+							Calendar calendar = Calendar.getInstance();
+							calendar.setTime(source);
+							return calendar;
+						}
+					}
+
+
+					private static class CalendarToDateConverter implements Converter<Calendar, Date> {
+
+						@Override
+						public Date convert(Calendar source) {
+							return source.getTime();
+						}
+					}
+
+
+					private static class CalendarToLongConverter implements Converter<Calendar, Long> {
+
+						@Override
+						public Long convert(Calendar source) {
+							return source.getTimeInMillis();
+						}
+					}
+
+
+					private static class LongToDateConverter implements Converter<Long, Date> {
+
+						@Override
+						public Date convert(Long source) {
+							return new Date(source);
+						}
+					}
+
+
+					private static class LongToCalendarConverter implements Converter<Long, Calendar> {
+
+						@Override
+						public Calendar convert(Long source) {
+							Calendar calendar = Calendar.getInstance();
+							calendar.setTimeInMillis(source);
+							return calendar;
+						}
+					}
+
+				}	
+
+		3.5.5. Configuring Formatting in Spring MVC
+		
+	3.6. Configuring a Global Date and Time Format
+	
+		默认情况下，没有添加注解@DateTimeFormat的时间日期字段，类型转换时使用默认样式DateFormat.SHORT。 可以通过修改全局格式配置来改变此默认值。
+
+		但要确保Spring没有注册别的格式化程序。
+
+		i.e:	
+
+			java:			
+
+				@Configuration
+				public class AppConfig {
+
+				    @Bean
+				    public FormattingConversionService conversionService() {
+
+				        // Use the DefaultFormattingConversionService but do not register defaults
+				        DefaultFormattingConversionService conversionService = new DefaultFormattingConversionService(false);
+
+				        // Ensure @NumberFormat is still supported
+				        conversionService.addFormatterForFieldAnnotation(new NumberFormatAnnotationFormatterFactory());
+
+				        // Register JSR-310 date conversion with a specific global format
+				        DateTimeFormatterRegistrar registrar = new DateTimeFormatterRegistrar();
+				        registrar.setDateFormatter(DateTimeFormatter.ofPattern("yyyyMMdd"));
+				        registrar.registerFormatters(conversionService);
+
+				        // Register date conversion with a specific global format
+				        DateFormatterRegistrar registrar = new DateFormatterRegistrar();
+				        registrar.setFormatter(new DateFormatter("yyyyMMdd"));
+				        registrar.registerFormatters(conversionService);
+
+				        return conversionService;
+				    }
+				}
+
+			xml:
+			
+				<?xml version="1.0" encoding="UTF-8"?>
+				<beans xmlns="http://www.springframework.org/schema/beans"
+				    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				    xsi:schemaLocation="
+				        http://www.springframework.org/schema/beans
+				        https://www.springframework.org/schema/beans/spring-beans.xsd>
+
+				    <bean id="conversionService" class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+				        <property name="registerDefaultFormatters" value="false" />
+				        <property name="formatters">
+				            <set>
+				                <bean class="org.springframework.format.number.NumberFormatAnnotationFormatterFactory" />
+				            </set>
+				        </property>
+				        <property name="formatterRegistrars">
+				            <set>
+				                <bean class="org.springframework.format.datetime.joda.JodaTimeFormatterRegistrar">
+				                    <property name="dateFormatter">
+				                        <bean class="org.springframework.format.datetime.joda.DateTimeFormatterFactoryBean">
+				                            <property name="pattern" value="yyyyMMdd"/>
+				                        </bean>
+				                    </property>
+				                </bean>
+				            </set>
+				        </property>
+				    </bean>
+				</beans>
+
+	3.7. Java Bean Validation
+	
+		3.7.1. Overview of Bean Validation
+
+			Bean Validation API综合信息： https://beanvalidation.org/
+
+			Hibernate Validator 文档： https://hibernate.org/validator/ 
+
+			i.e:
+
+				java:
+
+					public class PersonForm {
+
+					    @NotNull
+					    @Size(max=64)
+					    private String name;
+
+					    @Min(0)
+					    private int age;
+					}
+
+	3.7.2. Configuring a Bean Validation Provider
+	
+		Spring中配置默认的校验器:
+
+			@Configuration
+			public class AppConfig {
+
+			    @Bean
+			    public LocalValidatorFactoryBean validator() {
+			        return new LocalValidatorFactoryBean;
+			    }
+			}
+
+		Injecting a Validator
+		
+			import javax.validation.Validator;
+
+			@Service
+			public class MyService {
+
+			    @Autowired
+			    private Validator validator;
+			}	
+
+			------------------------or 
+
+			import org.springframework.validation.Validator;
+
+			@Service
+			public class MyService {
+
+			    @Autowired
+			    private Validator validator;
+			}
+
+		Configuring Custom Constraints
+
+			每个bean校验的约束都包含两部分：
+				1. 代表约束和配置属性的@Contraint注解
+				2. javax.validation.ConstraintValidator校验器实现类，包含校验的具体规则
+
+			接口定义：
+			
+				public interface ConstraintValidator<A extends Annotation, T> {
+
+					default void initialize(A constraintAnnotation) {}
+
+					boolean isValid(T value, ConstraintValidatorContext context);
+
+				}	
+
+				@Documented
+				@Target({ ANNOTATION_TYPE })
+				@Retention(RUNTIME)
+				public @interface Constraint {
+
+					Class<? extends ConstraintValidator<?, ?>>[] validatedBy();
+
+				}
+
+			i.e:	
+		
+			   @Documented
+			   @Constraint(validatedBy = OrderNumberValidator.class)
+			   @Target({ METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER, TYPE_USE })
+			   @Retention(RUNTIME)
+			   public @interface OrderNumber {
+			       String message() default "{com.acme.constraint.OrderNumber.message}";
+			       Class<?>[] groups() default {};
+			       Class<? extends Payload>[] payload() default {};
+			   }
+
+			   public class OrderNumberValidator implements ConstraintValidator {
+
+				    @Autowired;
+				    private Foo aDependency;
+
+				    // ...
+				}
+
+			Spring-driven Method Validation
+
+				同样可以继承方法校验规则（已被Bean Validation1.1支持）
+
+				配置：
+			
+					@Configuration
+					public class AppConfig {
+
+					    @Bean
+					    public MethodValidationPostProcessor validationPostProcessor() {
+					        return new MethodValidationPostProcessor;
+					    }
+					}	
+
+				用法:
+
+					public @NotNull Object myValidMethod(@NotNull String arg1, @Max(10) int arg2)
+
+				说明：
+					
+					为了能查到内部的约束注解，需要在类型上添加@Validated注解
+
+		3.7.3. Configuring a DataBinder
+		
+			Spring3.0+以后，可以在DataBinder实例中配置校验器Validator，一旦配置成功，便可以通过调用binder.validate()调用校验器，所有的校验异常信息都会自动封装到其BindingResult中。
+
+			也可以通过dataBinder.addValidators，dataBinder.replaceValidators给DataBinder实例配置多个校验器。
+
+			用法：
+
+				Foo target = new Foo();
+				DataBinder binder = new DataBinder(target);
+				binder.setValidator(new FooValidator());
+
+				// bind to the target object
+				binder.bind(propertyValues);
+
+				// validate the target object
+				binder.validate();
+
+				// get BindingResult that includes any validation errors
+				BindingResult results = binder.getBindingResult();
+
+		3.7.4. Spring MVC 3 Validation
+		
+			默认情况下，如果类路径下存在Bean Validation实现类（比如 Hibernate Validator），LocalValidatorFactoryBean 就会自动注册为全局的校验器。
+
+			配置：
+
+				java:
+
+					@Configuration
+					@EnableWebMvc
+					public class WebConfig implements WebMvcConfigurer {
+
+					    @Override
+					    public Validator getValidator() {
+					        // ...
+					    }
+					}
+
+				xml:
+				
+					<?xml version="1.0" encoding="UTF-8"?>
+					<beans xmlns="http://www.springframework.org/schema/beans"
+					    xmlns:mvc="http://www.springframework.org/schema/mvc"
+					    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+					    xsi:schemaLocation="
+					        http://www.springframework.org/schema/beans
+					        https://www.springframework.org/schema/beans/spring-beans.xsd
+					        http://www.springframework.org/schema/mvc
+					        https://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+					    <mvc:annotation-driven validator="globalValidator"/>
+
+					</beans>	
+
+			注册校验器实现类：
+			
+				@Controller
+				public class MyController {
+
+				    @InitBinder
+				    protected void initBinder(WebDataBinder binder) {
+				        binder.addValidators(new FooValidator());
+				    }
+				}	
+
+			说明：
+				
+				如果已经有其他校验器的情况下，想使用LocalValidatorFactoryBean，可以在该bean上添加@Primary注解防止冲突。
+
+		// done 2020-3-1 19:05:06
+		
+4. Spring Expression Language (SpEL)				
+
+
+
+			   	
+
+
+
+
+
+
+
+
 
 
 

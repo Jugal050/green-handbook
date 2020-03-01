@@ -44,6 +44,8 @@ https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/
 
 							3.4. Spring Type Conversion 					// done 2020-3-1 12:15:47
 
+							3. Validation, Data Binding, and Type Conversion// done 2020-3-1 19:05:38
+
 	Testing				Mock Objects, TestContext Framework, Spring MVC Test, WebTestClient.
 
 	Data Access			Transactions, DAO Support, JDBC, O/R Mapping, XML Marshalling.
