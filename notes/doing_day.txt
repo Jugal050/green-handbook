@@ -1850,7 +1850,89 @@
 			TestEntity entity = (TestEntity) conversionService.convert(null,
 				TypeDescriptor.valueOf(String.class), TypeDescriptor.valueOf(TestEntity.class));
 
-	# 3. Validation, Data Binding, and Type Conversion  		// done 2020-3-1 19:05:38			
+	# 3. Validation, Data Binding, and Type Conversion  		// done 2020-3-1 19:05:38、
+
+2020-3-2 11:05:47
+
+	# 已读文档的相关源码测试类										// done 2020-3-2 17:38:12
+
+		org.springframework.core.ResolvableTypeTests
+
+		org.springframework.core.convert.TypeDescriptorTests
+
+		org.springframework.core.convert.converter.DefaultConversionServiceTests
+
+		...		
+
+	# Java模拟框架： Mockito 									
+
+		official website: https://site.mockito.org/
+
+		doc: https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html
+
+		jar: org.mockito:mockito-core:3.2.0
+
+	# 工具集： YourKit [https://www.yourkit.com/]
+
+		说明： CPU, JVM分析工具 [收费]
+
+	# Spring相关类说明：
+
+		ResolvableType: 
+
+			说明：封装了java.lang.refelect.Type类型，能够对Class进行基本解析，还可以从字段、方法参数、方法返回、Class类型解析生成，完成之后可以获取其父类、接口、常规参数等。
+
+			用法：
+
+				public class Demo {
+
+					private HashMap<Integer, List<String>> myMap;
+
+					public void example() {
+
+						ResolvableType t = ResolvableType.forField(getClass().getDeclaredField("myMap"));
+						t.getSuperType(); // AbstractMap<Integer, List<String>>
+						t.asMap(); // Map<Integer, List<String>>
+						t.getGeneric(0).resolve(); // Integer
+						t.getGeneric(1).resolve(); // List
+						t.getGeneric(1); // List<String>
+						t.resolveGeneric(1, 0); // String
+
+					}
+
+				}
+
+
+		TypeDescriptor: 
+
+			说明：类型相关信息说明，包括数组/集合。
+
+			用法：
+
+				public class Demo {
+
+					@Test
+					void parameterPrimitive() throws Exception {
+						TypeDescriptor desc = new TypeDescriptor(new MethodParameter(getClass().getMethod("testParameterPrimitive", int.class), 0));
+						assertThat(desc.getType()).isEqualTo(int.class);
+						assertThat(desc.getObjectType()).isEqualTo(Integer.class);
+						assertThat(desc.getName()).isEqualTo("int");
+						assertThat(desc.toString()).isEqualTo("int");
+						assertThat(desc.isPrimitive()).isTrue();
+						assertThat(desc.getAnnotations().length).isEqualTo(0);
+						assertThat(desc.isCollection()).isFalse();
+						assertThat(desc.isMap()).isFalse();
+					}
+
+					public void testParameterPrimitive(int primitive) {}	
+
+				}
+
+	# 				
+	
+
+
+
 
 
 

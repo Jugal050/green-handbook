@@ -5203,6 +5203,58 @@ Core Technologies 			https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-fra
 				如果已经有其他校验器的情况下，想使用LocalValidatorFactoryBean，可以在该bean上添加@Primary注解防止冲突。
 
 		// done 2020-3-1 19:05:06
+
+			相关类说明：
+
+				ResolvableType: 
+
+					说明：封装了java.lang.refelect.Type类型，能够对Class进行基本解析，还可以从字段、方法参数、方法返回、Class类型解析生成，完成之后可以获取其父类、接口、常规参数等。
+
+					用法：
+
+						public class Demo {
+
+							private HashMap<Integer, List<String>> myMap;
+
+							public void example() {
+
+								ResolvableType t = ResolvableType.forField(getClass().getDeclaredField("myMap"));
+								t.getSuperType(); // AbstractMap<Integer, List<String>>
+								t.asMap(); // Map<Integer, List<String>>
+								t.getGeneric(0).resolve(); // Integer
+								t.getGeneric(1).resolve(); // List
+								t.getGeneric(1); // List<String>
+								t.resolveGeneric(1, 0); // String
+
+							}
+
+						}
+
+
+				TypeDescriptor: 
+
+					说明：类型相关信息说明，包括数组/集合。
+
+					用法：
+
+						public class Demo {
+
+							@Test
+							void parameterPrimitive() throws Exception {
+								TypeDescriptor desc = new TypeDescriptor(new MethodParameter(getClass().getMethod("testParameterPrimitive", int.class), 0));
+								assertThat(desc.getType()).isEqualTo(int.class);
+								assertThat(desc.getObjectType()).isEqualTo(Integer.class);
+								assertThat(desc.getName()).isEqualTo("int");
+								assertThat(desc.toString()).isEqualTo("int");
+								assertThat(desc.isPrimitive()).isTrue();
+								assertThat(desc.getAnnotations().length).isEqualTo(0);
+								assertThat(desc.isCollection()).isFalse();
+								assertThat(desc.isMap()).isFalse();
+							}
+
+							public void testParameterPrimitive(int primitive) {}	
+
+						}
 		
 4. Spring Expression Language (SpEL)				
 
