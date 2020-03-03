@@ -5258,108 +5258,221 @@ Core Technologies 			https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-fra
 		
 4. Spring Expression Language (SpEL)				
 
+	相关类：
 
+		// 包含每个表达式的解析状态，发生改变时对其他表达式不可见，可以保存本地变量，复杂表达式中的表达式组件之间进行信息沟通。也为不同的树节点定义了常用的通用程序。
+		org.springframework.expression.spel.ExpressionState[class]
 
-			   	
+		// 表达式解析（包括其中的对象引用解析）在此类中进行。 默认实现类： org.springframework.expression.spel.support.StandardEvaluationContext
+		org.springframework.expression.EvaluationContext[interface]
 
+		// 转换表达式的AST树节点
+		org.springframework.expression.spel.SpelNode[interface]
 
+		// JVM操作码
+		org.springframework.asm.Opcodes[interface]
 
+		// SpEL表达式解析的所有AST节点的通用父类
+		org.springframework.expression.spel.ast.SpelNodeImpl[abstract]
 
+		// 将String字符串转换为可解析的编译表达式，支持转换模板和标准的表达式字符串。
+		org.springframework.expression.ExpressionParser[interface]
 
+		// 可解析模板的表达式解析器，可以作为其他被还未支持模板解析的父类
+		org.springframework.expression.common.TemplateAwareExpressionParser[abstract]
 
+		// 手写的SpEL解析器，实例可以重复使用，但非线程安全
+		org.springframework.expression.spel.standard.InternalSpelExpressionParser
 
+		// SpEL解析器，实例可以重复使用，但非线程安全
+		org.springframework.expression.spel.standard.SpelExpressionParser
 
+		// SpEL解析器配置信息对象
+		org.springframework.expression.spel.SpelParserConfiguration
 
+		// 可以解析对象的表达式，封装了已转换的字符串表达式的详细信息，表达式解析的通用抽象接口。
+		org.springframework.expression.Expression[interface]
 
+		// 已转换待解析的SpEL表达式，可以单独或在上下文中解析。 表达式解析包括types、beans、properties和methods等元素的解析。
+		org.springframework.expression.spel.standard.SpelExpression
 
-		
+		// 可以将输入数据转换为可解析的标识流
+		org.springframework.expression.spel.standard.Tokenizer
 
-		
+		// 特定标识（输入数据的信息和位置）的持有者
+		org.springframework.expression.spel.standard.Token
 
+		// 包含一个object对象和它的类型描述信息
+		org.springframework.expression.TypedValue
 
-
-
-
-
-
-
-
-
-
-				
-
-
-
-
-
-
-
-
-
-
-				
-
-
-
-
-
-
-
-
-		
-
-
-
-
-
-		
-
-
-
-
-
-
-
-
-
-
-
-		
-
-
-
-
-			
-
-
-
-
-
-			
-
-			
-
-
-
-
-
-
-
-
-
-
+	相关数据结构：
 	
+		AST: Astract Syntax Tree, 抽象语法树。 是源代码语法结构的一种抽象表示。它以树状的形式表现编程语言的语法结构，树上的每个节点都表示源代码中的一种结构。
+
+		Deque: double-ended queue, 双端列队。 具有列队和栈的性质，双端列队中的元素可以从两端弹出，插入/删除操作也在列队两端进行。
+
+		Stack: 栈。 后进push先出pop。（如子弹压膛）
+
+		Queue: 列队。 先进先出。 （如安检）
+
+	4.1. Evaluation
+	
+		i.e:	
+
+			java:
+
+				// String表达式
+				ExpressionParser parser = new SpelExpressionParser();
+				Expression exp = parser.parseExpression("'Hello World'"); 
+				String message = (String) exp.getValue();
+
+				// 方法调用: object.invoke()
+				ExpressionParser parser = new SpelExpressionParser();
+				Expression exp = parser.parseExpression("'Hello World'.concat('!')"); 
+				String message = (String) exp.getValue();
+
+				// 方法调用: .bytes = invokes 'getBytes()'
+				ExpressionParser parser = new SpelExpressionParser();
+				Expression exp = parser.parseExpression("'Hello World'.bytes"); 
+				byte[] bytes = (byte[]) exp.getValue();
+
+				// 属性获取: prop1.prop2.prop3
+				ExpressionParser parser = new SpelExpressionParser();
+				Expression exp = parser.parseExpression("'Hello World'.bytes.length"); 
+				int length = (Integer) exp.getValue();
+
+				// 构造器调用:
+				ExpressionParser parser = new SpelExpressionParser();
+				Expression exp = parser.parseExpression("new String('hello world').toUpperCase()"); 
+				String message = exp.getValue(String.class);
+
+				// 对象解析
+				// Create and set a calendar
+				GregorianCalendar c = new GregorianCalendar();
+				c.set(1856, 7, 9);
+
+				// The constructor arguments are name, birthday, and nationality.
+				Inventor tesla = new Inventor("Nikola Tesla", c.getTime(), "Serbian");
+
+				ExpressionParser parser = new SpelExpressionParser();
+
+				Expression exp = parser.parseExpression("name"); // Parse name as an expression
+				String name = (String) exp.getValue(tesla);
+				// name == "Nikola Tesla"
+
+				exp = parser.parseExpression("name == 'Nikola Tesla'");
+				boolean result = exp.getValue(tesla, Boolean.class);
+				// result == true
+
+		4.1.1. Understanding EvaluationContext
+
+			EvaluationContext： 表达式解析（包括其中的对象引用解析）在此类中进行。 实现类： 
+
+				// 简单实现类
+				org.springframework.expression.spel.support.SimpleEvaluationContext
+
+				// 标准实现类（默认）
+				org.springframework.expression.spel.support.StandardEvaluationContext
+
+			Type Conversion
+
+				默认使用的是Spring中的类型转换器ConversionService。如果SpEL解析过程中需要进行类型转化，则会自动调用类型转换器。
+			
+				i.e:
+
+					java:
+
+						class Simple {
+						    public List<Boolean> booleanList = new ArrayList<Boolean>();
+						}
+
+						Simple simple = new Simple();
+						simple.booleanList.add(true);
+
+						EvaluationContext context = SimpleEvaluationContext.forReadOnlyDataBinding().build();
+
+						// "false" is passed in here as a String. SpEL and the conversion service
+						// will recognize that it needs to be a Boolean and convert it accordingly.
+						parser.parseExpression("booleanList[0]").setValue(context, simple, "false");
+
+						// b is false
+						Boolean b = simple.booleanList.get(0);	
+
+		4.1.2. Parser Configuration	
+
+			可以通过SpelParserConfiguration对SpEL转换器进行自定义配置。
+
+			i.e:
+
+				java:
+
+					class Demo {
+					    public List<String> list;
+					}
+
+					// Turn on:
+					// - auto null reference initialization
+					// - auto collection growing
+					SpelParserConfiguration config = new SpelParserConfiguration(true,true);
+
+					ExpressionParser parser = new SpelExpressionParser(config);
+
+					Expression expression = parser.parseExpression("list[3]");
+
+					Demo demo = new Demo();
+
+					Object o = expression.getValue(demo);
+
+					// demo.list will now be a real collection of 4 entries
+					// Each entry is a new empty String
+
+		4.1.3. SpEL Compilation
+		
+			Compiler Configuration
+
+				编译器默认未开启，可以通过两种方法进行开启。
+
+				编译器有三种模式：
+
+					OFF (default): 关闭
+					IMMEDIATE: 即时开启，表达式会尽早编译（在第一次解析拦截后）。编译失败会抛出异常。
+					MIXED: 混合模式，异常会被内部处理。
+
+				i.e:
+				
+					java:
+
+						SpelParserConfiguration config = new SpelParserConfiguration(SpelCompilerMode.IMMEDIATE, this.getClass().getClassLoader());
+
+						SpelExpressionParser parser = new SpelExpressionParser(config);
+
+						Expression expr = parser.parseExpression("payload");
+
+						MyMessage message = new MyMessage();
+
+						Object payload = expr.getValue(message);
+
+					properties:
+					
+						spring.expression.compiler.mode = off/immediate/mixed		
+
+			Compiler Limitations			
+
+				Spring4.1以后，基础的编译框架已完成，但是还未支持所有种类的表达式编译（通用表达式已支持）。当前版本中，以下情形还未支持编译：
+
+					Expressions involving assignment
+
+					Expressions relying on the conversion service
+
+					Expressions using custom resolvers or accessors
+
+					Expressions using selection or projection
+
+		// done 2020-3-3 12:46:06				
+
+	4.2. Expressions in Bean Definitions				
 
 
 
-
-
-
-
-
-
-
-
-
-
+		
 
