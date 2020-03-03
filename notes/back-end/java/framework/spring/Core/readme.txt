@@ -5470,8 +5470,749 @@ Core Technologies 			https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-fra
 
 		// done 2020-3-3 12:46:06				
 
-	4.2. Expressions in Bean Definitions				
+	4.2. Expressions in Bean Definitions
 
+		格式： #{ <expression string> }				
+
+		4.2.1. XML Configuration
+
+			i.e:
+
+				<!-- 构造器参数/字段属性值 -->
+
+					<bean id="numberGuess" class="org.spring.samples.NumberGuess">
+					    <property name="randomNumber" value="#{ T(java.lang.Math).random() * 100.0 }"/>
+
+					    <!-- other properties -->
+					</bean>
+
+				<!-- 预先定义的系统属性 -->
+
+					<bean id="taxCalculator" class="org.spring.samples.TaxCalculator">
+					    <property name="defaultLocale" value="#{ systemProperties['user.region'] }"/>
+
+					    <!-- other properties -->
+					</bean>
+
+				<!-- 引用别的bean中的属性值 -->
+
+					<bean id="numberGuess" class="org.spring.samples.NumberGuess">
+					    <property name="randomNumber" value="#{ T(java.lang.Math).random() * 100.0 }"/>
+
+					    <!-- other properties -->
+					</bean>
+
+					<bean id="shapeGuess" class="org.spring.samples.ShapeGuess">
+					    <property name="initialShapeSeed" value="#{ numberGuess.randomNumber }"/>
+
+					    <!-- other properties -->
+					</bean>
+
+		4.2.2. Annotation Configuration			
+
+			可以通过在字段、方法、构造器参数上添加@Value注解来设置默认值。
+
+			i.e:
+
+				// 字段
+
+					public class FieldValueTestBean {
+
+					    @Value("#{ systemProperties['user.region'] }")
+					    private String defaultLocale;
+
+					    public void setDefaultLocale(String defaultLocale) {
+					        this.defaultLocale = defaultLocale;
+					    }
+
+					    public String getDefaultLocale() {
+					        return this.defaultLocale;
+					    }
+					}
+
+				// setter方法
+				
+					public class PropertyValueTestBean {
+
+					    private String defaultLocale;
+
+					    @Value("#{ systemProperties['user.region'] }")
+					    public void setDefaultLocale(String defaultLocale) {
+					        this.defaultLocale = defaultLocale;
+					    }
+
+					    public String getDefaultLocale() {
+					        return this.defaultLocale;
+					    }
+					}	
+
+				// @Autowired方法
+				
+					public class SimpleMovieLister {
+
+					    private MovieFinder movieFinder;
+					    private String defaultLocale;
+
+					    @Autowired
+					    public void configure(MovieFinder movieFinder,
+					            @Value("#{ systemProperties['user.region'] }") String defaultLocale) {
+					        this.movieFinder = movieFinder;
+					        this.defaultLocale = defaultLocale;
+					    }
+
+					    // ...
+					}	
+
+				// 构造器
+				
+					public class MovieRecommender {
+
+					    private String defaultLocale;
+
+					    private CustomerPreferenceDao customerPreferenceDao;
+
+					    public MovieRecommender(CustomerPreferenceDao customerPreferenceDao,
+					            @Value("#{systemProperties['user.country']}") String defaultLocale) {
+					        this.customerPreferenceDao = customerPreferenceDao;
+					        this.defaultLocale = defaultLocale;
+					    }
+
+					    // ...
+					}
+
+	4.3. Language Reference
+
+		4.3.1. Literal Expressions
+
+			字符串用一个单引号标识，字符用两个单引号标识。
+
+			i.e: 
+
+				ExpressionParser parser = new SpelExpressionParser();
+
+				// evals to "Hello World"
+				String helloWorld = (String) parser.parseExpression("'Hello World'").getValue();
+
+				double avogadrosNumber = (Double) parser.parseExpression("6.0221415E+23").getValue();
+
+				// evals to 2147483647
+				int maxValue = (Integer) parser.parseExpression("0x7FFFFFFF").getValue();
+
+				boolean trueValue = (Boolean) parser.parseExpression("true").getValue();
+
+				Object nullValue = parser.parseExpression("null").getValue();
+
+		4.3.2. Properties, Arrays, Lists, Maps, and Indexers
+
+			首字符大小写无关。
+		
+			i.e:
+
+				// Properties（点.）
+
+					// evals to 1856
+					int year = (Integer) parser.parseExpression("Birthdate.Year + 1900").getValue(context);
+
+					String city = (String) parser.parseExpression("placeOfBirth.City").getValue(context);
+
+				// Arrays/Lists（方括号[]）
+
+					ExpressionParser parser = new SpelExpressionParser();
+					EvaluationContext context = SimpleEvaluationContext.forReadOnlyDataBinding().build();
+
+					// Inventions Array
+
+					// evaluates to "Induction motor"
+					String invention = parser.parseExpression("inventions[3]").getValue(
+					        context, tesla, String.class);
+
+					// Members List
+
+					// evaluates to "Nikola Tesla"
+					String name = parser.parseExpression("Members[0].Name").getValue(
+					        context, ieee, String.class);
+
+					// List and Array navigation
+					// evaluates to "Wireless communication"
+					String invention = parser.parseExpression("Members[0].Inventions[6]").getValue(
+					        context, ieee, String.class);	
+
+			    // Maps （方括号['key']）     
+
+					// Officer's Dictionary
+
+					Inventor pupin = parser.parseExpression("Officers['president']").getValue(
+					        societyContext, Inventor.class);
+
+					// evaluates to "Idvor"
+					String city = parser.parseExpression("Officers['president'].PlaceOfBirth.City").getValue(
+					        societyContext, String.class);
+
+					// setting values
+					parser.parseExpression("Officers['advisors'][0].PlaceOfBirth.Country").setValue(
+					        societyContext, "Croatia");  
+
+	    4.3.3. Inline Lists
+	    
+          	使用花括号{}标识list
+
+          	i.e:
+
+          		// evaluates to a Java list containing the four numbers
+				List numbers = (List) parser.parseExpression("{1,2,3,4}").getValue(context);
+
+				List listOfLists = (List) parser.parseExpression("{{'a','b'},{'x','y'}}").getValue(context);
+
+		4.3.4. Inline Maps
+		
+			使用{key:value}标识map
+
+			i.e:
+
+				// evaluates to a Java map containing the two entries
+				Map inventorInfo = (Map) parser.parseExpression("{name:'Nikola',dob:'10-July-1856'}").getValue(context);
+
+				Map mapOfMaps = (Map) parser.parseExpression("{name:{first:'Nikola',last:'Tesla'},dob:{day:10,month:'July',year:1856}}").getValue(context);	
+
+		4.3.5. Array Construction
+		
+			使用java通用的数组表达方式即可，支持在创建时进行初始化（多元数组不支持）。
+
+			i.e:
+
+				int[] numbers1 = (int[]) parser.parseExpression("new int[4]").getValue(context);
+
+				// Array with initializer
+				int[] numbers2 = (int[]) parser.parseExpression("new int[]{1,2,3}").getValue(context);
+
+				// Multi dimensional array
+				int[][] numbers3 = (int[][]) parser.parseExpression("new int[4][5]").getValue(context);
+
+		4.3.6. Methods
+		
+			可以使用java编码方式，也可以使用方法名。		
+
+			i.e:
+
+				// string literal, evaluates to "bc"
+				String bc = parser.parseExpression("'abc'.substring(1, 3)").getValue(String.class);
+
+				// evaluates to true
+				boolean isMember = parser.parseExpression("isMember('Mihajlo Pupin')").getValue(societyContext, Boolean.class);	
+
+		4.3.7. Operators
+		
+			Relational Operators
+
+				i.e:
+
+					// evaluates to true
+					boolean trueValue = parser.parseExpression("2 == 2").getValue(Boolean.class);
+
+					// evaluates to false
+					boolean falseValue = parser.parseExpression("2 < -5.0").getValue(Boolean.class);
+
+					// evaluates to true
+					boolean trueValue = parser.parseExpression("'black' < 'block'").getValue(Boolean.class);
+
+					// evaluates to false
+					boolean falseValue = parser.parseExpression("'xyz' instanceof T(Integer)").getValue(Boolean.class);
+
+					// evaluates to true
+					boolean trueValue = parser.parseExpression("'5.00' matches '^-?\\d+(\\.\\d{2})?$'").getValue(Boolean.class);
+
+					//evaluates to false
+					boolean falseValue = parser.parseExpression("'5.0067' matches '^-?\\d+(\\.\\d{2})?$'").getValue(Boolean.class);
+
+				tips:
+				
+					对于null值： X > null is always true, X < null is always false	
+
+					对于基本类型自动装箱问题： 1 instanceof T(int) 为 false, 1 instanceof T(Integer) 为true
+
+					支持字母表示关系型操作符： lt (<) gt (>) le (<=) ge (>=) eq (==) ne (!=) div (/) mod (%) not (!).
+
+
+			Logical Operators
+
+				支持的逻辑运算符包括： and (&&) or (||) not (!)
+
+				i.e:
+
+					// -- AND --
+
+					// evaluates to false
+					boolean falseValue = parser.parseExpression("true and false").getValue(Boolean.class);
+
+					// evaluates to true
+					String expression = "isMember('Nikola Tesla') and isMember('Mihajlo Pupin')";
+					boolean trueValue = parser.parseExpression(expression).getValue(societyContext, Boolean.class);
+
+					// -- OR --
+
+					// evaluates to true
+					boolean trueValue = parser.parseExpression("true or false").getValue(Boolean.class);
+
+					// evaluates to true
+					String expression = "isMember('Nikola Tesla') or isMember('Albert Einstein')";
+					boolean trueValue = parser.parseExpression(expression).getValue(societyContext, Boolean.class);
+
+					// -- NOT --
+
+					// evaluates to false
+					boolean falseValue = parser.parseExpression("!true").getValue(Boolean.class);
+
+					// -- AND and NOT --
+					String expression = "isMember('Nikola Tesla') and !isMember('Mihajlo Pupin')";
+					boolean falseValue = parser.parseExpression(expression).getValue(societyContext, Boolean.class);
+
+			Mathematical Operators
+
+				数值类型支持： + - * / % ^
+
+				字符串类型支持： +
+
+				i.e:
+
+					// Addition
+					int two = parser.parseExpression("1 + 1").getValue(Integer.class);  // 2
+
+					String testString = parser.parseExpression(
+					        "'test' + ' ' + 'string'").getValue(String.class);  // 'test string'
+
+					// Subtraction
+					int four = parser.parseExpression("1 - -3").getValue(Integer.class);  // 4
+
+					double d = parser.parseExpression("1000.00 - 1e4").getValue(Double.class);  // -9000
+
+					// Multiplication
+					int six = parser.parseExpression("-2 * -3").getValue(Integer.class);  // 6
+
+					double twentyFour = parser.parseExpression("2.0 * 3e0 * 4").getValue(Double.class);  // 24.0
+
+					// Division
+					int minusTwo = parser.parseExpression("6 / -3").getValue(Integer.class);  // -2
+
+					double one = parser.parseExpression("8.0 / 4e0 / 2").getValue(Double.class);  // 1.0
+
+					// Modulus
+					int three = parser.parseExpression("7 % 4").getValue(Integer.class);  // 3
+
+					int one = parser.parseExpression("8 / 5 % 2").getValue(Integer.class);  // 1
+
+					// Operator precedence
+					int minusTwentyOne = parser.parseExpression("1+2-3*8").getValue(Integer.class);  // -21
+
+			The Assignment Operator		
+
+				通过等号=设置属性值 
+
+				i.e:
+
+					Inventor inventor = new Inventor();
+					EvaluationContext context = SimpleEvaluationContext.forReadWriteDataBinding().build();
+
+					parser.parseExpression("Name").setValue(context, inventor, "Aleksandar Seovic");
+
+					// alternatively
+					String aleks = parser.parseExpression("Name = 'Aleksandar Seovic'").getValue(context, inventor, String.class);
+
+		4.3.8. Types
+		
+			可以使用T指定Class类型。 StandardEvaluationContext 使用 TypeLocator 来查找类型。 
+			StandardTypeLocator 默认识别 java.lang包，所以，如果是java.lang包下，可以简写。其他包下需要全限定类名。
+
+			i.e:
+
+				Class dateClass = parser.parseExpression("T(java.util.Date)").getValue(Class.class);
+
+				Class stringClass = parser.parseExpression("T(String)").getValue(Class.class);
+
+				boolean trueValue = parser.parseExpression(
+				        "T(java.math.RoundingMode).CEILING < T(java.math.RoundingMode).FLOOR")
+				        .getValue(Boolean.class);
+
+        4.3.9. Constructors
+
+        	可以使用new调用构造器方法。 除了基本类型，都需要全限定类名。
+
+        	i.e:
+
+        		Inventor einstein = p.parseExpression(
+				        "new org.spring.samples.spel.inventor.Inventor('Albert Einstein', 'German')")
+				        .getValue(Inventor.class);
+
+				//create new inventor instance within add method of List
+				p.parseExpression(
+				        "Members.add(new org.spring.samples.spel.inventor.Inventor(
+				            'Albert Einstein', 'German'))").getValue(societyContext);
+
+
+        4.3.10. Variables
+
+        	可以通过#variableName语法来引用表达式中的变量。
+
+        	i.e:
+
+        		Inventor tesla = new Inventor("Nikola Tesla", "Serbian");
+
+				EvaluationContext context = SimpleEvaluationContext.forReadWriteDataBinding().build();
+				context.setVariable("newName", "Mike Tesla");
+
+				parser.parseExpression("Name = #newName").getValue(context, tesla);
+				System.out.println(tesla.getName())  // "Mike Tesla"
+
+			The #this and #root Variables
+			
+				#this指向当前解析对象。 #root指向基础的上下文对象。
+
+				i.e:
+
+					// create an array of integers
+					List<Integer> primes = new ArrayList<Integer>();
+					primes.addAll(Arrays.asList(2,3,5,7,11,13,17));
+
+					// create parser and set variable 'primes' as the array of integers
+					ExpressionParser parser = new SpelExpressionParser();
+					EvaluationContext context = SimpleEvaluationContext.forReadOnlyDataAccess();
+					context.setVariable("primes", primes);
+
+					// all prime numbers > 10 from the list (using selection ?{...})
+					// evaluates to [11, 13, 17]
+					List<Integer> primesGreaterThanTen = (List<Integer>) parser.parseExpression(
+					        "#primes.?[#this>10]").getValue(context);
+
+        4.3.11. Functions	
+
+        	可以自定义函数方法，便于在表达式中调用。
+
+        	注册：
+
+        		Method method = ...;
+
+				EvaluationContext context = SimpleEvaluationContext.forReadOnlyDataBinding().build();
+				context.setVariable("myFunction", method);
+
+			使用:
+
+				public abstract class StringUtils {
+
+				    public static String reverseString(String input) {
+				        StringBuilder backwards = new StringBuilder(input.length());
+				        for (int i = 0; i < input.length(); i++) {
+				            backwards.append(input.charAt(input.length() - 1 - i));
+				        }
+				        return backwards.toString();
+				    }
+				}
+
+				----------------------
+
+				ExpressionParser parser = new SpelExpressionParser();
+
+				EvaluationContext context = SimpleEvaluationContext.forReadOnlyDataBinding().build();
+				context.setVariable("reverseString",
+				        StringUtils.class.getDeclaredMethod("reverseString", String.class));
+
+				String helloWorldReversed = parser.parseExpression(
+				        "#reverseString('hello')").getValue(context, String.class);
+
+        4.3.12. Bean References
+
+        	如果解析上下文已注册了bean解析器，则可以通过在表达式中添加@圈查找bean。
+
+        	i.e:
+
+        		ExpressionParser parser = new SpelExpressionParser();
+				StandardEvaluationContext context = new StandardEvaluationContext();
+				context.setBeanResolver(new MyBeanResolver());
+
+				// This will end up calling resolve(context,"something") on MyBeanResolver during evaluation
+				Object bean = parser.parseExpression("@something").getValue(context);
+
+			查找FactoryBean，需要在表达式中添加&
+
+			i.e:
+
+				ExpressionParser parser = new SpelExpressionParser();
+				StandardEvaluationContext context = new StandardEvaluationContext();
+				context.setBeanResolver(new MyBeanResolver());
+
+				// This will end up calling resolve(context,"&foo") on MyBeanResolver during evaluation
+				Object bean = parser.parseExpression("&foo").getValue(context);	
+
+		4.3.13. Ternary Operator (If-Then-Else) 
+
+			三目运算符: boolean ? trueResult  : falseResult
+
+			i.e:
+
+				String falseString = parser.parseExpression("false ? 'trueExp' : 'falseExp'").getValue(String.class);
+
+				parser.parseExpression("Name").setValue(societyContext, "IEEE");
+				societyContext.setVariable("queryName", "Nikola Tesla");
+
+				expression = "isMember(#queryName)? #queryName + ' is a member of the ' " +
+				        "+ Name + ' Society' : #queryName + ' is not a member of the ' + Name + ' Society'";
+
+				String queryResultString = parser.parseExpression(expression)
+				        .getValue(societyContext, String.class);
+				// queryResultString = "Nikola Tesla is a member of the IEEE Society"
+
+		4.3.14. The Elvis Operator
+
+			Elvis运算符: expression ?: otherResult // 如果expression不为空/false，返回本身，否则返回otherResult
+
+			i.e:
+
+				String name = "Elvis Presley";
+				String displayName = (name != null ? name : "Unknown");
+
+
+				ExpressionParser parser = new SpelExpressionParser();
+
+				String name = parser.parseExpression("name?:'Unknown'").getValue(String.class);
+				System.out.println(name);  // 'Unknown'
+
+
+				ExpressionParser parser = new SpelExpressionParser();
+				EvaluationContext context = SimpleEvaluationContext.forReadOnlyDataBinding().build();
+
+				Inventor tesla = new Inventor("Nikola Tesla", "Serbian");
+				String name = parser.parseExpression("Name?:'Elvis Presley'").getValue(context, tesla, String.class);
+				System.out.println(name);  // Nikola Tesla
+
+				tesla.setName(null);
+				name = parser.parseExpression("Name?:'Elvis Presley'").getValue(context, tesla, String.class);
+				System.out.println(name);  // Elvis Presley	
+
+				// This will inject a system property pop3.port if it is defined or 25 if not.
+				@Value("#{systemProperties['pop3.port'] ?: 25}")		
+				private int port;
+
+		4.3.15. Safe Navigation Operator
+
+			安全导航操作符： object?.	property // 如果object不为空，返回object.property，否则返回null
+
+			i.e:
+
+				ExpressionParser parser = new SpelExpressionParser();
+				EvaluationContext context = SimpleEvaluationContext.forReadOnlyDataBinding().build();
+
+				Inventor tesla = new Inventor("Nikola Tesla", "Serbian");
+				tesla.setPlaceOfBirth(new PlaceOfBirth("Smiljan"));
+
+				String city = parser.parseExpression("PlaceOfBirth?.City").getValue(context, tesla, String.class);
+				System.out.println(city);  // Smiljan
+
+				tesla.setPlaceOfBirth(null);
+				city = parser.parseExpression("PlaceOfBirth?.City").getValue(context, tesla, String.class);
+				System.out.println(city);  // null - does not throw NullPointerException!!!
+
+		4.3.16. Collection Selection
+
+			集合选择： .?[selectionExpression] // 过滤并返回该集合中满足条件表达式selectionExpression的元素集合
+
+			i.e:
+
+				List<Inventor> list = (List<Inventor>) parser.parseExpression("Members.?[Nationality == 'Serbian']").getValue(societyContext);
+
+				Map newMap = parser.parseExpression("map.?[value<27]").getValue();
+
+			tips:
+			
+				除了返回所有满足条件的元素外，也可以获取返回集合的首位元素：
+
+					满足条件的第一个元素： 	.^[selectionExpression]
+
+					满足条件的最后一个元素： .$[selectionExpression]
+
+		4.3.17. Collection Projection
+
+			集合项目： .![projectionExpression]  // 返回集合中子元素的集合
+
+			i.e:
+
+				// 返回Members中的所有inventors的出生地的集合
+				// returns ['Smiljan', 'Idvor' ]
+				List placesOfBirth = (List)parser.parseExpression("Members.![placeOfBirth.city]");
+
+		4.3.18. Expression templating
+		
+			默认表达式模板： #{}
+
+			自定义模板：
+
+				public class TemplateParserContext implements ParserContext {
+
+				    public String getExpressionPrefix() {
+				        return "#{";
+				    }
+
+				    public String getExpressionSuffix() {
+				        return "}";
+				    }
+
+				    public boolean isTemplate() {
+				        return true;
+				    }
+				}
+
+			i.e:
+
+				String randomPhrase = parser.parseExpression(
+			        "random number is #{T(java.lang.Math).random()}",
+			        new TemplateParserContext()).getValue(String.class);		
+
+	4.4. Classes Used in the Examples						
+
+		i.e:
+
+			import java.util.Date;
+			import java.util.GregorianCalendar;
+
+			public class Inventor {
+
+			    private String name;
+			    private String nationality;
+			    private String[] inventions;
+			    private Date birthdate;
+			    private PlaceOfBirth placeOfBirth;
+
+			    public Inventor(String name, String nationality) {
+			        GregorianCalendar c= new GregorianCalendar();
+			        this.name = name;
+			        this.nationality = nationality;
+			        this.birthdate = c.getTime();
+			    }
+
+			    public Inventor(String name, Date birthdate, String nationality) {
+			        this.name = name;
+			        this.nationality = nationality;
+			        this.birthdate = birthdate;
+			    }
+
+			    public Inventor() {
+			    }
+
+			    public String getName() {
+			        return name;
+			    }
+
+			    public void setName(String name) {
+			        this.name = name;
+			    }
+
+			    public String getNationality() {
+			        return nationality;
+			    }
+
+			    public void setNationality(String nationality) {
+			        this.nationality = nationality;
+			    }
+
+			    public Date getBirthdate() {
+			        return birthdate;
+			    }
+
+			    public void setBirthdate(Date birthdate) {
+			        this.birthdate = birthdate;
+			    }
+
+			    public PlaceOfBirth getPlaceOfBirth() {
+			        return placeOfBirth;
+			    }
+
+			    public void setPlaceOfBirth(PlaceOfBirth placeOfBirth) {
+			        this.placeOfBirth = placeOfBirth;
+			    }
+
+			    public void setInventions(String[] inventions) {
+			        this.inventions = inventions;
+			    }
+
+			    public String[] getInventions() {
+			        return inventions;
+			    }
+			}
+
+			-----------------------------
+
+			public class PlaceOfBirth {
+
+			    private String city;
+			    private String country;
+
+			    public PlaceOfBirth(String city) {
+			        this.city=city;
+			    }
+
+			    public PlaceOfBirth(String city, String country) {
+			        this(city);
+			        this.country = country;
+			    }
+
+			    public String getCity() {
+			        return city;
+			    }
+
+			    public void setCity(String s) {
+			        this.city = s;
+			    }
+
+			    public String getCountry() {
+			        return country;
+			    }
+
+			    public void setCountry(String country) {
+			        this.country = country;
+			    }
+			}
+
+			-----------------------------
+
+
+			import java.util.*;
+
+			public class Society {
+
+			    private String name;
+
+			    public static String Advisors = "advisors";
+			    public static String President = "president";
+
+			    private List<Inventor> members = new ArrayList<Inventor>();
+			    private Map officers = new HashMap();
+
+			    public List getMembers() {
+			        return members;
+			    }
+
+			    public Map getOfficers() {
+			        return officers;
+			    }
+
+			    public String getName() {
+			        return name;
+			    }
+
+			    public void setName(String name) {
+			        this.name = name;
+			    }
+
+			    public boolean isMember(String name) {
+			        for (Inventor inventor : members) {
+			            if (inventor.getName().equals(name)) {
+			                return true;
+			            }
+			        }
+			        return false;
+			    }
+			}
+
+	// done 2020-3-3 19:17:59
+
+5. Aspect Oriented Programming with Spring			
 
 
 		

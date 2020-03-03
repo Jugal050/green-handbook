@@ -48,6 +48,8 @@ https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/
 
 							4.1. Evaluation 								// done 2020-3-3 12:46:24
 
+							4. Spring Expression Language (SpEL) 			// done 2020-3-3 19:18:18
+
 	Testing				Mock Objects, TestContext Framework, Spring MVC Test, WebTestClient.
 
 	Data Access			Transactions, DAO Support, JDBC, O/R Mapping, XML Marshalling.
