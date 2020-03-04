@@ -6212,6 +6212,82 @@ Core Technologies 			https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-fra
 
 	// done 2020-3-3 19:17:59
 
+			# SpEL解析过程：
+		
+			代码块：
+
+				SpelExpressionParser parser = new SpelExpressionParser();
+				SpelExpression expr = parser.parseRaw("2      +    3");		
+				assertThat(expr.getValue()).isEqualTo(5);
+
+			执行逻辑：
+
+				// 实例化SpEL表达式转化器
+				SpelExpressionParser parser = new SpelExpressionParser();
+				
+					// 调用SpEL转化器的构造器
+					org.springframework.expression.spel.standard.SpelExpressionParser	
+
+						// 调用SpEL转化器配置的构造器，
+						// 配置包括： 编译模式[默认OFF]、编译的类加载器[默认NULL]、是否自动添加null引用[默认false]、集合是否自动扩容[默认false]、集合扩容最大长度[默认Integer.MAX_VALUE]
+						org.springframework.expression.spel.SpelParserConfiguration 
+
+				// 转化SpEL表达式		
+				SpelExpression expr = parser.parseRaw("2      +    3");		
+
+					// 转化原始的SpEL表达式
+					org.springframework.expression.spel.standard.SpelExpressionParser#parseRaw(String expressionString)
+
+						// 根据转化上下文执行转化逻辑
+						org.springframework.expression.spel.standard.SpelExpressionParser#doParseExpression(String expressionString, @Nullable ParserContext context)
+
+							// 构造内置的SpEL转化器
+							org.springframework.expression.spel.standard.InternalSpelExpressionParser#InternalSpelExpressionParser(SpelParserConfiguration configuration)
+
+							// 使用内置的SpEL转化器转化表达式
+							org.springframework.expression.spel.standard.InternalSpelExpressionParser#doParseExpression(String expressionString, @Nullable ParserContext context)
+
+								// 根据SpEL表达式构造分词器： Tokenizer tokenizer = new Tokenizer(expressionString);
+								org.springframework.expression.spel.standard.Tokenizer#Tokenizer(String inputData)
+
+								// 将分词器处理为标识符集合： this.tokenStream = tokenizer.process();
+								// 将字符解析为一个个标识符，如：数学运算符（+ - * / % ^）、逻辑运算符（and (&&) or (||) not (!)）、关系运算符（> == < != instanceof match）、赋值（=）
+								org.springframework.expression.spel.standard.Tokenizer#process()
+
+								// 将表达式一步步处理为AST树节点： SpelNodeImpl ast = eatExpression();
+								// 将表达式中的各个标识符进行逻辑处理，如： 数学运算、逻辑运算、关系比较、赋值运算等等
+								org.springframework.expression.spel.standard.InternalSpelExpressionParser#eatExpression()
+
+								// 构造SpEL表达式： return new SpelExpression(expressionString, ast, this.configuration);
+								org.springframework.expression.spel.standard.SpelExpression(String expression, SpelNodeImpl ast, SpelParserConfiguration configuration)
+
+
+				// 获取SpEL表达式结果
+				expr.getValue()
+
+					// 获取SpEL表达式的结果值
+					org.springframework.expression.spel.standard.SpelExpression#getValue()
+
+						// 获取表达式解析上下文
+						org.springframework.expression.spel.standard.SpelExpression#getEvaluationContext
+
+							// 构造标准的表达式解析上下文
+							org.springframework.expression.spel.support.StandardEvaluationContext#StandardEvaluationContext()
+
+						// 构建表达式状态信息： ExpressionState expressionState = new ExpressionState(getEvaluationContext(), this.configuration);
+						org.springframework.expression.spel.ExpressionState#ExpressionState(EvaluationContext context, SpelParserConfiguration configuration)
+
+						// 获取SpEL节点结果值： Object result = this.ast.getValue(expressionState);
+						org.springframework.expression.spel.ast.SpelNodeImpl#getValue(ExpressionState expressionState)
+
+							// 获取内部的操作运算结果值（本例中为加法运算符）
+							org.springframework.expression.spel.ast.OpPlus#getValueInternal(ExpressionState state)
+
+						// 解析次数超过触发编译的阈值时，执行表达式编译
+						// org.springframework.expression.spel.standard.SpelExpression#checkCompile(ExpressionState expressionState)	
+
+						// 返回结果值： return result;
+
 5. Aspect Oriented Programming with Spring			
 
 
