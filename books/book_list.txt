@@ -90,6 +90,8 @@ doing：
 
 			4. Spring Expression Language (SpEL) 			// done 2020-3-3 19:18:18
 
+			5.7. Mixing Aspect Types 						// done 2020-3-5 19:59:23
+
 			26 WebSocket Support 				 // start 2020-1-14 13:40:00    done 2010-1-14 18:44
 
 		

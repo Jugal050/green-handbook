@@ -6458,6 +6458,429 @@ Core Technologies 			https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-fra
 
 		// to complete 2020-3-5 12:19:07
 
+	5.5. Schema-based AOP Support
+	
+		module: spring-aop
+
+		element: <aop:config>	
+
+		tips: 
+			<aop:config>格式的配置会使spring的自动代理机制重量化，如果已经了类似BeanNameAutoProxyCreator的自动代理技术会产生问题（比如添加的切面通知植入失败），
+			所以，使用时要二选一。
+
+		5.5.1. Declaring an Aspect	
+		
+			xml: 
+
+				<aop:config>
+				    <aop:aspect id="myAspect" ref="aBean">
+				        ...
+				    </aop:aspect>
+				</aop:config>
+
+				<bean id="aBean" class="...">
+				    ...
+				</bean>	
+
+		5.5.2. Declaring a Pointcut
+
+			xml:
+		
+				<aop:config>
+
+				    <aop:pointcut id="businessService" expression="execution(* com.xyz.myapp.service.*.*(..))"/>
+
+				    <aop:pointcut id="businessService" expression="com.xyz.myapp.SystemArchitecture.businessService()"/>
+
+				</aop:config>	
+
+				----------------------------
+
+				<aop:config>
+
+				    <aop:aspect id="myAspect" ref="aBean">
+
+				        <aop:pointcut id="businessService"
+				            expression="execution(* com.xyz.myapp.service.*.*(..))"/>
+
+				        ...
+
+				    </aop:aspect>
+
+				</aop:config>	
+
+				----------------------------
+
+				<aop:config>
+
+				    <aop:aspect id="myAspect" ref="aBean">
+
+				        <aop:pointcut id="businessService" expression="execution(* com.xyz.myapp.service.*.*(..)) &amp;&amp; this(service)"/>
+
+				        <!--  && || ! 也可以使用 and or not关键字代替 -->
+				        <aop:pointcut id="businessService" expression="execution(* com.xyz.myapp.service.*.*(..)) and this(service)"/>
+
+				        <aop:before pointcut-ref="businessService" method="monitor"/>
+
+				        ...
+
+				    </aop:aspect>
+
+				</aop:config>
+
+				----------------------------
+
+			java:
+			
+				public void monitor(Object service) {
+				    // ...
+				}
+
+		5.5.3. Declaring Advice
+
+			Before Advice : 在匹配的方法执行前，执行该通知方法。
+
+				xml:
+
+					<aop:aspect id="beforeExample" ref="aBean">
+
+					    <aop:before pointcut-ref="dataAccessOperation" method="doAccessCheck"/>
+
+					    <!-- 也可以使用内部pointcut代替 -->	
+					    <aop:before pointcut="execution(* com.xyz.myapp.dao.*.*(..))" method="doAccessCheck"/>
+
+					    ...
+
+					</aop:aspect>
+
+			After Returning Advice : 在匹配的方法完成后，执行该通知方法。
+			
+				xml:
+
+					<aop:aspect id="afterReturningExample" ref="aBean">
+
+						<aop:after-returning pointcut-ref="dataAccessOperation" method="doAccessCheck"/>
+
+						<!-- 也可以获取该返回值，但是必须在method方法参数中添加该返回值 -->
+					    <aop:after-returning pointcut-ref="dataAccessOperation" returning="retVal" method="doAccessCheck"/>
+					    ...
+
+					</aop:aspect>		
+		
+				java:
+
+					public void doAccessCheck(Object retVal) {...}
+
+			After Throwing Advice : 在匹配的方法执行中抛出异常时，执行该通知方法。
+			
+				xml:
+
+					<aop:aspect id="afterThrowingExample" ref="aBean">
+
+						<aop:after-throwing pointcut-ref="dataAccessOperation" method="doRecoveryActions"/>
+
+						<!-- 也可以获取该异常，但是必须在method方法参数中添加该异常 -->
+					    <aop:after-throwing pointcut-ref="dataAccessOperation" throwing="dataAccessEx" method="doRecoveryActions"/>
+					    ...
+
+					</aop:aspect>		
+
+				java:
+				
+					public void doRecoveryActions(DataAccessException dataAccessEx) {...}	
+
+			After (Finally) Advice : 不管匹配的方法如何执行，之后都会执行该通知方法。
+			
+				xml:
+
+					<aop:aspect id="afterFinallyExample" ref="aBean">
+
+					    <aop:after
+					        pointcut-ref="dataAccessOperation"
+					        method="doReleaseLock"/>
+
+					    ...
+
+					</aop:aspect>
+
+			Around Advice
+
+				说明： 环绕匹配的方法运行周围。 可以是该方法执行前、执行后，还是自行决定何时执行、如何执行。通常用在线程安全的操作类中共享方法执行前后的状态信息。
+			
+				xml:
+
+					<aop:aspect id="aroundExample" ref="aBean">
+
+					    <aop:around
+					        pointcut-ref="businessService"
+					        method="doBasicProfiling"/>
+
+					    ...
+
+					</aop:aspect>
+
+				java:
+				
+					// 该方法第一个参数必须是ProceedingJoinPoint，.proceed()方法是执行切面匹配的方法。
+					public Object doBasicProfiling(ProceedingJoinPoint pjp) throws Throwable {
+					    // start stopwatch
+					    Object retVal = pjp.proceed();
+					    // stop stopwatch
+					    return retVal;
+					}	
+
+			Advice Parameters
+			
+				xml:
+
+					<aop:before pointcut="com.xyz.lib.Pointcuts.anyPublicMethod() and @annotation(auditable)" method="audit" arg-names="auditable"/>
+
+					------------------------
+
+					<beans xmlns="http://www.springframework.org/schema/beans"
+					    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+					    xmlns:aop="http://www.springframework.org/schema/aop"
+					    xsi:schemaLocation="
+					        http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+					        http://www.springframework.org/schema/aop https://www.springframework.org/schema/aop/spring-aop.xsd">
+
+					    <!-- this is the object that will be proxied by Spring's AOP infrastructure -->
+					    <bean id="personService" class="x.y.service.DefaultPersonService"/>
+
+					    <!-- this is the actual advice itself -->
+					    <bean id="profiler" class="x.y.SimpleProfiler"/>
+
+					    <aop:config>
+					        <aop:aspect ref="profiler">
+
+					            <aop:pointcut id="theExecutionOfSomePersonServiceMethod"
+					                expression="execution(* x.y.service.PersonService.getPerson(String,int))
+					                and args(name, age)"/>
+
+					            <aop:around pointcut-ref="theExecutionOfSomePersonServiceMethod"
+					                method="profile"/>
+
+					        </aop:aspect>
+					    </aop:config>
+
+					</beans>
+
+				java:
+
+					package x.y.service;
+
+					public interface PersonService {
+
+					    Person getPerson(String personName, int age);
+					}
+
+					public class DefaultFooService implements FooService {
+
+					    public Person getPerson(String name, int age) {
+					        return new Person(name, age);
+					    }
+					}
+
+					-------------------------
+
+					package x.y;
+
+					import org.aspectj.lang.ProceedingJoinPoint;
+					import org.springframework.util.StopWatch;
+
+					public class SimpleProfiler {
+
+					    public Object profile(ProceedingJoinPoint call, String name, int age) throws Throwable {
+					        StopWatch clock = new StopWatch("Profiling for '" + name + "' and '" + age + "'");
+					        try {
+					            clock.start(call.toShortString());
+					            return call.proceed();
+					        } finally {
+					            clock.stop();
+					            System.out.println(clock.prettyPrint());
+					        }
+					    }
+					}
+
+					-------------------------
+
+					import org.springframework.beans.factory.BeanFactory;
+					import org.springframework.context.support.ClassPathXmlApplicationContext;
+					import x.y.service.PersonService;
+
+					public final class Boot {
+
+					    public static void main(final String[] args) throws Exception {
+					        BeanFactory ctx = new ClassPathXmlApplicationContext("x/y/plain.xml");
+					        PersonService person = (PersonService) ctx.getBean("personService");
+					        person.getPerson("Pengo", 12);
+					    }
+					}
+
+			Advice Ordering
+			
+				实现Order接口或者添加@Order注解	
+
+		5.5.4. Introductions
+
+			说明，在Aspect中称为内部类型声明，通过让声明通知对象的切面实现指定接口，来提供相关对象的接口功能。
+
+			xml:
+
+				<aop:aspect id="usageTrackerAspect" ref="usageTracking">
+
+				    <aop:declare-parents
+				        types-matching="com.xzy.myapp.service.*+"
+				        implement-interface="com.xyz.myapp.service.tracking.UsageTracked"
+				        default-impl="com.xyz.myapp.service.tracking.DefaultUsageTracked"/>
+
+				    <aop:before
+				        pointcut="com.xyz.myapp.SystemArchitecture.businessService()
+				            and this(usageTracked)"
+				            method="recordUsage"/>
+
+				</aop:aspect>
+
+			java:
+			
+				public void recordUsage(UsageTracked usageTracked) {
+				    usageTracked.incrementUseCount();
+				}	
+		
+		5.5.5. Aspect Instantiation Models
+
+			schema-defined的切面实力模型目前只支持单例模式，其他支持可能会在以后添加。
+
+		5.5.6. Advisors
+		
+			xml:
+
+				<aop:config>
+
+				    <aop:pointcut id="businessService" expression="execution(* com.xyz.myapp.service.*.*(..))"/>
+
+				    <aop:advisor pointcut-ref="businessService" advice-ref="tx-advice"/>
+				</aop:config>
+
+				<tx:advice id="tx-advice">
+				    <tx:attributes>
+				        <tx:method name="*" propagation="REQUIRED"/>
+				    </tx:attributes>
+				</tx:advice>	
+
+		5.5.7. An AOP Schema Example
+		
+			java:
+
+				public class ConcurrentOperationExecutor implements Ordered {
+
+				    private static final int DEFAULT_MAX_RETRIES = 2;
+
+				    private int maxRetries = DEFAULT_MAX_RETRIES;
+				    private int order = 1;
+
+				    public void setMaxRetries(int maxRetries) {
+				        this.maxRetries = maxRetries;
+				    }
+
+				    public int getOrder() {
+				        return this.order;
+				    }
+
+				    public void setOrder(int order) {
+				        this.order = order;
+				    }
+
+				    public Object doConcurrentOperation(ProceedingJoinPoint pjp) throws Throwable {
+				        int numAttempts = 0;
+				        PessimisticLockingFailureException lockFailureException;
+				        do {
+				            numAttempts++;
+				            try {
+				                return pjp.proceed();
+				            }
+				            catch(PessimisticLockingFailureException ex) {
+				                lockFailureException = ex;
+				            }
+				        } while(numAttempts <= this.maxRetries);
+				        throw lockFailureException;
+				    }
+
+				}
+
+
+			xml:
+
+				<aop:config>
+
+				    <aop:aspect id="concurrentOperationRetry" ref="concurrentOperationExecutor">
+
+				        <aop:pointcut id="idempotentOperation"
+				            expression="execution(* com.xyz.myapp.service.*.*(..))"/>
+
+				        <aop:around
+				            pointcut-ref="idempotentOperation"
+				            method="doConcurrentOperation"/>
+
+				    </aop:aspect>
+
+				</aop:config>
+
+				<bean id="concurrentOperationExecutor"
+				    class="com.xyz.myapp.service.impl.ConcurrentOperationExecutor">
+				        <property name="maxRetries" value="3"/>
+				        <property name="order" value="100"/>
+				</bean>
+
+	5.6. Choosing which AOP Declaration Style to Use
+	
+		5.6.1. Spring AOP or Full AspectJ?
+
+			原则： 能简单实现就不搞复杂化。 Spring AOP要比整个AspectJ更简单（没有在开发或者构建应用过程中添加AspectJ编译和植入）。
+
+				如果只需要对在Spring beans上的方法执行进行通知，选择Spring AOP，
+
+				如果需要对非Spring容器管理的对象进行通知，或者通知的匹配方法规则要求很高很复杂，选择AspectJ。
+
+				如果选择AspectJ，是选择编码格式还是注解格式？
+
+					如果使用的java版本1.5或者更早，选择编码格式。
+
+					如果应用设计时，切面相关的占比很高，而且可以使用Eclipse中的AJDT插件，选择编码格式。
+
+					如果不使用Eclipse，aspect切面相关的占比很低，使用注解格式。
+
+		5.6.2. @AspectJ or XML for Spring AOP?			
+
+			如果选择使用Spring AOP，是使用注解格式还是XML格式？
+
+				XML优点：
+
+					使用Spring的用户对XML风格比较熟悉，而且它实际上也属于比较传统的POJO。
+
+					企业服务中把AOP作为工具使用时，使用XML格式，可以让系统中的切面配置保持整洁。
+
+				XML缺点：
+
+					XML其实是将需求与实现（后端的bean类与切面配置）进行分隔了，违背了DRY原则（系统中的任何片段都要独立、明确、有代表性）。
+
+					XML配置要比@AspectJ注解表达上限制更多，比如，切面模型只支持单例模式，xml中无法合并使用已添加的切入点pointcuts。
+
+	5.7. Mixing Aspect Types
+
+		// done 2020-3-5 19:59:12
+
+	5.8. Proxying Mechanisms
+	
+
+
+
+
+
+
+
+
+
 
 		
 

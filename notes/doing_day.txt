@@ -2069,8 +2069,41 @@
 
 2020-3-5 11:53:38
 
-	# 5.4. @AspectJ support 									// 泛读done，文档待补充，测试类待debug 2020-3-5 12:06:05		
+	# 5.4. @AspectJ support 									// 泛读done，文档待补充，测试类待debug 2020-3-5 12:06:05	
 
+	# spring hot point:
+
+		## 切面功能实现，是使用Spring AOP还是AspectJ？
+
+			原则： 能简单实现就不搞复杂化。 Spring AOP要比整个AspectJ更简单（没有在开发或者构建应用过程中添加AspectJ编译和植入）。
+
+				如果只需要对在Spring beans上的方法执行进行通知，选择Spring AOP，
+
+				如果需要对非Spring容器管理的对象进行通知，或者通知的匹配方法规则要求很高很复杂，选择AspectJ。
+
+				如果选择AspectJ，是选择编码格式还是注解格式？
+
+					如果使用的java版本1.5或者更早，选择编码格式。
+
+					如果应用设计时，切面相关的占比很高，而且可以使用Eclipse中的AJDT插件，选择编码格式。
+
+					如果不使用Eclipse，aspect切面相关的占比很低，使用注解格式。
+
+		## 如果选择使用Spring AOP，是使用注解格式还是XML格式？
+
+			XML优点：
+
+				使用Spring的用户对XML风格比较熟悉，而且它实际上也属于比较传统的POJO。
+
+				企业服务中把AOP作为工具使用时，使用XML格式，可以让系统中的切面配置保持整洁。
+
+			XML缺点：
+
+				XML其实是将需求与实现（后端的bean类与切面配置）进行分隔了，违背了DRY原则（系统中的任何片段都要独立、明确、有代表性）。
+
+				XML配置要比@AspectJ注解表达上限制更多，比如，切面模型只支持单例模式，xml中无法合并使用已添加的切入点pointcuts。		
+
+	# 5.7. Mixing Aspect Types 						// done 2020-3-5 19:59:23			
 
 		
 			

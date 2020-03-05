@@ -52,6 +52,8 @@ https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/
 
 							5.4. @AspectJ support 							// done 2020-3-5 12:06:31
 
+							5.7. Mixing Aspect Types 						// done 2020-3-5 19:59:23
+
 	Testing				Mock Objects, TestContext Framework, Spring MVC Test, WebTestClient.
 
 	Data Access			Transactions, DAO Support, JDBC, O/R Mapping, XML Marshalling.
