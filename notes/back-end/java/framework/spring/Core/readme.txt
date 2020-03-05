@@ -6288,7 +6288,175 @@ Core Technologies 			https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-fra
 
 						// 返回结果值： return result;
 
-5. Aspect Oriented Programming with Spring			
+5. Aspect Oriented Programming with Spring	
+
+	5.1. AOP Concepts		
+
+	5.2. Spring AOP Capabilities and Goals
+
+	5.3. AOP Proxies
+
+	5.4. @AspectJ support 							
+
+		5.4.1. Enabling @AspectJ Support
+
+			Enabling @AspectJ Support with Java Configuration
+
+				@Configuration
+				@EnableAspectJAutoProxy
+				public class AppConfig {
+
+				}
+
+			Enabling @AspectJ Support with XML Configuration
+
+				<aop:aspectj-autoproxy/>
+
+		5.4.2. Declaring an Aspect
+
+		5.4.3. Declaring a Pointcut
+
+			Supported Pointcut Designators
+
+			Combining Pointcut Expressions
+
+			Sharing Common Pointcut Definitions
+
+			Examples
+
+			Writing Good Pointcuts
+
+		5.4.4. Declaring Advice
+
+			Before Advice
+
+			After Returning Advice
+
+			After Throwing Advice
+
+			After (Finally) Advice
+
+			Around Advice
+
+			Advice Parameters
+
+				Access to the Current JoinPoint
+
+				Passing Parameters to Advice
+
+				Determining Argument Names
+
+				Proceeding with Arguments
+
+			Advice Ordering
+
+		5.4.5. Introductions
+
+			java:
+
+				@Aspect
+				public class UsageTracking {
+
+				    @DeclareParents(value="com.xzy.myapp.service.*+", defaultImpl=DefaultUsageTracked.class)
+				    public static UsageTracked mixin;
+
+				    @Before("com.xyz.myapp.SystemArchitecture.businessService() && this(usageTracked)")
+				    public void recordUsage(UsageTracked usageTracked) {
+				        usageTracked.incrementUseCount();
+				    }
+
+				}	
+
+		5.4.6. Aspect Instantiation Models
+
+			默认，applicationContext中每个aspect切面都是单例的，切面调用每次都是调用该单例切面模型。 
+			但是，我们可以修改切面的生命周期，Spring支持AspectJ中的perthis，pertarget实例模型（其他的，如percflow, percflowbelow, pertypewithin还不支持）
+
+			i.e:
+
+				@Aspect("perthis(com.xyz.myapp.SystemArchitecture.businessService())")
+				public class MyAspect {
+
+				    private int someState;
+
+				    @Before(com.xyz.myapp.SystemArchitecture.businessService())
+				    public void recordServiceUsage() {
+				        // ...
+				    }
+
+				}
+
+		5.4.7. An AOP Example	
+
+			i.e:
+
+				java:
+
+					@Aspect
+					public class ConcurrentOperationExecutor implements Ordered {
+
+					    private static final int DEFAULT_MAX_RETRIES = 2;
+
+					    private int maxRetries = DEFAULT_MAX_RETRIES;
+					    private int order = 1;
+
+					    public void setMaxRetries(int maxRetries) {
+					        this.maxRetries = maxRetries;
+					    }
+
+					    public int getOrder() {
+					        return this.order;
+					    }
+
+					    public void setOrder(int order) {
+					        this.order = order;
+					    }
+
+					    @Around("com.xyz.myapp.SystemArchitecture.businessService()")
+					    public Object doConcurrentOperation(ProceedingJoinPoint pjp) throws Throwable {
+					        int numAttempts = 0;
+					        PessimisticLockingFailureException lockFailureException;
+					        do {
+					            numAttempts++;
+					            try {
+					                return pjp.proceed();
+					            }
+					            catch(PessimisticLockingFailureException ex) {
+					                lockFailureException = ex;
+					            }
+					        } while(numAttempts <= this.maxRetries);
+					        throw lockFailureException;
+					    }
+
+					}
+
+					-------------------------
+
+					@Retention(RetentionPolicy.RUNTIME)
+					public @interface Idempotent {
+					    // marker annotation
+					}
+
+					-------------------------
+
+					@Around("com.xyz.myapp.SystemArchitecture.businessService() && " +
+					        "@annotation(com.xyz.myapp.service.Idempotent)")
+					public Object doConcurrentOperation(ProceedingJoinPoint pjp) throws Throwable {
+					    // ...
+					}
+
+					-------------------------
+
+				xml:
+				
+					<aop:aspectj-autoproxy/>
+
+					<bean id="concurrentOperationExecutor" class="com.xyz.myapp.service.impl.ConcurrentOperationExecutor">
+					    <property name="maxRetries" value="3"/>
+					    <property name="order" value="100"/>
+					</bean>	
+
+		// to complete 2020-3-5 12:19:07
 
 
 		
