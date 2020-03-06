@@ -7010,6 +7010,221 @@ Core Technologies 			https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-fra
 					AspectJ不会有自身调用的问题，因为它不基于代理。（而Spring AOP是基于代理的）
 
 
+		CGLIB代理原理： 			
+
+			/**
+			 * 基于AdvisedSupport配置对象，来创建AOP代理的工厂接口
+			 *
+			 * 代理应该遵循以下规则：
+			 *    实现所有配置信息中需要被代理的接口
+			 *    实现Advised接口
+			 *    实现equals方法（为了比较被代理的接口，通知，目标对象）
+			 *    如果所有的通知和目标对象可序列化，那么代理也应该可以序列化
+			 *    如果所有的通知和目标对象线程安全，那么代理也应该线程安全 
+			 *
+			 * 代理可以允许，也可以不允许通知修改。 如果不允许（比如配置信息被冻结），当试图修改通知时，代理应该抛出异常。
+			 */
+			org.springframework.aop.framework.AopProxyFactory 
+
+				public interface AopProxyFactory {
+					AopProxy createAopProxy(AdvisedSupport config) throws AopConfigException;
+				}
+
+			/**
+			 * AopProxyFactory接口的默认实现，创建一个CGLIB代理或者JDK动态代理。
+			 * 
+			 * 如果指定的AdvisedSupport满足以下任一条件，创建CGLIB代理：
+			 *    设置了优化标识optimize
+			 *    设置了代理目标类标识proxyTargetClass
+			 *    没有指定代理接口
+			 *
+			 * 通常，通过设置proxyTargetClass来强制使用CGLIB代理，或者通过指定接口来使用JDK动态代理。
+			 */
+			org.springframework.aop.framework.DefaultAopProxyFactory
+
+				public class DefaultAopProxyFactory implements AopProxyFactory, Serializable {
+
+					@Override
+					public AopProxy createAopProxy(AdvisedSupport config) throws AopConfigException {
+						if (config.isOptimize() || config.isProxyTargetClass() || hasNoUserSuppliedProxyInterfaces(config)) {
+							Class<?> targetClass = config.getTargetClass();
+							if (targetClass == null) {
+								throw new AopConfigException("TargetSource cannot determine target class: " +
+										"Either an interface or a target is required for proxy creation.");
+							}
+							if (targetClass.isInterface() || Proxy.isProxyClass(targetClass)) {
+								return new JdkDynamicAopProxy(config);
+							}
+							return new ObjenesisCglibAopProxy(config);
+						}
+						else {
+							return new JdkDynamicAopProxy(config);
+						}
+					}
+
+					/**
+					 * Determine whether the supplied {@link AdvisedSupport} has only the
+					 * {@link org.springframework.aop.SpringProxy} interface specified
+					 * (or no proxy interfaces specified at all).
+					 */
+					private boolean hasNoUserSuppliedProxyInterfaces(AdvisedSupport config) {
+						Class<?>[] ifcs = config.getProxiedInterfaces();
+						return (ifcs.length == 0 || (ifcs.length == 1 && SpringProxy.class.isAssignableFrom(ifcs[0])));
+					}
+
+				}
+
+			/**
+			 * 已配置的AOP代理的委托接口，可以创建实际的代理对象
+			 *	
+			 * DefaultAopProxyFactory提供了JDK动态代理和CGLIB代理开箱即用的实现类
+			 */ 	
+			org.springframework.aop.framework.AopProxy	
+
+				public interface AopProxy {
+
+					// 使用默认的AopProxy类加载器（通常为当前线程的类加载器）来创建一个新的代理对象
+					Object getProxy();
+
+					// 使用指定的类加载器来创建一个新的代理对象，参数为null时，会下传参数导致低级的代理默认配置，与getPrexy()不同。
+					Object getProxy(@Nullable ClassLoader classLoader);
+				}
+
+			/**
+			 * Spring AOP框架中，AopProxy基于CGLIB的实现。
+			 * 
+			 * 需要根据AdvisedSupport对象的配置，通过代理工厂获取。 该类是Spring AOP框架中内置类，无需客户端直接编码调用。
+			 *
+			 * 如果需要（比如有代理目标类），DefaultAopProxyFactory会自动创建基于CGLIB的代理。
+			 *
+			 * 如果底层的目标类是线程安全的，使用此类创建的代理对象也是现成安全的。
+			 */ 
+			org.springframework.aop.framework.CglibAopProxy
+
+				class CglibAopProxy implements AopProxy, Serializable {
+
+
+					@Override
+					public Object getProxy() {
+						return getProxy(null);
+					}
+
+					@Override
+					public Object getProxy(@Nullable ClassLoader classLoader) {
+						if (logger.isTraceEnabled()) {
+							logger.trace("Creating CGLIB proxy: " + this.advised.getTargetSource());
+						}
+
+						try {
+							Class<?> rootClass = this.advised.getTargetClass();
+							Assert.state(rootClass != null, "Target class must be available for creating a CGLIB proxy");
+
+							Class<?> proxySuperClass = rootClass;
+							if (rootClass.getName().contains(ClassUtils.CGLIB_CLASS_SEPARATOR)) {
+								proxySuperClass = rootClass.getSuperclass();
+								Class<?>[] additionalInterfaces = rootClass.getInterfaces();
+								for (Class<?> additionalInterface : additionalInterfaces) {
+									this.advised.addInterface(additionalInterface);
+								}
+							}
+
+							// Validate the class, writing log messages as necessary.
+							validateClassIfNecessary(proxySuperClass, classLoader);
+
+							// Configure CGLIB Enhancer...
+							Enhancer enhancer = createEnhancer();
+							if (classLoader != null) {
+								enhancer.setClassLoader(classLoader);
+								if (classLoader instanceof SmartClassLoader &&
+										((SmartClassLoader) classLoader).isClassReloadable(proxySuperClass)) {
+									enhancer.setUseCache(false);
+								}
+							}
+							enhancer.setSuperclass(proxySuperClass);
+							enhancer.setInterfaces(AopProxyUtils.completeProxiedInterfaces(this.advised));
+							enhancer.setNamingPolicy(SpringNamingPolicy.INSTANCE);
+							enhancer.setStrategy(new ClassLoaderAwareGeneratorStrategy(classLoader));
+
+							Callback[] callbacks = getCallbacks(rootClass);
+							Class<?>[] types = new Class<?>[callbacks.length];
+							for (int x = 0; x < types.length; x++) {
+								types[x] = callbacks[x].getClass();
+							}
+							// fixedInterceptorMap only populated at this point, after getCallbacks call above
+							enhancer.setCallbackFilter(new ProxyCallbackFilter(
+									this.advised.getConfigurationOnlyCopy(), this.fixedInterceptorMap, this.fixedInterceptorOffset));
+							enhancer.setCallbackTypes(types);
+
+							// Generate the proxy class and create a proxy instance.
+							return createProxyClassAndInstance(enhancer, callbacks);
+						}
+						catch (CodeGenerationException | IllegalArgumentException ex) {
+							throw new AopConfigException("Could not generate CGLIB subclass of " + this.advised.getTargetClass() +
+									": Common causes of this problem include using a final class or a non-visible class",
+									ex);
+						}
+						catch (Throwable ex) {
+							// TargetSource.getTarget() failed
+							throw new AopConfigException("Unexpected AOP exception", ex);
+						}
+					}
+
+				}
+
+
+			/**
+			 * 基于Objenesis的CglibAopProxy的子类，无需通过调用类构造器来创建代理实例。 Spring4之后默认使用。
+			 */ 	
+			org.springframework.aop.framework.ObjenesisCglibAopProxy	
+				class ObjenesisCglibAopProxy extends CglibAopProxy {	
+
+					private static final SpringObjenesis objenesis = new SpringObjenesis();
+
+					public ObjenesisCglibAopProxy(AdvisedSupport config) {
+						super(config);
+					}
+
+
+					@Override
+					protected Object createProxyClassAndInstance(Enhancer enhancer, Callback[] callbacks) {
+						Class<?> proxyClass = enhancer.createClass();
+						Object proxyInstance = null;
+
+						if (objenesis.isWorthTrying()) {
+							try {
+								proxyInstance = objenesis.newInstance(proxyClass, enhancer.getUseCache());
+							}
+							catch (Throwable ex) {
+								logger.debug("Unable to instantiate proxy using Objenesis, " +
+										"falling back to regular proxy construction", ex);
+							}
+						}
+
+						if (proxyInstance == null) {
+							// Regular instantiation via default constructor...
+							try {
+								Constructor<?> ctor = (this.constructorArgs != null ?
+										proxyClass.getDeclaredConstructor(this.constructorArgTypes) :
+										proxyClass.getDeclaredConstructor());
+								ReflectionUtils.makeAccessible(ctor);
+								proxyInstance = (this.constructorArgs != null ?
+										ctor.newInstance(this.constructorArgs) : ctor.newInstance());
+							}
+							catch (Throwable ex) {
+								throw new AopConfigException("Unable to instantiate proxy using Objenesis, " +
+										"and regular proxy instantiation via default constructor fails as well", ex);
+							}
+						}
+
+						((Factory) proxyInstance).setCallbacks(callbacks);
+						return proxyInstance;
+					}
+
+				}
+
+			}		
+
+
 
 
 
