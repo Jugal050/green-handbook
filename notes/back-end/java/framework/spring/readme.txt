@@ -54,6 +54,8 @@ https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/
 
 							5.7. Mixing Aspect Types 						// done 2020-3-5 19:59:23
 
+							5.8. Proxying Mechanisms						// done 2020-3-6 12:36:58
+
 	Testing				Mock Objects, TestContext Framework, Spring MVC Test, WebTestClient.
 
 	Data Access			Transactions, DAO Support, JDBC, O/R Mapping, XML Marshalling.

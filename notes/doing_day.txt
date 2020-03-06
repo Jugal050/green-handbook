@@ -2103,7 +2103,111 @@
 
 				XML配置要比@AspectJ注解表达上限制更多，比如，切面模型只支持单例模式，xml中无法合并使用已添加的切入点pointcuts。		
 
-	# 5.7. Mixing Aspect Types 						// done 2020-3-5 19:59:23			
+	# 5.7. Mixing Aspect Types 						// done 2020-3-5 19:59:23
+
+2020-3-6 09:26:06
+
+	# Objenesis: 
+
+		说明： 特殊类实例化的小型类库。
+
+		由来： java本身已经支持使用Class.newInstance()来动态实例化，然后，只有当类有合适的构造器时才会起作用，如果一个类包含以下几种情况，就很难通过该方式进行实例化：
+
+				- 构造器带参数
+				- 构造器有副作用
+				- 构造器会抛异常
+
+				所以，在很多地方，我们可以看见类似"该类必须有默认构造器"的限制，Objenesis的宗旨就是实例化对象时不受这些限制。
+
+		官网： http://objenesis.org/index.html
+
+		使用： 
+
+			主要接口：
+
+				interface ObjectInstantiator {
+				  Object newInstance();
+				}
+
+				interface InstantiatorStrategy {
+				  ObjectInstantiator newInstantiatorOf(Class type);
+				}
+
+			实例化策略：
+			
+				1. Stardard 不会调用构造器
+				2. Serializable compliant 和java标准的实例化对象方式类似，调用第一个非序列化父类的构造器。
+
+				tips： 程序会自动判断最佳策略。
+
+			使用示例：
+
+				Objenesis objenesis = new ObjenesisStd(); // or ObjenesisSerializer
+				MyThingy thingy1 = (MyThingy) objenesis.newInstance(MyThingy.class);
+
+				// or (a little bit more efficient if you need to create many objects)
+
+				Objenesis objenesis = new ObjenesisStd();
+				ObjectInstantiator thingyInstantiator = objenesis.getInstantiatorOf(MyThingy.class);
+
+				MyThingy thingy1 = (MyThingy)thingyInstantiator.newInstance();				
+				MyThingy thingy2 = (MyThingy)thingyInstantiator.newInstance();				
+				MyThingy thingy3 = (MyThingy)thingyInstantiator.newInstance();	
+
+				// 缓存使用
+
+					Objenesis o = new ObjenesisStd(false); // cache disabled
+
+				// 自定义策略	
+
+					public class Sun14Strategy implements InstantiatorStrategy {
+					    public ObjectInstantiator newInstantiatorOf(Class type) {
+					        // return sun dedicated instantiator
+					        return new SunReflectionFactoryInstantiator(type);
+					    }
+					}		
+
+					// Directly
+					Objenesis o = new ObjenesisBase(new Sun14Strategy());
+
+					// Or inside your Objenesis own implementation
+					public class ObjenesisSun14 extends ObjenesisBase {
+					    public ObjenesisSun14() {
+					       super(new Sun14Strategy());
+					    }
+					}
+
+				// 静态工具类	
+
+					Object o1 = ObjenesisHelper.newInstance(MyClass.class);
+					Object o2 = ObjenesisHelper.newSerializableInstance(MyClass.class);
+					ObjectInstantiator o3 = ObjenesisHelper.getInstantiatorOf(MyClass.class);
+					ObjectInstantiator o4 = ObjenesisHelper.getSerializableObjectInstantiatorOf(MyClass.class);
+				
+	# sublime text2/3 license:
+
+			ZYNGA INC.
+			50 User License
+			EA7E-811825
+			927BA117 84C9300F 4A0CCBC4 34A56B44
+			985E4562 59F2B63B CCCFF92F 0E646B83
+			0FD6487D 1507AE29 9CC4F9F5 0A6F32E3
+			0343D868 C18E2CD5 27641A71 25475648
+			309705B3 E468DDC4 1B766A18 7952D28C
+			E627DDBA 960A2153 69A2D98A C87C0607
+			45DC6049 8C04EC29 D18DFA40 442C680B
+
+			1342224D 44D90641 33A3B9F2 46AADB8F
+
+	# 5.8. Proxying Mechanisms								// done 2020-3-6 12:36:58
+
+		test todo 
+
+			ProxyFactoryTests.java
+
+
+
+
 
 		
 			

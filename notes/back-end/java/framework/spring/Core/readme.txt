@@ -6871,7 +6871,149 @@ Core Technologies 			https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-fra
 		// done 2020-3-5 19:59:12
 
 	5.8. Proxying Mechanisms
-	
+
+		Spring AOP 使用JDK动态代理或者CGLIB来为指定的目标对象创建代理，JDK动态代理在JDK中，CGLIB是开源的类定义库（已被重新打包在spring-core中）。
+
+		如果代理对象实现了接口，则使用JDK动态代理，所有被代理对象实现的接口都会被代理。如果目标对象没有实现任何接口，则使用CGLIB创建代理。
+
+		CGLIB的缺点：
+
+			final修饰的方法不能被增强，因为final方法不能被运行期生成的子类重写。
+
+			Spring4.0以后，代理对象的构造器不再调用两次，因为CGLIB代理实例是通过Objenesis[实例化特殊class对象的小型类库]创建的。只有当JVM不允许越过构造器时，Spring AOP可能会调用两次
+
+		强制使用CGLIB代理：
+
+			<aop:config proxy-target-class="true">
+			    <!-- other beans defined here... -->
+			</aop:config>
+
+		当使用@AspectJ自动代理时强制CGLIB代理：
+
+			<aop:aspectj-autoproxy proxy-target-class="true"/>
+
+		5.8.1. Understanding AOP Proxies
+
+			Spring AOP是基于代理的。
+		
+			对象直接调用时：
+
+				java:
+
+					public class SimplePojo implements Pojo {
+
+					    public void foo() {
+					        // this next method invocation is a direct call on the 'this' reference
+					        this.bar();
+					    }
+
+					    public void bar() {
+					        // some logic...
+					    }
+					}	
+
+					------------------------
+
+					public class Main {
+
+					    public static void main(String[] args) {
+					        Pojo pojo = new SimplePojo();
+					        // this is a direct method call on the 'pojo' reference
+					        pojo.foo();
+					    }
+					}
+
+				image:
+				
+					Calling code          pojo.foo()
+					   |  /|\
+					   |   |
+					   |   |
+					   |   |
+					  \|/  |
+					Plain Object ————————>foo() on the object
+
+
+			使用代理调用时：			
+
+				java:
+
+					public class Main {
+
+					    public static void main(String[] args) {
+					        ProxyFactory factory = new ProxyFactory(new SimplePojo());
+					        factory.addInterface(Pojo.class);
+					        factory.addAdvice(new RetryAdvice());
+
+					        Pojo pojo = (Pojo) factory.getProxy();
+					        // this is a method call on the proxy!
+					        pojo.foo();
+					    }
+					}
+
+
+
+				image:
+
+					Calling code          
+					   |  /|\             __Proxy
+					   |   | pojo.foo()  /
+				|------|---|------------|
+				|	   |———|————————————|————> foo() on the proxy
+				|	  \|/  |            |
+				|	Plain Object ———————|————> then foo() on the object
+				|-----------------------|
+
+			关键点，Main类中有一个Proxy代理引用，Pojo对象上的方法调用会发生在代理商。这样，代理就可以添加相关的方法拦截/增强通知。
+			但是，一旦调用到达目标对象SimplePojo，再进行内部方法上的调用，比如，this.foo()或者this.bar(), 都会发生再目标对象this上，而不是代理Proxy。
+			也就是，内部方法调用将不再会被代理方法拦截/增强通知。
+
+			那么，我们应该怎么办呢？
+
+				最好就是不进行内部调用，这样也可以实现代码侵入最小化。
+
+				另一种方法有点可怕，是非常不推荐的，就是在代码中手动添加Spring AOP逻辑。
+
+					i.e:
+						java:
+
+							public class SimplePojo implements Pojo {
+
+							    public void foo() {
+							        // this works, but... gah!
+							        ((Pojo) AopContext.currentProxy()).bar();
+							    }
+
+							    public void bar() {
+							        // some logic...
+							    }
+							}
+
+							------------------------（需要的额外配置）
+
+							public class Main {
+
+							    public static void main(String[] args) {
+							        ProxyFactory factory = new ProxyFactory(new SimplePojo());
+							        factory.addInterface(Pojo.class);
+							        factory.addAdvice(new RetryAdvice());
+							        factory.setExposeProxy(true);
+
+							        Pojo pojo = (Pojo) factory.getProxy();
+							        // this is a method call on the proxy!
+							        pojo.foo();
+							    }
+							}
+
+				tips:			
+
+					AspectJ不会有自身调用的问题，因为它不基于代理。（而Spring AOP是基于代理的）
+
+
+
+
+
+
 
 
 
