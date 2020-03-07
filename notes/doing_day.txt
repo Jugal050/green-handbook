@@ -2205,164 +2205,98 @@
 
 			ProxyFactoryTests.java
 
+2020-3-7 10:30:30
 
+	# 代理Proxy相关源码 		
 
+		CGLIB:
 
+			// 新建代理工厂 
+			org.springframework.aop.framework.ProxyFactory#ProxyFactory()
 
-		
-			
+			// 生成代理 
+			org.springframework.aop.framework.ProxyFactory#getProxy()
 
+				// 创建AOP代理
+				org.springframework.aop.framework.ProxyCreatorSupport#createAopProxy
 
+					// 获取AOP代理工厂，默认为：DefaultAopProxyFactory
+					org.springframework.aop.framework.ProxyCreatorSupport#getAopProxyFactory
 
+					// 创建AOP代理
+					org.springframework.aop.framework.DefaultAopProxyFactory#createAopProxy
 
+						// 需要优化(optimize)|需要代理目标类(proxyTargetClass)|无接口(hasNoUserSuppliedProxyInterfaces) 使用CGLIB代理
+						org.springframework.aop.framework.ObjenesisCglibAopProxy#ObjenesisCglibAopProxy
 
+						// 否则，使用JDK动态代理
+						org.springframework.aop.framework.JdkDynamicAopProxy#JdkDynamicAopProxy
 
+				// 生成代理	
+				org.springframework.aop.framework.CglibAopProxy#getProxy() // CGLIB
 
-
-
-
-
-
-
-
-
+					// 获取通知的目标类
+					org.springframework.aop.framework.AdvisedSupport#getTargetClass
 					
+					// 如果目标类是CGLIB代理类，则将其基类的接口也添加到通知接口中
+					org.springframework.aop.framework.AdvisedSupport#addInterface
 
+					// 校验类型信息
+					org.springframework.aop.framework.CglibAopProxy#validateClassIfNecessary
 
+					// 创建增强器
+					org.springframework.aop.framework.CglibAopProxy#createEnhancer
 
+					// 设置增强器属性
 
+						// 如果类加载器不为空，设置类加载器
+						org.springframework.cglib.core.AbstractClassGenerator#setClassLoader	
 
-	
+						// 如果类加载器是智能类加载器，并且其中该代理类基类可重复加载，设置用户缓存为false
+						org.springframework.cglib.core.AbstractClassGenerator#setUseCache
 
+						// 设置基类
+						org.springframework.cglib.proxy.Enhancer#setSuperclass
 
+						// 设置接口
+						org.springframework.cglib.proxy.Enhancer#setInterfaces
 
+						// 设置命名规则，默认SpringNamingPolicy（标签为BySpringCGLIB）
+						org.springframework.cglib.core.AbstractClassGenerator#setNamingPolicy
 
+						// 设置生成器生成字节码的使用策略，默认ClassLoaderAwareGeneratorStrategy
+						org.springframework.cglib.core.AbstractClassGenerator#setStrategy
 
+						// 设置回调过滤器，默认ProxyCallbackFilter
+						org.springframework.cglib.proxy.Enhancer#setCallbackFilter
 
+						// 设置回调类型
+						org.springframework.cglib.proxy.Enhancer#setCallbackTypes
 
+					// 创建代理类和代理实例
+					org.springframework.aop.framework.CglibAopProxy#createProxyClassAndInstance
 
-	
+						// 设置增强器，构造期是否拦截为false
+						org.springframework.cglib.proxy.Enhancer#setInterceptDuringConstruction
 
+						// 设置增强器的回调实现类
+						org.springframework.cglib.proxy.Enhancer#setCallbacks
 
+						// 使用基类的构造器生成新类，使用指定的回调生成新对象实例
+						org.springframework.cglib.proxy.Enhancer#create() // 无参构造
+						org.springframework.cglib.proxy.Enhancer#create(java.lang.Class[], java.lang.Object[]) 	// 有参构造
 
+							// 
+							org.springframework.cglib.proxy.Enhancer#createHelper
 
 
 
 
 
 
-			
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-			
-
-
-
-
-
-
-
-
-
-
-
-
-
-							
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	 
-
-
-		
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-		  	
-
-	
-
-
-
-
-
-
-
-
-
-			 	  
+				org.springframework.aop.framework.JdkDynamicAopProxy#getProxy() // JDK
 
 
 
