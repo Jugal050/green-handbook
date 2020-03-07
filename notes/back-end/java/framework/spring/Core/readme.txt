@@ -7225,7 +7225,7 @@ Core Technologies 			https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-fra
 			}		
 
 			/**
-			 *
+			 * 字节码增强器
 			 *
 			 *
 			 *
@@ -7242,13 +7242,133 @@ Core Technologies 			https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-fra
 
 				}
 
-				
+
+
+			/**
+			 * 生成处理多值key的类，以便在map、set中使用。 equals和hashCode方法遵循《Effective Java》中的规则
+			 *
+			 * 生成一个KeyFactory，需要提供一个描述key结构的接口，接口需要包含一个名为newInstance、返回值为Object、任意参数的方法。如：
+			 *
+			 *      private interface IntStringKey {
+			 *          public Object newInstance(int i, String s);
+			 *      }
+			 * 
+			 * 当有一个KeyFactory，就可以调用接口中定义的newInstance方法生成一个新key值。
+			 *
+			 *      IntStringKey factory = (IntStringKey)KeyFactory.create(IntStringKey.class);
+			 *      Object key1 = factory.newInstance(4, "Hello");
+			 *      Object key2 = factory.newInstance(4, "World");
+			 * 
+			 * notes: 只有当key1、key2都是同一个工厂生成、并且key1.equals(key2)，key1和key2的hashCode才相等。
+			 */
+			org.springframework.cglib.core.KeyFactory	
+
+				abstract public class KeyFactory {
+
+					public static KeyFactory create(Class keyInterface) {
+						return create(keyInterface, null);
+					}
+
+					public static KeyFactory create(Class keyInterface, Customizer customizer) {
+						return create(keyInterface.getClassLoader(), keyInterface, customizer);
+					}
+
+					public static KeyFactory create(Class keyInterface, KeyFactoryCustomizer first, List<KeyFactoryCustomizer> next) {
+						return create(keyInterface.getClassLoader(), keyInterface, first, next);
+					}
+
+					public static KeyFactory create(ClassLoader loader, Class keyInterface, Customizer customizer) {
+						return create(loader, keyInterface, customizer, Collections.<KeyFactoryCustomizer>emptyList());
+					}
+
+					public static KeyFactory create(ClassLoader loader, Class keyInterface, KeyFactoryCustomizer customizer,
+							List<KeyFactoryCustomizer> next) {
+						Generator gen = new Generator();
+						gen.setInterface(keyInterface);
+						// SPRING PATCH BEGIN
+						gen.setContextClass(keyInterface);
+						// SPRING PATCH END
+
+						if (customizer != null) {
+							gen.addCustomizer(customizer);
+						}
+						if (next != null && !next.isEmpty()) {
+							for (KeyFactoryCustomizer keyFactoryCustomizer : next) {
+								gen.addCustomizer(keyFactoryCustomizer);
+							}
+						}
+						gen.setClassLoader(loader);
+						return gen.create();
+					}
+
+
+					public static class Generator extends AbstractClassGenerator {
 
 
 
+					}	
 
 
+				}
 
+
+			/**
+			 * 所有代码生成的CGLIB组件的抽象类
+			 *
+			 * 为了提高性能，除了缓存生成的类文件外，生成代码前还提供了：自定义的类加载器、生成类的名称、转换。
+			 */
+			org.springframework.cglib.core.AbstractClassGenerator
+
+				abstract public class AbstractClassGenerator<T> implements ClassGenerator {
+
+				}
+
+			/**
+			 * 类生成器接口
+			 */
+			org.springframework.cglib.core.ClassGenerator
+
+				public interface ClassGenerator {
+				    void generateClass(ClassVisitor var1) throws Exception;
+				}
+
+
+			/**
+			 * Java类访问器。该类方法调用必须按照如下顺序：
+			 *   visit [ visitSource ] [ visitModule ][ visitNestHost ][ visitPermittedSubtype ][ visitOuterClass ] 
+			 *   ( visitAnnotation | visitTypeAnnotation | visitAttribute )* ( visitNestMember | visitInnerClass | visitField | visitMethod )* visitEnd.
+			 */
+			org.springframework.asm.ClassVisitor[abstract]
+
+			/**
+			 * 可调试的类写入器
+			 */
+			org.springframework.cglib.core.DebuggingClassWriter[ extends ClassVisitor]
+
+			/**
+			 * 可根据JVMS（JVM规范）生成响应类文件结构的类访问器。
+			 *
+			 * 可单独使用生成java class文件，也可以通过类读取器和类访问器修改现有的class文件
+			 */
+			org.springframework.asm.ClassWriter
+
+			/**
+			 * Java方法访问器。该类方法调用必须按照如下熟悉怒：
+			 *  ( visitParameter )* [ visitAnnotationDefault ] ( visitAnnotation | visitAnnotableParameterCount | visitParameterAnnotation visitTypeAnnotation 
+			 *  | visitAttribute )* [ visitCode ( visitFrame | visit<i>X</i>Insn | visitLabel | visitInsnAnnotation | visitTryCatchBlock | visitTryCatchAnnotation 
+			 *  | visitLocalVariable | visitLocalVariableAnnotation | visitLineNumber )* visitMaxs ] visitEnd. 
+			 */
+			org.springframework.asm.MethodVisitor
+
+			/**
+			 * 类发射器： 生成class类文件相关
+			 */
+			org.springframework.cglib.core.ClassEmitter [extends ClassTransformer [extends ClassVisitor] ]
+
+			/**
+			 * 代码发射器： 生成class类文件中的代码相关
+			 */
+			org.springframework.cglib.core.CodeEmitter [extends LocalVariablesSorter [extends MethodVisitor]]
 
 
 

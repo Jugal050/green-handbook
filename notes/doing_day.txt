@@ -2209,7 +2209,7 @@
 
 	# 代理Proxy相关源码 		
 
-		CGLIB:
+		CGLIB or JDK: 												
 
 			// 新建代理工厂 
 			org.springframework.aop.framework.ProxyFactory#ProxyFactory()
@@ -2233,7 +2233,7 @@
 						org.springframework.aop.framework.JdkDynamicAopProxy#JdkDynamicAopProxy
 
 				// 生成代理	
-				org.springframework.aop.framework.CglibAopProxy#getProxy() // CGLIB
+				org.springframework.aop.framework.CglibAopProxy#getProxy() // CGLIB 	// done 2020-3-7 19:50:25
 
 					// 获取通知的目标类
 					org.springframework.aop.framework.AdvisedSupport#getTargetClass
@@ -2286,17 +2286,90 @@
 						org.springframework.cglib.proxy.Enhancer#create() // 无参构造
 						org.springframework.cglib.proxy.Enhancer#create(java.lang.Class[], java.lang.Object[]) 	// 有参构造
 
-							// 
+							// 创建辅助类
 							org.springframework.cglib.proxy.Enhancer#createHelper
 
+								// 信息校验: 包括回调类型、过滤器
+								org.springframework.cglib.proxy.Enhancer#preValidate
 
+								// 创建多值Key，通过EnhancerKey接口生成的KeyFactory
+								org.springframework.cglib.proxy.Enhancer.EnhancerKey#newInstance
 
+								// 反射生成类实例
+								org.springframework.cglib.core.AbstractClassGenerator#create
 
+									// 获取类加载器
+									org.springframework.cglib.core.AbstractClassGenerator#getClassLoader
 
+									// 查看缓存是否有该类加载器相关的缓存，如果没有，添加相关缓存(key: 类加载器， map: 类加载器信息)
+									Map<ClassLoader, ClassLoaderData> newCache = new WeakHashMap<ClassLoader, ClassLoaderData>(cache);
 
+									// 从类加载器信息中获取类生成器
 
+										// 如果使用缓存userCache，则从缓存中获取
+										org.springframework.cglib.core.AbstractClassGenerator#unwrapCachedValue(generatedClasses.get(gen));
 
-				org.springframework.aop.framework.JdkDynamicAopProxy#getProxy() // JDK
+										// 如果不使用缓存，则使用增强器生成
+										org.springframework.cglib.proxy.Enhancer#generate
+
+											// 校验信息，包括：类仅有、回调等属性
+											org.springframework.cglib.proxy.Enhancer#validate
+
+											// 根据基类、接口设置名称前缀
+											org.springframework.cglib.core.AbstractClassGenerator#setNamePrefix
+
+											// 生成类
+											org.springframework.cglib.core.AbstractClassGenerator#generate
+
+												// 保存并设置线程本地变量
+												java.lang.ThreadLocal#set 
+
+												// 生成类名
+												org.springframework.cglib.core.AbstractClassGenerator#generateClassName
+
+												// 缓存类名
+												org.springframework.cglib.core.AbstractClassGenerator.ClassLoaderData#reserveName
+
+												// 设置类名
+												org.springframework.cglib.core.AbstractClassGenerator#setClassName
+
+												// 如果尝试加载参数attemptLoad为true，直接使用类加载器加载该类并返回
+												java.lang.ClassLoader#loadClass(java.lang.String)
+
+												// 否则，根据生成策略生成字节数组，默认生成策略：DefaultGeneratorStrategy
+												org.springframework.cglib.core.DefaultGeneratorStrategy#generate
+
+													// 获取类访问器
+													org.springframework.cglib.core.DefaultGeneratorStrategy#getClassVisitor
+
+														// 构造可调试的类写入器，ASM API版本使用AsmApi.value()，类访问器使用ClassWriter
+														org.springframework.cglib.core.DebuggingClassWriter#DebuggingClassWriter
+
+														// 生成类文件
+														org.springframework.cglib.proxy.Enhancer#generateClass
+
+															// 根据JVMS，来生成类文件头信息、字段信息、构造器、方法、尾信息等等class信息
+
+												// 定义class，参数包括： 类名、字节数组、类加载器、受保护的域对象、	上下文类
+												org.springframework.cglib.core.ReflectUtils#defineClass
+
+													// 根据JDK版本，使用响应的方法加载类Class对象
+
+														// 首选操作: JDK 9+，如果类加载器匹配，使用Lookup.defineClass API
+														// 经典操作: 使用方法 protected ClassLoader.defineClass
+														// 回退操作: JDK 9+，即时类加载器不匹配，也使用Lookup.defineClass API
+
+														// 强制静态域初始化
+
+												// 到此结束！！！！！！！！	
+
+				org.springframework.aop.framework.JdkDynamicAopProxy#getProxy() // JDK 	// TODO
+
+	# JVM规范（Java Virtual Machine Specification）：
+
+		url: https://docs.oracle.com/javase/specs/jvms/se9/html/index.html
+	
+
 
 
 
