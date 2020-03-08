@@ -2232,8 +2232,8 @@
 						// 否则，使用JDK动态代理
 						org.springframework.aop.framework.JdkDynamicAopProxy#JdkDynamicAopProxy
 
-				// 生成代理	
-				org.springframework.aop.framework.CglibAopProxy#getProxy() // CGLIB 	// done 2020-3-7 19:50:25
+				// 生成CGLIB代理	 // done 2020-3-7 19:50:25
+				org.springframework.aop.framework.CglibAopProxy#getProxy()
 
 					// 获取通知的目标类
 					org.springframework.aop.framework.AdvisedSupport#getTargetClass
@@ -2348,7 +2348,7 @@
 														// 生成类文件
 														org.springframework.cglib.proxy.Enhancer#generateClass
 
-															// 根据JVMS，来生成类文件头信息、字段信息、构造器、方法、尾信息等等class信息
+															// 根据JVMS，通过ClassEmitter、CodeEmitter来生成类文件头信息、字段信息、构造器、方法、尾信息等等class信息
 
 												// 定义class，参数包括： 类名、字节数组、类加载器、受保护的域对象、	上下文类
 												org.springframework.cglib.core.ReflectUtils#defineClass
@@ -2363,11 +2363,59 @@
 
 												// 到此结束！！！！！！！！	
 
-				org.springframework.aop.framework.JdkDynamicAopProxy#getProxy() // JDK 	// TODO
+				// 生成JDK动态代理 		// done 2020-3-8 12:11:36
+				org.springframework.aop.framework.JdkDynamicAopProxy#getProxy()
+
+					// 从AOP配置中提取要代理的所有接口，主要包括目标本身接口，以及几个代理通用接口：SpringProxy、Advised、DecoratingProxy
+					org.springframework.aop.framework.AopProxyUtils#completeProxiedInterfaces
+
+					// 查找equals和hashCode方法
+					org.springframework.aop.framework.JdkDynamicAopProxy#findDefinedEqualsAndHashCodeMethods
+
+					// 为指定接口生成代理类实例，该实例可以将方法调用转发给指定的调用处理器（Invocation Handler）
+					java.lang.reflect.Proxy#newProxyInstance
+
+						// 查找或生成指定的代理类
+						java.lang.reflect.Proxy#getProxyClass0
+
+							// 如果该加载器中给定的接口代理实现已存在，直接复制并返回缓存信息。否则，通过ProxyClassFactory创建代理类
+							java.lang.reflect.WeakCache#get
+
+								// 根据类加载器和接口数组生成、定义、并返回代理类
+								java.lang.reflect.Proxy.ProxyClassFactory#apply
+
+									// 校验信息
+
+									// 生成代理类名
+
+									// 生成指定代理类
+									sun.misc.ProxyGenerator#generateProxyClass
+
+										// 生成类文件，包括代理方法、构造器、静态方法，最后返回字节数组
+										sun.misc.ProxyGenerator#generateClassFile
+
+										// 如果需要保存生成文件，在文件夹下生成class文件
+										java.nio.file.Files#write
+
+									// 定义指定代理类
+									java.lang.reflect.Proxy#defineClass0[native]
+
+						// 使用指定的调用处理器调用构造器
+						java.lang.reflect.Constructor#newInstance
+
+							// 后续调用JNI本地接口，c++/c/jvm等不是很懂，所以到此为止
+							jdk\src\share\native\java\lang\reflect\Proxy.c
+							jdk\src\share\javavm\export\jni.h
 
 	# JVM规范（Java Virtual Machine Specification）：
 
 		url: https://docs.oracle.com/javase/specs/jvms/se9/html/index.html
+
+2020-3-8 12:10:52
+
+	# CGLIB代理和JDK动态代理 									// done 2020-3-8 12:11:06
+
+		// 待梳理个MD文档
 	
 
 
