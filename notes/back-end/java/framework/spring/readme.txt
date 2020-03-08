@@ -56,6 +56,8 @@ https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/
 
 							5.8. Proxying Mechanisms						// done 2020-3-6 12:36:58
 
+							5. Aspect Oriented Programming with Spring 		// done 2020-3-8 16:34:20	
+
 	Testing				Mock Objects, TestContext Framework, Spring MVC Test, WebTestClient.
 
 	Data Access			Transactions, DAO Support, JDBC, O/R Mapping, XML Marshalling.

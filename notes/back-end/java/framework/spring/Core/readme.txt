@@ -7233,8 +7233,6 @@ Core Technologies 			https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-fra
 
 				}
 
-
-
 			/**
 			 * 生成处理多值key的类，以便在map、set中使用。 equals和hashCode方法遵循《Effective Java》中的规则
 			 *
@@ -7293,11 +7291,7 @@ Core Technologies 			https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-fra
 					}
 
 
-					public static class Generator extends AbstractClassGenerator {
-
-
-
-					}	
+					public static class Generator extends AbstractClassGenerator {}	
 
 
 				}
@@ -7360,6 +7354,249 @@ Core Technologies 			https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-fra
 			 * 代码发射器： 生成class类文件中的代码相关
 			 */
 			org.springframework.cglib.core.CodeEmitter [extends LocalVariablesSorter [extends MethodVisitor]]
+
+	5.9. Programmatic Creation of @AspectJ Proxies
+	
+		java:
+
+			// create a factory that can generate a proxy for the given target object
+			AspectJProxyFactory factory = new AspectJProxyFactory(targetObject);
+
+			// add an aspect, the class must be an @AspectJ aspect
+			// you can call this as many times as you need with different aspects
+			factory.addAspect(SecurityManager.class);
+
+			// you can also add existing aspect instances, the type of the object supplied must be an @AspectJ aspect
+			factory.addAspect(usageTracker);
+
+			// now get the proxy object...
+			MyInterfaceType proxy = factory.getProxy();	
+
+	5.10. Using AspectJ with Spring Applications
+	
+		5.10.1. Using AspectJ to Dependency Inject Domain Objects with Spring
+
+		5.10.2. Other Spring aspects for AspectJ
+
+		5.10.3. Configuring AspectJ Aspects by Using Spring IoC
+
+			xml:
+
+				<bean id="profiler" class="com.xyz.profiler.Profiler"
+				        factory-method="aspectOf"> 
+
+				    <property name="profilingStrategy" ref="jamonProfilingStrategy"/>
+				</bean>
+
+				<aop:aspectj-autoproxy>
+				    <aop:include name="thisBean"/>
+				    <aop:include name="thatBean"/>
+				</aop:aspectj-autoproxy>
+
+		5.10.4. Load-time Weaving with AspectJ in the Spring Framework
+		
+			A First Example
+
+				java:
+
+					package foo;
+
+					import org.aspectj.lang.ProceedingJoinPoint;
+					import org.aspectj.lang.annotation.Aspect;
+					import org.aspectj.lang.annotation.Around;
+					import org.aspectj.lang.annotation.Pointcut;
+					import org.springframework.util.StopWatch;
+					import org.springframework.core.annotation.Order;
+
+					@Aspect
+					public class ProfilingAspect {
+
+					    @Around("methodsToBeProfiled()")
+					    public Object profile(ProceedingJoinPoint pjp) throws Throwable {
+					        StopWatch sw = new StopWatch(getClass().getSimpleName());
+					        try {
+					            sw.start(pjp.getSignature().getName());
+					            return pjp.proceed();
+					        } finally {
+					            sw.stop();
+					            System.out.println(sw.prettyPrint());
+					        }
+					    }
+
+					    @Pointcut("execution(public * foo...(..))")
+					    public void methodsToBeProfiled(){}
+					}	
+
+					------------------------------
+
+					package foo;
+
+					import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+					public final class Main {
+
+					    public static void main(String[] args) {
+					        ApplicationContext ctx = new ClassPathXmlApplicationContext("beans.xml", Main.class);
+
+					        EntitlementCalculationService entitlementCalculationService =
+					                (EntitlementCalculationService) ctx.getBean("entitlementCalculationService");
+
+					        // the profiling aspect is 'woven' around this method execution
+					        entitlementCalculationService.calculateEntitlement();
+					    }
+					}
+
+					------------------------------
+
+					package foo;
+
+					import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+					public final class Main {
+
+					    public static void main(String[] args) {
+					        new ClassPathXmlApplicationContext("beans.xml", Main.class);
+
+					        EntitlementCalculationService entitlementCalculationService =
+					                new StubEntitlementCalculationService();
+
+					        // the profiling aspect will be 'woven' around this method execution
+					        entitlementCalculationService.calculateEntitlement();
+					    }
+					}
+
+				aop.xml:
+
+					<!DOCTYPE aspectj PUBLIC "-//AspectJ//DTD//EN" "https://www.eclipse.org/aspectj/dtd/aspectj.dtd">
+					<aspectj>
+
+					    <weaver>
+					        <!-- only weave classes in our application-specific packages -->
+					        <include within="foo.*"/>
+					    </weaver>
+
+					    <aspects>
+					        <!-- weave in just this aspect -->
+					        <aspect name="foo.ProfilingAspect"/>
+					    </aspects>
+
+					</aspectj>
+
+				applicationContext.xml:
+				
+					<?xml version="1.0" encoding="UTF-8"?>
+					<beans xmlns="http://www.springframework.org/schema/beans"
+					    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+					    xmlns:context="http://www.springframework.org/schema/context"
+					    xsi:schemaLocation="
+					        http://www.springframework.org/schema/beans
+					        https://www.springframework.org/schema/beans/spring-beans.xsd
+					        http://www.springframework.org/schema/context
+					        https://www.springframework.org/schema/context/spring-context.xsd">
+
+					    <!-- a service object; we will be profiling its methods -->
+					    <bean id="entitlementCalculationService"
+					            class="foo.StubEntitlementCalculationService"/>
+
+					    <!-- this switches on the load-time weaving -->
+					    <context:load-time-weaver/>
+					</beans>
+
+				cmd:
+
+					java -javaagent:C:/projects/foo/lib/global/spring-instrument.jar foo.Main
+
+				console:
+					
+					Calculating entitlement
+
+					StopWatch 'ProfilingAspect': running time (millis) = 1234
+					------ ----- ----------------------------
+					ms     %     Task name
+					------ ----- ----------------------------
+					01234  100%  calculateEntitlement	
+
+			Aspects
+			
+			Required libraries (JARS)
+
+				spring-aop.jar
+
+				aspectjweaver.jar		
+
+				spring-instrument.jar // 如果使用Spring提供的组件
+				
+			Spring Configuration
+			
+				java:
+
+					@Configuration
+					@EnableLoadTimeWeaving
+					public class AppConfig {
+					}	
+
+					------------------------------
+
+					@Configuration
+					@EnableLoadTimeWeaving
+					public class AppConfig implements LoadTimeWeavingConfigurer {
+
+					    @Override
+					    public LoadTimeWeaver getLoadTimeWeaver() {
+					        return new ReflectiveLoadTimeWeaver();
+					    }
+					}
+
+				xml:
+				
+					<?xml version="1.0" encoding="UTF-8"?>
+					<beans xmlns="http://www.springframework.org/schema/beans"
+					    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+					    xmlns:context="http://www.springframework.org/schema/context"
+					    xsi:schemaLocation="
+					        http://www.springframework.org/schema/beans
+					        https://www.springframework.org/schema/beans/spring-beans.xsd
+					        http://www.springframework.org/schema/context
+					        https://www.springframework.org/schema/context/spring-context.xsd">
+
+					    <context:load-time-weaver/>
+
+					</beans>	
+
+					------------------------------
+
+					<?xml version="1.0" encoding="UTF-8"?>
+					<beans xmlns="http://www.springframework.org/schema/beans"
+					    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+					    xmlns:context="http://www.springframework.org/schema/context"
+					    xsi:schemaLocation="
+					        http://www.springframework.org/schema/beans
+					        https://www.springframework.org/schema/beans/spring-beans.xsd
+					        http://www.springframework.org/schema/context
+					        https://www.springframework.org/schema/context/spring-context.xsd">
+
+					    <context:load-time-weaver
+					            weaver-class="org.springframework.instrument.classloading.ReflectiveLoadTimeWeaver"/>
+
+					</beans>	
+
+			Environment-specific Configuration
+			
+				Tomcat, JBoss, WebSphere, WebLogic
+
+					<scanning xmlns="urn:jboss:scanning:1.0"/>
+
+				Generic Java Applications
+				
+					-javaagent:/path/to/spring-instrument.jar			
+
+	5.11. Further Resources
+	
+		AspectJ website: https://www.eclipse.org/aspectj
+
+	// done 2020-3-8 16:34:08	
+
+6. Spring AOP APIs						
 
 
 

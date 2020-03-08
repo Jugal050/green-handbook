@@ -70,6 +70,8 @@ framework
 
 			5.8. Proxying Mechanisms						// done 2020-3-6 12:36:58
 
+			5. Aspect Oriented Programming with Spring 		// done 2020-3-8 16:34:20	
+
 			26 WebSocket Support 			// done 2010-1-14 18:44
 
 		source-code:
