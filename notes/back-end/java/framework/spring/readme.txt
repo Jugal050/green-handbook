@@ -58,6 +58,8 @@ https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/
 
 							5. Aspect Oriented Programming with Spring 		// done 2020-3-8 16:34:20	
 
+							6.1. Pointcut API in Spring 					// done 2020-3-9 12:08:30
+
 	Testing				Mock Objects, TestContext Framework, Spring MVC Test, WebTestClient.
 
 	Data Access			Transactions, DAO Support, JDBC, O/R Mapping, XML Marshalling.

@@ -6290,7 +6290,38 @@ Core Technologies 			https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-fra
 
 5. Aspect Oriented Programming with Spring	
 
-	5.1. AOP Concepts		
+	5.1. AOP Concepts	
+
+		Aspect（切面）: 关注于切割多个类的模块。 比如事务管理。 Spring AOP中，通过配置/注解普通类来实现切面。
+
+		Join point（连接点）: 程序执行过程中的一个节点，比如方法执行/异常处理。 Spring AOP中，连接点通常代表方法执行。
+
+		Advice（通知）: 切面在指定切入点执行的动作。 动作可在连接点的"前后"、"前"、"后"执行。 许多AOP框架，包括Spring，通知模型指的是连接点前后的一条拦截器链。
+
+		Pointcut（切入点）: 匹配Join point的断言。 Advice与Pointcut表达式有关，在匹配该Pointcut表达式的任何Join point执行。
+		                   切入点表达式匹配连接点是AOP的核心，Spring默认使用AspectJ的表达式语言。
+
+       	Introduction（说明）： 代表类型额外声明其他方法/字段。 Spring AOP允许对任何通知对象声明接口（以及对应实现）。
+       						  比如，可以使用Introduction创建一个IsModified接口的实现，来缓存数据。 （在Aspect社区中，Introduction被称为内部类型声明）
+
+	  	Target object（目标对象）： 被切面增强的对象。 也城作为"Advised object"。 由于Spring AOP是通过运行时代理实现的，该对象通常是代理对象。
+
+	  	AOP proxy（AOP代理）： AOP框架为了实现切面目的（比如增强方法执行等等）创建的对象。在Spring中，AOP代理是JDK动态代理或者CGLIB代理。
+
+	  	Weaving （植入）： 联合切面和其他应用类型/对象来创建一个增强对象（Advised object）。 可以在编译器（使用AspectJ compiler），加载器，或者运行期。
+	  					  Spring和其他纯粹的AOP框架一样，在运行期植入。
+
+	  	通知类型：
+
+	  		执行前通知： 连接点前执行通知。 无法终止该连接点的程序执行（除非程序抛出异常）
+
+	  		返回后通知： 连接点完成之后进行通知（比如，方法执行完成并正常返回，无异常抛出）
+
+	  		异常后通知： 方法抛出异常时执行通知
+
+	  		执行后通知： 不管连接点执行情况（正常执行或者返回、还是抛出异常），完成之后都会执行通知
+
+	  		执行前后通知： 连接点执行前后执行通知。 功能最强大的通知，方法执行前后执行后都可以自定义执行通知的程序。 可通过直接返回或抛出异常，来选择是否执行连接点程序，还是来减掉通知方法
 
 	5.2. Spring AOP Capabilities and Goals
 
@@ -7596,7 +7627,98 @@ Core Technologies 			https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-fra
 
 	// done 2020-3-8 16:34:08	
 
-6. Spring AOP APIs						
+6. Spring AOP APIs
+
+	6.1. Pointcut API in Spring
+
+		6.1.1. Concepts
+
+			java:
+
+				public interface Pointcut {
+
+				    ClassFilter getClassFilter();
+
+				    MethodMatcher getMethodMatcher();
+
+				}
+
+				public interface ClassFilter {
+
+				    boolean matches(Class clazz);
+				}
+
+				public interface MethodMatcher {
+
+				    boolean matches(Method m, Class targetClass);
+
+				    boolean isRuntime();
+
+				    boolean matches(Method m, Class targetClass, Object[] args);
+				}
+
+		6.1.2. Operations on Pointcuts
+		
+			org.springframework.aop.support.Pointcuts		
+			org.springframework.aop.support.ComposablePointcut 
+
+		6.1.3. AspectJ Expression Pointcuts
+		
+			org.springframework.aop.aspectj.AspectJExpressionPointcut
+
+		6.1.4. Convenience Pointcut Implementations
+		
+			Static Pointcuts
+
+				Regular Expression Pointcuts
+
+					org.springframework.aop.support.JdkRegexpMethodPointcut
+
+					用法：
+
+						xml:
+
+							<bean id="settersAndAbsquatulatePointcut"
+							        class="org.springframework.aop.support.JdkRegexpMethodPointcut">
+							    <property name="patterns">
+							        <list>
+							            <value>.*set.*</value>
+							            <value>.*absquatulate</value>
+							        </list>
+							    </property>
+							</bean>	
+
+							----------------------------------
+
+							<bean id="settersAndAbsquatulateAdvisor"
+							        class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
+							    <property name="advice">
+							        <ref bean="beanNameOfAopAllianceInterceptor"/>
+							    </property>
+							    <property name="patterns">
+							        <list>
+							            <value>.*set.*</value>
+							            <value>.*absquatulate</value>
+							        </list>
+							    </property>
+							</bean>
+
+				Attribute-driven Pointcuts
+			
+			Dynamic pointcuts
+
+				Control Flow Pointcuts
+
+					org.springframework.aop.support.ControlFlowPointcut		
+
+		6.1.5. Pointcut Superclasses
+		
+			org.springframework.aop.support.StaticMethodMatcherPointcut			
+
+		6.1.6. Custom Pointcuts			
+
+		// done 2020-3-9 12:08:18						
+
 
 
 
