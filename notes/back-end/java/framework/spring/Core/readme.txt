@@ -7908,6 +7908,1181 @@ Core Technologies 			https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-fra
 
 	6.3. The Advisor API in Spring			
 
+		org.springframework.aop.support.DefaultPointcutAdvisor
+
+	6.4. Using the ProxyFactoryBean to Create AOP Proxies
+
+		在Spring中，创建AOP代理的基础方法就是使用org.springframework.aop.framework.ProxyFactoryBean，它可以完全控制切入点、通知、以及执行顺序，如果你不需要这些控制，它会更容易。
+	
+		6.4.1. Basics	
+
+			java:
+
+				@Test
+				public void testDetectsInterfaces() throws Exception {
+					ProxyFactoryBean fb = new ProxyFactoryBean();
+					fb.setTarget(new TestBean());
+					fb.addAdvice(new DebugInterceptor());
+					fb.setBeanFactory(new DefaultListableBeanFactory());
+					ITestBean proxy = (ITestBean) fb.getObject();
+					assertThat(AopUtils.isJdkDynamicProxy(proxy)).isTrue();
+				}
+
+		6.4.2. JavaBean Properties
+
+			与Spring提供的大多数FactoryBean实现一样，ProxyFactoryBean本身也是一个JavaBean。 它包含的属性有：
+
+				- 设置代理的目标对象
+				- 设置是否使用CGLIB
+
+			还要写关键属性是继承自org.springframework.aop.framework.ProxyConfig，主要的属性有：
+
+				- proxyTargetClass: 如果目标类而不是目标类的接口需要代理，为true。 设置为true，则通过CGLIB创建代理。
+				- optimize: 通过CGLIB创建代理时，可以控制是否进行必要的优化。 除非特别了解AOP代理的优化操作，否则尽力不要随便使用。而且只针对CGLIB代理有效，对JDK动态代理无效。
+				- frozen: 如果一个代理设置为frozen，将不能再修改配置信息。
+				          当你不希望代理创建之后调用者操作此代理（通过Advised接口）时可以设置锁定，也算是小小的优化。默认值为false，即允许修改（添加advice等）
+		        - exposeProxy: 是否将当前代理暴露在线程本地变量中，以便目标对象直接获取。如果目标对象需要获取代理并且exposeProxy设置为true，可以使用AopConetext.getProxy()获取代理
+		        
+		    其他只针对ProxyFactoryBean的属性有：
+		    
+		    	- proxyInterfaces: 接口名称的字符串数组。 如果为空，使用CGLIB代理目标类。
+		    	- interceptorNames: Advisor, interceptor, 其他调用通知的字符串数组。 有序的，先添加的先执行。
+		    	- singleton: 无论getObject()调用多少次，该工厂是否返回单例对象。 默认为true，如果想使用带状态的通知advice，使用prototype的通知advices，且设置singleton为false。
+
+		6.4.3. JDK- and CGLIB-based proxies
+		
+			如果要代理的目标对象，没有实现任何接口，创建CGLIB代理。JDK动态代理基于接口的，没有接口，JDK动态代理无法创建。 可以给目标bean设置interceptNames属性来指定拦截器集合。
+			但是，即使ProxyFactoryBean 的 proxyTargetClass属性设置为false，仍然是创建CGLIB代理（最好不要这样做，容易混淆）。
+
+			如果目标类实现了一个/多个接口，代理类型取决于ProxyFactoryBean的配置信息：
+
+				如果proxyTargetClass设置为true，创建CGLIB代理。 即使proxyInterfaces添加了接口，只要proxyTargetClass设置为true，也只会创建CGLIB代理。
+
+				如果proxyInterfaces设置了一个/多个接口，创建JDK动态代理。 代理会实现所有proxyInterfaces中设置的接口。 
+				如果目标类除了刚好实现了proxyInterfaces中接口，还实现了其他接口，也同样有效，只不过创建的代理不会实现其他的接口（除了proxyInterfaces中的那些接口）。
+
+				如果没有设置proxyInterfaces，但是目标类实现了一个/多个接口，ProxyFactoryBean 将自动检测，如果确实实现了接口，使用JKD动态代理。
+				与设置proxyInterfaces等效的，不过自动检测，无需手工添加，也不容易出错。
+
+		6.4.4. Proxying Interfaces
+		
+			i.e:
+
+				xml:
+
+					<bean id="personTarget" class="com.mycompany.PersonImpl">
+					    <property name="name" value="Tony"/>
+					    <property name="age" value="51"/>
+					</bean>
+
+					<bean id="myAdvisor" class="com.mycompany.MyAdvisor">
+					    <property name="someProperty" value="Custom string property value"/>
+					</bean>
+
+					<bean id="debugInterceptor" class="org.springframework.aop.interceptor.DebugInterceptor">
+					</bean>
+
+					<bean id="person"
+					    class="org.springframework.aop.framework.ProxyFactoryBean">
+					    <property name="proxyInterfaces" value="com.mycompany.Person"/>
+
+					    <property name="target" ref="personTarget"/>
+					    <property name="interceptorNames">
+					        <list>
+					            <value>myAdvisor</value>
+					            <value>debugInterceptor</value>
+					        </list>
+					    </property>
+					</bean>		
+
+					------------------ref引用-----------------
+
+					<bean id="personUser" class="com.mycompany.PersonUser">
+					    <property name="person"><ref bean="person"/></property>
+					</bean>
+
+					------------------使用内部bean-----------------
+
+					<bean id="myAdvisor" class="com.mycompany.MyAdvisor">
+					    <property name="someProperty" value="Custom string property value"/>
+					</bean>
+
+					<bean id="debugInterceptor" class="org.springframework.aop.interceptor.DebugInterceptor"/>
+
+					<bean id="person" class="org.springframework.aop.framework.ProxyFactoryBean">
+					    <property name="proxyInterfaces" value="com.mycompany.Person"/>
+					    <!-- Use inner bean, not local reference to target -->
+					    <property name="target">
+					        <bean class="com.mycompany.PersonImpl">
+					            <property name="name" value="Tony"/>
+					            <property name="age" value="51"/>
+					        </bean>
+					    </property>
+					    <property name="interceptorNames">
+					        <list>
+					            <value>myAdvisor</value>
+					            <value>debugInterceptor</value>
+					        </list>
+					    </property>
+					</bean>
+
+				java:
+					
+					Person person = (Person) factory.getBean("person");	
+
+		6.4.5. Proxying Classes
+
+			CGLIB代理，是在运行期生成目标类的子类。 Spring配置该子类来集成目标类方法的调用。子类使用装饰者模式，植入通知advice。
+
+			CGLIB的两个问题：
+
+				1. Final方法不能被通知，因为不能被子类重写。
+
+				2. 无需在类路径下添加CGLIB，因为Spring3.2之后，CGLIB已被重新打包进spring-core包下，CGLIB代理与JDK动态代理一样，可以箱外操作。
+
+			CGLIB代理与JDK动态代理的性能表现有些区别，咱不讨论。
+
+		6.4.6. Using “Global” Advisors	
+
+			表达式匹配，在拦截器名后添加星号*，所有名称匹配该格式的advisors都会被添加到该通知链中。
+
+			xml:
+
+				<bean id="proxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+				    <property name="target" ref="service"/>
+				    <property name="interceptorNames">
+				        <list>
+				            <value>global*</value>
+				        </list>
+				    </property>
+				</bean>
+
+				<bean id="global_debug" class="org.springframework.aop.interceptor.DebugInterceptor"/>
+				<bean id="global_performance" class="org.springframework.aop.interceptor.PerformanceMonitorInterceptor"/>
+
+	6.5. Concise Proxy Definitions
+
+		xml:
+
+			<bean id="txProxyTemplate" abstract="true"
+			        class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+			    <property name="transactionManager" ref="transactionManager"/>
+			    <property name="transactionAttributes">
+			        <props>
+			            <prop key="*">PROPAGATION_REQUIRED</prop>
+			        </props>
+			    </property>
+			</bean>
+
+			<bean id="myService" parent="txProxyTemplate">
+			    <property name="target">
+			        <bean class="org.springframework.samples.MyServiceImpl">
+			        </bean>
+			    </property>
+			</bean>
+
+			<bean id="mySpecialService" parent="txProxyTemplate">
+			    <property name="target">
+			        <bean class="org.springframework.samples.MySpecialServiceImpl">
+			        </bean>
+			    </property>
+			    <property name="transactionAttributes">
+			        <props>
+			            <prop key="get*">PROPAGATION_REQUIRED,readOnly</prop>
+			            <prop key="find*">PROPAGATION_REQUIRED,readOnly</prop>
+			            <prop key="load*">PROPAGATION_REQUIRED,readOnly</prop>
+			            <prop key="store*">PROPAGATION_REQUIRED</prop>
+			        </props>
+			    </property>
+			</bean>
+
+	6.6. Creating AOP Proxies Programmatically with the ProxyFactory
+
+		代理工厂： org.springframework.aop.framework.ProxyFactory
+	
+		java:
+
+			ProxyFactory factory = new ProxyFactory(myBusinessInterfaceImpl);
+			factory.addAdvice(myMethodInterceptor);
+			factory.addAdvisor(myAdvisor);
+			MyBusinessInterface tb = (MyBusinessInterface) factory.getProxy();	
+
+	6.7. Manipulating Advised Objects
+	
+		接口定义：
+
+			java:
+
+				Advisor[] getAdvisors();
+
+				void addAdvice(Advice advice) throws AopConfigException;
+
+				void addAdvice(int pos, Advice advice) throws AopConfigException;
+
+				void addAdvisor(Advisor advisor) throws AopConfigException;
+
+				void addAdvisor(int pos, Advisor advisor) throws AopConfigException;
+
+				int indexOf(Advisor advisor);
+
+				boolean removeAdvisor(Advisor advisor) throws AopConfigException;
+
+				void removeAdvisor(int index) throws AopConfigException;
+
+				boolean replaceAdvisor(Advisor a, Advisor b) throws AopConfigException;
+
+				boolean isFrozen();		
+
+		示例：
+		
+			java:	
+
+				Advised advised = (Advised) myObject;
+				Advisor[] advisors = advised.getAdvisors();
+				int oldAdvisorCount = advisors.length;
+				System.out.println(oldAdvisorCount + " advisors");
+
+				// Add an advice like an interceptor without a pointcut
+				// Will match all proxied methods
+				// Can use for interceptors, before, after returning or throws advice
+				advised.addAdvice(new DebugInterceptor());
+
+				// Add selective advice using a pointcut
+				advised.addAdvisor(new DefaultPointcutAdvisor(mySpecialPointcut, myAdvice));
+
+				assertEquals("Added two advisors", oldAdvisorCount + 2, advised.getAdvisors().length);
+
+	6.8. Using the "auto-proxy" facility
+
+		auto-proxy: 自动代理选定的bean定义信息。
+
+		6.8.1. Auto-proxy Bean Definitions
+
+			package: org.springframework.aop.framework.autoproxy
+
+			BeanNameAutoProxyCreator
+
+				自动检测与通配符匹配的名称的bean，进行自动代理。
+
+				xml:
+
+				<bean class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+				    <property name="beanNames" value="jdk*,onlyJdk"/>
+				    <property name="interceptorNames">
+				        <list>
+				            <value>myInterceptor</value>
+				        </list>
+				    </property>
+				</bean>
+
+			DefaultAdvisorAutoProxyCreator
+
+				只要添加，就会检测当前上下文中所有的bean。（需要添加advisors，not interceptors or other advices）
+
+				xml:
+
+					<bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"/>
+
+					<bean class="org.springframework.transaction.interceptor.TransactionAttributeSourceAdvisor">
+					    <property name="transactionInterceptor" ref="transactionInterceptor"/>
+					</bean>
+
+					<bean id="customAdvisor" class="com.mycompany.MyAdvisor"/>
+
+					<bean id="businessObject1" class="com.mycompany.BusinessObject1">
+					    <!-- Properties omitted -->
+					</bean>
+
+					<bean id="businessObject2" class="com.mycompany.BusinessObject2"/>	
+
+	6.9. Using TargetSource Implementations
+
+		org.springframework.aop.TargetSource
+
+			java:
+
+				public interface TargetSource extends TargetClassAware {
+					@Override
+					Class<?> getTargetClass();
+					boolean isStatic();
+					Object getTarget() throws Exception;
+					void releaseTarget(Object target) throws Exception;	
+				}
+
+				public interface TargetClassAware {
+					Class<?> getTargetClass();
+				}
+
+		6.9.1. Hot-swappable Target Sources
+
+			org.springframework.aop.target.HotSwappableTargetSource
+
+			用法：
+
+				java:
+
+					HotSwappableTargetSource swapper = (HotSwappableTargetSource) beanFactory.getBean("swapper");
+					Object oldTarget = swapper.swap(newTarget);
+
+				xml:
+
+					<bean id="initialTarget" class="mycompany.OldTarget"/>
+
+					<bean id="swapper" class="org.springframework.aop.target.HotSwappableTargetSource">
+					    <constructor-arg ref="initialTarget"/>
+					</bean>
+
+					<bean id="swappable" class="org.springframework.aop.framework.ProxyFactoryBean">
+					    <property name="targetSource" ref="swapper"/>
+					</bean>
+
+		6.9.2. Pooling Target Sources
+		
+			org.springframework.aop.target.AbstractPoolingTargetSource
+
+			用法：
+
+				xml:
+
+					<bean id="businessObjectTarget" class="com.mycompany.MyBusinessObject" scope="prototype">
+					    ... properties omitted
+					</bean>
+
+					<bean id="poolTargetSource" class="org.springframework.aop.target.CommonsPool2TargetSource">
+					    <property name="targetBeanName" value="businessObjectTarget"/>
+					    <property name="maxSize" value="25"/>
+					</bean>
+
+					<bean id="businessObject" class="org.springframework.aop.framework.ProxyFactoryBean">
+					    <property name="targetSource" ref="poolTargetSource"/>
+					    <property name="interceptorNames" value="myInterceptor"/>
+					</bean>
+
+					----------------------------------		
+
+					<bean id="poolConfigAdvisor" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+					    <property name="targetObject" ref="poolTargetSource"/>
+					    <property name="targetMethod" value="getPoolingConfigMixin"/>
+					</bean>	
+
+				java:
+				
+					PoolingConfig conf = (PoolingConfig) beanFactory.getBean("businessObject");
+					System.out.println("Max pool size is " + conf.getMaxSize());
+
+		6.9.3. Prototype Target Sources
+
+			xml:
+
+				<bean id="prototypeTargetSource" class="org.springframework.aop.target.PrototypeTargetSource">
+				    <property name="targetBeanName" ref="businessObjectTarget"/>
+				</bean>
+
+		6.9.4. ThreadLocal Target Sources
+		
+			xml:
+
+				<bean id="threadlocalTargetSource" class="org.springframework.aop.target.ThreadLocalTargetSource">
+				    <property name="targetBeanName" value="businessObjectTarget"/>
+				</bean>			
+
+		6.10. Defining New Advice Types
+		
+			SPI package: org.springframework.aop.framework.adapter		
+
+			interface: org.aopalliance.aop.Advice
+
+	// done 2020-3-9 19:21:01
+
+7. Null-safety
+
+	@Nullable: 指定的参数、返回值、字段可以为空
+	@NonNull: 指定的参数、返回值、字段不可以为空(@NonNullApi and @NonNullFields修饰时，可以省略)
+	@NonNullApi: package级别，表明参数、返回值不能为空
+	@NonNullFields: package级别，表明字段不能为空
+
+	7.1. Use cases	
+
+	7.2. JSR-305 meta-annotations
+
+	// done 2020-3-9 19:26:50
+
+8. Data Buffers and Codecs
+
+	spring-core提供的字节缓存 APIS：
+
+		DataBufferFactory abstracts the creation of a data buffer.
+
+		DataBuffer represents a byte buffer, which may be pooled.
+
+		DataBufferUtils offers utility methods for data buffers.
+
+		Codecs decode or encode streams data buffer streams into higher level objects.
+
+	8.1. DataBufferFactory
+	
+	8.2. DataBuffer
+
+	8.3. PooledDataBuffer
+
+	8.4. DataBufferUtils
+
+	8.5. Codecs
+
+	8.6. Using DataBuffer
+
+		java:
+
+			DataBuffer buffer = factory.allocateBuffer();
+			boolean release = true;
+			try {
+			    // serialize and populate buffer..
+			    release = false;
+			}
+			finally {
+			    if (release) {
+			        DataBufferUtils.release(buffer);
+			    }
+			}
+			return buffer;
+
+	// 使用流/数据缓存相关时，再详细阅读。 done 2020-3-9 19:33:01
+
+9. Appendix 附录：	
+
+	9.1. XML Schemas
+
+	9.1.1. The util Schema
+
+		xml:
+
+			<?xml version="1.0" encoding="UTF-8"?>
+			<beans xmlns="http://www.springframework.org/schema/beans"
+			    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			    xmlns:util="http://www.springframework.org/schema/util"
+			    xsi:schemaLocation="
+			        http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+			        http://www.springframework.org/schema/util https://www.springframework.org/schema/util/spring-util.xsd">
+
+			        <!-- bean definitions here -->
+
+			        <!-- Using <util:constant/> -->
+			        <bean id="..." class="...">
+					    <property name="isolation">
+					        <bean id="java.sql.Connection.TRANSACTION_SERIALIZABLE"
+					                class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean" />
+					    </property>
+					</bean>
+
+					<bean id="..." class="...">
+					    <property name="isolation">
+					        <util:constant static-field="java.sql.Connection.TRANSACTION_SERIALIZABLE"/>
+					    </property>
+					</bean>
+
+			</beans>	
+
+		Setting a Bean Property or Constructor Argument from a Field Value
+		
+			xml:
+
+				<bean id="myField"
+				        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+				    <property name="staticField" value="java.sql.Connection.TRANSACTION_SERIALIZABLE"/>
+				</bean>	
+
+				<bean id="java.sql.Connection.TRANSACTION_SERIALIZABLE"
+        				class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean"/>
+
+        		<bean id="..." class="...">
+				    <property name="isolation">
+				        <bean id="java.sql.Connection.TRANSACTION_SERIALIZABLE"
+				                class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean" />
+				    </property>
+				</bean>		
+
+		Using <util:property-path/>
+		
+			xml:
+
+				<!-- target bean to be referenced by name -->
+				<bean id="testBean" class="org.springframework.beans.TestBean" scope="prototype">
+				    <property name="age" value="10"/>
+				    <property name="spouse">
+				        <bean class="org.springframework.beans.TestBean">
+				            <property name="age" value="11"/>
+				        </bean>
+				    </property>
+				</bean>
+
+				<!-- results in 10, which is the value of property 'age' of bean 'testBean' -->
+				<bean id="testBean.age" class="org.springframework.beans.factory.config.PropertyPathFactoryBean"/>	
+
+				<!-- target bean to be referenced by name -->
+				<bean id="testBean" class="org.springframework.beans.TestBean" scope="prototype">
+				    <property name="age" value="10"/>
+				    <property name="spouse">
+				        <bean class="org.springframework.beans.TestBean">
+				            <property name="age" value="11"/>
+				        </bean>
+				    </property>
+				</bean>
+
+				<!-- results in 10, which is the value of property 'age' of bean 'testBean' -->
+				<util:property-path id="name" path="testBean.age"/>	
+
+			Using <util:property-path/> to Set a Bean Property or Constructor Argument
+			
+				xml:
+
+					// target bean to be referenced by name
+					<bean id="person" class="org.springframework.beans.TestBean" scope="prototype">
+					    <property name="age" value="10"/>
+					    <property name="spouse">
+					        <bean class="org.springframework.beans.TestBean">
+					            <property name="age" value="11"/>
+					        </bean>
+					    </property>
+					</bean>
+
+					// results in 11, which is the value of property 'spouse.age' of bean 'person'
+					<bean id="theAge"
+					        class="org.springframework.beans.factory.config.PropertyPathFactoryBean">
+					    <property name="targetBeanName" value="person"/>
+					    <property name="propertyPath" value="spouse.age"/>
+					</bean>	
+
+					<!-- results in 12, which is the value of property 'age' of the inner bean -->
+					<bean id="theAge"
+					        class="org.springframework.beans.factory.config.PropertyPathFactoryBean">
+					    <property name="targetObject">
+					        <bean class="org.springframework.beans.TestBean">
+					            <property name="age" value="12"/>
+					        </bean>
+					    </property>
+					    <property name="propertyPath" value="age"/>
+					</bean>
+
+					<!-- results in 10, which is the value of property 'age' of bean 'person' -->
+					<bean id="person.age"
+					        class="org.springframework.beans.factory.config.PropertyPathFactoryBean"/>
+
+
+					<bean id="..." class="...">
+					    <property name="age">
+					        <bean id="person.age"
+					                class="org.springframework.beans.factory.config.PropertyPathFactoryBean"/>
+					    </property>
+					</bean>        
+
+			Using <util:properties/>
+
+				xml:
+
+					<!-- creates a java.util.Properties instance with values loaded from the supplied location -->
+					<bean id="jdbcConfiguration" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+					    <property name="location" value="classpath:com/foo/jdbc-production.properties"/>
+					</bean>
+
+					<!-- creates a java.util.Properties instance with values loaded from the supplied location -->
+					<util:properties id="jdbcConfiguration" location="classpath:com/foo/jdbc-production.properties"/>
+
+			Using <util:list/>
+			
+				xml:
+
+					<!-- creates a java.util.List instance with values loaded from the supplied 'sourceList' -->
+					<bean id="emails" class="org.springframework.beans.factory.config.ListFactoryBean">
+					    <property name="sourceList">
+					        <list>
+					            <value>pechorin@hero.org</value>
+					            <value>raskolnikov@slums.org</value>
+					            <value>stavrogin@gov.org</value>
+					            <value>porfiry@gov.org</value>
+					        </list>
+					    </property>
+					</bean>	
+
+					<!-- creates a java.util.List instance with the supplied values -->
+					<util:list id="emails">
+					    <value>pechorin@hero.org</value>
+					    <value>raskolnikov@slums.org</value>
+					    <value>stavrogin@gov.org</value>
+					    <value>porfiry@gov.org</value>
+					</util:list>
+
+					<util:list id="emails" list-class="java.util.LinkedList">
+					    <value>jackshaftoe@vagabond.org</value>
+					    <value>eliza@thinkingmanscrumpet.org</value>
+					    <value>vanhoek@pirate.org</value>
+					    <value>d'Arcachon@nemesis.org</value>
+					</util:list>
+
+			Using <util:map/>
+			
+				xml:
+
+					<!-- creates a java.util.Map instance with values loaded from the supplied 'sourceMap' -->
+					<bean id="emails" class="org.springframework.beans.factory.config.MapFactoryBean">
+					    <property name="sourceMap">
+					        <map>
+					            <entry key="pechorin" value="pechorin@hero.org"/>
+					            <entry key="raskolnikov" value="raskolnikov@slums.org"/>
+					            <entry key="stavrogin" value="stavrogin@gov.org"/>
+					            <entry key="porfiry" value="porfiry@gov.org"/>
+					        </map>
+					    </property>
+					</bean>	
+
+					<!-- creates a java.util.Map instance with the supplied key-value pairs -->
+					<util:map id="emails">
+					    <entry key="pechorin" value="pechorin@hero.org"/>
+					    <entry key="raskolnikov" value="raskolnikov@slums.org"/>
+					    <entry key="stavrogin" value="stavrogin@gov.org"/>
+					    <entry key="porfiry" value="porfiry@gov.org"/>
+					</util:map>	
+
+					<util:map id="emails" map-class="java.util.TreeMap">
+					    <entry key="pechorin" value="pechorin@hero.org"/>
+					    <entry key="raskolnikov" value="raskolnikov@slums.org"/>
+					    <entry key="stavrogin" value="stavrogin@gov.org"/>
+					    <entry key="porfiry" value="porfiry@gov.org"/>
+					</util:map>
+
+			Using <util:set/>		
+
+				xml:
+
+					<!-- creates a java.util.Set instance with values loaded from the supplied 'sourceSet' -->
+					<bean id="emails" class="org.springframework.beans.factory.config.SetFactoryBean">
+					    <property name="sourceSet">
+					        <set>
+					            <value>pechorin@hero.org</value>
+					            <value>raskolnikov@slums.org</value>
+					            <value>stavrogin@gov.org</value>
+					            <value>porfiry@gov.org</value>
+					        </set>
+					    </property>
+					</bean>
+
+					<!-- creates a java.util.Set instance with the supplied values -->
+					<util:set id="emails">
+					    <value>pechorin@hero.org</value>
+					    <value>raskolnikov@slums.org</value>
+					    <value>stavrogin@gov.org</value>
+					    <value>porfiry@gov.org</value>
+					</util:set>
+
+					<util:set id="emails" set-class="java.util.TreeSet">
+					    <value>pechorin@hero.org</value>
+					    <value>raskolnikov@slums.org</value>
+					    <value>stavrogin@gov.org</value>
+					    <value>porfiry@gov.org</value>
+					</util:set>
+		
+		9.1.2. The aop Schema
+
+			xml-schema:
+
+				<?xml version="1.0" encoding="UTF-8"?>
+				<beans xmlns="http://www.springframework.org/schema/beans"
+				    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				    xmlns:context="http://www.springframework.org/schema/context"
+				    xsi:schemaLocation="
+				        http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+				        http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+
+				    <!-- bean definitions here -->
+
+				</beans>
+
+			Using <property-placeholder/>
+			
+			Using <annotation-config/>
+
+				开启Spring检测bean中的注解，的元素：
+
+					Spring’s @Configuration model
+
+					@Autowired/@Inject and @Value
+
+					JSR-250’s @Resource, @PostConstruct and @PreDestroy (if available)
+
+					JPA’s @PersistenceContext and @PersistenceUnit (if available)
+
+					Spring’s @EventListener
+
+				tips:
+					
+					1. 可以使用BeanPostProcessors 代替
+
+					2. 这些元素不会启动Spring中的@Transaction注解检测，可以使用<tx:annotation-driven/> 
+
+			Using <component-scan/>
+			
+			Using <load-time-weaver/>
+
+			Using <spring-configured/>
+
+			Using <mbean-export/>
+
+		9.1.4. The Beans Schema		
+
+			xml:		
+
+				<?xml version="1.0" encoding="UTF-8"?>
+				<beans xmlns="http://www.springframework.org/schema/beans"
+				    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				    xsi:schemaLocation="
+				        http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd">
+
+				    <bean id="foo" class="x.y.Foo">
+				        <meta key="cacheName" value="foo"/> 
+				        <property name="name" value="Rick"/>
+				    </bean>
+
+				</beans>
+
+	9.2. XML Schema Authoring
+
+		新建xml配置扩展：
+
+			Author an XML schema to describe your custom element(s).
+
+			Code a custom NamespaceHandler implementation.
+
+			Code one or more BeanDefinitionParser implementations (this is where the real work is done).
+
+			Register your new artifacts with Spring.
+
+		xml:
+	
+			<myns:dateformat id="dateFormat" pattern="yyyy-MM-dd HH:mm" lenient="true"/>
+
+		9.2.1. Authoring the Schema
+		
+			xml:
+
+				<!-- myns.xsd (inside package org/springframework/samples/xml) -->
+
+				<?xml version="1.0" encoding="UTF-8"?>
+				<xsd:schema xmlns="http://www.mycompany.example/schema/myns"
+				        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+				        xmlns:beans="http://www.springframework.org/schema/beans"
+				        targetNamespace="http://www.mycompany.example/schema/myns"
+				        elementFormDefault="qualified"
+				        attributeFormDefault="unqualified">
+
+				    <xsd:import namespace="http://www.springframework.org/schema/beans"/>
+
+				    <xsd:element name="dateformat">
+				        <xsd:complexType>
+				            <xsd:complexContent>
+				                <xsd:extension base="beans:identifiedType"> 
+				                    <xsd:attribute name="lenient" type="xsd:boolean"/>
+				                    <xsd:attribute name="pattern" type="xsd:string" use="required"/>
+				                </xsd:extension>
+				            </xsd:complexContent>
+				        </xsd:complexType>
+				    </xsd:element>
+				</xsd:schema>	
+
+				--------------------------------------	
+
+				<myns:dateformat id="dateFormat" pattern="yyyy-MM-dd HH:mm" lenient="true"/>
+
+				--------------------------------------
+			
+				<bean id="dateFormat" class="java.text.SimpleDateFormat">
+				    <constructor-arg value="yyyy-HH-dd HH:mm"/>
+				    <property name="lenient" value="true"/>
+				</bean>	
+
+		9.2.2. Coding a NamespaceHandler	
+
+			java:
+
+				package org.springframework.samples.xml;
+
+				import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
+
+				public class MyNamespaceHandler extends NamespaceHandlerSupport {
+
+				    public void init() {
+				        registerBeanDefinitionParser("dateformat", new SimpleDateFormatBeanDefinitionParser());
+				    }
+				}
+
+		9.2.3. Using BeanDefinitionParser
+
+			java:
+		
+				package org.springframework.samples.xml;
+
+				import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+				import org.springframework.beans.factory.xml.AbstractSingleBeanDefinitionParser;
+				import org.springframework.util.StringUtils;
+				import org.w3c.dom.Element;
+
+				import java.text.SimpleDateFormat;
+
+				public class SimpleDateFormatBeanDefinitionParser extends AbstractSingleBeanDefinitionParser { 
+
+				    protected Class getBeanClass(Element element) {
+				        return SimpleDateFormat.class; 
+				    }
+
+				    protected void doParse(Element element, BeanDefinitionBuilder bean) {
+				        // this will never be null since the schema explicitly requires that a value be supplied
+				        String pattern = element.getAttribute("pattern");
+				        bean.addConstructorArgValue(pattern);
+
+				        // this however is an optional property
+				        String lenient = element.getAttribute("lenient");
+				        if (StringUtils.hasText(lenient)) {
+				            bean.addPropertyValue("lenient", Boolean.valueOf(lenient));
+				        }
+				    }
+
+				}	
+
+		9.2.4. Registering the Handler and the Schema
+		
+			Writing META-INF/spring.handlers
+
+				http\://www.mycompany.example/schema/myns=org.springframework.samples.xml.MyNamespaceHandler
+
+			Writing 'META-INF/spring.schemas'	
+
+				http\://www.mycompany.example/schema/myns/myns.xsd=org/springframework/samples/xml/myns.xsd
+
+		9.2.5. Using a Custom Extension in Your Spring XML Configuration
+		
+			xml:
+
+				<?xml version="1.0" encoding="UTF-8"?>
+				<beans xmlns="http://www.springframework.org/schema/beans"
+				    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				    xmlns:myns="http://www.mycompany.example/schema/myns"
+				    xsi:schemaLocation="
+				        http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+				        http://www.mycompany.example/schema/myns http://www.mycompany.com/schema/myns/myns.xsd">
+
+				    <!-- as a top-level bean -->
+				    <myns:dateformat id="defaultDateFormat" pattern="yyyy-MM-dd HH:mm" lenient="true"/> 
+
+				    <bean id="jobDetailTemplate" abstract="true">
+				        <property name="dateFormat">
+				            <!-- as an inner bean -->
+				            <myns:dateformat pattern="HH:mm MM-dd-yyyy"/>
+				        </property>
+				    </bean>
+
+				</beans>
+
+		9.2.6. More Detailed Examples
+		
+			Nesting Custom Elements within Custom Elements
+
+				xml:
+
+					<?xml version="1.0" encoding="UTF-8"?>
+					<beans xmlns="http://www.springframework.org/schema/beans"
+					    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+					    xmlns:foo="http://www.foo.example/schema/component"
+					    xsi:schemaLocation="
+					        http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+					        http://www.foo.example/schema/component http://www.foo.example/schema/component/component.xsd">
+
+					    <foo:component id="bionic-family" name="Bionic-1">
+					        <foo:component name="Mother-1">
+					            <foo:component name="Karate-1"/>
+					            <foo:component name="Sport-1"/>
+					        </foo:component>
+					        <foo:component name="Rock-1"/>
+					    </foo:component>
+
+					</beans>	
+
+				java:
+				
+					package com.foo;
+
+					import java.util.ArrayList;
+					import java.util.List;
+
+					public class Component {
+
+					    private String name;
+					    private List<Component> components = new ArrayList<Component> ();
+
+					    // mmm, there is no setter method for the 'components'
+					    public void addComponent(Component component) {
+					        this.components.add(component);
+					    }
+
+					    public List<Component> getComponents() {
+					        return components;
+					    }
+
+					    public String getName() {
+					        return name;
+					    }
+
+					    public void setName(String name) {
+					        this.name = name;
+					    }
+					}
+
+					----------------------------------
+
+					package com.foo;
+
+					import org.springframework.beans.factory.FactoryBean;
+
+					import java.util.List;
+
+					public class ComponentFactoryBean implements FactoryBean<Component> {
+
+					    private Component parent;
+					    private List<Component> children;
+
+					    public void setParent(Component parent) {
+					        this.parent = parent;
+					    }
+
+					    public void setChildren(List<Component> children) {
+					        this.children = children;
+					    }
+
+					    public Component getObject() throws Exception {
+					        if (this.children != null && this.children.size() > 0) {
+					            for (Component child : children) {
+					                this.parent.addComponent(child);
+					            }
+					        }
+					        return this.parent;
+					    }
+
+					    public Class<Component> getObjectType() {
+					        return Component.class;
+					    }
+
+					    public boolean isSingleton() {
+					        return true;
+					    }
+					}
+
+					-------------------------------------
+
+					package com.foo;
+
+					import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
+
+					public class ComponentNamespaceHandler extends NamespaceHandlerSupport {
+
+					    public void init() {
+					        registerBeanDefinitionParser("component", new ComponentBeanDefinitionParser());
+					    }
+					}
+
+					------------------------------------
+
+					package com.foo;
+
+					import org.springframework.beans.factory.config.BeanDefinition;
+					import org.springframework.beans.factory.support.AbstractBeanDefinition;
+					import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+					import org.springframework.beans.factory.support.ManagedList;
+					import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
+					import org.springframework.beans.factory.xml.ParserContext;
+					import org.springframework.util.xml.DomUtils;
+					import org.w3c.dom.Element;
+
+					import java.util.List;
+
+					public class ComponentBeanDefinitionParser extends AbstractBeanDefinitionParser {
+
+					    protected AbstractBeanDefinition parseInternal(Element element, ParserContext parserContext) {
+					        return parseComponentElement(element);
+					    }
+
+					    private static AbstractBeanDefinition parseComponentElement(Element element) {
+					        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ComponentFactoryBean.class);
+					        factory.addPropertyValue("parent", parseComponent(element));
+
+					        List<Element> childElements = DomUtils.getChildElementsByTagName(element, "component");
+					        if (childElements != null && childElements.size() > 0) {
+					            parseChildComponents(childElements, factory);
+					        }
+
+					        return factory.getBeanDefinition();
+					    }
+
+					    private static BeanDefinition parseComponent(Element element) {
+					        BeanDefinitionBuilder component = BeanDefinitionBuilder.rootBeanDefinition(Component.class);
+					        component.addPropertyValue("name", element.getAttribute("name"));
+					        return component.getBeanDefinition();
+					    }
+
+					    private static void parseChildComponents(List<Element> childElements, BeanDefinitionBuilder factory) {
+					        ManagedList<BeanDefinition> children = new ManagedList<BeanDefinition>(childElements.size());
+					        for (Element element : childElements) {
+					            children.add(parseComponentElement(element));
+					        }
+					        factory.addPropertyValue("children", children);
+					    }
+					}
+
+				xml:
+				
+					<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+					<xsd:schema xmlns="http://www.foo.example/schema/component"
+					        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+					        targetNamespace="http://www.foo.example/schema/component"
+					        elementFormDefault="qualified"
+					        attributeFormDefault="unqualified">
+
+					    <xsd:element name="component">
+					        <xsd:complexType>
+					            <xsd:choice minOccurs="0" maxOccurs="unbounded">
+					                <xsd:element ref="component"/>
+					            </xsd:choice>
+					            <xsd:attribute name="id" type="xsd:ID"/>
+					            <xsd:attribute name="name" use="required" type="xsd:string"/>
+					        </xsd:complexType>
+					    </xsd:element>
+
+					</xsd:schema>	
+
+
+				# in 'META-INF/spring.handlers'
+					http\://www.foo.example/schema/component=com.foo.ComponentNamespaceHandler	
+
+				# in 'META-INF/spring.schemas'
+					http\://www.foo.example/schema/component/component.xsd=com/foo/component.xsd	
+
+			Custom Attributes on “Normal” Elements	
+			
+				xml:
+
+					<bean id="checkingAccountService" class="com.foo.DefaultCheckingAccountService"
+					        jcache:cache-name="checking.account">
+					    <!-- other dependencies here... -->
+					</bean>
+
+				java:
+				
+					package com.foo;
+
+					public class JCacheInitializer {
+
+					    private String name;
+
+					    public JCacheInitializer(String name) {
+					        this.name = name;
+					    }
+
+					    public void initialize() {
+					        // lots of JCache API calls to initialize the named cache...
+					    }
+					}
+
+				xml:
+				
+					<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+					<xsd:schema xmlns="http://www.foo.example/schema/jcache"
+					        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+					        targetNamespace="http://www.foo.example/schema/jcache"
+					        elementFormDefault="qualified">
+
+					    <xsd:attribute name="cache-name" type="xsd:string"/>
+
+					</xsd:schema>
+
+				java:
+				
+					package com.foo;
+
+					import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
+
+					public class JCacheNamespaceHandler extends NamespaceHandlerSupport {
+
+					    public void init() {
+					        super.registerBeanDefinitionDecoratorForAttribute("cache-name",
+					            new JCacheInitializingBeanDefinitionDecorator());
+					    }
+
+					}	
+
+					---------------------------------
+
+					package com.foo;
+
+					import org.springframework.beans.factory.config.BeanDefinitionHolder;
+					import org.springframework.beans.factory.support.AbstractBeanDefinition;
+					import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+					import org.springframework.beans.factory.xml.BeanDefinitionDecorator;
+					import org.springframework.beans.factory.xml.ParserContext;
+					import org.w3c.dom.Attr;
+					import org.w3c.dom.Node;
+
+					import java.util.ArrayList;
+					import java.util.Arrays;
+					import java.util.List;
+
+					public class JCacheInitializingBeanDefinitionDecorator implements BeanDefinitionDecorator {
+
+					    private static final String[] EMPTY_STRING_ARRAY = new String[0];
+
+					    public BeanDefinitionHolder decorate(Node source, BeanDefinitionHolder holder,
+					            ParserContext ctx) {
+					        String initializerBeanName = registerJCacheInitializer(source, ctx);
+					        createDependencyOnJCacheInitializer(holder, initializerBeanName);
+					        return holder;
+					    }
+
+					    private void createDependencyOnJCacheInitializer(BeanDefinitionHolder holder,
+					            String initializerBeanName) {
+					        AbstractBeanDefinition definition = ((AbstractBeanDefinition) holder.getBeanDefinition());
+					        String[] dependsOn = definition.getDependsOn();
+					        if (dependsOn == null) {
+					            dependsOn = new String[]{initializerBeanName};
+					        } else {
+					            List dependencies = new ArrayList(Arrays.asList(dependsOn));
+					            dependencies.add(initializerBeanName);
+					            dependsOn = (String[]) dependencies.toArray(EMPTY_STRING_ARRAY);
+					        }
+					        definition.setDependsOn(dependsOn);
+					    }
+
+					    private String registerJCacheInitializer(Node source, ParserContext ctx) {
+					        String cacheName = ((Attr) source).getValue();
+					        String beanName = cacheName + "-initializer";
+					        if (!ctx.getRegistry().containsBeanDefinition(beanName)) {
+					            BeanDefinitionBuilder initializer = BeanDefinitionBuilder.rootBeanDefinition(JCacheInitializer.class);
+					            initializer.addConstructorArg(cacheName);
+					            ctx.getRegistry().registerBeanDefinition(beanName, initializer.getBeanDefinition());
+					        }
+					        return beanName;
+					    }
+					}	
+
+
+				# in 'META-INF/spring.handlers'
+					http\://www.foo.example/schema/jcache=com.foo.JCacheNamespaceHandler
+
+				# in 'META-INF/spring.schemas'
+					http\://www.foo.example/schema/jcache/jcache.xsd=com/foo/jcache.xsd			
+
+// done 2020-3-9 19:57:32					
+
+
+
+
+
 
 
 
