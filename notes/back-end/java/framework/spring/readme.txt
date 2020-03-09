@@ -60,6 +60,8 @@ https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/
 
 							6.1. Pointcut API in Spring 					// done 2020-3-9 12:08:30
 
+							6.2. Advice API in Spring 						// done 2020-3-9 13:05:20
+
 	Testing				Mock Objects, TestContext Framework, Spring MVC Test, WebTestClient.
 
 	Data Access			Transactions, DAO Support, JDBC, O/R Mapping, XML Marshalling.

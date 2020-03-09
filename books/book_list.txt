@@ -98,6 +98,8 @@ doing：
 
 			6.1. Pointcut API in Spring 					// done 2020-3-9 12:08:30
 
+			6.2. Advice API in Spring 						// done 2020-3-9 13:05:20
+
 			26 WebSocket Support 				 // start 2020-1-14 13:40:00    done 2010-1-14 18:44
 
 		

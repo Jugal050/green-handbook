@@ -7717,9 +7717,196 @@ Core Technologies 			https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-fra
 
 		6.1.6. Custom Pointcuts			
 
-		// done 2020-3-9 12:08:18						
+		// done 2020-3-9 12:08:18	
 
+	6.2. Advice API in Spring
+	
+		6.2.1. Advice Lifecycles
 
+		6.2.2. Advice Types in Spring
+
+			Interception Around Advice
+
+				java:
+
+					public interface MethodInterceptor extends Interceptor {
+
+					    Object invoke(MethodInvocation invocation) throws Throwable;
+					}	
+
+					------------------------
+
+					public class DebugInterceptor implements MethodInterceptor {
+
+					    public Object invoke(MethodInvocation invocation) throws Throwable {
+					        System.out.println("Before: invocation=[" + invocation + "]");
+					        Object rval = invocation.proceed();
+					        System.out.println("Invocation returned");
+					        return rval;
+					    }
+					}	
+
+			Before Advice
+			
+				java:
+
+					public interface MethodBeforeAdvice extends BeforeAdvice {
+
+					    void before(Method m, Object[] args, Object target) throws Throwable;
+					}	
+
+					------------------------	
+
+					public class CountingBeforeAdvice implements MethodBeforeAdvice {
+
+					    private int count;
+
+					    public void before(Method m, Object[] args, Object target) throws Throwable {
+					        ++count;
+					    }
+
+					    public int getCount() {
+					        return count;
+					    }
+					}
+
+			Throws Advice
+
+				org.springframework.aop.ThrowsAdvice
+			
+				java:
+
+					afterThrowing([Method, args, target], subclassOfThrowable)
+
+					------------------------
+
+					public class RemoteThrowsAdvice implements ThrowsAdvice {
+
+					    public void afterThrowing(RemoteException ex) throws Throwable {
+					        // Do something with remote exception
+					    }
+					}	
+
+					------------------------	
+
+					public class ServletThrowsAdviceWithArguments implements ThrowsAdvice {
+
+					    public void afterThrowing(Method m, Object[] args, Object target, ServletException ex) {
+					        // Do something with all arguments
+					    }
+					}	
+
+					------------------------	
+
+					public static class CombinedThrowsAdvice implements ThrowsAdvice {
+
+					    public void afterThrowing(RemoteException ex) throws Throwable {
+					        // Do something with remote exception
+					    }
+
+					    public void afterThrowing(Method m, Object[] args, Object target, ServletException ex) {
+					        // Do something with all arguments
+					    }
+					}
+
+			After Returning Advice
+
+				org.springframework.aop.AfterReturningAdvice
+			
+				java:
+
+					public interface AfterReturningAdvice extends Advice {
+
+					    void afterReturning(Object returnValue, Method m, Object[] args, Object target)
+					            throws Throwable;
+					}	
+
+					------------------------	
+
+					public class CountingAfterReturningAdvice implements AfterReturningAdvice {
+
+					    private int count;
+
+					    public void afterReturning(Object returnValue, Method m, Object[] args, Object target)
+					            throws Throwable {
+					        ++count;
+					    }
+
+					    public int getCount() {
+					        return count;
+					    }
+					}
+
+			Introduction Advice
+			
+				java:
+
+					public interface IntroductionInterceptor extends MethodInterceptor {
+
+					    boolean implementsInterface(Class intf);
+					}							
+
+					------------------------
+
+					public interface IntroductionAdvisor extends Advisor, IntroductionInfo {
+
+					    ClassFilter getClassFilter();
+
+					    void validateInterfaces() throws IllegalArgumentException;
+					}
+
+					public interface IntroductionInfo {
+
+					    Class[] getInterfaces();
+					}
+
+					------------------------	
+
+					public interface Lockable {
+					    void lock();
+					    void unlock();
+					    boolean locked();
+					}
+
+					------------------------	
+
+					public class LockMixin extends DelegatingIntroductionInterceptor implements Lockable {
+
+					    private boolean locked;
+
+					    public void lock() {
+					        this.locked = true;
+					    }
+
+					    public void unlock() {
+					        this.locked = false;
+					    }
+
+					    public boolean locked() {
+					        return this.locked;
+					    }
+
+					    public Object invoke(MethodInvocation invocation) throws Throwable {
+					        if (locked() && invocation.getMethod().getName().indexOf("set") == 0) {
+					            throw new LockedException();
+					        }
+					        return super.invoke(invocation);
+					    }
+
+					}
+
+					------------------------	
+
+					public class LockMixinAdvisor extends DefaultIntroductionAdvisor {
+
+					    public LockMixinAdvisor() {
+					        super(new LockMixin(), Lockable.class);
+					    }
+					}
+
+		// done 2020-3-9 13:05:04			
+
+	6.3. The Advisor API in Spring			
 
 
 
