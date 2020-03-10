@@ -52,6 +52,8 @@ doing：
 
 			1.3 Annotated Controllers 			 // start 2020-1-7 21:30:49		done 2020-1-7 22:39:44
 
+		Core Technologies 									// start 2020-2-20 08:00:00 	done 2020-3-9 19:57:56
+
 			1.9. Annotation-based Container Configuration	// start 2020-2-23 10:43:10 	done 2020-2-23 18:42:11
 
 			1.10.4. Using Filters to Customize Scanning		// done 2020-2-24 12:38:14
@@ -102,9 +104,11 @@ doing：
 
 			Core Technologies 								// done 2020-3-9 19:57:56
 
-			26 WebSocket Support 				 // start 2020-1-14 13:40:00    done 2010-1-14 18:44
+		Testing												// start 2020-3-10 15:43:59
 
-		
+			3.3. JDBC Testing Support	 					// done 2020-3-10 19:44:54	
+
+			26 WebSocket Support 				 // start 2020-1-14 13:40:00    done 2010-1-14 18:44
 
 todo:
 

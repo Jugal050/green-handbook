@@ -2,7 +2,7 @@ https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/
 
 	Overview			history, design philosophy, feedback, getting started. 											// done 2020-2-13 15:58:12
 
-	Core				IoC Container, Events, Resources, i18n, Validation, Data Binding, Type Conversion, SpEL, AOP.
+	Core				IoC Container, Events, Resources, i18n, Validation, Data Binding, Type Conversion, SpEL, AOP.   // start 2020-2-20 08:00:00	
 
 							1.4.4. Lazy-initialized Beans	// done 2020-2-20 19:32:33
 
@@ -64,7 +64,9 @@ https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/
 
 							Core Technologies 								// done 2020-3-9 19:57:56
 
-	Testing				Mock Objects, TestContext Framework, Spring MVC Test, WebTestClient.
+	Testing				Mock Objects, TestContext Framework, Spring MVC Test, WebTestClient. 		// start 2020-3-10 17:32:37
+
+							3.3. JDBC Testing Support	 					// done 2020-3-10 19:44:54	
 
 	Data Access			Transactions, DAO Support, JDBC, O/R Mapping, XML Marshalling.
 
