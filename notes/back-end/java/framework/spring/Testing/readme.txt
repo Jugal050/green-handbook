@@ -82,5 +82,164 @@ Testing 			https://docs.spring.io/spring/docs/current/spring-framework-reference
 
 	// done 2020-3-10 19:42:52	
 
-	3.4. Annotations		
+	3.4. Annotations
 
+		3.4.1. Spring Testing Annotations	
+
+			@BootstrapWith
+
+			@ContextConfiguration
+
+			@WebAppConfiguration
+
+			@ContextHierarchy
+
+			@ActiveProfiles
+
+			@TestPropertySource
+
+			@DirtiesContext
+
+			@TestExecutionListeners
+
+			@Commit
+
+			@Rollback
+
+			@BeforeTransaction
+
+			@AfterTransaction
+
+			@Sql
+
+			@SqlConfig
+
+			@SqlMergeMode
+
+			@SqlGroup	
+
+		3.4.2. Standard Annotation Support
+
+			@Autowired
+
+			@Qualifier
+
+			@Value
+
+			@Resource (javax.annotation) if JSR-250 is present
+
+			@ManagedBean (javax.annotation) if JSR-250 is present
+
+			@Inject (javax.inject) if JSR-330 is present
+
+			@Named (javax.inject) if JSR-330 is present
+
+			@PersistenceContext (javax.persistence) if JPA is present
+
+			@PersistenceUnit (javax.persistence) if JPA is present
+
+			@Required
+
+			@Transactional (org.springframework.transaction.annotation) with limited attribute support
+
+		3.4.3. Spring JUnit 4 Testing Annotations
+		
+			@IfProfileValue
+
+			@ProfileValueSourceConfiguration
+
+			@Timed
+
+			@Repeat	
+
+		3.4.4. Spring JUnit Jupiter Testing Annotations
+		
+			@SpringJUnitConfig
+
+			@SpringJUnitWebConfig
+
+			@TestConstructor
+
+			@EnabledIf
+
+			@DisabledIf	
+
+		3.4.5. Meta-Annotation Support for Testing
+		
+			@BootstrapWith
+
+			@ContextConfiguration
+
+			@ContextHierarchy
+
+			@ActiveProfiles
+
+			@TestPropertySource
+
+			@DirtiesContext
+
+			@WebAppConfiguration
+
+			@TestExecutionListeners
+
+			@Transactional
+
+			@BeforeTransaction
+
+			@AfterTransaction
+
+			@Commit
+
+			@Rollback
+
+			@Sql
+
+			@SqlConfig
+
+			@SqlMergeMode
+
+			@SqlGroup
+
+			@Repeat (only supported on JUnit 4)
+
+			@Timed (only supported on JUnit 4)
+
+			@IfProfileValue (only supported on JUnit 4)
+
+			@ProfileValueSourceConfiguration (only supported on JUnit 4)
+
+			@SpringJUnitConfig (only supported on JUnit Jupiter)
+
+			@SpringJUnitWebConfig (only supported on JUnit Jupiter)
+
+			@TestConstructor (only supported on JUnit Jupiter)
+
+			@EnabledIf (only supported on JUnit Jupiter)
+
+			@DisabledIf (only supported on JUnit Jupiter)	
+
+	3.5. Spring TestContext Framework
+	
+		3.5.1. Key Abstractions
+
+		3.5.2. Bootstrapping the TestContext Framework
+
+		3.5.3. TestExecutionListener Configuration
+
+			Registering TestExecutionListener Implementations
+
+			Automatic Discovery of Default TestExecutionListener Implementations
+
+			Ordering TestExecutionListener Implementations
+
+			Merging TestExecutionListener Implementations
+
+		3.5.4. Test Execution Events	
+
+			Exception Handling
+
+			Asynchronous Listeners
+
+		// done 2020-3-11 12:18:46	
+
+		3.5.5. Context Management

@@ -68,6 +68,8 @@ https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/
 
 							3.3. JDBC Testing Support	 					// done 2020-3-10 19:44:54	
 
+							3.5.4. Test Execution Events					// done 2020-3-11 12:18:57
+
 	Data Access			Transactions, DAO Support, JDBC, O/R Mapping, XML Marshalling.
 
 	Web Servlet	 		Spring MVC, WebSocket, SockJS, STOMP Messaging.
