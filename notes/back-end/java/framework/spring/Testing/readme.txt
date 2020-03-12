@@ -753,7 +753,824 @@ Testing 			https://docs.spring.io/spring/docs/current/spring-framework-reference
 
 		// done 2020-3-12 12:11:52		
 
-		3.5.10. Parallel Test Execution		
+		3.5.10. Parallel Test Execution
+
+		3.5.11. TestContext Framework Support Classes
+
+			Spring JUnit 4 Runner
+
+				Spring TestContext Framework通过自定义runner提供了JUnit4的完全支持，只要测试类添加了注解@RunWith(SpringJUnit4ClassRunner.class)或@RunWith(SpringRunner.class)，
+				开发者就可以使用标准的基于JUnit4的单元、集成测试、同时可以使用TestContext框架，比如加载application contexts, 测试实例的依赖注入，测试方法执行事务等等。
+
+				java:
+
+					@RunWith(SpringRunner.class)
+					@TestExecutionListeners({})
+					public class SimpleTest {
+
+					    @Test
+					    public void testMethod() {
+					        // execute test logic...
+					    }
+					}
+
+			Spring JUnit 4 Rules
+
+				package: org.springframework.test.context.junit4.rules
+
+				rules: SpringClassRule, SpringMethodRule	
+
+				java:
+
+					// Optionally specify a non-Spring Runner via @RunWith(...)
+					@ContextConfiguration
+					public class IntegrationTest {
+
+					    @ClassRule
+					    public static final SpringClassRule springClassRule = new SpringClassRule();
+
+					    @Rule
+					    public final SpringMethodRule springMethodRule = new SpringMethodRule();
+
+					    @Test
+					    public void testMethod() {
+					        // execute test logic...
+					    }
+					}	
+
+			JUnit 4 Support Classes
+			
+				package: org.springframework.test.context.junit4
+
+				classes: AbstractJUnit4SpringContextTests, AbstractTransactionalJUnit4SpringContextTests	
+
+			SpringExtension for JUnit Jupiter
+			
+				相关注解: @ExtendWith(SpringExtension.class)	, @SpringJUnitConfig, @SpringJUnitWebConfig 
+
+				java:
+
+					// Instructs JUnit Jupiter to extend the test with Spring support.
+					@ExtendWith(SpringExtension.class)
+					// Instructs Spring to load an ApplicationContext from TestConfig.class
+					@ContextConfiguration(classes = TestConfig.class)
+					class SimpleTests {
+
+					    @Test
+					    void testMethod() {
+					        // execute test logic...
+					    }
+					}	
+
+					--------------------------------------
+
+					// Instructs Spring to register the SpringExtension with JUnit
+					// Jupiter and load an ApplicationContext from TestConfig.class
+					@SpringJUnitConfig(TestConfig.class)
+					class SimpleTests {
+
+					    @Test
+					    void testMethod() {
+					        // execute test logic...
+					    }
+					}
+
+					--------------------------------------
+
+					// Instructs Spring to register the SpringExtension with JUnit
+					// Jupiter and load a WebApplicationContext from TestWebConfig.class
+					@SpringJUnitWebConfig(TestWebConfig.class)
+					class SimpleWebTests {
+
+					    @Test
+					    void testMethod() {
+					        // execute test logic...
+					    }
+					}
+
+			Dependency Injection with SpringExtension
+			
+				Constructor Injection		
+
+					java:
+
+						@SpringJUnitConfig(TestConfig.class)
+						class OrderServiceIntegrationTests {
+
+						    private final OrderService orderService;
+
+						    @Autowired
+						    OrderServiceIntegrationTests(OrderService orderService) {
+						        this.orderService = orderService;
+						    }
+
+						    // tests that use the injected OrderService
+						}
+
+						-------------------------------------
+
+						// if spring.test.constructor.autowire.mode = all
+
+						@SpringJUnitConfig(TestConfig.class)
+						class OrderServiceIntegrationTests {
+
+						    private final OrderService orderService;
+
+						    OrderServiceIntegrationTests(OrderService orderService) {
+						        this.orderService = orderService;
+						    }
+
+						    // tests that use the injected OrderService
+						}
+
+				Method Injection
+				
+					java:
+
+						@SpringJUnitConfig(TestConfig.class)
+						class OrderServiceIntegrationTests {
+
+						    @Test
+						    void deleteOrder(@Autowired OrderService orderService) {
+						        // use orderService from the test's ApplicationContext
+						    }
+						}	
+
+						-------------------------------------
+
+						@SpringJUnitConfig(TestConfig.class)
+						class OrderServiceIntegrationTests {
+
+						    @RepeatedTest(10)
+						    void placeOrderRepeatedly(RepetitionInfo repetitionInfo,
+						            @Autowired OrderService orderService) {
+
+						        // use orderService from the test's ApplicationContext
+						        // and repetitionInfo from JUnit Jupiter
+						    }
+						}
+
+			TestNG Support Classes
+			
+				package: org.springframework.test.context.testng
+
+				classes: AbstractTestNGSpringContextTests, AbstractTransactionalTestNGSpringContextTests		
+
+		// done 2020-3-12 16:41:22		
+
+	3.6. Spring MVC Test Framework		
+
+		无需运行Servlet容器，即可进行相关测试。	
+
+		3.6.1. Server-Side Tests
+
+			java:
+
+				import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.;
+				import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.;
+
+				@SpringJUnitWebConfig(locations = "test-servlet-context.xml")
+				class ExampleTests {
+
+				    MockMvc mockMvc;
+
+				    @BeforeEach
+				    void setup(WebApplicationContext wac) {
+				        this.mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
+				    }
+
+				    @Test
+				    void getAccount() throws Exception {
+				        this.mockMvc.perform(get("/accounts/1")
+				                .accept(MediaType.APPLICATION_JSON))
+				            .andExpect(status().isOk())
+				            .andExpect(content().contentType("application/json"))
+				            .andExpect(jsonPath("$.name").value("Lee"));
+				    }
+				}
+
+			Static Imports	
+
+			Setup Choices	
+
+				java:
+
+					@SpringJUnitWebConfig(locations = "my-servlet-context.xml")
+					class MyWebTests {
+
+					    MockMvc mockMvc;
+
+					    @BeforeEach
+					    void setup(WebApplicationContext wac) {
+					        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+					    }
+
+					    // ...
+
+					}
+
+					-------------------------------------
+
+					class MyWebTests {
+
+					    MockMvc mockMvc;
+
+					    @BeforeEach
+					    void setup() {
+					        this.mockMvc = MockMvcBuilders.standaloneSetup(new AccountController()).build();
+					    }
+
+					    // ...
+
+					}
+
+				xml:	
+
+					<bean id="accountService" class="org.mockito.Mockito" factory-method="mock">
+					    <constructor-arg value="org.example.AccountService"/>
+					</bean>
+
+				java:
+				
+					@SpringJUnitWebConfig(locations = "test-servlet-context.xml")
+					class AccountTests {
+
+					    @Autowired
+					    AccountService accountService;
+
+					    MockMvc mockMvc;
+
+					    @BeforeEach
+					    void setup(WebApplicationContext wac) {
+					        this.mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
+					    }
+
+					    // ...
+
+					}	
+
+			Setup Features
+
+				相关类： 
+
+					// 定义了构造MockMvc实例的通用方法
+					org.springframework.test.web.servlet.setup.ConfigurableMockMvcBuilder
+				
+				java:
+
+					// 为所有请求声明一个Accpect的头信息，为所有响应设置200的响应码和Content-Type的头信息
+
+						// static import of MockMvcBuilders.standaloneSetup
+
+						MockMvc mockMvc = standaloneSetup(new MusicController())
+						    .defaultRequest(get("/").accept(MediaType.APPLICATION_JSON))
+						    .alwaysExpect(status().isOk())
+						    .alwaysExpect(content().contentType("application/json;charset=UTF-8"))
+						    .build();	
+
+					// MockMvcConfigurer，保存并循环使用http请求的session
+
+						// static import of SharedHttpSessionConfigurer.sharedHttpSession
+
+						MockMvc mockMvc = MockMvcBuilders.standaloneSetup(new TestController())
+						        .apply(sharedHttpSession())
+						        .build();
+
+						// Use mockMvc to perform requests...
+
+			Performing Requests	
+
+				java:
+
+					---------------------- 可以使用任何http方法 -----------------------
+
+					mockMvc.perform(post("/hotels/{id}", 42).accept(MediaType.APPLICATION_JSON));
+
+					---------------------- 上传文件 ----------------------- 
+
+					// MockMultipartHttpServletRequest 
+					mockMvc.perform(multipart("/doc").file("a1", "ABC".getBytes("UTF-8")));	
+
+					---------------------- 指定查询参数 -----------------------
+
+					mockMvc.perform(get("/hotels?thing={thing}", "somewhere"));	
+
+					---------------------- 添加请求参数（查询/表单提交） -----------------------
+
+					mockMvc.perform(get("/hotels").param("thing", "somewhere"));
+
+					---------------------- 完整的请求URI -----------------------
+
+					mockMvc.perform(get("/app/main/hotels/{id}").contextPath("/app").servletPath("/main"))
+
+					---------------------- 设置请求的默认属性 -----------------------
+
+					class MyWebTests {
+
+				    MockMvc mockMvc;
+
+				    @BeforeEach
+				    void setup() {
+				        mockMvc = standaloneSetup(new AccountController())
+				            .defaultRequest(get("/")
+				            .contextPath("/app").servletPath("/main")
+				            .accept(MediaType.APPLICATION_JSON)).build();
+				    }
+				}
+
+			Defining Expectations	
+
+				package: MockMvcResultMatchers.* 
+
+				category: 
+
+					响应属性的验证： 响应码、头信息、响应内容
+
+					其他： 处理请求的controller方法，是否有异常，内容模型，结果视图，新增属性等等
+
+
+				java:
+
+					---------------------- 添加期望值 -----------------------
+
+					mockMvc.perform(get("/accounts/1")).andExpect(status().isOk());
+
+					---------------------- 数据绑定及校验 -----------------------
+
+					mockMvc.perform(post("/persons"))
+					    .andExpect(status().isOk())
+					    .andExpect(model().attributeHasErrors("person"));
+
+					---------------------- 打印请求处理结果 -----------------------    
+
+				    mockMvc.perform(post("/persons"))
+					    .andDo(print())
+					    .andExpect(status().isOk())
+					    .andExpect(model().attributeHasErrors("person"));
+
+					---------------------- 直接返回 -----------------------      
+
+					MvcResult mvcResult = mockMvc.perform(post("/persons")).andExpect(status().isOk()).andReturn(); 
+
+					---------------------- MockMvc设置通用期望值 -----------------------   
+
+					standaloneSetup(new SimpleController())
+					    .alwaysExpect(status().isOk())
+					    .alwaysExpect(content().contentType("application/json;charset=UTF-8"))
+					    .build()
+
+					---------------------- 使用jsonPath表达式验证JSON响应结果中Spring HATEOAS创建的超链接 ----------------------   
+
+					mockMvc.perform(get("/people").accept(MediaType.APPLICATION_JSON))
+    					.andExpect(jsonPath("$.links[?(@.rel == 'self')].href").value("http://localhost:8080/people"));  
+
+					---------------------- 使用xpath表达式验证XML响应结果中Spring HATEOAS创建的超链接 ----------------------   
+
+    				Map<String, String> ns = Collections.singletonMap("ns", "http://www.w3.org/2005/Atom");
+						mockMvc.perform(get("/handle").accept(MediaType.APPLICATION_XML))
+						    .andExpect(xpath("/person/ns:link[@rel='self']/@href", ns).string("http://localhost:8080/people"));	
+
+			Async Requests
+			
+				java:
+
+					---------------------- 异步请求 ----------------------
+
+					@Test
+					void test() throws Exception {
+					    MvcResult mvcResult = this.mockMvc.perform(get("/path"))
+					            .andExpect(status().isOk()) 
+					            .andExpect(request().asyncStarted()) 
+					            .andExpect(request().asyncResult("body")) 
+					            .andReturn();
+
+					    this.mockMvc.perform(asyncDispatch(mvcResult)) 
+					            .andExpect(status().isOk()) 
+					            .andExpect(content().string("body"));  	
+
+
+            Streaming Responses
+
+        	Filter Registrations
+
+        		java:
+
+        			---------------------- 注册过滤器： MockFilterChain处理，DispatcherServlet集成最后一个过滤器 ----------------------
+
+        			mockMvc = standaloneSetup(new PersonController()).addFilters(new CharacterEncodingFilter()).build();  
+
+			Spring MVC Test vs End-to-End Tests
+
+			Further Examples
+
+				spring-test/test: https://github.com/spring-projects/spring-framework/tree/master/spring-test/src/test/java/org/springframework/test/web/servlet/samples
+
+				project: spring-mvc-showcase 
+
+			// done 2020-3-12 17:48:04
+			
+		3.6.2. HtmlUnit Integration	
+
+			Why HtmlUnit Integration?
+
+				Integration Testing to the Rescue?
+
+				Enter HtmlUnit Integration
+
+				HtmlUnit Integration Options
+
+					MockMvc and HtmlUnit: Use this option if you want to use the raw HtmlUnit libraries.
+
+					MockMvc and WebDriver: Use this option to ease development and reuse code between integration and end-to-end testing.
+
+					MockMvc and Geb: Use this option if
+
+			MockMvc and HtmlUnit		
+
+				MockMvc and HtmlUnit Setup
+
+					dependency: net.sourceforge.htmlunit:htmlunit 2.18+
+
+					java:
+
+						------------------- 创建Web客户端 -------------------
+
+						WebClient webClient;
+
+						@BeforeEach
+						void setup(WebApplicationContext context) {
+						    webClient = MockMvcWebClientBuilder
+						            .webAppContextSetup(context)
+						            .build();
+						}
+
+				MockMvc and HtmlUnit Usage
+
+					java:
+
+						------------------- 请求视图 -------------------
+
+						HtmlPage createMsgFormPage = webClient.getPage("http://localhost/messages/form");
+
+						------------------- 表单填充、提交、获取响应页面 -------------------
+
+						HtmlForm form = createMsgFormPage.getHtmlElementById("messageForm");
+						HtmlTextInput summaryInput = createMsgFormPage.getHtmlElementById("summary");
+						summaryInput.setValueAttribute("Spring Rocks");
+						HtmlTextArea textInput = createMsgFormPage.getHtmlElementById("text");
+						textInput.setText("In case you didn't know, Spring Rocks!");
+						HtmlSubmitInput submit = form.getOneHtmlElementByAttribute("input", "type", "submit");
+						HtmlPage newMessagePage = submit.click();
+
+						------------------- 解析、验证响应页面 -------------------
+
+						assertThat(newMessagePage.getUrl().toString()).endsWith("/messages/123");
+						String id = newMessagePage.getHtmlElementById("id").getTextContent();
+						assertThat(id).isEqualTo("123");
+						String summary = newMessagePage.getHtmlElementById("summary").getTextContent();
+						assertThat(summary).isEqualTo("Spring Rocks");
+						String text = newMessagePage.getHtmlElementById("text").getTextContent();
+						assertThat(text).isEqualTo("In case you didn't know, Spring Rocks!");
+
+				Advanced MockMvcWebClientBuilder
+				
+					java:
+
+						------------------- 基本使用 -------------------
+
+						WebClient webClient;
+
+						@BeforeEach
+						void setup(WebApplicationContext context) {
+						    webClient = MockMvcWebClientBuilder
+						            .webAppContextSetup(context)
+						            .build();
+						}		
+
+						------------------- 添加配置信息 -------------------
+
+						WebClient webClient;
+
+						@BeforeEach
+						void setup() {
+						    webClient = MockMvcWebClientBuilder
+						        // demonstrates applying a MockMvcConfigurer (Spring Security)
+						        .webAppContextSetup(context, springSecurity())
+						        // for illustration only - defaults to ""
+						        .contextPath("")
+						        // By default MockMvc is used for localhost only;
+						        // the following will use MockMvc for example.com and example.org as well
+						        .useMockMvcForHosts("example.com","example.org")
+						        .build();
+						}
+
+						------------------- 通过MockMvc添加配置信息 -------------------
+
+						MockMvc mockMvc = MockMvcBuilders
+						        .webAppContextSetup(context)
+						        .apply(springSecurity())
+						        .build();
+
+						webClient = MockMvcWebClientBuilder
+						        .mockMvcSetup(mockMvc)
+						        // for illustration only - defaults to ""
+						        .contextPath("")
+						        // By default MockMvc is used for localhost only;
+						        // the following will use MockMvc for example.com and example.org as well
+						        .useMockMvcForHosts("example.com","example.org")
+						        .build();
+
+			MockMvc and WebDriver
+
+				Why WebDriver and MockMvc?
+
+					java:
+
+						HtmlTextInput summaryInput = currentPage.getHtmlElementById("summary");
+						summaryInput.setValueAttribute(summary);
+
+						-------------------
+
+						public HtmlPage createMessage(HtmlPage currentPage, String summary, String text) {
+						    setSummary(currentPage, summary);
+						    // ...
+						}
+
+						public void setSummary(HtmlPage currentPage, String summary) {
+						    HtmlTextInput summaryInput = currentPage.getHtmlElementById("summary");
+						    summaryInput.setValueAttribute(summary);
+						}
+
+						-------------------
+
+						public class CreateMessagePage {
+
+						    final HtmlPage currentPage;
+
+						    final HtmlTextInput summaryInput;
+
+						    final HtmlSubmitInput submit;
+
+						    public CreateMessagePage(HtmlPage currentPage) {
+						        this.currentPage = currentPage;
+						        this.summaryInput = currentPage.getHtmlElementById("summary");
+						        this.submit = currentPage.getHtmlElementById("submit");
+						    }
+
+						    public <T> T createMessage(String summary, String text) throws Exception {
+						        setSummary(summary);
+
+						        HtmlPage result = submit.click();
+						        boolean error = CreateMessagePage.at(result);
+
+						        return (T) (error ? new CreateMessagePage(result) : new ViewMessagePage(result));
+						    }
+
+						    public void setSummary(String summary) throws Exception {
+						        summaryInput.setValueAttribute(summary);
+						    }
+
+						    public static boolean at(HtmlPage page) {
+						        return "Create Message".equals(page.getTitleText());
+						    }
+						}
+
+				MockMvc and WebDriver Setup
+				
+					java:
+
+						------------------- 创建WebDriver ------------------- 
+
+						WebDriver driver;
+
+						@BeforeEach
+						void setup(WebApplicationContext context) {
+						    driver = MockMvcHtmlUnitDriverBuilder
+						            .webAppContextSetup(context)
+						            .build();
+						}	
+
+				MockMvc and WebDriver Usage
+				
+					java:
+
+						------------------- 获取页面 -------------------
+
+						CreateMessagePage page = CreateMessagePage.to(driver);
+
+						------------------- 表单填充、提交、获取响应页面 -------------------
+
+						ViewMessagePage viewMessagePage =
+        					page.createMessage(ViewMessagePage.class, expectedSummary, expectedText);
+
+    					------------------- 响应页面信息解析、校验 -------------------
+
+    					assertThat(viewMessagePage.getMessage()).isEqualTo(expectedMessage);
+						assertThat(viewMessagePage.getSuccess()).isEqualTo("Successfully created a new message");
+
+						------------------- 通过继承AbstractPage简易化操作 -------------------
+
+    					public class CreateMessagePage extends AbstractPage { 
+
+						    
+						    private WebElement summary;
+						    private WebElement text;
+
+						    
+						    @FindBy(css = "input[type=submit]")
+						    private WebElement submit;
+
+						    public CreateMessagePage(WebDriver driver) {
+						        super(driver);
+						    }
+
+						    public <T> T createMessage(Class<T> resultPage, String summary, String details) {
+						        this.summary.sendKeys(summary);
+						        this.text.sendKeys(details);
+						        this.submit.click();
+						        return PageFactory.initElements(driver, resultPage);
+						    }
+
+						    public static CreateMessagePage to(WebDriver driver) {
+						        driver.get("http://localhost:9990/mail/messages/form");
+						        return PageFactory.initElements(driver, CreateMessagePage.class);
+						    }
+						}	
+
+						------------------- 通过ViewMessagePage获取的Message与域对象交互 -------------------
+
+						public Message getMessage() throws ParseException {
+						    Message message = new Message();
+						    message.setId(getId());
+						    message.setCreated(getCreated());
+						    message.setSummary(getSummary());
+						    message.setText(getText());
+						    return message;
+						}		
+
+						------------------- 回收driver -------------------
+
+						@AfterEach
+						void destroy() {
+						    if (driver != null) {
+						        driver.close();
+						    }
+						}
+
+				Advanced MockMvcHtmlUnitDriverBuilder
+
+					java:
+
+						------------------- 基本用法 -------------------
+
+						WebDriver driver;
+
+						@BeforeEach
+						void setup(WebApplicationContext context) {
+						    driver = MockMvcHtmlUnitDriverBuilder
+						            .webAppContextSetup(context)
+						            .build();
+						}
+
+						------------------- 配置信息 -------------------
+
+						WebDriver driver;
+
+						@BeforeEach
+						void setup() {
+						    driver = MockMvcHtmlUnitDriverBuilder
+						            // demonstrates applying a MockMvcConfigurer (Spring Security)
+						            .webAppContextSetup(context, springSecurity())
+						            // for illustration only - defaults to ""
+						            .contextPath("")
+						            // By default MockMvc is used for localhost only;
+						            // the following will use MockMvc for example.com and example.org as well
+						            .useMockMvcForHosts("example.com","example.org")
+						            .build();
+						}
+
+						------------------- 通过MockMvc配置信息 -------------------
+
+						MockMvc mockMvc = MockMvcBuilders
+						        .webAppContextSetup(context)
+						        .apply(springSecurity())
+						        .build();
+
+						driver = MockMvcHtmlUnitDriverBuilder
+						        .mockMvcSetup(mockMvc)
+						        // for illustration only - defaults to ""
+						        .contextPath("")
+						        // By default MockMvc is used for localhost only;
+						        // the following will use MockMvc for example.com and example.org as well
+						        .useMockMvcForHosts("example.com","example.org")
+						        .build();
+
+	        MockMvc and Geb
+
+	        	Why Geb and MockMvc?
+
+	        	MockMvc and Geb Setup
+
+	        		java:
+
+	        			------------------- 初始化一个 Geb Brower -------------------
+
+	        			def setup() {
+						    browser.driver = MockMvcHtmlUnitDriverBuilder
+						        .webAppContextSetup(context)
+						        .build()
+						}
+
+				MockMvc and Geb Usage
+
+					groovy:
+
+						------------------- 获取请求页面 -------------------
+
+						to CreateMessagePage
+
+						------------------- 表单填充、提交、获取响应页面 -------------------
+
+						when:
+						form.summary = expectedSummary
+						form.text = expectedMessage
+						submit.click(ViewMessagePage)
+
+						------------------- 使用页面对象格式 -------------------
+
+						class CreateMessagePage extends Page {
+						    static url = 'messages/form'
+						    static at = { assert title == 'Messages : Create'; true }
+						    static content =  {
+						        submit { $('input[type=submit]') }
+						        form { $('form') }
+						        errors(required:false) { $('label.error, .alert-error')?.text() }
+						    }
+						}
+
+						------------------- 获取请求页面、校验响应结果 -------------------
+
+						to CreateMessagePage
+
+						then:
+						at CreateMessagePage
+						errors.contains('This field is required.')
+
+						then:
+						at ViewMessagePage
+						success == 'Successfully created a new message'
+						id
+						date
+						summary == expectedSummary
+						message == expectedMessage
+
+			// done 2020-3-12 19:37:20
+
+		3.6.3. Client-Side REST Tests
+
+			java:
+
+				RestTemplate restTemplate = new RestTemplate();
+
+				MockRestServiceServer mockServer = MockRestServiceServer.bindTo(restTemplate).build();
+				mockServer.expect(requestTo("/greeting")).andRespond(withSuccess());
+
+				// Test code that uses the above RestTemplate ...
+
+				mockServer.verify();
+
+				------------------- ignoreExpectOrder -------------------
+
+				server = MockRestServiceServer.bindTo(restTemplate).ignoreExpectOrder(true).build();
+
+				------------------- 指定执行次数 -------------------
+
+				RestTemplate restTemplate = new RestTemplate();
+
+				MockRestServiceServer mockServer = MockRestServiceServer.bindTo(restTemplate).build();
+				mockServer.expect(times(2), requestTo("/something")).andRespond(withSuccess());
+				mockServer.expect(times(3), requestTo("/somewhere")).andRespond(withSuccess());
+
+				// ...
+
+				mockServer.verify();
+
+				------------------- 绑定MockMvc -------------------
+
+				MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+				this.restTemplate = new RestTemplate(new MockMvcClientHttpRequestFactory(mockMvc));
+
+				// Test code that uses the above RestTemplate ...
+
+			Static Imports
+			
+			Further Examples of Client-side REST Tests
+
+				spring-test/test: https://github.com/spring-projects/spring-framework/tree/master/spring-test/src/test/java/org/springframework/test/web/client/samples
+
+		// done 2020-3-12 19:44:38
+
+	3.7. WebTestClient	
 
 		
 

@@ -72,6 +72,8 @@ https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/
 
 							3.5.9. Executing SQL Scripts 					// done 2020-3-12 12:12:12
 
+							3.6. Spring MVC Test Framework  				// done 2020-3-12 19:51:36
+
 	Data Access			Transactions, DAO Support, JDBC, O/R Mapping, XML Marshalling.
 
 	Web Servlet	 		Spring MVC, WebSocket, SockJS, STOMP Messaging.

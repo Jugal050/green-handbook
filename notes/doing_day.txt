@@ -2494,6 +2494,24 @@
 		0	韩斌伟	0	0	0	0	0	0	项目组办公开始时间待定	0	0
 
 	# 3.5.9. Executing SQL Scripts 					// done 2020-3-12 12:12:12
+
+	# HtmlUnit:
+
+		说明： Java GUI-Less browser, supporting JavaScript, to run against web pages   (web页面高级操作，比如表单填充/提交，链接点击，元素获取等等操作)   
+
+		官网： https://sourceforge.net/projects/htmlunit/
+
+		文档： http://htmlunit.sourceforge.net/gettingStarted.html
+
+		类似框架：（Spring MVC Test Framework）
+
+			Geb： https://gebish.org/manual/current/
+
+			说明： 基于WebDriver，更方便
+
+	# 3.6. Spring MVC Test Framework 				// done 2020-3-12 19:51:36
+
+
 		
 	
 
