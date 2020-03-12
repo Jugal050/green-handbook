@@ -243,3 +243,518 @@ Testing 			https://docs.spring.io/spring/docs/current/spring-framework-reference
 		// done 2020-3-11 12:18:46	
 
 		3.5.5. Context Management
+
+			Context Configuration with XML resources
+
+			Context Configuration with Groovy Scripts
+
+			Context Configuration with Component Classes
+
+			Mixing XML, Groovy Scripts, and Component Classes
+
+			Context Configuration with Context Initializers
+
+			Context Configuration Inheritance
+
+			Context Configuration with Environment Profiles
+
+			Context Configuration with Test Property Sources
+
+			Loading a WebApplicationContext
+
+			Context Caching
+
+			Context Hierarchies
+
+		// done 2020-3-12 10:31:53
+
+		3.5.6. Dependency Injection of Test Fixtures	
+
+			监听器： DependencyInjectionTestExecutionListener 
+
+			java:
+
+				@ExtendWith(SpringExtension.class)
+				// specifies the Spring configuration to load for this test fixture
+				@ContextConfiguration("repository-config.xml")
+				class HibernateTitleRepositoryTests {
+
+				    // this instance will be dependency injected by type
+				    @Autowired
+				    HibernateTitleRepository titleRepository;
+
+				    @Test
+				    void findById() {
+				        Title title = titleRepository.findById(new Long(10));
+				        assertNotNull(title);
+				    }
+				}
+
+				---------------------------------------
+
+				@ExtendWith(SpringExtension.class)
+				// specifies the Spring configuration to load for this test fixture
+				@ContextConfiguration("repository-config.xml")
+				class HibernateTitleRepositoryTests {
+
+				    // this instance will be dependency injected by type
+				    HibernateTitleRepository titleRepository;
+
+				    @Autowired
+				    void setTitleRepository(HibernateTitleRepository titleRepository) {
+				        this.titleRepository = titleRepository;
+				    }
+
+				    @Test
+				    void findById() {
+				        Title title = titleRepository.findById(new Long(10));
+				        assertNotNull(title);
+				    }
+				}
+
+				---------------------------------------
+
+				// ...
+
+				    @Autowired
+				    @Override
+				    public void setDataSource(@Qualifier("myDataSource") DataSource dataSource) {
+				        super.setDataSource(dataSource);
+				    }
+
+				// ...
+
+			xml:
+			
+				<?xml version="1.0" encoding="UTF-8"?>
+				<beans xmlns="http://www.springframework.org/schema/beans"
+				    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				    xsi:schemaLocation="http://www.springframework.org/schema/beans
+				        https://www.springframework.org/schema/beans/spring-beans.xsd">
+
+				    <!-- this bean will be injected into the HibernateTitleRepositoryTests class -->
+				    <bean id="titleRepository" class="com.foo.repository.hibernate.HibernateTitleRepository">
+				        <property name="sessionFactory" ref="sessionFactory"/>
+				    </bean>
+
+				    <bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+				        <!-- configuration elided for brevity -->
+				    </bean>
+
+				</beans>	
+
+		3.5.7. Testing Request- and Session-scoped Beans
+
+			测试request-scoped and session-scoped beans步骤：
+
+				// 确保test类已通过添加注解@WebAppConfiguration加载WebAppConfiguration
+				Ensure that a WebApplicationContext is loaded for your test by annotating your test class with @WebAppConfiguration.
+
+				// test实例中注入request/session模拟对象，并准备相应的配置信息
+				Inject the mock request or session into your test instance and prepare your test fixture as appropriate.
+
+				// 调用web组件
+				Invoke your web component that you retrieved from the configured WebApplicationContext (with dependency injection).
+
+				// 对模拟对象执行断言
+				Perform assertions against the mocks.
+
+			xml:
+
+				<!-- request scoped -->			
+				<beans>
+
+				    <bean id="userService" class="com.example.SimpleUserService"
+				            c:loginAction-ref="loginAction"/>
+
+				    <bean id="loginAction" class="com.example.LoginAction"
+				            c:username="#{request.getParameter('user')}"
+				            c:password="#{request.getParameter('pswd')}"
+				            scope="request">
+				        <aop:scoped-proxy/>
+				    </bean>
+
+				</beans>
+
+				-------------------------------------------
+
+				<!-- session scoped -->			
+				<beans>
+
+				    <bean id="userService" class="com.example.SimpleUserService"
+				            c:userPreferences-ref="userPreferences" />
+
+				    <bean id="userPreferences" class="com.example.UserPreferences"
+				            c:theme="#{session.getAttribute('theme')}"
+				            scope="session">
+				        <aop:scoped-proxy/>
+				    </bean>
+
+				</beans>		
+
+			java:
+			
+				// request scoped
+				@SpringJUnitWebConfig
+				class RequestScopedBeanTests {
+
+				    @Autowired UserService userService;
+				    @Autowired MockHttpServletRequest request;
+
+				    @Test
+				    void requestScope() {
+				        request.setParameter("user", "enigma");
+				        request.setParameter("pswd", "$pr!ng");
+
+				        LoginResults results = userService.loginUser();
+				        // assert results
+				    }
+				}
+
+				// session scoped
+				@SpringJUnitWebConfig
+				class SessionScopedBeanTests {
+
+				    @Autowired UserService userService;
+				    @Autowired MockHttpSession session;
+
+				    @Test
+				    void sessionScope() throws Exception {
+				        session.setAttribute("theme", "blue");
+
+				        Results results = userService.processUserPreferences();
+				        // assert results
+				    }
+				}
+
+		3.5.8. Transaction Management
+		
+			监听器： TransactionalTestExecutionListener		
+
+			Test-managed Transactions
+
+			Enabling and Disabling Transactions
+
+				java:
+
+					@SpringJUnitConfig(TestConfig.class)
+					@Transactional
+					class HibernateUserRepositoryTests {
+
+					    @Autowired
+					    HibernateUserRepository repository;
+
+					    @Autowired
+					    SessionFactory sessionFactory;
+
+					    JdbcTemplate jdbcTemplate;
+
+					    @Autowired
+					    void setDataSource(DataSource dataSource) {
+					        this.jdbcTemplate = new JdbcTemplate(dataSource);
+					    }
+
+					    @Test
+					    void createUser() {
+					        // track initial state in test database:
+					        final int count = countRowsInTable("user");
+
+					        User user = new User(...);
+					        repository.save(user);
+
+					        // Manual flush is required to avoid false positive in test
+					        sessionFactory.getCurrentSession().flush();
+					        assertNumUsers(count + 1);
+					    }
+
+					    private int countRowsInTable(String tableName) {
+					        return JdbcTestUtils.countRowsInTable(this.jdbcTemplate, tableName);
+					    }
+
+					    private void assertNumUsers(int expected) {
+					        assertEquals("Number of rows in the [user] table.", expected, countRowsInTable("user"));
+					    }
+					}
+
+			Transaction Rollback and Commit Behavior		
+
+				默认情况下，测试中的事务在测试完成时会自动回滚。但是可以通过@Commit、@Rollback来执行提交/回滚。
+
+			Programmatic Transaction Management
+			
+				java:
+
+					@ContextConfiguration(classes = TestConfig.class)
+					public class ProgrammaticTransactionManagementTests extends
+					        AbstractTransactionalJUnit4SpringContextTests {
+
+					    @Test
+					    public void transactionalTest() {
+					        // assert initial state in test database:
+					        assertNumUsers(2);
+
+					        deleteFromTables("user");
+
+					        // changes to the database will be committed!
+					        TestTransaction.flagForCommit();
+					        TestTransaction.end();
+					        assertFalse(TestTransaction.isActive());
+					        assertNumUsers(0);
+
+					        TestTransaction.start();
+					        // perform other actions against the database that will
+					        // be automatically rolled back after the test completes...
+					    }
+
+					    protected void assertNumUsers(int expected) {
+					        assertEquals("Number of rows in the [user] table.", expected, countRowsInTable("user"));
+					    }
+					}	
+
+			Running Code Outside of a Transaction
+
+				@BeforeTransaction | @AfterTransaction
+			
+			Configuring a Transaction Manager	
+
+				如果有多个PlatformTransactionManager，可以通过以下方式进行区分添加：
+
+					@Transactional("myTxMgr")
+
+					@Transactional(transactionManager = "myTxMgr")
+
+					@Configuration注解的TransactionManagementConfigurer实现类
+
+			Demonstration of All Transaction-related Annotations
+			
+				java:
+
+					@SpringJUnitConfig
+					@Transactional(transactionManager = "txMgr")
+					@Commit
+					class FictitiousTransactionalTest {
+
+					    @BeforeTransaction
+					    void verifyInitialDatabaseState() {
+					        // logic to verify the initial state before a transaction is started
+					    }
+
+					    @BeforeEach
+					    void setUpTestDataWithinTransaction() {
+					        // set up test data within the transaction
+					    }
+
+					    @Test
+					    // overrides the class-level @Commit setting
+					    @Rollback
+					    void modifyDatabaseWithinTransaction() {
+					        // logic which uses the test data and modifies database state
+					    }
+
+					    @AfterEach
+					    void tearDownWithinTransaction() {
+					        // execute "tear down" logic within the transaction
+					    }
+
+					    @AfterTransaction
+					    void verifyFinalDatabaseState() {
+					        // logic to verify the final state after transaction has rolled back
+					    }
+
+					}	
+
+					-------------------------------------------	Hibernate
+
+					// ...
+
+					@Autowired
+					SessionFactory sessionFactory;
+
+					@Transactional
+					@Test // no expected exception!
+					public void falsePositive() {
+					    updateEntityInHibernateSession();
+					    // False positive: an exception will be thrown once the Hibernate
+					    // Session is finally flushed (i.e., in production code)
+					}
+
+					@Transactional
+					@Test(expected = ...)
+					public void updateWithSessionFlush() {
+					    updateEntityInHibernateSession();
+					    // Manual flush is required to avoid false positive in test
+					    sessionFactory.getCurrentSession().flush();
+					}
+
+					// ...	
+
+					-------------------------------------------	Jpa
+
+					// ...
+
+					@PersistenceContext
+					EntityManager entityManager;
+
+					@Transactional
+					@Test // no expected exception!
+					public void falsePositive() {
+					    updateEntityInJpaPersistenceContext();
+					    // False positive: an exception will be thrown once the JPA
+					    // EntityManager is finally flushed (i.e., in production code)
+					}
+
+					@Transactional
+					@Test(expected = ...)
+					public void updateWithEntityManagerFlush() {
+					    updateEntityInJpaPersistenceContext();
+					    // Manual flush is required to avoid false positive in test
+					    entityManager.flush();
+					}
+
+					// ...	
+
+		3.5.9. Executing SQL Scripts
+
+			Executing SQL scripts programmatically
+
+				Spring提供的，可以在集成测试的编码中执行SQL脚本的类：
+
+					org.springframework.jdbc.datasource.init.ScriptUtils
+
+					org.springframework.jdbc.datasource.init.ResourceDatabasePopulator
+
+					org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests
+
+					org.springframework.test.context.testng.AbstractTransactionalTestNGSpringContextTests
+
+				java:
+				
+					@Test
+					void databaseTest() {
+					    ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
+					    populator.addScripts(
+					            new ClassPathResource("test-schema.sql"),
+					            new ClassPathResource("test-data.sql"));
+					    populator.setSeparator("@@");
+					    populator.execute(this.dataSource);
+					    // execute code that uses the test schema and data
+					}	
+
+			Executing SQL scripts declaratively with @Sql
+
+				注解： @Sql
+			
+				监听器： SqlScriptsTestExecutionListener（默认支持）		
+
+				Path Resource Semantics
+
+					java:
+
+						@SpringJUnitConfig
+						@Sql("/test-schema.sql")
+						class DatabaseTests {
+
+						    @Test
+						    void emptySchemaTest() {
+						        // execute code that uses the test schema without any test data
+						    }
+
+						    @Test
+						    @Sql({"/test-schema.sql", "/test-user-data.sql"})
+						    void userTest() {
+						        // execute code that uses the test schema and test data
+						    }
+						}
+
+				Default Script Detection
+				
+					- 类上添加的注解： 如果类名为com.example.MyTest，默认检测的脚本为： classpath:com/example/MyTest.sql.
+					- 方法上添加的注解： 如果类名为com.example.MyTest，方法名为testMethod()，默认检测的脚本为： classpath:com/example/MyTest.testMethod.sql.
+
+				Declaring Multiple @Sql Sets
+				
+					java8:
+
+						@Test
+						@Sql(scripts = "/test-schema.sql", config = @SqlConfig(commentPrefix = "`"))
+						@Sql("/test-user-data.sql")
+						void userTest() {
+						    // execute code that uses the test schema and test data
+						}
+
+					java:
+					
+						@Test
+						@SqlGroup({
+						    @Sql(scripts = "/test-schema.sql", config = @SqlConfig(commentPrefix = "`")),
+						    @Sql("/test-user-data.sql")
+						)}
+						void userTest() {
+						    // execute code that uses the test schema and test data
+						}
+
+				Script Execution Phases
+				
+					默认情况下，SQL脚本是在相关方法执行前执行。如果想改变默认行为，可以使用@Sql中的executionPhase属性。
+
+						java:
+
+							@Test
+							@Sql(
+							    scripts = "create-test-data.sql",
+							    config = @SqlConfig(transactionMode = ISOLATED)
+							)
+							@Sql(
+							    scripts = "delete-test-data.sql",
+							    config = @SqlConfig(transactionMode = ISOLATED),
+							    executionPhase = AFTER_TEST_METHOD
+							)
+							void userTest() {
+							    // execute code that needs the test data to be committed
+							    // to the database outside of the test's transaction
+							}	
+
+				Script Configuration with @SqlConfig
+				
+					Transaction management for @Sql
+
+						java:
+
+							@SpringJUnitConfig(TestDatabaseConfig.class)
+							@Transactional
+							class TransactionalSqlScriptsTests {
+
+							    final JdbcTemplate jdbcTemplate;
+
+							    @Autowired
+							    TransactionalSqlScriptsTests(DataSource dataSource) {
+							        this.jdbcTemplate = new JdbcTemplate(dataSource);
+							    }
+
+							    @Test
+							    @Sql("/test-data.sql")
+							    void usersTest() {
+							        // verify state in test database:
+							        assertNumUsers(2);
+							        // execute code that uses the test data...
+							    }
+
+							    int countRowsInTable(String tableName) {
+							        return JdbcTestUtils.countRowsInTable(this.jdbcTemplate, tableName);
+							    }
+
+							    void assertNumUsers(int expected) {
+							        assertEquals(expected, countRowsInTable("user"),
+							            "Number of rows in the [user] table.");
+							    }
+							}	
+
+				Merging and Overriding Configuration with @SqlMergeMode							
+
+		// done 2020-3-12 12:11:52		
+
+		3.5.10. Parallel Test Execution		
+
+		
+
+
