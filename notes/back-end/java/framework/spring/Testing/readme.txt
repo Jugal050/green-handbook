@@ -1572,6 +1572,155 @@ Testing 			https://docs.spring.io/spring/docs/current/spring-framework-reference
 
 	3.7. WebTestClient	
 
+		3.7.1. Setup
+
+			java:
+
+				------------------- Bind to Controller -------------------
+
+				client = WebTestClient.bindToController(new TestController()).build();
+
+				------------------- Bind to Router Function -------------------
+
+				RouterFunction<?> route = ...
+				client = WebTestClient.bindToRouterFunction(route).build();	
+
+				------------------- Bind to ApplicationContext -------------------
+
+				@SpringJUnitConfig(WebConfig.class) 
+				class MyTests {
+
+				    WebTestClient client;
+
+				    @BeforeEach
+				    void setUp(ApplicationContext context) {  
+				        client = WebTestClient.bindToApplicationContext(context).build(); 
+				    }
+				}
+
+				------------------- Bind to Server -------------------
+
+				client = WebTestClient.bindToServer().baseUrl("http://localhost:8080").build();
+
+				------------------- Client Builder -------------------
+
+				client = WebTestClient.bindToController(new TestController())
+			        .configureClient()
+			        .baseUrl("/test")
+			        .build();
+
+        3.7.2. Writing Tests
+
+        	java:
+
+        		------------------- 校验响应码和响应头信息 -------------------
+
+	        	client.get().uri("/persons/1")
+			            .accept(MediaType.APPLICATION_JSON)
+			            .exchange()
+			            .expectStatus().isOk()
+			            .expectHeader().contentType(MediaType.APPLICATION_JSON)
+
+
+	            client.get().uri("/persons")
+				        .exchange()
+				        .expectStatus().isOk()
+				        .expectBodyList(Person.class).hasSize(3).contains(person);
+			
+				client.get().uri("/persons/1")
+				        .exchange()
+				        .expectStatus().isOk()
+				        .expectBody(Person.class)
+				        .consumeWith(result -> {
+				            // custom assertions (e.g. AssertJ)...
+				        });
+
+		        EntityExchangeResult<Person> result = client.get().uri("/persons/1")
+				        .exchange()
+				        .expectStatus().isOk()
+				        .expectBody(Person.class)
+				        .returnResult();
+
+	        No Content
+
+	        	java:
+
+	        		client.get().uri("/persons/123")
+					        .exchange()
+					        .expectStatus().isNotFound()
+					        .expectBody(Void.class);
+
+			        client.post().uri("/persons")
+					        .body(personMono, Person.class)
+					        .exchange()
+					        .expectStatus().isCreated()
+					        .expectBody().isEmpty();
+
+	        JSON Content
+
+	        	java:
+
+	        		client.get().uri("/persons/1")
+					        .exchange()
+					        .expectStatus().isOk()
+					        .expectBody()
+					        .json("{\"name\":\"Jane\"}")
+
+			        client.get().uri("/persons")
+					        .exchange()
+					        .expectStatus().isOk()
+					        .expectBody()
+					        .jsonPath("$[0].name").isEqualTo("Jane")
+					        .jsonPath("$[1].name").isEqualTo("Jason");
+
+	        Streaming Responses
+
+	        	java:
+
+	        		FluxExchangeResult<MyEvent> result = client.get().uri("/events")
+					        .accept(TEXT_EVENT_STREAM)
+					        .exchange()
+					        .expectStatus().isOk()
+					        .returnResult(MyEvent.class);
+
+
+			        Flux<Event> eventFlux = result.getResponseBody();
+
+					StepVerifier.create(eventFlux)
+					        .expectNext(person)
+					        .expectNextCount(4)
+					        .consumeNextWith(p -> ...)
+					        .thenCancel()
+					        .verify();
+
+        	Request Body
+
+4. Further Resources
+
+	JUnit: “A programmer-friendly testing framework for Java”. Used by the Spring Framework in its test suite and supported in the Spring TestContext Framework.
+
+	TestNG: A testing framework inspired by JUnit with added support for test groups, data-driven testing, distributed testing, and other features. Supported in the Spring TestContext Framework
+
+	AssertJ: “Fluent assertions for Java”, including support for Java 8 lambdas, streams, and other features.
+
+	Mock Objects: Article in Wikipedia.
+
+	MockObjects.com: Web site dedicated to mock objects, a technique for improving the design of code within test-driven development.
+
+	Mockito: Java mock library based on the Test Spy pattern. Used by the Spring Framework in its test suite.
+
+	EasyMock: Java library “that provides Mock Objects for interfaces (and objects through the class extension) by generating them on the fly using Java’s proxy mechanism.”
+
+	JMock: Library that supports test-driven development of Java code with mock objects.
+
+	DbUnit: JUnit extension (also usable with Ant and Maven) that is targeted at database-driven projects and, among other things, puts your database into a known state between test runs.
+
+	The Grinder: Java load testing framework.
+
+	SpringMockK: Support for Spring Boot integration tests written in Kotlin using MockK instead of Mockito.	
+
+// done 2020-3-12 20:07:02	
+
 		
 
 

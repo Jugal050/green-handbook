@@ -64,7 +64,7 @@ https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/
 
 							Core Technologies 								// done 2020-3-9 19:57:56
 
-	Testing				Mock Objects, TestContext Framework, Spring MVC Test, WebTestClient. 		// start 2020-3-10 17:32:37
+	Testing				Mock Objects, TestContext Framework, Spring MVC Test, WebTestClient. 		// start 2020-3-10 17:32:37 done 2020-3-12 20:07:52
 
 							3.3. JDBC Testing Support	 					// done 2020-3-10 19:44:54	
 
@@ -73,6 +73,8 @@ https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/
 							3.5.9. Executing SQL Scripts 					// done 2020-3-12 12:12:12
 
 							3.6. Spring MVC Test Framework  				// done 2020-3-12 19:51:36
+
+							Testing 										// done 2020-3-12 20:07:30
 
 	Data Access			Transactions, DAO Support, JDBC, O/R Mapping, XML Marshalling.
 
