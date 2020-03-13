@@ -2513,6 +2513,195 @@
 
 	# Testing 										// done 2020-3-12 20:07:30
 
+2020-3-13 09:01:18
+
+	# Testing case.
+
+		// 使用内置数据库测试SQL相关（数据库连接、SQL脚本、SQL配置等）
+
+		测试类：
+
+			java:
+
+				package org.springframework.test.context.configuration.interfaces;
+
+				import javax.sql.DataSource;
+
+				import org.junit.jupiter.api.Test;
+				import org.junit.jupiter.api.extension.ExtendWith;
+
+				import org.springframework.beans.factory.annotation.Autowired;
+				import org.springframework.jdbc.core.JdbcTemplate;
+				import org.springframework.test.context.jdbc.Sql;
+				import org.springframework.test.context.jdbc.SqlConfig;
+				import org.springframework.test.context.junit.jupiter.SpringExtension;
+				import org.springframework.test.jdbc.JdbcTestUtils;
+
+				import static org.assertj.core.api.Assertions.assertThat;
+
+				@ExtendWith(SpringExtension.class)
+				class SqlConfigInterfaceTests implements SqlConfigTestInterface {
+
+					JdbcTemplate jdbcTemplate;
+
+					@Autowired
+					void setDataSource(DataSource dataSource) {
+						this.jdbcTemplate = new JdbcTemplate(dataSource);
+					}
+
+					@Test
+					@Sql(scripts = "/org/springframework/test/context/jdbc/schema.sql", //
+							config = @SqlConfig(separator = ";"))
+					@Sql("/org/springframework/test/context/jdbc/data-add-users-with-custom-script-syntax.sql")
+					void methodLevelScripts() {
+						assertNumUsers(3);
+					}
+
+					void assertNumUsers(int expected) {
+						assertThat(countRowsInTable("user")).as("Number of rows in the 'user' table.").isEqualTo(expected);
+					}
+
+					int countRowsInTable(String tableName) {
+						return JdbcTestUtils.countRowsInTable(this.jdbcTemplate, tableName);
+					}
+
+				}	
+
+				@ContextConfiguration(classes = EmptyDatabaseConfig.class)
+				@DirtiesContext
+				@SqlConfig(commentPrefixes = { "`", "%%" }, blockCommentStartDelimiter = "#$", blockCommentEndDelimiter = "$#", separator = "@@")
+				interface SqlConfigTestInterface {
+				}
+
+				@Configuration
+				public class EmptyDatabaseConfig {
+
+					@Bean
+					JdbcTemplate jdbcTemplate(DataSource dataSource) {
+						return new JdbcTemplate(dataSource);
+					}
+
+					@Bean
+					PlatformTransactionManager transactionManager(DataSource dataSource) {
+						return new DataSourceTransactionManager(dataSource);
+					}
+
+					@Bean
+					DataSource dataSource() {
+						return new EmbeddedDatabaseBuilder()//
+						.setName("empty-sql-scripts-test-db")//
+						.build();
+					}
+
+				}
+
+			相关类：
+
+				/**
+				 * @ExtendWith 为添加注解的测试类/测试方法注册Extension实现类
+				 */ 
+				org.junit.jupiter.api.extension.ExtendWith
+
+				/**
+				 * JUnit5的编程模型中集成Spring测试框架（Spring TestContext Framework）
+				 * 集成方法： @ExtendWith(SpringExtension.class) 或者 @SpringJUnitConfig 或者 @SpringJUnitWebConfig
+				 */ 
+				org.springframework.test.context.junit.jupiter.SpringExtension
+
+				/**
+				 * @ContextConfiguration 为集成测试定义ApplicationContext加载和配置等相关信息（支持注解、xml等资源配置）
+				 */
+				org.springframework.test.context.ContextConfiguration
+
+				/** 
+				 * 为了SQL脚本集成测试，提供的空的数据库配置类
+				 */
+				org.springframework.test.context.jdbc.EmptyDatabaseConfig
+
+				/**
+				 * spring-jdbc中的核心类，简化了JDBC和工具类的使用
+				 *
+				 * 执行JDBC工作流，帮助应用代码提供SQL和其他结果信息。
+				 * 执行SQL查询、修改，初始化结果集迭代器、捕获JDBC异常并转换为更易读的spring异常。
+				 */
+				org.springframework.jdbc.core.JdbcTemplate
+
+				/**
+				 * Spring事务中的核心接口
+				 * 默认实现： JtaTransactionManager, DataSourceTransactionManager
+				 */
+				org.springframework.transaction.PlatformTransactionManager
+
+				/**
+				 * 物理数据源的连接工厂。 DriverManager的变体。
+				 * 实现类通常是一个基于Java名称或者JNDI API的名称服务来进行注册。
+				 * 
+				 * 驱动厂商实现，有三种方式：
+				 *     1. 基本实现，提供一个标准的连接对象Connection。
+				 *	   2. 连接池实现，连接对象Connection自动从连接池中获取，该实现处理连接池管理的中间层。
+				 *	   3. 分布式事务实现，连接对象Connection从连接池中获取并且可以用于分布式事务，该实现处理连接池管理和分布式事务的中间层。
+				 * 
+				 * 实现类必须提供一个public的无参构造
+				 */
+				javax.sql.DataSource
+
+				/**
+				 * 内置数据库的构造器
+				 */
+				org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder
+
+				/**
+				 * 内置数据库的工厂类，工厂配置完成后，通过getDatabase()来获取内置数据库实例EmbeddedDatabase
+				 */
+				org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory
+
+				/**
+				 * 支持的内置数据库的类型，包括: HSQL, H2, Derby
+				 */
+				org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType	
+
+				/**
+				 * 处理SQL脚本的通用工具类
+				 */
+				org.springframework.jdbc.datasource.init.ScriptUtils
+
+				/**
+				 * 使用外部资源定义的SQL脚本对数据库进行填充、初始化、清理等操作
+				 */
+				org.springframework.jdbc.datasource.init.ResourceDatabasePopulator
+
+				/**
+				 * 数据库填充、初始化、清理等操作的策略接口
+				 */
+				org.springframework.jdbc.datasource.init.DatabasePopulator
+
+				/**
+				 * 处理DatabasePopulator的工具类
+				 */
+				org.springframework.jdbc.datasource.init.DatabasePopulatorUtils
+
+				/**
+				 * SQL配置注解，可以设置SQL脚本的解析、执行等相关信息（如SQL脚本的注释前缀、分隔符、事务模式（传播机制/执行策略）、编码、数据库名称（多数据源时需要设置））
+				 * 
+				 */
+				org.springframework.test.context.jdbc.SqlConfig
+
+				/**
+				 * 集成测试中，@Sql可以为注解的类/方法配置SQL脚本、执行语句statement，如：@Sql(scripts = "/org/springframework/test/context/jdbc/schema.sql")
+				 */
+				org.springframework.test.context.jdbc.Sql
+
+
+	# 内嵌数据库：
+
+		org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType
+
+			HSQL(Hypersonic): http://hsqldb.org (Embedded Java SQL Database)
+
+			H2(H2): https://h2database.com (Embedded Java SQL Database Engine) 									
+
+			DERBY(Apache Derby): https://db.apache.org/derby (Embedded SQL Database)
+
 
 		
 	
