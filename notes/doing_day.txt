@@ -2691,6 +2691,51 @@
 				 */
 				org.springframework.test.context.jdbc.Sql
 
+				/**
+				 * 可用于简单的标准数据库测试场景的JDBC相关的通用工具类
+				 */
+				org.springframework.test.jdbc.JdbcTestUtils
+
+
+		// 添加WebApplicationContext支持
+
+			测试类：
+
+				java:
+
+					@ExtendWith(SpringExtension.class)
+					class WebAppConfigurationInterfaceTests implements WebAppConfigurationTestInterface {
+
+						@Autowired
+						WebApplicationContext wac;
+
+
+						@Test
+						void wacLoaded() {
+							assertThat(wac).isNotNull();
+						}
+
+					}
+
+					@WebAppConfiguration
+					@ContextConfiguration(classes = Config.class)
+					interface WebAppConfigurationTestInterface {
+
+						@Configuration
+						static class Config {
+							/* no user beans required for these tests */
+						}
+
+					}
+
+			相关类：
+			
+				/**
+				 * 类注解，声明集成测试中的applicationConetxt为WebApplicationContext
+				 * 必须与@ContextConfiguration一起使用，要么在单独的测试类中，要么在测试类的子类中。
+				 */
+				org.springframework.test.context.web.WebAppConfiguration		
+
 
 	# 内嵌数据库：
 
@@ -2701,6 +2746,16 @@
 			H2(H2): https://h2database.com (Embedded Java SQL Database Engine) 									
 
 			DERBY(Apache Derby): https://db.apache.org/derby (Embedded SQL Database)
+
+	# 住址和宽带信息 	@张良
+	
+		住址： 北京市昌平区定泗路宏福苑北区2-2-1302
+
+		宽带： 电信宽带
+
+	# 远程办公环境：
+
+		虚拟机 -> win7系统
 
 
 		
