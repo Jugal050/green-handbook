@@ -2763,11 +2763,11 @@
 
 		windows7 系统 										// done 2020-3-13 22:00:03		
 
-		Critrix: C:\Users\hbw44\Documents\Citrix1 			// TODO 
+		Critrix: C:\Users\hbw44\Documents\Citrix1 			// TODO  done 2020-3-14 17:12:41
 
-			CitrixReceiver 									// 添加账户： 请输入您的工作电子邮件或IT部门提供的服务器地址：
+			CitrixReceiver 									// 添加账户： 请输入您的工作电子邮件或IT部门提供的服务器地址： 			// 直接关掉即可。 done
 
-			CitrixWorkspaceApp								// 请求的操作失败，相关日志：桌面/TrolleyExpress-20200314-115921.txt
+			CitrixWorkspaceApp								// 请求的操作失败，相关日志：桌面/TrolleyExpress-20200314-115921.txt 	// 不安装也可以。 done
 
 			安全桌面 										// 已安装，账号无权限 		jbf-hanbinwei 13752330376oa/
 
