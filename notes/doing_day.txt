@@ -2757,6 +2757,22 @@
 
 		虚拟机 -> win7系统
 
+# 2020-3-14 11:59:38
+
+	# 远程办公环境安装：										// todo @凯月 @张良  worktime
+
+		windows7 系统 										// done 2020-3-13 22:00:03		
+
+		Critrix: C:\Users\hbw44\Documents\Citrix1 			// TODO 
+
+			CitrixReceiver 									// 添加账户： 请输入您的工作电子邮件或IT部门提供的服务器地址：
+
+			CitrixWorkspaceApp								// 请求的操作失败，相关日志：桌面/TrolleyExpress-20200314-115921.txt
+
+			安全桌面 										// 已安装，账号无权限 		jbf-hanbinwei 13752330376oa/
+
+		IPV6已关闭（windows10 + windows7虚拟机）	
+
 
 		
 	
