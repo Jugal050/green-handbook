@@ -86,37 +86,367 @@ Testing 			https://docs.spring.io/spring/docs/current/spring-framework-reference
 
 		3.4.1. Spring Testing Annotations	
 
-			@BootstrapWith
+			@BootstrapWith: 
 
-			@ContextConfiguration
+				类注解，可以用来配置如何引导Spring TestContext Framework，可以使用@BootStrapWith来指定一个自定义的TestContextBootstrapper。
 
-			@WebAppConfiguration
+			@ContextConfiguration: 
 
-			@ContextHierarchy
+				定义类级别的元注解，集成测试中可以用于决定如何加载和配置ApplicationContext，注解支持声明上下文加载用的资源路径和组件类：
+					资源路径是指典型的类路径下的xml配置文件/Groovy脚本，也支持文件系统中的文件/脚本。
+					组件类是指典型的@Configuration类，@Component、@Service也支持
 
-			@ActiveProfiles
+				i.e:
+
+					java:
+
+						-------------------- 资源路径 --------------------
+
+						@ContextConfiguration("/test-config.xml") 
+						class XmlApplicationContextTests {
+						    // class body...
+						}
+
+						-------------------- 配置类 --------------------
+
+						@ContextConfiguration(classes = TestConfig.class) 
+						class ConfigClassApplicationContextTests {
+						    // class body...
+						}
+
+						-------------------- 声明上下文初始化类ApplicationContextInitializer --------------------
+
+						@ContextConfiguration(initializers = CustomContextIntializer.class) 
+						class ContextInitializerTests {
+						    // class body...
+						}
+
+						-------------------- 申明上下文加载策略 --------------------
+						@ContextConfiguration(locations = "/test-context.xml", loader = CustomContextLoader.class) 
+						class CustomLoaderXmlApplicationContextTests {
+						    // class body...
+						}
+
+			@WebAppConfiguration: 
+
+				类注解，集成测试中可用于申明其加载的ApplicationContext为WebApplicationContext。 必须与@ContextConfiguration一起使用才会生效。
+
+				i.e:
+
+					java:
+
+						@ContextConfiguration
+						@WebAppConfiguration 
+						class WebAppTests {
+						    // class body...
+						}
+
+						-------------------- 指定类路径支援 --------------------
+
+						@ContextConfiguration
+						@WebAppConfiguration("classpath:test-web-resources") 
+						class WebAppTests {
+						    // class body...
+						}
+
+			@ContextHierarchy:
+
+				类注解，用来定义集成测试中ApplicationContext实例的继承关系。
+
+				i.e:
+
+					@ContextHierarchy({
+					    @ContextConfiguration("/parent-config.xml"),
+					    @ContextConfiguration("/child-config.xml")
+					})
+					class ContextHierarchyTests {
+					    // class body...
+					}
+
+					@WebAppConfiguration
+					@ContextHierarchy({
+					    @ContextConfiguration(classes = AppConfig.class),
+					    @ContextConfiguration(classes = WebConfig.class)
+					})
+					class WebIntegrationTests {
+					    // class body...
+					}
+
+
+			@ActiveProfiles:
+
+				类注解，用来声明集成测试中ApplicationContext加载时激活使用的bean定义配置。可继承父类上的注解信息。
+				可以通过实现ActiveProfilesResolver+@ActiveProfiles(resolver)来替代
+
+				i.e:
+
+					java:
+
+						-------------------- dev(profile)被激活使用 --------------------
+
+						@ContextConfiguration
+						@ActiveProfiles("dev") 
+						class DeveloperTests {
+						    // class body...
+						}
+
+						-------------------- dev, integration(profile)被激活使用 --------------------
+
+						@ContextConfiguration
+						@ActiveProfiles({"dev", "integration"}) 
+						class DeveloperIntegrationTests {
+						    // class body...
+						}
 
 			@TestPropertySource
 
+				类注解，用来配置属性文件的路径，在集成测试中可以添加内部属性到ApplicationContext.Environment.PropertySources中。
+				优先级高于操作系统的环境变量、Java系统属性、@PropertySource/编码方式添加的属性源。
+
+				i.e:
+
+					-------------------- 声明类路径下的资源文件 --------------------
+
+					@ContextConfiguration
+					@TestPropertySource("/test.properties") 
+					class MyIntegrationTests {
+					    // class body...
+					}
+
+					-------------------- 声明内部属性 --------------------
+
+					@ContextConfiguration
+					@TestPropertySource(properties = { "timezone = GMT", "port: 4242" }) 
+					class MyIntegrationTests {
+					    // class body...
+					}
+
+
 			@DirtiesContext
+
+				表明底层Spring的ApplicationContext在测试执行期间已污染，需要被关闭。 当一个applicationContext被标记为dirty，他将从测试中的框架缓存中移除并关闭。
+				这就导致，其他需要同样配置上下文的测试/测试子类中的底层Spring容器会重新创建。
+
+				可以用在类/方法上。 被注解的ApplicationContext是在方法/类执行前还是执行后执行污染标记，取决于配置的属性methodMode/classMode.
+
+				i.e:
+
+					java:
+
+						-------------------- 类注解 + BEFORE_CLASS: 测试类前标记污染 --------------------
+
+						@DirtiesContext(classMode = BEFORE_CLASS) 
+						class FreshContextTests {
+						    // some tests that require a new Spring container
+						}
+
+						-------------------- 类注解 + AFTER_CLASS（默认）: 测试类后标记污染 --------------------
+
+						@DirtiesContext 
+						class ContextDirtyingTests {
+						    // some tests that result in the Spring container being dirtied
+						}
+
+						-------------------- 类注解 + BEFORE_EACH_TEST_METHOD： 每个测试方法前标记污染 --------------------
+
+						@DirtiesContext(classMode = BEFORE_EACH_TEST_METHOD) 
+						class FreshContextTests {
+						    // some tests that require a new Spring container
+						}
+
+						-------------------- 类注解 + AFTER_EACH_TEST_METHOD： 每个测试方法后标记污染 --------------------
+
+						@DirtiesContext(classMode = AFTER_EACH_TEST_METHOD) 
+						class ContextDirtyingTests {
+						    // some tests that result in the Spring container being dirtied
+						}
+
+						-------------------- 方法注解 + BEFORE_METHOD: 测试方法前标记污染 --------------------
+
+						@DirtiesContext(methodMode = BEFORE_METHOD) 
+						@Test
+						void testProcessWhichRequiresFreshAppCtx() {
+						    // some logic that requires a new Spring container
+						}
+
+						-------------------- 方法注解 + AFTER_METHOD（默认）: 测试方法后标记污染 --------------------
+
+						@DirtiesContext 
+						@Test
+						void testProcessWhichDirtiesAppCtx() {
+						    // some logic that results in the Spring container being dirtied
+						}
+
+						-------------------- 上下文继承，参考DirtiesContext.HierarchyMode（EXHAUSTIVE: 所有类、子类都会标记；CURRENT_LEVEL: 只有当前层级会被标记） -------------
+
+						@ContextHierarchy({
+						    @ContextConfiguration("/parent-config.xml"),
+						    @ContextConfiguration("/child-config.xml")
+						})
+						class BaseTests {
+						    // class body...
+						}
+
+						class ExtendedTests extends BaseTests {
+
+						    @Test
+						    @DirtiesContext(hierarchyMode = CURRENT_LEVEL) 
+						    void test() {
+						        // some logic that results in the child context being dirtied
+						    }
+						}
 
 			@TestExecutionListeners
 
+				类上的元注解，配置需要通过TestContextManager进行注册的TestExecutionListener实现类。通常与@ContextConfiguration搭配使用。
+
+				i.e:
+
+					@ContextConfiguration
+					@TestExecutionListeners({CustomTestExecutionListener.class, AnotherTestExecutionListener.class}) 
+					class CustomTestExecutionListenerTests {
+					    // class body...
+					}
+
 			@Commit
+
+				表明支持事务的测试方法在执行完成之后进行事务提交。 支持注解类/方法。
+
+				i.e:
+
+					java:
+
+						-------------------- 提交测试结果到数据库 --------------------
+
+						@Commit 
+						@Test
+						void testProcessWithoutRollback() {
+						    // ...
+						}
 
 			@Rollback
 
+				表明支持事务的测试方法在执行完成后是否回滚事务，如果为true，则事务回滚，否则，则事务提交。Spring Context Framework的集成测试中，默认为true（即时不主动声明）。
+
+				i.e:
+
+					java:
+
+						@Rollback(false) 
+						@Test
+						void testProcessWithoutRollback() {
+						    // ...
+						}
+
 			@BeforeTransaction
+
+				在@Transaction注解的事务中，表明该注解的方法会在事务开始前执行。修饰的方法无需是public的，也可以是Java8中接口的default实现。
+
+				i.e:
+
+					java:
+
+						@BeforeTransaction 
+						void beforeTransaction() {
+						    // logic to be executed before a transaction is started
+						}
 
 			@AfterTransaction
 
+				在@Transaction注解的事务中，表明该注解的方法会在事务结束后执行。修饰的方法无需是public的，也可以是Java8中接口的default实现。
+
+				i.e:
+
+					java:
+
+						@AfterTransaction 
+						void afterTransaction() {
+						    // logic to be executed after a transaction has ended
+						}
+
 			@Sql
+
+				注解类/方法，配置集成测试中需要在指定数据库上执行的SQL脚本。
+
+				i.e:
+
+					java:
+
+						-------------------- Run two scripts for this test. --------------------
+
+						@Test
+						@Sql({"/test-schema.sql", "/test-user-data.sql"}) 
+						void userTest() {
+						    // execute code that relies on the test schema and test data
+						}
 
 			@SqlConfig
 
+				如何解析并执行@Sql注解配置的SQL脚本
+
+				i.e:
+
+					java:
+
+						@Test
+						@Sql(
+						    scripts = "/test-user-data.sql",
+						    config = @SqlConfig(commentPrefix = "`", separator = "@@") 
+						)
+						void userTest() {
+						    // execute code that relies on the test data
+						}
+
 			@SqlMergeMode
 
+				用来声明是否合并方法级别的@Sql脚本和类级别的@Sql脚本。 如果无声明，默认为OVERRIDE，方法上的@Sql会覆盖类上的@Sql。
+
+				i.e:
+
+					-------------------- 类中所有方法都设置为MERGE模式 --------------------
+
+					@SpringJUnitConfig(TestConfig.class)
+					@Sql("/test-schema.sql")
+					@SqlMergeMode(MERGE) 
+					class UserTests {
+
+					    @Test
+					    @Sql("/user-test-data-001.sql")
+					    void standardUserProfile() {
+					        // execute code that relies on test data set 001
+					    }
+					}
+
+					-------------------- 类中指定方法设置为MERGE模式 --------------------
+
+					@SpringJUnitConfig(TestConfig.class)
+					@Sql("/test-schema.sql")
+					class UserTests {
+
+					    @Test
+					    @Sql("/user-test-data-001.sql")
+					    @SqlMergeMode(MERGE) 
+					    void standardUserProfile() {
+					        // execute code that relies on test data set 001
+					    }
+					}
+
 			@SqlGroup	
+
+				容器注解，汇总其他的@Sql注解（分组）。
+
+				i.e:
+
+					-------------------- 声明一组SQL脚本 --------------------
+
+					@Test
+					@SqlGroup({ 
+					    @Sql(scripts = "/test-schema.sql", config = @SqlConfig(commentPrefix = "`")),
+					    @Sql("/test-user-data.sql")
+					)}
+					void userTest() {
+					    // execute code that uses the test schema and test data
+					}
 
 		3.4.2. Standard Annotation Support
 
