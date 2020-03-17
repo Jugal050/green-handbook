@@ -116,6 +116,14 @@ framework
 
 		source-code:
 
+	hibernate-validator:
+	
+		hibernate-reference-guid:  http://hibernate.org/validator/documentation/ 					// start 2020-3-17 21:30:42
+
+			1 Getting started 									// done 2020-3-17 23:02:14
+
+			
+
 	springboot:
 
 		springboot-reference-guide:
