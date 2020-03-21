@@ -2820,6 +2820,12 @@
 
 	# 饿了											// 2020-3-18 11:36:37
 
+2020-3-21 15:21:06
+
+	# Hibernate Validator Reference Guide
+
+		4. Interpolating constraint error messages 	// done 2020-3-21 15:22:30
+
 	
 
 		

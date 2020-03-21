@@ -205,7 +205,192 @@ Hibernate Validator 6.0.17.Final ——— JSR 380 Reference Implementation
 
 	// done 2020-3-17 23:00:07	
 
-2. 声明、校验实体类约束		
+2. 声明、校验实体约束
+
+3. 声明、校验方法约束 		
+
+4. 添加约束的错误消息
+
+	4.1 默认消息
+
+		消息参数: {}
+		消息表达式: ${}
+
+		解析规则：
+
+			1. 国际化
+
+				ValidationMessage.properties
+				ValidationMessage_en_US.properties
+				ValidationMessage_zh_CN.properties
+
+			2. ValidationMessages	
+
+			3. 约束属性值
+			
+				Size#min(): must not be least {min}
+
+			4. EL表达式	
+
+		4.1.1 转义字符
+		
+			\{ -> {
+			\} -> }
+			\$ -> $
+			\\ -> \
+
+		4.1.2 添加消息表达式	 
+
+			EL表达式中可用的内容：
+
+				- 约束中的属性值: 属性名称
+				- 当前校验值（属性、对象、方法参数等等）: validatedValue
+				- 对象映射: format(String format, Object... args) 类似 java.util.Formatter.format(String format, Object... args)
+
+		4.1.3 例子
+
+			实体类：
+
+				public class Car {
+
+					@NotNull
+					private String manufacturer;
+
+					@Size(
+							min = 2,
+							max = 14,
+							message = "The license plate '${validatedValue}' must be between {min} and {max} characters long"
+					)
+					private String licensePlate;
+
+					@Min(
+							value = 2,
+							message = "There must be at least {value} seat${value > 1 ? 's' : ''}"
+					)
+					private int seatCount;
+
+					@DecimalMax(
+							value = "350",
+							message = "The top speed ${formatter.format('%1$.2f', validatedValue)} is higher " +
+									"than {value}"
+					)
+					private double topSpeed;
+
+					@DecimalMax(value = "100000", message = "Price must not be higher than ${value}")
+					private BigDecimal price;
+
+					public Car(
+							String manufacturer,
+							String licensePlate,
+							int seatCount,
+							double topSpeed,
+							BigDecimal price) {
+						this.manufacturer = manufacturer;
+						this.licensePlate = licensePlate;
+						this.seatCount = seatCount;
+						this.topSpeed = topSpeed;
+						this.price = price;
+					}
+
+					//getters and setters ...
+				}
+
+			测试类：
+
+				public class CarTest {
+
+					private static Validator validator;
+
+					@BeforeClass
+					public static void setUpValidator() {
+						ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+						validator = factory.getValidator();
+					}
+
+					@Test
+					public void messageDescriptors() {
+						//tag::messageDescriptors[]
+						Car car = new Car( null, "A", 1, 400.123456, BigDecimal.valueOf( 200000 ) );
+
+						String message = validator.validateProperty( car, "manufacturer" )
+								.iterator()
+								.next()
+								.getMessage();
+						assertEquals( "must not be null", message );
+
+						message = validator.validateProperty( car, "licensePlate" )
+								.iterator()
+								.next()
+								.getMessage();
+						assertEquals(
+								"The license plate 'A' must be between 2 and 14 characters long",
+								message
+						);
+
+						message = validator.validateProperty( car, "seatCount" ).iterator().next().getMessage();
+						assertEquals( "There must be at least 2 seats", message );
+
+						message = validator.validateProperty( car, "topSpeed" ).iterator().next().getMessage();
+						assertEquals( "The top speed 400.12 is higher than 350", message );
+
+						message = validator.validateProperty( car, "price" ).iterator().next().getMessage();
+						assertEquals( "Price must not be higher than $100000", message );
+						//end::messageDescriptors[]
+					}
+				}
+
+	4.2	自定义消息
+
+		实现：
+	
+			实现接口： java.validation.MessageInterpolator
+
+			默认实现： Configuration#getDefaultMessageInterpolator()
+
+		配置方法：
+
+			- validation.xml
+
+			- ValidatorFactory / Validator
+
+		4.2.1 资源绑定地址：	
+
+			- 默认
+
+				Validator validator = Validation.byDefaultProvider()
+						.configure()
+						.messageInterpolator(
+								new ResourceBundleMessageInterpolator(
+										new PlatformResourceBundleLocator( "MyMessages" )
+								)
+						)
+						.buildValidatorFactory()
+						.getValidator();
+
+			- 综合			
+
+				Validator validator = Validation.byDefaultProvider()
+				.configure()
+				.messageInterpolator(
+						new ResourceBundleMessageInterpolator(
+								new AggregateResourceBundleLocator(
+										Arrays.asList(
+												"MyMessages",
+												"MyOtherMessages"
+										)
+								)
+						)
+				)
+				.buildValidatorFactory()
+				.getValidator();
+
+	// done 2020-3-21 15:21:00					
+
+
+
+
+
+
 
 
 
