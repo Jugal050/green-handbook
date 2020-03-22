@@ -2826,6 +2826,20 @@
 
 		4. Interpolating constraint error messages 	// done 2020-3-21 15:22:30
 
+2020-3-22 10:20:51
+	
+	# Hibernate Validator Reference Guide
+
+		6. Creating custom constraint 				// done 2020-3-22 10:21:20
+
+		7. Value extraction							// done 2020-3-22 10:29:21
+
+		8. Configuring via xml 						// done 2020-3-22 10:34:43
+
+		9. Bootstraping 							// done 2020-3-22 11:23:45
+
+		10. Using constraint metedata 
+
 	
 
 		

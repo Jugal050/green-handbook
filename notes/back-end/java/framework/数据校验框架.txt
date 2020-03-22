@@ -384,7 +384,420 @@ Hibernate Validator 6.0.17.Final ——— JSR 380 Reference Implementation
 				.buildValidatorFactory()
 				.getValidator();
 
-	// done 2020-3-21 15:21:00					
+	// done 2020-3-21 15:21:00		
+
+6. Creating custom constraint 				// done 2020-3-22 10:21:20
+
+7. Value extraction							// done 2020-3-22 10:29:21
+
+8. Configuring via xml 						// done 2020-3-22 10:34:43				
+
+9. Bootstraping 	
+
+	9.1 获取ValidatorFactory和Validator
+
+		默认：
+
+			ValidatorFactory validatorFactory = validation.buildDefaultValidatorFactory();						
+			Validator validator = validatorFactory.getValidator();
+
+			== 等价于：
+
+			ValidatorFactory validatorFactory = Validation.byDefaultProvider()
+					.configure()
+					.buildValidatorFactory();
+			Validator validator = validatorFactory.getValidator();
+
+		使用指定的provider:
+
+			ValidatorFactory validatorFactory = Validation.byProvider( HibernateValidator.class )
+					.configure()
+					.buildValidatorFactory();
+			Validator validator = validatorFactory.getValidator();
+		
+
+		tips:
+
+			如果ValidatorFactory不再使用，使用validatorFactory.close()释放资源	
+
+	9.2 配置ValidatorFactory
+	
+		xml配置失效：
+
+			Configuration.ignoreXmlConfiguration();
+
+		获取xml配置：
+
+			Configuration.getBoorstrapConfiguration();
+
+		9.1.1 消息集成器
+
+			定义：
+
+				public class MyMessageInterpolator implements MessageInterpolator {
+
+					@Override
+					public String interpolate(String messageTemplate, Context context) {
+						//...
+						return null;
+					}
+
+					@Override
+					public String interpolate(String messageTemplate, Context context, Locale locale) {
+						//...
+						return null;
+					}
+				}
+
+			配置：	
+		
+				public void messageInterpolator() {
+					//tag::messageInterpolator[]
+					ValidatorFactory validatorFactory = Validation.byDefaultProvider()
+							.configure()
+							.messageInterpolator( new MyMessageInterpolator() )
+							.buildValidatorFactory();
+					Validator validator = validatorFactory.getValidator();
+					//end::messageInterpolator[]
+				}
+
+		9.1.2 属性解析器
+
+			定义：
+
+				public class MyTraversableResolver implements TraversableResolver {
+
+					@Override
+					public boolean isReachable(
+							Object traversableObject,
+							Node traversableProperty,
+							Class<?> rootBeanType,
+							Path pathToTraversableObject,
+							ElementType elementType) {
+						//...
+						return false;
+					}
+
+					@Override
+					public boolean isCascadable(
+							Object traversableObject,
+							Node traversableProperty,
+							Class<?> rootBeanType,
+							Path pathToTraversableObject,
+							ElementType elementType) {
+						//...
+						return false;
+					}
+				}
+
+			配置：	
+
+				public void traversableResolver() {
+					//tag::traversableResolver[]
+					ValidatorFactory validatorFactory = Validation.byDefaultProvider()
+							.configure()
+							.traversableResolver( new MyTraversableResolver() )
+							.buildValidatorFactory();
+					Validator validator = validatorFactory.getValidator();
+					//end::traversableResolver[]
+				}
+
+				------------------  关闭缓存功能 ------------------
+
+				public void traversableResolverDisableCache() {
+					//tag::traversableResolverDisableCache[]
+					ValidatorFactory validatorFactory = Validation.byProvider( HibernateValidator.class )
+							.configure()
+							.traversableResolver( new MyFastTraversableResolver() )
+							.enableTraversableResolverResultCache( false )
+							.buildValidatorFactory();
+					Validator validator = validatorFactory.getValidator();
+					//end::traversableResolverDisableCache[]
+				}
+
+		9.2.3 ConstraintValidatorFactory
+		
+			定义：
+
+				public class MyConstraintValidatorFactory implements ConstraintValidatorFactory {
+
+					@Override
+					public <T extends ConstraintValidator<?, ?>> T getInstance(Class<T> key) {
+						//...
+						return null;
+					}
+
+					@Override
+					public void releaseInstance(ConstraintValidator<?, ?> instance) {
+						//...
+					}
+				}	
+
+			配置：
+			
+				public void constraintValidatorFactory() {
+					//tag::constraintValidatorFactory[]
+					ValidatorFactory validatorFactory = Validation.byDefaultProvider()
+							.configure()
+							.constraintValidatorFactory( new MyConstraintValidatorFactory() )
+							.buildValidatorFactory();
+					Validator validator = validatorFactory.getValidator();
+					//end::constraintValidatorFactory[]
+				}	
+
+		9.2.4 ParameterNameProvider
+		
+			定义：
+
+				public class MyParameterNameProvider implements ParameterNameProvider {
+
+					@Override
+					public List<String> getParameterNames(Constructor<?> constructor) {
+						//...
+						return null;
+					}
+
+					@Override
+					public List<String> getParameterNames(Method method) {
+						//...
+						return null;
+					}
+				}
+
+			配置：			
+
+				public void parameterNameProvider() {
+					//tag::parameterNameProvider[]
+					ValidatorFactory validatorFactory = Validation.byDefaultProvider()
+							.configure()
+							.parameterNameProvider( new MyParameterNameProvider() )
+							.buildValidatorFactory();
+					Validator validator = validatorFactory.getValidator();
+					//end::parameterNameProvider[]
+				}
+
+		9.2.5 ClockProvider和时间校验容错率
+
+			定义：
+
+				public class FixedClockProvider implements ClockProvider {
+
+					private Clock clock;
+
+					public FixedClockProvider(ZonedDateTime dateTime) {
+						clock = Clock.fixed( dateTime.toInstant(), dateTime.getZone() );
+					}
+
+					@Override
+					public Clock getClock() {
+						return clock;
+					}
+
+				}
+
+			配置：
+		
+				public void clockProvider() {
+					//tag::clockProvider[]
+					ValidatorFactory validatorFactory = Validation.byDefaultProvider()
+							.configure()
+							.clockProvider( new FixedClockProvider( ZonedDateTime.of( 2016, 6, 15, 0, 0, 0, 0, ZoneId.of( "Europe/Paris" ) ) ) )
+							.buildValidatorFactory();
+					Validator validator = validatorFactory.getValidator();
+					//end::clockProvider[]
+				}
+
+				public void temporalValidationTolerance() {
+					//tag::temporalValidationTolerance[]
+					ValidatorFactory validatorFactory = Validation.byProvider( HibernateValidator.class )
+							.configure()
+							.temporalValidationTolerance( Duration.ofMillis( 10 ) )
+							.buildValidatorFactory();
+					Validator validator = validatorFactory.getValidator();
+					//end::temporalValidationTolerance[]
+				}
+
+		9.2.6 注册Value解析器
+
+			定义：
+
+				public class MultimapKeyValueExtractor
+						implements ValueExtractor<Multimap<@ExtractedValue ?, ?>> {
+
+					@Override
+					public void extractValues(Multimap<?, ?> originalValue, ValueReceiver receiver) {
+						for ( Object key : originalValue.keySet() ) {
+							receiver.keyedValue( "<multimap key>", key, key );
+						}
+					}
+				}
+
+				public class MultimapValueValueExtractor
+						implements ValueExtractor<Multimap<?, @ExtractedValue ?>> {
+
+					@Override
+					public void extractValues(Multimap<?, ?> originalValue, ValueReceiver receiver) {
+						for ( Entry<?, ?> entry : originalValue.entries() ) {
+							receiver.keyedValue( "<multimap value>", entry.getKey(), entry.getValue() );
+						}
+					}
+				}
+
+			配置：
+			
+				public void valueExtractor() {
+					//tag::valueExtractor[]
+					ValidatorFactory validatorFactory = Validation.byDefaultProvider()
+							.configure()
+							.addValueExtractor( new MultimapKeyValueExtractor() )
+							.addValueExtractor( new MultimapValueValueExtractor() )
+							.buildValidatorFactory();
+					Validator validator = validatorFactory.getValidator();
+					//end::valueExtractor[]
+				}
+
+		9.2.7 添加Map Streams
+		
+				public void addMapping() {
+					//tag::addMapping[]
+					InputStream constraintMapping1 = null;
+					InputStream constraintMapping2 = null;
+					ValidatorFactory validatorFactory = Validation.byDefaultProvider()
+							.configure()
+							.addMapping( constraintMapping1 )
+							.addMapping( constraintMapping2 )
+							.buildValidatorFactory();
+					Validator validator = validatorFactory.getValidator();
+					//end::addMapping[]
+				}	
+
+		9.2.8 提供者特殊配置
+
+			“failfast: 快速失败”
+
+				public void providerSpecificOptions() {
+					//tag::providerSpecificOptions[]
+					ValidatorFactory validatorFactory = Validation.byProvider( HibernateValidator.class )
+							.configure()
+							.failFast( true )
+							.addMapping( (ConstraintMapping) null )
+							.buildValidatorFactory();
+					Validator validator = validatorFactory.getValidator();
+					//end::providerSpecificOptions[]
+				}
+
+				------------------ or ------------------
+
+				public void providerSpecificOptionViaAddProperty() {
+					//tag::providerSpecificOptionViaAddProperty[]
+					ValidatorFactory validatorFactory = Validation.byProvider( HibernateValidator.class )
+							.configure()
+							.addProperty( "hibernate.validator.fail_fast", "true" )
+							.buildValidatorFactory();
+					Validator validator = validatorFactory.getValidator();
+					//end::providerSpecificOptionViaAddProperty[]
+				}
+
+		9.2.9 配置脚本解析工厂ScriptEvaluatorFactory
+		
+			9.2.9.1 xml配置
+
+				<?xml version="1.0" encoding="UTF-8"?>
+				<validation-config
+				        xmlns="http://xmlns.jcp.org/xml/ns/validation/configuration"
+				        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				        xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/validation/configuration validation-configuration-2.0.xsd"
+				        version="2.0">
+				    <default-provider>org.hibernate.validator.HibernateValidator</default-provider>
+
+				    <property name="hibernate.validator.enable_traversable_resolver_result_cache">false</property>
+
+				    <property name="hibernate.validator.script_evaluator_factory">
+				    	org.hibernate.validator.referenceguide.chapter09.CustomScriptEvaluatorFactory
+				    </property>
+				</validation-config>
+
+
+			9.2.9.2	编码配置	
+
+				定义：
+
+					public class CustomScriptEvaluatorFactory implements ScriptEvaluatorFactory {
+
+						@Override
+						public ScriptEvaluator getScriptEvaluatorByLanguageName(String languageName) {
+							return (script, bindings) -> true;
+						}
+
+						@Override
+						public void clear() {
+							// Nothing to do
+						}
+					}
+
+				配置：	
+
+					public void scriptEvaluatorFactoryProgrammatically() {
+						//tag::scriptEvaluatorFactoryProgrammatically[]
+						ValidatorFactory validatorFactory = Validation.byProvider( HibernateValidator.class )
+								.configure()
+								.scriptEvaluatorFactory( new CustomScriptEvaluatorFactory() )
+								.buildValidatorFactory();
+						Validator validator = validatorFactory.getValidator();
+						//end::scriptEvaluatorFactoryProgrammatically[]
+					}
+
+			9.2.9.3 自定义ScriptEvaluatorFactory实现示例
+			
+				实现示例：org.hibernate.validator.osgi.scripting.MultiClassLoaderScriptEvaluatorFactory
+
+				配置：
+
+					public void scriptEvaluatorFactoryProgrammatically() {
+						//tag::scriptEvaluatorFactoryProgrammatically[]
+						ValidatorFactory validatorFactory = Validation.byProvider( HibernateValidator.class )
+								.configure()
+								.scriptEvaluatorFactory( new MultiClassLoaderScriptEvaluatorFactory(
+									GroovyScriptEngineFactory.class.getClassLoader() )
+								)
+								.buildValidatorFactory();
+						Validator validator = validatorFactory.getValidator();
+						//end::scriptEvaluatorFactoryProgrammatically[]
+					}
+
+	9.2.3 配置一个校验器
+
+		说明：
+
+			定义一个新的校验器上下文，并返回属于该上下文的一个校验器
+
+		配置：
+
+			public void usingContext() {
+				//tag::usingContext[]
+				ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
+
+				Validator validator = validatorFactory.usingContext()
+						.messageInterpolator( new MyMessageInterpolator() )
+						.traversableResolver( new MyTraversableResolver() )
+						.getValidator();
+				//end::usingContext[]
+			}
+
+	// done 2020-3-22 11:23:33	
+	
+10. 使用约束元数据API
+
+	10.1
+
+11. 与其他框架的集成
+
+		
+	
+
+
+
+
 
 
 
