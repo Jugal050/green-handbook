@@ -792,6 +792,10 @@ Hibernate Validator 6.0.17.Final ——— JSR 380 Reference Implementation
 
 11. 与其他框架的集成
 
+	// done 2020-3-22 12:31:07
+
+12. 特殊配置
+
 		
 	
 

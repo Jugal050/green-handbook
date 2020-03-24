@@ -2840,7 +2840,11 @@
 
 		10. Using constraint metedata 
 
-	
+2020-3-24 12:38:19
+
+	# JSON序列化时，无相关属性不抛异常
+
+		objectmapper.config(DesirializeFuture.FAIL_ON_UNKOWNON_PROPERTY, false);
 
 		
 	
