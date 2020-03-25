@@ -2846,6 +2846,12 @@
 
 		objectmapper.config(DesirializeFuture.FAIL_ON_UNKOWNON_PROPERTY, false);
 
+2020-3-25
+
+	# hibernate-validator reference-guide
+
+			
+
 		
 	
 

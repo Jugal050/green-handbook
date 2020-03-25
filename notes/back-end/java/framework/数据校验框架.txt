@@ -390,6 +390,19 @@ Hibernate Validator 6.0.17.Final ——— JSR 380 Reference Implementation
 
 7. Value extraction							// done 2020-3-22 10:29:21
 
+	Value值解析器： 处理从容器中取值的程序。（如：list, map, set, iterator, optional..）
+
+	7.1 Built-in value extractors
+
+		java.util.Iterable
+		java.util.List
+		java.util.Map
+		java.util.Optional, java.util.OptionalInt, java.util.OptionalDouble, java.util.OptionalLong
+
+	7.2 Implementing a ValueExtractor
+	
+
+
 8. Configuring via xml 						// done 2020-3-22 10:34:43				
 
 9. Bootstraping 	
@@ -795,6 +808,12 @@ Hibernate Validator 6.0.17.Final ——— JSR 380 Reference Implementation
 	// done 2020-3-22 12:31:07
 
 12. 特殊配置
+
+13. 注解处理器
+
+14. 更多
+
+	// done 2020-3-25 22:48:25
 
 		
 	
