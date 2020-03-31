@@ -85,3 +85,7 @@ https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/
 	Integration	 		Remoting, JMS, JCA, JMX, Email, Tasks, Scheduling, Caching.
 
 	Languages	 		Kotlin, Groovy, Dynamic Languages.
+
+https://docs.spring.io/spring-ws/docs/3.0.8.RELEASE/reference/	
+
+	
