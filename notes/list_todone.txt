@@ -10,6 +10,12 @@ java:
 
 		Java Virtual Machine Specification（JVM规范）： https://docs.oracle.com/javase/specs/jvms/se9/html/index.html （se9表示： JDK1.9）
 
+	javaEE：
+
+		The Java EE Tutorial: https://docs.oracle.com/javaee/7/tutorial/index.html 		// start 2020-4-4 11:29:31
+
+			Part VI Web Services					// 略读 done 2020-4-4 23:28:52
+
 framework
 
 	spring:
