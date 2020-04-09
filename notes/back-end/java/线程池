@@ -1,0 +1,526 @@
+线程及线程池源码：
+
+	模板：
+
+		java.util.concurrent.Executor
+
+			说明：
+
+				tips:
+
+			源码：
+			
+			示例：
+
+				/** */
+
+
+	JDK线程池相关：
+
+		
+		java.util.concurrent.Executor
+
+			说明： 可以执行提交的线程任务的对象。 接口解耦了任务提交和任务执行，包括，包括线程的使用、调度等。	该类通常用来代替直接的创建线程。
+
+				tips:
+					1. 不会严格要求是否异步执行任务
+
+
+			源码：
+
+				public interface Executor {
+					void execute(Runnable command);
+				}
+
+			示例：
+			
+				/** 代替每个任务的新建、开启：new Thread(new(RunnableTask())).start() */
+
+					Executor executor = <em>anExecutor</em>;
+					executor.execute(new RunnableTask1());
+					executor.execute(new RunnableTask2());	
+
+				/** 在调用的线程内同步执行任务 */	
+
+					class DirectExecutor implements Executor {
+						@Override
+						public void execute(Runnable r) {
+							r.run();
+						}
+					}
+
+				/** 通常状况下，会新启线程来执行，如下 */	
+
+					class ThreadPerTaskExecutor implements Executor {
+						public void execute(Runnable r) {
+						    new Thread(r).start();
+					}
+
+		java.util.concurrent.ExecutorService
+
+			说明：提供了线程任务的终止方法、以及获取执行结果Future，来追踪异步任务。
+
+				tips:
+
+			源码：
+
+				public interface ExecutorService extends Executor {
+
+					/** 
+					 * 在前一个提交执行的任务后，有序关闭执行器，不再接受新的任务。如果执行器已关闭，调用没有影响。
+					 * 该方法不会等待前一个任务完全执行完毕，但awaitTermination()会。
+					 */
+					void shutdown();
+
+					/**
+					 * 尝试停止所有正在执行的任务，停止正在等待执行的任务，返回等待执行的任务集合。
+					 * 该方法不会等待前一个任务完全执行完毕，但awaitTermination()会。
+					 * 不能保证能中断正在执行的任务。比如，典型的实现是通过interrupt中断线程，所以，如果线程任务不允许中断interrupt，任务就永远不会中断。
+					 */
+					List<Runnable> shutdownNow();
+
+					/**
+					 * 执行器是否已关闭 
+					 */
+					boolean isShutdown();
+
+					/** 
+					 * 执行器关闭之后是否所有的任务都已执行完毕。
+					 * 如果之前没有执行shutdown或shutdownNow，该返回值永远都不会是true
+					 */
+					boolean isTerminated();
+
+					/**
+					 * 收到shutdown请求后，等待所有的任务执行完毕，或者超时，或者当前线程被中断。
+					 */ 
+					boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException;
+
+					/**
+					 * 提交并执行一个有返回值的任务Callable，并返回一个执行结果Future。任务执行成功时，可通过Future.get()来获取任务的返回值。
+					 * 如果想直接等待任务执行完成，可以使用：result = exec.submit(aCallable).get();
+					 */
+					<T> Future<T> submit(Callable<T> task);
+
+					/**
+					 * 提交并执行一个任务Runnable，并返回一个执行结果Future。任务执行成功时，可通过Future.get()来获取任务的返回值。
+					 */ 
+					<T> Future<T> submit(Runnable task, T result);
+
+					Future<?> submit(Runnable task);
+
+					/**
+					 * 执行任务集合，所有任务完成后返回一个包含执行状态和结果的对象Future的集合。
+					 */ 
+					<T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks)
+        				throws InterruptedException;
+
+					/**
+					 * 执行任务集合，所有任务完成或者超时时，返回一个包含执行状态和结果的对象Future的集合。
+					 */
+					<T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks,
+				                                  long timeout, TimeUnit unit)
+				        throws InterruptedException;
+
+					/**
+					 * 执行任务集合，如果有执行成功的任务，则返回一个成功执行的任务的结果。 有任务执行成功或者异常时，未完成的任务都会被取消。
+					 */
+					<T> T invokeAny(Collection<? extends Callable<T>> tasks)
+        				throws InterruptedException, ExecutionException;
+
+					/**
+					 * 执行任务集合，如果有在超时时间内执行成功的任务，则返回一个成功执行的任务的结果。 有任务执行成功或者异常时，未完成的任务都会被取消。
+					 */
+					<T> T invokeAny(Collection<? extends Callable<T>> tasks,
+				                    long timeout, TimeUnit unit)
+				        throws InterruptedException, ExecutionException, TimeoutException;
+
+				}
+			
+			示例：
+
+				/** 网络服务简单示例 */	
+				class NetworkService implements Runnable {
+				  private final ServerSocket serverSocket;
+				  private final ExecutorService pool;
+
+				  public NetworkService(int port, int poolSize)
+				      throws IOException {
+				    serverSocket = new ServerSocket(port);
+				    pool = Executors.newFixedThreadPool(poolSize);
+				  }
+
+				  public void run() { // run the service
+				    try {
+				      for (;;) {
+				        pool.execute(new Handler(serverSocket.accept()));
+				      }
+				    } catch (IOException ex) {
+				      pool.shutdown();
+				    }
+				  }
+				}
+
+				class Handler implements Runnable {
+				  private final Socket socket;
+				  Handler(Socket socket) { this.socket = socket; }
+				  public void run() {
+				    // read and service request on socket
+				  }
+				}
+
+				/** 关闭线程执行器 */
+				void shutdownAndAwaitTermination(ExecutorService pool) {
+				  pool.shutdown(); // Disable new tasks from being submitted
+				  try {
+				    // Wait a while for existing tasks to terminate
+				    if (!pool.awaitTermination(60, TimeUnit.SECONDS)) {
+				      pool.shutdownNow(); // Cancel currently executing tasks
+				      // Wait a while for tasks to respond to being cancelled
+				      if (!pool.awaitTermination(60, TimeUnit.SECONDS))
+				          System.err.println("Pool did not terminate");
+				    }
+				  } catch (InterruptedException ie) {
+				    // (Re-)Cancel if current thread also interrupted
+				    pool.shutdownNow();
+				    // Preserve interrupt status
+				    Thread.currentThread().interrupt();
+				  }
+				} 
+
+		java.util.concurrent.AbstractExecutorService
+
+			说明： ExecutorService的抽象实现类，提供了一些默认的方法实现。
+
+				tips:
+
+			源码：
+
+				public abstract class AbstractExecutorService implements ExecutorService {
+
+					public Future<?> submit(Runnable task) {}
+
+					public <T> Future<T> submit(Runnable task, T result) {}
+
+					public <T> Future<T> submit(Callable<T> task) {}
+
+					public <T> T invokeAny(Collection<? extends Callable<T>> tasks)
+        				throws InterruptedException, ExecutionException {}
+
+        			public <T> T invokeAny(Collection<? extends Callable<T>> tasks,
+                        				   long timeout, TimeUnit unit)
+        				throws InterruptedException, ExecutionException, TimeoutException {	
+
+        			public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks)
+        				throws InterruptedException {	
+
+        			public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks,
+                        				                 long timeout, TimeUnit unit)
+        				throws InterruptedException {	
+
+				}
+			
+			示例：
+
+		java.util.concurrent.Future
+		
+			说明：表示异步计算的结果。提供的方法包括：计算是否完成，计算等待，获取计算结果。
+			      只有当计算完成时，可以通过get方法获取计算结果，未完成时，会阻塞等待。
+			      可以通过cancel方法来取消计算执行。一旦计算执行完成，就不能再被取消。
+			      如果想使用Future，但是没有计算结果，可以声明一个null的计算结果。
+
+				tips:
+
+			源码：
+
+				public interface Future<V> {
+
+					/**
+					 * 尝试取消任务的执行。如果任务已完成，或者已取消，或者因为某种原因不能取消，尝试取消时会失败。
+					 * 如果任务被取消时还未开始，取消成功的话，任务将不会再执行。
+					 * 如果任务已经开始，参数mayInterruptIfRunning将决定是否中断任务执行的线程。
+					 */
+					boolean cancel(boolean mayInterruptIfRunning);
+
+					/**
+					 * 如果任务在完成之前被取消，返回ture
+					 */
+					boolean isCancelled();
+
+					/**
+					 * 如果任务已完成，返回ture。 已完成包括：任务正常执行完毕，异常中断，或者已取消，这些情况下，都会返回ture。
+					 */
+					boolean isDone();
+
+					/** 
+					 * 任务如果未完成，进行等待，待完成后返回执行结果
+					 */
+					V get() throws InterruptedException, ExecutionException;
+
+					/**
+					 * 任务如果未完成，进行等待，但等待时间有限，如果在等待时间内执行完成，则返回执行结果。
+					 */
+					V get(long timeout, TimeUnit unit)
+        				throws InterruptedException, ExecutionException, TimeoutException;
+
+
+				}
+			
+			示例：
+
+				/** 简单使用 */		
+				interface ArchiveSearcher { String search(String target); }
+				class App {
+				  ExecutorService executor = ...
+				  ArchiveSearcher searcher = ...
+				  void showSearch(final String target)
+				      throws InterruptedException {
+				    Future<String> future
+				      = executor.submit(new Callable<String>() {
+				        public String call() {
+				            return searcher.search(target);
+				        }});
+				    displayOtherThings(); // do other things while searching
+				    try {
+				      displayText(future.get()); // use future
+				    } catch (ExecutionException ex) { cleanup(); return; }
+				  }
+				}
+
+				/** 使用FutureTask */
+				FutureTask<String> future =
+				  new FutureTask<String>(new Callable<String>() {
+				    public String call() {
+				      return searcher.search(target);
+				  }});
+				executor.execute(future);}</pre>
+
+		java.util.concurrent.RunnableFuture	
+		
+			说明：可Runnable的Future，任务执行成功后生成结果。
+
+			源码：
+
+				public interface RunnableFuture<V> extends Runnable, Future<V> {
+					void run();
+				}
+			
+			示例：
+
+		java.util.concurrent.FutureTask
+
+			说明： 可取消的异步执行任务。提供了Future的基本实现，包括任务的开始，取消，任务的完成情况，以及任务完成后的结果获取。
+			       只有当任务完成的时候才能获取结果，如果任务未完成，方法会等待。一旦方法任务执行完毕，不能被重启或者取消（除非调用runAndReset）
+
+				tips:
+
+			源码：
+
+				public class FutureTask<V> implements RunnableFuture<V> {
+
+					public FutureTask(Callable<V> callable) {}
+
+					public FutureTask(Runnable runnable, V result) {}
+
+					public boolean isCancelled() {}
+
+					public boolean isDone() {}
+
+					public boolean cancel(boolean mayInterruptIfRunning) {}
+
+					public V get() throws InterruptedException, ExecutionException {}
+
+					public V get(long timeout, TimeUnit unit)
+        				throws InterruptedException, ExecutionException, TimeoutException {}
+
+        			public void run() {}	
+
+
+				}
+
+				public interface RunnableFuture<V> extends Runnable, Future<V> {
+					void run();
+				}
+			
+			示例：
+
+		java.util.concurrent.ThreadPoolExecutor
+
+			说明： 线程池执行器。使用线程池里的线程，执行每一个提交的任务。通常使用Executors工厂方法进行配置。
+
+				线程池解决了两个问题：
+
+					1. 通过减少每个任务的执行开销，提供了资源的边界和管理信息（包括执行任务集合时的线程、资源消耗），使得执行大量异步任务时性能提高。
+					2. 每个线程池可以统计执行信息，比如已完成任务的数量。
+
+				为了可以广泛使用，该类提供了许多可调整的参数和可扩展的方法。 然而，调整参数时建议使用Executors中的方便的工厂方法。如：
+
+					Executors#newCachedThreadPool:  线程数量没有限制，线程自动回收。
+					Executors#newFixedThreadPool: 线程数量固定
+					Executors#newSingleThreadExecutor: 单个后台线程
+
+				以上的线程池的预配置可以满足大部分场景，如果不行，根据以下指导进行配置或调整：
+
+					核心线程数：corePoolSize
+					最大线程数：maximumPoolSize
+
+						当通过execute方法提交一个任务时：
+							当运行的线程数量 < 核心线程数corePoolSize时，不管是否有线程闲置，都会新建线程来执行请求。
+							当核心线程数corePoolSize < 运行的线程数量 < 最大线程数maximumPoolSize
+								当任务列队已满，新建线程。
+								当任务列队未满，任务会添加到列队中。
+
+						corePoolSize == maximumPoolSize时，线程池线程数量固定。		
+						maximumPoolSize == Integer.MAX_VALUE时，线程池线程池数量无限制。
+
+					构造需求：
+					
+						默认情况下，只有当任务到达时，核心线程才会新建初始化并开启，但是可以通过方法prestartCoreThread或prestartAllCoreThreads重写，
+						如果使用非空列队构造线程池时可能会需要预先开启线程。
+
+					线程创建：ThreadFactory
+
+						创建线程使用的是ThreadFactory。如果没有指定，默认是Executors#defaultThreadFactory。
+						可以自定义线程工厂类，从而修改线程的名称，线程组，优先级，是否守护线程等
+						如果线程工厂类创建线程失败，新建线程时返回null。
+						线程需要允许“modifyThread”，
+
+					存活时间：keepAliveTime	
+
+						如果线程池里的线程比核心线程数量多，超出的线程会在空闲超过keepAliveTime时关闭。
+						线程池不再使用的时候进行资源回收。 如果线程池后面使用更多时，新的线程会创建并初始化。
+						可以使用setKeepAliveTime(long, TimeUnit)来设置，参数设置为Long.MAX_VALUE, TimeUnit.NANOSECONDS时，可以防止线程回收（终止状态->关闭状态）
+						默认，该策略只适用于超出核心线程数的情况，但是可以通过allowCoreThreadTimeOut(boolean)来设置，使得核心线程也会过期回收。
+
+					队列：Queuing
+						
+						任何的阻塞列队BlockingQueue都可以用来床底或保存	提交的任务，该列队会与线程池大小相互作用。
+
+							如果线程数量 < 核心线程数量，通常会新建线程，来执行提交的任务。
+							如果线程数量 >= 核心线程数量，通常会在列队中保存提交的任务。
+							如果请求不能被列队保存，会新建线程，除非线程数量 >= 最大线程数，则会根据拒绝策略来继续执行。
+
+						常用的列队选择：
+
+							直接传递：Direct handoffs	
+
+								如SynchronousQueue
+								该列队不保存任务，会直接传递给线程执行。
+								如果没有可用的线程立即执行任务，任务保存列队尝试失败，会新建线程。
+								该策略在处理有内部关联的任务集合时，可避免死锁。
+								直接传递通常需要无限制的最大线程数，来避免提交的任务被拒绝。
+								当任务提交的平均速度超过他们执行的速度，线程就会无限增加。
+
+							无界队列：Unbounded queues
+							
+								如LinkedBlockingQueue
+								没有预定义的容量限制，会导致当没有空闲的核心线程时，任务就会保存在队列中。
+								永远不会有超过核心线程数量的线程创建（最大线程数没有任何作用）
+								当每个任务都是完全独立的，不影响其他任务执行时，适合使用。比如，web服务中，请求量瞬间爆发的情况发生时，可以起到缓存作用。
+								当任务提交的平均速度超过他们执行的速度，列队就会无限增长。								
+
+							有界队列：Bounded queues
+
+								如ArrayBlockingQueue
+								当线程最大数量有限时，该策略可以防止资源耗尽，但是使得调优和管理更加有难度。
+								列队长度和线程最大数量会相互作用：
+									列队长度很大，最大线程数很小时，会减少CPU的使用率，OS资源，上下文切换的负载，但是会降低吞吐量。
+									如果任务经常阻塞（比如时IO密集型），也许可以使用线程定时调度来执行。
+									列队长度很小时，通常需要更大的最大线程数来保持CPU的占用率，但是会造成线程调度的负载，也会降低吞吐量。
+
+					决绝策略：Rejected tasks
+
+						当线程池关闭时，新提交的任务就会被拒绝。 线程池未饱和情况下，会使用最大线程数和队列容量来执行任务。 线程池饱和后，可以使用拒绝策略来决定如何拒绝新提交的任务。
+
+						预定义的四种拒绝策略：
+
+							ThreadPoolExecutor.AbortPolicy（默认）： 抛出运行时异常RejectedExecutionException
+							ThreadPoolExecutor.CallerRunsPolicy： 使用提交任务的线程来执行任务，提供了一个简单的反馈控制机制，会降低任务提交的速率。
+							ThreadPoolExecutor.DiscardPolicy： 直接简单的丢弃
+							ThreadPoolExecutor.DiscardOldestPolicy： 如果线程池未关闭，会丢弃列队中的最早的任务，然后执行新任务（有可能会再被新提交任务覆盖，导致失败）
+
+						也可以通过RejectedExecutionHandler来自定义拒绝策略，但是在指定容量和队列的情况下，需要特别小心。
+
+					空方法：Hook methods	
+
+						// 每个任务执行之前调用
+						beforeExecute(Thread, Runnable)
+						// 每个任务执行之后调用
+						afterExecute(Runnable, Throwable)
+
+						上边两个方法，可以用来操作运行环境，比如，重新初始化线程本地变量，收集统计信息，或者添加日志。	
+
+						如果需要在线程池完全终止时进行特殊的处理，可以重写terminated方法
+
+					列队维护：Queue maintenance
+
+						getQueue可以获取列队，实现监控或者调试功能，其他用法不推荐使用。
+
+						当有大量的队列任务取消时，可以使用remove(Runnable)和purge来进行内存回收（storage reclamation）。
+
+					终止：Finalization
+					
+						线程池不再被引用时，且没有剩余线程时，会自动关闭。
+						当忘记调用shutdown时，想确保线程池被回收，可以通过设置合适的线程存活时间、核心线程数设置为0，允许核心现成实现allowCoreThreadTimeOut。
+
+				执行原理：
+
+					提交任务
+					   |	
+					   |	
+					  \|/
+					核心线程  ___是___\  队列已满?  ___是___\ 线程池已满?  ___是___\ 拒绝策略
+					是否已满?         /                    /                     / 决绝任务
+					   | 				   |                   | 		
+                       | 否   			   | 否                | 否   	 
+                      \|/  				  \|/                 \|/  		 
+                    创建线程 			入队等待             创建线程
+                    执行任务                                 执行任务
+
+
+
+				tips:
+
+			源码：
+			
+			示例：
+
+				/** 添加空方法的实现 */	
+
+				 class PausableThreadPoolExecutor extends ThreadPoolExecutor {
+				   private boolean isPaused;
+				   private ReentrantLock pauseLock = new ReentrantLock();
+				   private Condition unpaused = pauseLock.newCondition();
+				   public PausableThreadPoolExecutor(...) { super(...); }
+				   protected void beforeExecute(Thread t, Runnable r) {
+				     super.beforeExecute(t, r);
+				     pauseLock.lock();
+				     try {
+				       while (isPaused) unpaused.await();
+				     } catch (InterruptedException ie) {
+				       t.interrupt();
+				     } finally {
+				       pauseLock.unlock();
+				     }
+				   }
+				   public void pause() {
+				     pauseLock.lock();
+				     try {
+				       isPaused = true;
+				     } finally {
+				       pauseLock.unlock();
+				     }
+				   }
+				   public void resume() {
+				     pauseLock.lock();
+				     try {
+				       isPaused = false;
+				       unpaused.signalAll();
+				     } finally {
+				       pauseLock.unlock();
+				     }
+				   }
+				 }
+
+
+
+
