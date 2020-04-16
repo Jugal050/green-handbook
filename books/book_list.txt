@@ -32,6 +32,8 @@ done：
 
 	JCU(Java Concurrency Utilities): https://docs.oracle.com/javase/8/docs/technotes/guides/concurrency/index.html	// start 2020-4-10 10:03:45	done 2020-4-11 18:47:07
 
+	JMX(Java Management Extensions): https://docs.oracle.com/javase/tutorial/jmx/remote/custom.html 				// start 2020-4-16 14:00:01 done 2020-4-16 16:45:55
+
 doing：
 
 	《TCP/IP详解：卷1》												// doing start: 2019-8-20 16:43:51 now：chapter13 2019-8-28 20:58:41 TODO

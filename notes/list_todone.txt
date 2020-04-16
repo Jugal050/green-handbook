@@ -20,6 +20,8 @@ java:
 	
 		JCU(Java Concurrency Utilities): https://docs.oracle.com/javase/8/docs/technotes/guides/concurrency/index.html	// start 2020-4-10 10:03:45	done 2020-4-11 18:46:45
 
+		JMX(Java Management Extensions): https://docs.oracle.com/javase/tutorial/jmx/remote/custom.html 				// start 2020-4-16 14:00:01 done 2020-4-16 16:45:55
+
 framework
 
 	spring:

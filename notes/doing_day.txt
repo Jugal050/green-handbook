@@ -2915,6 +2915,14 @@
 
 	# Java Concurrent Animated： https://sourceforge.net/projects/javaconcurrenta/	
 
+2020-4-16
+
+	# JMX(Java Management Extensions): https:
+
+		https://docs.oracle.com/javase/tutorial/jmx/remote/custom.html 		// done 2020-4-16 16:45:55
+
+
+
 		
 
 

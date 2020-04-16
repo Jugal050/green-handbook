@@ -1,0 +1,569 @@
+JMX(Java Management Extensions): https://docs.oracle.com/javase/tutorial/jmx/index.html
+
+	# JMX技术概览：
+
+		JMX提供了一种管理资源（如应用、设备、服务）的简单的、标准的方法。由于JMX是动态的，可以用来监控、管理相关资源（包括新建、安装、实现的），包括JVM。
+
+		JMX使用java语言定义了监控和管理应用及网络的架构，设计模式，APIs和服务。
+
+		## 为什么使用JMX？
+
+			- JMX无需很高的投资就可以实现对java应用的管理。
+
+			- JMX提供了管理java应用、系统和网络的标准方法。
+
+			- JMX可以在JVM外使用。
+
+			- JMX提供了一种可扩展、动态管理的架构。
+
+			- JMX使用的是现有的标准java技术。
+
+			- 各IDE已支持创建JMX应用。
+
+			- 不管是在现有的管理方案，还是新兴的技术，都可以集成JMX。
+
+		## JMX技术架构
+
+			Instrumentation
+
+			JMX Agent
+
+			Remote Management
+
+		## JVM的监控和管理
+
+			Platform MXBeans and the Platform MBean Server
+
+			JConsole
+
+			Out-of-the-Box Management in Action
+
+			Monitoring an Application by Using JConsole
+
+	# MBeans说明：
+
+		定义： managed beans，可管理的java对象，类似javabeans，可以是设备、应用、任何需要管理资源。MBeans暴露的管理接口包括：
+
+			- 可读/可写的属性set： A set of readable or writable attributes, or both.
+			- 可操作的方法set： A set of invokable operations.
+			- 自身描述： A self-description.
+
+		类型：	
+
+			- Standard MBeans
+			- Dynamic MBeans
+			- Open MBeans
+			- Model MBeans
+			- MXBeans
+
+		示例：
+		
+			- Standard MBeans
+
+				MBean Interface:
+
+					public interface HelloMBean { 
+ 
+					    public void sayHello(); 
+					    public int add(int x, int y); 
+					    
+					    public String getName(); 
+					     
+					    public int getCacheSize(); 
+					    public void setCacheSize(int size); 
+					} 
+
+				MBean Implementation:
+				
+					public class Hello implements HelloMBean { 
+
+					    public void sayHello() { 
+					        System.out.println("hello, world"); 
+					    } 
+					     
+					    public int add(int x, int y) { 
+					        return x + y; 
+					    } 
+					     
+					    public String getName() { 
+					        return this.name; 
+					    }  
+					     
+					    public int getCacheSize() { 
+					        return this.cacheSize; 
+					    } 
+					     
+					    public synchronized void setCacheSize(int size) {
+					        ...
+					    
+					        this.cacheSize = size; 
+					        System.out.println("Cache size now " + this.cacheSize); 
+					    } 
+					    ...
+					     
+					    private final String name = "Reginald"; 
+					    private int cacheSize = DEFAULT_CACHE_SIZE; 
+					    private static final int 
+					        DEFAULT_CACHE_SIZE = 200; 
+					}
+
+				Creating a JMX Agent to Manage a Resource:
+				
+					public class Main { 
+ 
+					    public static void main(String[] args) 
+					        throws Exception { 
+					     
+					        MBeanServer mbs = ManagementFactory.getPlatformMBeanServer(); 
+					        ObjectName name = new ObjectName("com.example:type=Hello"); 
+					        Hello mbean = new Hello(); 
+					        mbs.registerMBean(mbean, name); 
+					          
+					        ...
+					     
+					        System.out.println("Waiting forever..."); 
+					        Thread.sleep(Long.MAX_VALUE); 
+					    } 
+					} 	
+
+				Running the Standard MBean Example:
+
+					...
+
+			- MXBeans: 只引用一个预定义的数据类型set的MBean（An MXBean is a type of MBean that references only a predefined set of data types.）
+
+				MXBean Interface:
+
+					public interface QueueSamplerMXBean { 
+					    public QueueSample getQueueSample(); 
+					    public void clearQueue(); 
+					} 
+
+				Defining MXBean Operations:
+				
+					public class QueueSampler implements QueueSamplerMXBean { 
+					     
+					    private Queue<String> queue; 
+					         
+					    public QueueSampler (Queue<String> queue) { 
+					        this.queue = queue; 
+					    } 
+					         
+					    public QueueSample getQueueSample() { 
+					        synchronized (queue) { 
+					            return new QueueSample(new Date(), 
+					                           queue.size(), queue.peek()); 
+					        } 
+					    } 
+					         
+					    public void clearQueue() { 
+					        synchronized (queue) { 
+					            queue.clear(); 
+					        } 
+					    } 
+					} 	
+
+				Defining the Java Type Returned by the MXBean Interface:
+				
+					public class QueueSample { 
+     
+					    private final Date date; 
+					    private final int size; 
+					    private final String head; 
+					         
+					    @ConstructorProperties({"date", "size", "head"}) 
+					    public QueueSample(Date date, int size, 
+					                        String head) { 
+					        this.date = date; 
+					        this.size = size; 
+					        this.head = head; 
+					    } 
+					         
+					    public Date getDate() { 
+					        return date; 
+					    } 
+					         
+					    public int getSize() { 
+					        return size; 
+					    } 
+					         
+					    public String getHead() { 
+					        return head; 
+					    } 
+					}   
+
+				Creating and Registering the MXBean in the MBean Server:
+				
+					public class Main { 
+ 
+					    public static void main(String[] args) throws Exception { 
+					        MBeanServer mbs = 
+					            ManagementFactory.getPlatformMBeanServer(); 
+					                
+					        ...  
+					        ObjectName mxbeanName = new ObjectName("com.example:type=QueueSampler");
+					        
+					        Queue<String> queue = new ArrayBlockingQueue<String>(10);
+					        queue.add("Request-1");
+					        queue.add("Request-2");
+					        queue.add("Request-3");
+					        QueueSampler mxbean = new QueueSampler(queue);
+					        
+					        mbs.registerMBean(mxbean, mxbeanName);
+					                 
+					        System.out.println("Waiting..."); 
+					        Thread.sleep(Long.MAX_VALUE); 
+					    } 
+					} 
+
+				Running the MXBean Example:
+				
+					...			
+
+	# 通知：
+
+		java:
+
+			public class Hello extends NotificationBroadcasterSupport implements HelloMBean {
+
+				public void sayHello() {
+					System.out.println("hello, world");
+				}
+
+				public int add(int x, int y) {
+					return x + y;
+				}
+
+				/* Getter for the Name attribute. The pattern shown here is frequent: the
+				   getter returns a private field representing the attribute value. In our
+				   case, the attribute value never changes, but for other attributes it
+				   might change as the application runs. Consider an attribute representing
+				   statistics such as uptime or memory usage, for example. Being read-only
+				   just means that it can't be changed through the management interface. */
+				public String getName() {
+					return this.name;
+				}
+
+				/* Getter for the CacheSize attribute. The pattern shown here is
+				   frequent: the getter returns a private field representing the
+				   attribute value, and the setter changes that field. */
+				public int getCacheSize() {
+					return this.cacheSize;
+				}
+
+				/* Setter for the CacheSize attribute. To avoid problems with
+				   stale values in multithreaded situations, it is a good idea
+				   for setters to be synchronized. */
+				public synchronized void setCacheSize(int size) {
+					int oldSize = this.cacheSize;
+					this.cacheSize = size;
+
+				/* In a real application, changing the attribute would
+				   typically have effects beyond just modifying the cacheSize
+				   field.  For example, resizing the cache might mean
+				   discarding entries or allocating new ones. The logic for
+				   these effects would be here. */
+					System.out.println("Cache size now " + this.cacheSize);
+
+				/* Construct a notification that describes the change. The
+				   "source" of a notification is the ObjectName of the MBean
+				   that emitted it. But an MBean can put a reference to
+				   itself ("this") in the source, and the MBean server will
+				   replace this with the ObjectName before sending the
+				   notification on to its clients.
+
+				   For good measure, we maintain a sequence number for each
+				   notification emitted by this MBean.
+
+				   The oldValue and newValue parameters to the constructor are
+				   of type Object, so we are relying on Tiger's autoboxing
+				   here.  */
+					Notification n =
+							new AttributeChangeNotification(this,
+									sequenceNumber++,
+									System.currentTimeMillis(),
+									"CacheSize changed",
+									"CacheSize",
+									"int",
+									oldSize,
+									this.cacheSize);
+
+				/* Now send the notification using the sendNotification method
+				   inherited from the parent class NotificationBroadcasterSupport. */
+					sendNotification(n);
+				}
+
+				@Override
+				public MBeanNotificationInfo[] getNotificationInfo() {
+					String[] types = new String[] {
+							AttributeChangeNotification.ATTRIBUTE_CHANGE
+					};
+					String name = AttributeChangeNotification.class.getName();
+					String description = "An attribute of this MBean has changed";
+					MBeanNotificationInfo info =
+							new MBeanNotificationInfo(types, name, description);
+					return new MBeanNotificationInfo[] {info};
+				}
+
+				private final String name = "Reginald";
+				private int cacheSize = DEFAULT_CACHE_SIZE;
+				private static final int DEFAULT_CACHE_SIZE = 200;
+
+				private long sequenceNumber = 1;
+			}
+	
+	# 远程管理：		
+
+		Exposing a Resource for Remote Management By JConsole:
+
+		Creating a Custom JMX Client:
+
+			/*
+			 * Copyright (c) 1995, 2008, Oracle and/or its affiliates. All rights reserved.
+			 *
+			 * Redistribution and use in source and binary forms, with or without
+			 * modification, are permitted provided that the following conditions
+			 * are met:
+			 *
+			 *   - Redistributions of source code must retain the above copyright
+			 *     notice, this list of conditions and the following disclaimer.
+			 *
+			 *   - Redistributions in binary form must reproduce the above copyright
+			 *     notice, this list of conditions and the following disclaimer in the
+			 *     documentation and/or other materials provided with the distribution.
+			 *
+			 *   - Neither the name of Oracle or the names of its
+			 *     contributors may be used to endorse or promote products derived
+			 *     from this software without specific prior written permission.
+			 *
+			 * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+			 * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+			 * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+			 * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+			 * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+			 * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+			 * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+			 * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+			 * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+			 * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+			 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+			 */
+
+			/*
+			 * Client.java - JMX client that interacts with the JMX agent. It gets
+			 * attributes and performs operations on the Hello MBean and the QueueSampler
+			 * MXBean example. It also listens for Hello MBean notifications.
+			 */
+
+			package com.binvi.springboot.demo03.book.javase.jmx;
+
+			import java.io.IOException;
+			import java.util.Arrays;
+			import java.util.Set;
+			import java.util.TreeSet;
+
+			import javax.management.AttributeChangeNotification;
+			import javax.management.JMX;
+			import javax.management.MBeanServerConnection;
+			import javax.management.Notification;
+			import javax.management.NotificationListener;
+			import javax.management.ObjectName;
+			import javax.management.remote.JMXConnector;
+			import javax.management.remote.JMXConnectorFactory;
+			import javax.management.remote.JMXServiceURL;
+
+			public class Client {
+
+				/**
+				 * Inner class that will handle the notifications.
+				 */
+				public static class ClientListener implements NotificationListener {
+					public void handleNotification(Notification notification,
+												   Object handback) {
+						echo("\nReceived notification:");
+						echo("\tClassName: " + notification.getClass().getName());
+						echo("\tSource: " + notification.getSource());
+						echo("\tType: " + notification.getType());
+						echo("\tMessage: " + notification.getMessage());
+						if (notification instanceof AttributeChangeNotification) {
+							AttributeChangeNotification acn =
+									(AttributeChangeNotification) notification;
+							echo("\tAttributeName: " + acn.getAttributeName());
+							echo("\tAttributeType: " + acn.getAttributeType());
+							echo("\tNewValue: " + acn.getNewValue());
+							echo("\tOldValue: " + acn.getOldValue());
+						}
+					}
+				}
+
+				/* For simplicity, we declare "throws Exception".
+				   Real programs will usually want finer-grained exception handling. */
+				public static void main(String[] args) throws Exception {
+					// Create an RMI connector client and
+					// connect it to the RMI connector server
+					//
+					echo("\nCreate an RMI connector client and " +
+							"connect it to the RMI connector server");
+					JMXServiceURL url =
+							new JMXServiceURL("service:jmx:rmi:///jndi/rmi://:9999/jmxrmi");
+					JMXConnector jmxc = JMXConnectorFactory.connect(url, null);
+
+					// Create listener
+					//
+					ClientListener listener = new ClientListener();
+
+					// Get an MBeanServerConnection
+					//
+					echo("\nGet an MBeanServerConnection");
+					MBeanServerConnection mbsc = jmxc.getMBeanServerConnection();
+					waitForEnterPressed();
+
+					// Get domains from MBeanServer
+					//
+					echo("\nDomains:");
+					String domains[] = mbsc.getDomains();
+					Arrays.sort(domains);
+					for (String domain : domains) {
+						echo("\tDomain = " + domain);
+					}
+					waitForEnterPressed();
+
+					// Get MBeanServer's default domain
+					//
+					echo("\nMBeanServer default domain = " + mbsc.getDefaultDomain());
+
+					// Get MBean count
+					//
+					echo("\nMBean count = " + mbsc.getMBeanCount());
+
+					// Query MBean names
+					//
+					echo("\nQuery MBeanServer MBeans:");
+					Set<ObjectName> names =
+							new TreeSet<ObjectName>(mbsc.queryNames(null, null));
+					for (ObjectName name : names) {
+						echo("\tObjectName = " + name);
+					}
+					waitForEnterPressed();
+
+					// ----------------------
+					// Manage the Hello MBean
+					// ----------------------
+
+					echo("\n>>> Perform operations on Hello MBean <<<");
+
+					// Construct the ObjectName for the Hello MBean
+					//
+					ObjectName mbeanName = new ObjectName("com.example:type=Hello");
+
+					// Create a dedicated proxy for the MBean instead of
+					// going directly through the MBean server connection
+					//
+					HelloMBean mbeanProxy =
+							JMX.newMBeanProxy(mbsc, mbeanName, HelloMBean.class, true);
+
+					// Add notification listener on Hello MBean
+					//
+					echo("\nAdd notification listener...");
+					mbsc.addNotificationListener(mbeanName, listener, null, null);
+
+					// Get CacheSize attribute in Hello MBean
+					//
+					echo("\nCacheSize = " + mbeanProxy.getCacheSize());
+
+					// Set CacheSize attribute in Hello MBean
+					// Calling "reset" makes the Hello MBean emit a
+					// notification that will be received by the registered
+					// ClientListener.
+					//
+					mbeanProxy.setCacheSize(150);
+
+					// Sleep for 2 seconds to have time to receive the notification
+					//
+					echo("\nWaiting for notification...");
+					sleep(2000);
+
+					// Get CacheSize attribute in Hello MBean
+					//
+					echo("\nCacheSize = " + mbeanProxy.getCacheSize());
+
+					// Invoke "sayHello" in Hello MBean
+					//
+					echo("\nInvoke sayHello() in Hello MBean...");
+					mbeanProxy.sayHello();
+
+					// Invoke "add" in Hello MBean
+					//
+					echo("\nInvoke add(2, 3) in Hello MBean...");
+					echo("\nadd(2, 3) = " + mbeanProxy.add(2, 3));
+
+					waitForEnterPressed();
+
+					// ------------------------------
+					// Manage the QueueSampler MXBean
+					// ------------------------------
+
+					echo("\n>>> Perform operations on QueueSampler MXBean <<<");
+
+					// Construct the ObjectName for the QueueSampler MXBean
+					//
+					ObjectName mxbeanName =
+							new ObjectName("com.example:type=QueueSampler");
+
+					// Create a dedicated proxy for the MXBean instead of
+					// going directly through the MBean server connection
+					//
+					QueueSamplerMXBean mxbeanProxy =
+							JMX.newMXBeanProxy(mbsc, mxbeanName, QueueSamplerMXBean.class);
+
+					// Get QueueSample attribute in QueueSampler MXBean
+					//
+					QueueSample queue1 = mxbeanProxy.getQueueSample();
+					echo("\nQueueSample.Date = " + queue1.getDate());
+					echo("QueueSample.Head = " + queue1.getHead());
+					echo("QueueSample.Size = " + queue1.getSize());
+
+					// Invoke "clearQueue" in QueueSampler MXBean
+					//
+					echo("\nInvoke clearQueue() in QueueSampler MXBean...");
+					mxbeanProxy.clearQueue();
+
+					// Get QueueSample attribute in QueueSampler MXBean
+					//
+					QueueSample queue2 = mxbeanProxy.getQueueSample();
+					echo("\nQueueSample.Date = " + queue2.getDate());
+					echo("QueueSample.Head = " + queue2.getHead());
+					echo("QueueSample.Size = " + queue2.getSize());
+
+					waitForEnterPressed();
+
+					// Close MBeanServer connection
+					//
+					echo("\nClose the connection to the server");
+					jmxc.close();
+					echo("\nBye! Bye!");
+				}
+
+				private static void echo(String msg) {
+					System.out.println(msg);
+				}
+
+				private static void sleep(int millis) {
+					try {
+						Thread.sleep(millis);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+
+				private static void waitForEnterPressed() {
+					try {
+						echo("\nPress <Enter> to continue...");
+						System.in.read();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+
+
