@@ -2917,9 +2917,32 @@
 
 2020-4-16
 
-	# JMX(Java Management Extensions): https:
+	# JMX(Java Management Extensions): 
 
 		https://docs.oracle.com/javase/tutorial/jmx/remote/custom.html 		// done 2020-4-16 16:45:55
+
+	# 工作日志：		// done 2020-4-17 16:48:39
+	
+		上班时间：9:00
+		下班时间：18:00
+		工作地点：北京市昌平区宏福苑北区
+		工作内容：
+		周一（远程办公）：1、业务迁移-WebService接口开发
+		周二（远程办公）：1、业务迁移-WebService接口开发
+		周三（远程办公）：1、业务迁移-WebService接口开发
+		周四（远程办公）：1、业务迁移-WebService接口开发
+		周五（远程办公）：1、业务迁移-WebService接口开发	
+
+	# windows下的cmd命令：
+	
+		复制文件: robocopy D:\tmp  E:\doc readme.txt
+
+		webservice导入wsdl文件生成java代码: wsimport -s E:\workspace\WS_Client\src -p com.ws.client -keep http://127.0.0.1/webService/server?wsdl
+
+			（1）wsimport 是java的一个命令，在bin目录下
+			（2）E:\workspace\WS_Client\src 为项目源码地址
+			（3）com.ws.client 将生成的客户端代码放到这里
+			（4）http://127.0.0.1/webService/server?wsdl 其中http://127.0.0.1/webService/server?wsdl是在服务器端发布的地址	
 
 
 
