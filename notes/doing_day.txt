@@ -2944,6 +2944,41 @@
 			（3）com.ws.client 将生成的客户端代码放到这里
 			（4）http://127.0.0.1/webService/server?wsdl 其中http://127.0.0.1/webService/server?wsdl是在服务器端发布的地址	
 
+2020-4-20 15:21:00
+
+	# java tools: jdk中的工具类，如: wsimport native2ascii jar keytool jconsole jvisualvm等等
+
+		https://docs.oracle.com/javase/8/docs/technotes/tools/		
+
+2020-4-21 10:24:30
+
+	# w3c标签库： https://www.w3.org/TR/			
+
+	# dubbo: http://dubbo.apache.org/zh-cn/docs/user/configuration/xml.html
+
+		示例 				// done 2020-4-21 23:59:02
+
+2020-4-22 11:25:25
+
+	# 《Java开发手册 泰山版》		// done 2020-4-22 11:36:51
+
+	# DbUnit：数据库测试工具 		http://dbunit.sourceforge.net/
+
+	# dubbo： http://dubbo.apache.org/zh-cn/docs/user/configuration/xml.html
+
+		dubbo-user-book.pdf // done 2020-4-23 00:12:37
+
+		dubbo-dev-book.pdf  // done 2020-4-23 00:12:19
+
+		dubbo-admin-book.pdf // done 2020-4-23 22:08:54
+
+2020-4-23 22:09:01
+
+	# apache.axis2: webservice服务框架	
+
+		http://axis.apache.org/axis2/java/core/index.html	
+
+
 
 
 		

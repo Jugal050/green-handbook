@@ -22,6 +22,8 @@ java:
 
 		JMX(Java Management Extensions): https://docs.oracle.com/javase/tutorial/jmx/remote/custom.html 				// start 2020-4-16 14:00:01 done 2020-4-16 16:45:55
 
+		java tools: jdk中的工具类，如: wsimport native2ascii jar keytool jconsole jvisualvm等等		https://docs.oracle.com/javase/8/docs/technotes/tools/		
+
 framework
 
 	spring:
@@ -77,6 +79,14 @@ framework
 		springboot-reference-guide:
 
 		source-code:
+
+	dubbo: 
+	
+		http://dubbo.apache.org/zh-cn/docs/user/configuration/xml.html	// start 2020-4-21 22:13:43
+
+	DbUnit：数据库测试工具 		
+		
+		http://dbunit.sourceforge.net/	
 
 json:
 

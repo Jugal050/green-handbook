@@ -34,6 +34,8 @@ done：
 
 	JMX(Java Management Extensions): https://docs.oracle.com/javase/tutorial/jmx/remote/custom.html 				// start 2020-4-16 14:00:01 done 2020-4-16 16:45:55
 
+	java tools: https://docs.oracle.com/javase/8/docs/technotes/tools/
+
 doing：
 
 	《TCP/IP详解：卷1》												// doing start: 2019-8-20 16:43:51 now：chapter13 2019-8-28 20:58:41 TODO
@@ -124,7 +126,7 @@ doing：
 
 	The Java EE Tutorial: https://docs.oracle.com/javaee/7/tutorial/index.html 		// start 2020-4-4 11:29:31		
 
-	
+	http://dubbo.apache.org/zh-cn/docs/user/configuration/xml.html
 			
 
 todo:
