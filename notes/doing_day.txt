@@ -2996,6 +2996,48 @@
 
 	# docker && k8s 
 
+2020-4-27 15:18:31
+
+	# k8s-client-java
+
+		基于官方kubernetes-client/
+
+			java类库，实现通过java完成对kubenetes原生资源对象（pod、node、namespace、servcie、deployment）和自定义资源对象（如：cluster）的增删改查或事件监听（watch）
+
+		k8s-client-java选型
+		
+			目前通过java操作k8s，开源版本共有两个：
+
+				kubernetes-client/java
+				fabric8io/kubernetes-client
+
+		kubernetes-client/java和fabric8io/kubernetes-client对比
+
+		 	        			和官网API一致性	   							社区活跃度				代码生成
+		kubernetes-client/java	根据k8s-openapi随之更新，一致性和更新频率高	目前不活跃				kubernetes-client/java提供了生成代码的通用跨语言工具，
+		                                                                              				该工具托管在 kubernetes-client / gen存储库中
+		fabric8io/kubernetes-client	一致性低，更新慢；其中不支持k8s1.8和1.13	社区活跃，目前使用者多	暂无
+
+		鉴于kubernetes-client/java和官网API一致性好，本文决定采用它
+
+2020-4-30：
+
+	# 周报：		// done 2020-4-30 10:32:57
+
+		上班时间：9:00
+		下班时间：18:00
+		工作地点：北京市昌平区宏福苑北区
+		工作内容：
+		周一（远程办公）：1、readiness和liveness系统设计
+		周二（远程办公）：1、readiness和liveness系统设计
+		周三（远程办公）：1、readiness和liveness开发及联调
+		周四（远程办公）：1、readiness和liveness开发及联调
+
+2020-5-6：
+
+	# spring- jdbc相关		
+
+
 				
 
 

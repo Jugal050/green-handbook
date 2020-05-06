@@ -78,6 +78,10 @@ https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/
 
 	Data Access			Transactions, DAO Support, JDBC, O/R Mapping, XML Marshalling.
 
+							3.6. Simplifying JDBC Operations with the SimpleJdbc Classes 		// done 2020-5-6 19:45:15
+
+							3.7. Modeling JDBC Operations as Java Objects 						// done 2020-5-6 20:07:14
+
 	Web Servlet	 		Spring MVC, WebSocket, SockJS, STOMP Messaging.
 
 	Web Reactive	 	Spring WebFlux, WebClient, WebSocket.
