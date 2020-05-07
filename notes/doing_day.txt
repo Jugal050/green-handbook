@@ -3037,6 +3037,16 @@
 
 	# spring- jdbc相关		
 
+2020-5-7
+
+	# ftp-client 示例参考： org.apache.activemq:activemq-client:5.8.0
+
+		创建FTPClient: org.apache.activemq.blob.FTPStrategy#createFTP
+		文件上传: org.apache.activemq.blob.FTPBlobUploadStrategy	
+		文件下载: org.apache.activemq.blob.FTPBlobDownloadStrategy
+
+
+
 
 				
 
