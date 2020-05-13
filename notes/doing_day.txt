@@ -3045,6 +3045,24 @@
 		文件上传: org.apache.activemq.blob.FTPBlobUploadStrategy	
 		文件下载: org.apache.activemq.blob.FTPBlobDownloadStrategy
 
+2020-5-8
+	
+	# chrome extension 谷歌浏览器扩展程序： 
+
+		E:\BaiduNetdiskDownload\工作文件\ChromeAppHeroes离线安装包		
+
+	# windows相关问题请移步官网： https://www.microsoft.com/zh-cn/
+
+	# 基于Mybatis一主多从数据源 包含具体测试代码实例： 
+
+		https://github.com/L316476844/Mybatis-DynamicDataSource
+
+		https://github.com/amoszhou/spring-dynamic/tree/master/src
+
+2020-5-13
+
+	# 模板模式： org.springframework.jdbc.core.JdbcTemplate		
+
 
 
 
