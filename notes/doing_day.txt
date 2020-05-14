@@ -3063,6 +3063,100 @@
 
 	# 模板模式： org.springframework.jdbc.core.JdbcTemplate		
 
+2020-5-14
+
+	# spring-mybatis 多数据源
+
+		1. 多组数据源相关bean，包括：
+
+			datasource.xml： 
+
+				<bean id="dataSource1" class="..."></>
+				<bean id="dataSource2" class="..."></>
+
+				<bean id="transactionManager1" class="...">
+					<property name="dataSource" ref="dataSource1"/>
+				</bean>
+				<bean id="transactionManager2" class="...">
+					<property name="dataSource" ref="dataSource2"/>
+				</bean>
+
+				<bean id="transactionTemplate1" class="...">
+					<property name="transactionManager" ref="transactionManager1"/>
+				</bean>
+				<bean id="transactionTemplate2" class="...">
+					<property name="transactionManager" ref="transactionManager2"/>
+				</bean>
+
+			mybatis-settings.xml： 
+
+				<bean id="sessionFactory1" class="...">
+					<property name="dataSource" ref="dataSource1">
+					<configLocation>
+ 						classpath*:META-INF/com/model/db1/...*Mapper.xml
+					</configLocation>
+				</bean>
+				<bean id="sessionFactory2" class="...">
+					<property name="dataSource" ref="dataSource2">
+					<configLocation>
+ 						classpath*:META-INF/com/model/db2/...*Mapper.xml
+					</configLocation>
+				</bean>
+
+				<bean id="sessionTemplate1" class="">
+					<property name="sessionFactory" ref="sessionFactory1"/>
+				</bean>
+				<bean id="sessionTemplate2" class="">
+					<property name="sessionFactory" ref="sessionFactory2"/>
+				</bean>
+
+				<bean id="sessionConfigor1" class="">
+					<property name="sessionTemplate" ref="sessionTemplate1"/>
+				</bean>
+				<bean id="sessionConfigor2" class="">
+					<property name="sessionTemplate" ref="sessionTemplate2"/>
+				</bean>
+
+		2. 开启事务注解
+
+			<context:auto-transaction proxy-mode="proxy" />
+
+		3. service层事务开启：（由于没有指定默认事务，会导致service无事务，而Mapper层会默认使用数据库自带事务）
+		
+			@Service
+			@Transactional("transactionManager1")
+			public class XXXServiceImpl implements XXXService {
+
+			}
+
+	# FTP上传下载
+
+		org.apache.common:common-net.jar: 
+
+			FTP客户端类：com.common.net.ftp.FTPClient
+
+		操作：
+
+			上传、下载、删除...
+
+		基本逻辑：
+
+			- 创建FTPClient客户端: new FTPClient();
+
+			- 连接FTP服务器： client.connect(host, port);
+			- 登录FTP服务器： client.login(username, password);
+
+			- FTP相关操作： client.api();
+				上传、下载、删除、创建目录等等
+				
+			- 退出登录： client.logout();
+			- 断开连接： client.disconnect();
+
+	# IO工具类： org.apache.common:common-io.jar.IOUtils		
+
+		
+
+
 
 
 
