@@ -76,11 +76,21 @@ https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/
 
 							Testing 										// done 2020-3-12 20:07:30
 
-	Data Access			Transactions, DAO Support, JDBC, O/R Mapping, XML Marshalling.
+	Data Access			Transactions, DAO Support, JDBC, O/R Mapping, XML Marshalling. 			// done 2020-5-18 22:15:51
 
 							3.6. Simplifying JDBC Operations with the SimpleJdbc Classes 		// done 2020-5-6 19:45:15
 
 							3.7. Modeling JDBC Operations as Java Objects 						// done 2020-5-6 20:07:14
+
+							4. Object Relational Mapping (ORM) Data Access						// done 2020-5-18 21:47:05
+
+							4.3. Hibernate 														// done 2020-5-18 11:32:52	
+
+							4.4 JPA 															// done 2020-5-18 21:46:26 略读，使用时精读	
+
+							5 Marshalling XML by Using Object-XML Mappers						// doen 2020-5-18 22:15:25
+
+							6 Appendix 															// done 2020-5-18 22:15:30
 
 	Web Servlet	 		Spring MVC, WebSocket, SockJS, STOMP Messaging.
 

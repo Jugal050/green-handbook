@@ -3154,6 +3154,18 @@
 
 	# IO工具类： org.apache.common:common-io.jar.IOUtils		
 
+2020-5-17
+
+	# 4.3. Hibernate 		// done 2020-5-18 11:32:52	
+
+2020-5-18 21:42:20
+
+	# 4.4 JPA 				// 略读，使用时精读	
+
+	# 5 Marshalling XML by Using Object-XML Mappers							// doen 2020-5-18 22:15:25
+
+	# 6 Appendix 															// done 2020-5-18 22:15:30
+
 		
 
 
