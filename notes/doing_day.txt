@@ -3164,6 +3164,12 @@
 
 	# 5 Marshalling XML by Using Object-XML Mappers							// doen 2020-5-18 22:15:25
 
+		// 将对象解析为xml流
+		org.springframework.oxm.Marshaller			
+
+		// 将xml流解析为对象
+		org.springframework.oxm.Unmarshaller
+
 	# 6 Appendix 															// done 2020-5-18 22:15:30
 
 		
