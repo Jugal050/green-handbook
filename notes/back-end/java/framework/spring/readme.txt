@@ -94,6 +94,8 @@ https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/
 
 	Web Servlet	 		Spring MVC, WebSocket, SockJS, STOMP Messaging.
 
+							1.1. DispatcherServlet 												// done 2020-5-19 23:35:48
+
 	Web Reactive	 	Spring WebFlux, WebClient, WebSocket.
 
 	Integration	 		Remoting, JMS, JCA, JMX, Email, Tasks, Scheduling, Caching.

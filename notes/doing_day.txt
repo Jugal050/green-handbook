@@ -3172,6 +3172,14 @@
 
 	# 6 Appendix 															// done 2020-5-18 22:15:30
 
+2020-5-19
+
+	# Web on Servlet Stack 													// start 2020-5-19 20:30:57
+
+		1. Spring Web MVC	
+
+			1.1. DispatcherServlet 											// done 2020-5-19 23:35:48
+
 		
 
 
