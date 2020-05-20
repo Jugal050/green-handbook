@@ -96,6 +96,8 @@ https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/
 
 							1.1. DispatcherServlet 												// done 2020-5-19 23:35:48
 
+							1.2. Filters 														// done 2020-5-20 23:08:33
+
 	Web Reactive	 	Spring WebFlux, WebClient, WebSocket.
 
 	Integration	 		Remoting, JMS, JCA, JMX, Email, Tasks, Scheduling, Caching.
