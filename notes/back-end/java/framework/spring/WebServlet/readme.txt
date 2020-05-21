@@ -122,5 +122,11 @@ Web on Servlet Stack
 
 		1.2.3. Shallow ETag
 		
-			ShallowEtagHeaderFilter 		
+			ShallowEtagHeaderFilter 
+
+		1.2.4. CORS														// done 2020-5-21 22:02:22
+
+			CorsFilter 			
+
+	1.3. Annotated Controllers		
 
