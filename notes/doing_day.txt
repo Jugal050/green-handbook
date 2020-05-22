@@ -203,16 +203,6 @@
 
 	# 民生银行入场 
 
-		1. 姓名:  韩斌伟
-		2. 联系电话: 137 5233 0376
-		3. 所在项目组名称: 中国民生银行信息科技部外部开发资源池公共资源框架采购项目
-		4. 所在工作楼层: 6层(工位暂时未定)
-		5. 行方项目经理: 王飞
-		6. 行方经理联系方式: ‭186 0012 9523‬
-		7. 所属地区: 安外
-		8. 公司项目经理: 王飞
-		9. 公司经理练习方式: 156 1410 8346
-
 	# https://docs.spring.io/spring/docs/5.2.0.RELEASE/spring-framework-reference/core.html#core-convert
 
 	  https://docs.spring.io/spring/docs/5.2.0.RELEASE/spring-framework-reference/core.html#validation // done 2019年11月13日 18点50分
@@ -689,24 +679,2534 @@
 					@Value("${jdbc.password}")
 					private String password;	
 
+2020-1-22 01:46:13
+
+	# NARUTO download url： thunder://QUFtYWduZXQ6P3h0PXVybjpidGloOjYwRDE3RjFBQzAwNjY1MkZCNjY1QjM4QTE5OTM2QTZGNzdFRDU2RjVaWg==					
+
+							magnet:?xt=urn:btih:60D17F1AC006652FB665B38A19936A6F77ED56F5
+
+2020-2-7 14:16:44
+
+	# idea永久注册码:							
+
+		QYYBAC9D3J-eyJsaWNlbnNlSWQiOiJRWVlCQUM5RDNKIiwibGljZW5zZWVOYW1lIjoi6LaF57qnIOeoi+W6j+WRmCIsImFzc2lnbmVlTmFtZSI6IiIsImFzc2lnbmVlRW1haWwiOiIiLCJsaWNlbnNlUmVzdHJpY3Rpb24iOiIiLCJjaGVja0NvbmN1cnJlbnRVc2UiOmZhbHNlLCJwcm9kdWN0cyI6W3siY29kZSI6IklJIiwiZmFsbGJhY2tEYXRlIjoiMjAyMC0wMS0wNCIsInBhaWRVcFRvIjoiMjAyMS0wMS0wMyJ9LHsiY29kZSI6IkFDIiwiZmFsbGJhY2tEYXRlIjoiMjAyMC0wMS0wNCIsInBhaWRVcFRvIjoiMjAyMS0wMS0wMyJ9LHsiY29kZSI6IkRQTiIsImZhbGxiYWNrRGF0ZSI6IjIwMjAtMDEtMDQiLCJwYWlkVXBUbyI6IjIwMjEtMDEtMDMifSx7ImNvZGUiOiJQUyIsImZhbGxiYWNrRGF0ZSI6IjIwMjAtMDEtMDQiLCJwYWlkVXBUbyI6IjIwMjEtMDEtMDMifSx7ImNvZGUiOiJHTyIsImZhbGxiYWNrRGF0ZSI6IjIwMjAtMDEtMDQiLCJwYWlkVXBUbyI6IjIwMjEtMDEtMDMifSx7ImNvZGUiOiJETSIsImZhbGxiYWNrRGF0ZSI6IjIwMjAtMDEtMDQiLCJwYWlkVXBUbyI6IjIwMjEtMDEtMDMifSx7ImNvZGUiOiJDTCIsImZhbGxiYWNrRGF0ZSI6IjIwMjAtMDEtMDQiLCJwYWlkVXBUbyI6IjIwMjEtMDEtMDMifSx7ImNvZGUiOiJSUzAiLCJmYWxsYmFja0RhdGUiOiIyMDIwLTAxLTA0IiwicGFpZFVwVG8iOiIyMDIxLTAxLTAzIn0seyJjb2RlIjoiUkMiLCJmYWxsYmFja0RhdGUiOiIyMDIwLTAxLTA0IiwicGFpZFVwVG8iOiIyMDIxLTAxLTAzIn0seyJjb2RlIjoiUkQiLCJmYWxsYmFja0RhdGUiOiIyMDIwLTAxLTA0IiwicGFpZFVwVG8iOiIyMDIxLTAxLTAzIn0seyJjb2RlIjoiUEMiLCJmYWxsYmFja0RhdGUiOiIyMDIwLTAxLTA0IiwicGFpZFVwVG8iOiIyMDIxLTAxLTAzIn0seyJjb2RlIjoiUk0iLCJmYWxsYmFja0RhdGUiOiIyMDIwLTAxLTA0IiwicGFpZFVwVG8iOiIyMDIxLTAxLTAzIn0seyJjb2RlIjoiV1MiLCJmYWxsYmFja0RhdGUiOiIyMDIwLTAxLTA0IiwicGFpZFVwVG8iOiIyMDIxLTAxLTAzIn0seyJjb2RlIjoiREIiLCJmYWxsYmFja0RhdGUiOiIyMDIwLTAxLTA0IiwicGFpZFVwVG8iOiIyMDIxLTAxLTAzIn0seyJjb2RlIjoiREMiLCJmYWxsYmFja0RhdGUiOiIyMDIwLTAxLTA0IiwicGFpZFVwVG8iOiIyMDIxLTAxLTAzIn0seyJjb2RlIjoiUlNVIiwiZmFsbGJhY2tEYXRlIjoiMjAyMC0wMS0wNCIsInBhaWRVcFRvIjoiMjAyMS0wMS0wMyJ9XSwiaGFzaCI6IjE2MDgwOTA5LzAiLCJncmFjZVBlcmlvZERheXMiOjcsImF1dG9Qcm9sb25nYXRlZCI6ZmFsc2UsImlzQXV0b1Byb2xvbmdhdGVkIjpmYWxzZX0=-I7c5mu4hUCMxcldrwZEJMaT+qkrzrF1bjJi0i5QHcrRxk2LO0jqzUe2fBOUR4L+x+7n6kCwAoBBODm9wXst8dWLXdq179EtjU3rfJENr1wXGgtef//FNow+Id5iRufJ4W+p+3s5959GSFibl35YtbELELuCUH2IbCRly0PUBjitgA0r2y+9jV5YD/dmrd/p4C87MccC74NxtQfRdeUEGx87vnhsqTFH/sP4C2VljSo/F/Ft9JqsSlGfwSKjzU8BreYt1QleosdMnMK7a+fkfxh7n5zg4DskdVlNbfe6jvYgMVE16DMXd6F1Zhwq+lrmewJA2jPToc+H5304rcJfa9w==-MIIElTCCAn2gAwIBAgIBCTANBgkqhkiG9w0BAQsFADAYMRYwFAYDVQQDDA1KZXRQcm9maWxlIENBMB4XDTE4MTEwMTEyMjk0NloXDTIwMTEwMjEyMjk0NlowaDELMAkGA1UEBhMCQ1oxDjAMBgNVBAgMBU51c2xlMQ8wDQYDVQQHDAZQcmFndWUxGTAXBgNVBAoMEEpldEJyYWlucyBzLnIuby4xHTAbBgNVBAMMFHByb2QzeS1mcm9tLTIwMTgxMTAxMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxcQkq+zdxlR2mmRYBPzGbUNdMN6OaXiXzxIWtMEkrJMO/5oUfQJbLLuMSMK0QHFmaI37WShyxZcfRCidwXjot4zmNBKnlyHodDij/78TmVqFl8nOeD5+07B8VEaIu7c3E1N+e1doC6wht4I4+IEmtsPAdoaj5WCQVQbrI8KeT8M9VcBIWX7fD0fhexfg3ZRt0xqwMcXGNp3DdJHiO0rCdU+Itv7EmtnSVq9jBG1usMSFvMowR25mju2JcPFp1+I4ZI+FqgR8gyG8oiNDyNEoAbsR3lOpI7grUYSvkB/xVy/VoklPCK2h0f0GJxFjnye8NT1PAywoyl7RmiAVRE/EKwIDAQABo4GZMIGWMAkGA1UdEwQCMAAwHQYDVR0OBBYEFGEpG9oZGcfLMGNBkY7SgHiMGgTcMEgGA1UdIwRBMD+AFKOetkhnQhI2Qb1t4Lm0oFKLl/GzoRykGjAYMRYwFAYDVQQDDA1KZXRQcm9maWxlIENBggkA0myxg7KDeeEwEwYDVR0lBAwwCgYIKwYBBQUHAwEwCwYDVR0PBAQDAgWgMA0GCSqGSIb3DQEBCwUAA4ICAQAF8uc+YJOHHwOFcPzmbjcxNDuGoOUIP+2h1R75Lecswb7ru2LWWSUMtXVKQzChLNPn/72W0k+oI056tgiwuG7M49LXp4zQVlQnFmWU1wwGvVhq5R63Rpjx1zjGUhcXgayu7+9zMUW596Lbomsg8qVve6euqsrFicYkIIuUu4zYPndJwfe0YkS5nY72SHnNdbPhEnN8wcB2Kz+OIG0lih3yz5EqFhld03bGp222ZQCIghCTVL6QBNadGsiN/lWLl4JdR3lJkZzlpFdiHijoVRdWeSWqM4y0t23c92HXKrgppoSV18XMxrWVdoSM3nuMHwxGhFyde05OdDtLpCv+jlWf5REAHHA201pAU6bJSZINyHDUTB+Beo28rRXSwSh3OUIvYwKNVeoBY+KwOJ7WnuTCUq1meE6GkKc4D/cXmgpOyW/1SmBz3XjVIi/zprZ0zf3qH5mkphtg6ksjKgKjmx1cXfZAAX6wcDBNaCL+Ortep1Dh8xDUbqbBVNBL4jbiL3i3xsfNiyJgaZ5sX7i8tmStEpLbPwvHcByuf59qJhV/bZOl8KqJBETCDJcY6O2aqhTUy+9x93ThKs1GKrRPePrWPluud7ttlgtRveit/pcBrnQcXOl1rHq7ByB8CFAxNotRUYL9IF5n3wJOgkPojMy6jetQA5Ogc8Sm7RG6vg1yow==
+
+		A82DEE284F-eyJsaWNlbnNlSWQiOiJBODJERUUyODRGIiwibGljZW5zZWVOYW1lIjoiaHR0cHM6Ly96aGlsZS5pbyIsImFzc2lnbmVlTmFtZSI6IiIsImFzc2lnbmVlRW1haWwiOiIiLCJsaWNlbnNlUmVzdHJpY3Rpb24iOiJVbmxpbWl0ZWQgbGljZW5zZSB0aWxsIGVuZCBvZiB0aGUgY2VudHVyeS4iLCJjaGVja0NvbmN1cnJlbnRVc2UiOmZhbHNlLCJwcm9kdWN0cyI6W3siY29kZSI6IklJIiwicGFpZFVwVG8iOiIyMDg5LTA3LTA3In0seyJjb2RlIjoiUlMwIiwicGFpZFVwVG8iOiIyMDg5LTA3LTA3In0seyJjb2RlIjoiV1MiLCJwYWlkVXBUbyI6IjIwODktMDctMDcifSx7ImNvZGUiOiJSRCIsInBhaWRVcFRvIjoiMjA4OS0wNy0wNyJ9LHsiY29kZSI6IlJDIiwicGFpZFVwVG8iOiIyMDg5LTA3LTA3In0seyJjb2RlIjoiREMiLCJwYWlkVXBUbyI6IjIwODktMDctMDcifSx7ImNvZGUiOiJEQiIsInBhaWRVcFRvIjoiMjA4OS0wNy0wNyJ9LHsiY29kZSI6IlJNIiwicGFpZFVwVG8iOiIyMDg5LTA3LTA3In0seyJjb2RlIjoiRE0iLCJwYWlkVXBUbyI6IjIwODktMDctMDcifSx7ImNvZGUiOiJBQyIsInBhaWRVcFRvIjoiMjA4OS0wNy0wNyJ9LHsiY29kZSI6IkRQTiIsInBhaWRVcFRvIjoiMjA4OS0wNy0wNyJ9LHsiY29kZSI6IkdPIiwicGFpZFVwVG8iOiIyMDg5LTA3LTA3In0seyJjb2RlIjoiUFMiLCJwYWlkVXBUbyI6IjIwODktMDctMDcifSx7ImNvZGUiOiJDTCIsInBhaWRVcFRvIjoiMjA4OS0wNy0wNyJ9LHsiY29kZSI6IlBDIiwicGFpZFVwVG8iOiIyMDg5LTA3LTA3In0seyJjb2RlIjoiUlNVIiwicGFpZFVwVG8iOiIyMDg5LTA3LTA3In1dLCJoYXNoIjoiODkwNzA3MC8wIiwiZ3JhY2VQZXJpb2REYXlzIjowLCJhdXRvUHJvbG9uZ2F0ZWQiOmZhbHNlLCJpc0F1dG9Qcm9sb25nYXRlZCI6ZmFsc2V9-5epo90Xs7KIIBb8ckoxnB/AZQ8Ev7rFrNqwFhBAsQYsQyhvqf1FcYdmlecFWJBHSWZU9b41kvsN4bwAHT5PiznOTmfvGv1MuOzMO0VOXZlc+edepemgpt+t3GUHvfGtzWFYeKeyCk+CLA9BqUzHRTgl2uBoIMNqh5izlDmejIwUHLl39QOyzHiTYNehnVN7GW5+QUeimTr/koVUgK8xofu59Tv8rcdiwIXwTo71LcU2z2P+T3R81fwKkt34evy7kRch4NIQUQUno//Pl3V0rInm3B2oFq9YBygPUdBUbdH/KHROyohZRD8SaZJO6kUT0BNvtDPKF4mCT1saWM38jkw==-MIIElTCCAn2gAwIBAgIBCTANBgkqhkiG9w0BAQsFADAYMRYwFAYDVQQDDA1KZXRQcm9maWxlIENBMB4XDTE4MTEwMTEyMjk0NloXDTIwMTEwMjEyMjk0NlowaDELMAkGA1UEBhMCQ1oxDjAMBgNVBAgMBU51c2xlMQ8wDQYDVQQHDAZQcmFndWUxGTAXBgNVBAoMEEpldEJyYWlucyBzLnIuby4xHTAbBgNVBAMMFHByb2QzeS1mcm9tLTIwMTgxMTAxMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA5ndaik1GD0nyTdqkZgURQZGW+RGxCdBITPXIwpjhhaD0SXGa4XSZBEBoiPdY6XV6pOfUJeyfi9dXsY4MmT0D+sKoST3rSw96xaf9FXPvOjn4prMTdj3Ji3CyQrGWeQU2nzYqFrp1QYNLAbaViHRKuJrYHI6GCvqCbJe0LQ8qqUiVMA9wG/PQwScpNmTF9Kp2Iej+Z5OUxF33zzm+vg/nYV31HLF7fJUAplI/1nM+ZG8K+AXWgYKChtknl3sW9PCQa3a3imPL9GVToUNxc0wcuTil8mqveWcSQCHYxsIaUajWLpFzoO2AhK4mfYBSStAqEjoXRTuj17mo8Q6M2SHOcwIDAQABo4GZMIGWMAkGA1UdEwQCMAAwHQYDVR0OBBYEFGEpG9oZGcfLMGNBkY7SgHiMGgTcMEgGA1UdIwRBMD+AFKOetkhnQhI2Qb1t4Lm0oFKLl/GzoRykGjAYMRYwFAYDVQQDDA1KZXRQcm9maWxlIENBggkA0myxg7KDeeEwEwYDVR0lBAwwCgYIKwYBBQUHAwEwCwYDVR0PBAQDAgWgMA0GCSqGSIb3DQEBCwUAA4ICAQBonMu8oa3vmNAa4RQP8gPGlX3SQaA3WCRUAj6Zrlk8AesKV1YSkh5D2l+yUk6njysgzfr1bIR5xF8eup5xXc4/G7NtVYRSMvrd6rfQcHOyK5UFJLm+8utmyMIDrZOzLQuTsT8NxFpbCVCfV5wNRu4rChrCuArYVGaKbmp9ymkw1PU6+HoO5i2wU3ikTmRv8IRjrlSStyNzXpnPTwt7bja19ousk56r40SmlmC04GdDHErr0ei2UbjUua5kw71Qn9g02tL9fERI2sSRjQrvPbn9INwRWl5+k05mlKekbtbu2ev2woJFZK4WEXAd/GaAdeZZdumv8T2idDFL7cAirJwcrbfpawPeXr52oKTPnXfi0l5+g9Gnt/wfiXCrPElX6ycTR6iL3GC2VR4jTz6YatT4Ntz59/THOT7NJQhr6AyLkhhJCdkzE2cob/KouVp4ivV7Q3Fc6HX7eepHAAF/DpxwgOrg9smX6coXLgfp0b1RU2u/tUNID04rpNxTMueTtrT8WSskqvaJd3RH8r7cnRj6Y2hltkja82HlpDURDxDTRvv+krbwMr26SB/40BjpMUrDRCeKuiBahC0DCoU/4+ze1l94wVUhdkCfL0GpJrMSCDEK+XEurU18Hb7WT+ThXbkdl6VpFdHsRvqAnhR2g4b+Qzgidmuky5NUZVfEaZqV/g==
+
+	# Spring源码阅读：
+
+		https://github.com/seaswalker/spring-analysis
+
+			spring-core					// done 2020-2-6 16:19:33
+			spring-aop					// done 2020-2-7 16:19:41
+			spring-context				// done 2020-2-7 17:14:33
+			spring-task					// done 2020-2-8 15:00:45
+
+				定时器：
+
+					用法：以XML作为示例，基于注解的也是一样的。
+						xml：
+							<task:scheduler id="scheduler" pool-size="3" />
+							<bean id="task" class="task.Task"/>
+							<task:scheduled-tasks scheduler="scheduler">
+							    <task:scheduled ref="task" method="print" cron="0/5 * * * * ?"/>
+							</task:scheduled-tasks>
+
+						java:
+							public class Task {
+							    public void print() {
+							        System.out.println("print执行");
+							    }
+							}
+
+					解析：		
+
+						注册：
+							org.springframework.scheduling.config.TaskNamespaceHandler
+								@Override
+								public void init() {
+								    this.registerBeanDefinitionParser("annotation-driven", new AnnotationDrivenBeanDefinitionParser());
+								    this.registerBeanDefinitionParser("executor", new ExecutorBeanDefinitionParser());
+								    this.registerBeanDefinitionParser("scheduled-tasks", new ScheduledTasksBeanDefinitionParser());
+								    this.registerBeanDefinitionParser("scheduler", new SchedulerBeanDefinitionParser());
+								}
+
+						scheduler:
+							SchedulerBeanDefinitionParser
+
+						scheduler-tasks:
+							ScheduledTasksBeanDefinitionParser
+
+					调度执行：
+
+						ContextLifecycleScheduledTaskRegistrar
+
+						scheduler初始化:
+							TaskScheduler 				// 同步执行
+							ConcurrentTaskExecutor 		// 异步执行
+
+						任务调度 ：
+							org.springframework.scheduling.config.ScheduledTaskRegistrar#scheduleTriggerTask	
+							org.springframework.scheduling.config.ScheduledTaskRegistrar#scheduleCronTask
+							org.springframework.scheduling.config.ScheduledTaskRegistrar#scheduleFixedRateTask
+							org.springframework.scheduling.config.ScheduledTaskRegistrar#scheduleFixedDelayTask
+
+						Trigger：
+
+						Cron解析：
+							CronTask
+							CronTrigger
+							CronSequenceGenerator
+
+						调度：
+							ReschedulingRunnable.schedule
+
+				异步执行：
+				
+					xml:
+						<task:executor id="executor" pool-size="3"/>
+						<task:annotation-driven executor="executor"/>			
+
+					java:
+						@Async("executor")
+						public void print() {
+						    System.out.println("print执行");
+						}	
+
+			spring-transaction			// 初略看了 2020-2-8 15:20:16 done 2020-2-9 16:17:27
+
+				配置：
+
+					<!-- 数据源以Sping自带为例，每次请求均返回一个新的连接 -->
+					<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+					    <property name="driverClassName" value="${jdbc.driverClassName}" />
+					    <property name="url" value="${jdbc.url}" />
+					    <property name="username" value="${jdbc.username}" />
+					    <property name="password" value="${jdbc.password}" />
+					</bean>
+					<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+					    <property name="dataSource" ref="dataSource"/>
+					</bean>
+					<tx:annotation-driven transaction-manager="transactionManager"/>
+
+				解析：
+					
+					TxNamespaceHandler
+						@Override
+						public void init() {
+						    registerBeanDefinitionParser("advice", new TxAdviceBeanDefinitionParser());
+						    registerBeanDefinitionParser("annotation-driven", 
+						        new AnnotationDrivenBeanDefinitionParser());
+						    registerBeanDefinitionParser("jta-transaction-manager", new JtaTransactionManagerBeanDefinitionParser());
+						}	
+
+					AnnotationDrivenBeanDefinitionParser.parse()
+					
+					TransactionalEventListener
+
+					AnnotationTransactionAttributeSource: 解析@Transactional注解的相关属性	
+
+				运行：
+
+					JdkDynamicAopProxy.invoke
+
+					事务拦截器：TransactionInterceptor
+
+					事务管理器：DataSourceTransactionManager等等
+
+					事务开启：TransactionAspectSupport.createTransactionIfNecessary
+
+					是否已存在事务：TransactionSynchronizationManager.doGetResource
+
+						是否存在事务指的是在当前线程、当前数据源(DataSource)中是否存在处于活动状态的事务。
+
+					事务已存在：
+
+						如果检测到已存在事务，那么就要考虑事务的传播特性(行为)：
+
+							AbstractPlatformTransactionManager.handleExistingTransaction
+
+						事务挂起：
+
+							所谓的事务挂起其实就是一个移除当前线程、数据源活动事务对象的过程。
+
+					事务创建：DataSourceTransactionManager.doBegin
+					
+						Spring事务的开启实际上是将数据库的自动提交设为false。
+
+					事务提交 & 回滚：
+						
+						其实就是对jdbc相应方法的封装，不再展开。				
+				
+				总结：		
+
+					事务的本质其实是对数据库自动提交的关闭与开启，传播特性是Spring提出、实现、控制的概念，而隔离级别是对数据库实现的封装。
+
+			spring-mvc			// 初略阅读 2020-2-9 16:39:21	done 2020-2-10 11:54:45
+
+				核心：DispatcherServlet
+
+				初始化：HttpServletBean.init
+
+				容器创建：FrameworkServlet.createWebApplicationContext
+
+				配置解析：MvcNamespaceHandler
+
+				MVC初始化：DispatcherServlet.initStrategies
+
+				HandlerMapping初始化：
+
+					RequestMappingHandlerMapping
+
+					DefaultAnnotationHandlerMapping
+
+					BeanNameUrlHandlerMapping
+
+				HandlerAdapter初始化：
+
+					RequestMappingHandlerAdapter
+
+				请求响应：FrameworkServlet.service	
+
+					请求分发: DispatcherServlet.doDispatch
+
+						处理器查找: DispatcherServlet.getHandler
+
+						适配器查找: DispatcherServlet.getHandlerAdapter
+
+					请求处理: RequestMappingHandlerAdapter.handleInternal
+
+						Session同步: 
+
+						参数解析: RequestParamMethodArgumentResolver
+
+							Model解析: ModelMethodProcessor
+
+						返回值解析: ViewNameMethodReturnValueHandler
+
+						视图渲染: DispatcherServlet.processDispatchResult
+
+							渲染: DispatcherServlet.render
+
+					参数绑定: DataBinder
+					
+					参数校验: ModelAttributeMethodProcessor.resolveArgument  DataBinder.validate	
+
+
+			guava-cache			// 初略阅读 2020-2-9 16:39:27
+
+2020-2-12 10:58:41
+
+	# spring framework 5 learn, step by step, include this:
+
+		** reference-guide：			
+
+		** demo/test:
+
+		** source-code:
+
+			Spring代码风格（Code Style），地址: https://github.com/spring-projects/spring-framework/wiki/Code-Style
+
+				有几点值得关注的：
+
+					## 导入语句 Import statements：
+
+						The import statements are structured as follow:
+
+							import java.* 
+							blank line
+							import javax.* 
+							blank line
+							import all other imports
+							blank line
+							import org.springframework.* 
+							blank line
+							import static all other imports
+
+						静态导入不应该在生产代码中使用，应该用在测试代码中，比如：import static org.assertj.core.api.Assertions.assertThat;
+
+						通配符导入，比如：import java.util.*; or import static org.assertj.core.api.Assertions.*，是禁止的，包括测试代码中。
+
+					## Java源文件结构 Java source file organization：
+
+						1. static fields
+						2. normal fields
+						3. constructors
+						4. (private) methods called from constructors
+						5. static factory methods
+						6. JavaBean properties (i.e., getters and setters)
+						7. method implementations coming from interfaces
+						8. private or protected templates that get called from method implementations coming from interfaces 
+						9. other methods
+						10. equals, hashCode, and toString 
+
+						private和protected方法应该紧跟在调用他们的方法的下方。比如：
+
+							public interface Service {
+								void init();
+								void service();
+								void post();
+							}
+
+							public class ServiceImple implements Service {
+
+								@Override
+								public void init() {
+									aaa();
+								}
+
+								private void aaa() {};
+
+								@Override
+								public void service() {
+									bbb();
+								}
+
+								private void bbb() {};
+
+								@Override
+								public void post() {
+									ccc();
+								}
+
+								private void ccc() {};
+							}
+
+					## Formatting		
+
+						### 花括号 Braces：
+
+							Block-like constructs: K&R style
+
+							Braces mostly follow the Kernighan and Ritchie style (a.k.a., "Egyptian brackets") for nonempty blocks and block-like constructs:
+								No line break before the opening brace but prefixed by a single space
+								Line break after the opening brace
+								Line break before the closing brace
+								Line break after the closing brace if that brace terminates a statement or the body of a method, constructor, or named class
+								Line break before else, catch and finally statements 
+
+							Example:
+
+								return new MyClass() {
+									@Override 
+									public void method() {
+										if (condition()) {
+											something();
+										}
+										else {
+											try {
+												alternative();
+											} 
+											catch (ProblemException ex) {
+												recover();
+											}
+											finally {
+												closeIO();
+											}
+										}
+									}
+								};
+
+							tips:
+
+								第四点和我们平时推荐的不太一样。Spring推荐： else、catch、finallly语句之前换行。
+
+						### 换行 Line wrapping		
+
+							0-90： 推荐
+							90-105: 可以接受
+							105-120: 允许但不鼓励，应该尽可能避免
+							> 120: 不允许
+
+							推荐80字符左右，原因是为了各种文档/设备，包括在Github上、手机等上的格式兼容适配。
+
+							还有，分隔符放在行尾，而不是下一行。比如：
+							
+									if (thisLengthyMethodCall(param1, param2) && anotherCheck() &&
+									        yetAnotherCheck()) {
+
+									    // ....
+									}
+
+						### 空行 Blank Line			
+
+							两个空行 Add two blank lines before the following elements:
+								static {} block
+								Fields
+								Constructors
+								Inner classes
+
+							一个空行：Add one blank line after a method signature that is multiline, i.e.
+
+								@Override
+								protected Object invoke(FooBarOperationContext context, 
+								        AnotherSuperLongName name) {
+
+								    // code here
+								}
+
+					##编码实践 Programming Practices			
+
+						### Ternary Operator 三目运算符
+
+							三目运算符要用圆括号括起来， i.e. return (foo != null ? foo : "default");
+
+							而且非空判断 not null 要在前面。
+
+
+						### Null Checks	
+
+							Use the org.springframework.util.Assert.notNull static method to check that a method argument is not null.
+
+							public void handle(Event event) {
+							    Assert.notNull(event, "Event must not be null");
+							    //...
+							}
+
+						### 通用工具类 Utility classes	
+
+							一个只有static通用方法的类，类名必须以Utils结尾，必须有私有的构造方法，类修饰符需要用abstact。防止使用者尝试实例化。
+
+								public abstract MyUtils {
+
+								    private MyUtils() {
+								        /* prevent instantiation */
+								    }
+
+								    // static utility methods
+								}
+
+						### 对象和方法引用 Field and method references		
+
+							类中的对象引用时使用this.，类中的方法引用时禁止使用this.
+							A field of a class should always be referenced using this. A method of class, however, should never be referenced using this.
+
+					## Javadoc		
+
+						In particular, please note:
+
+							Use an imperative style (i.e. Return and not Returns) for the first sentence.
+
+							// 描述和参数描述之前无需空行
+							No blank lines between the description and the parameter descriptions.
+
+							// 如果有多个段落，每个段落之前使用<p>标签
+							If the description is defined with multiple paragraphs, start each of them with <p>.
+							
+							If a parameter description needs to be wrapped, do not indent subsequent lines (see parserContext).
+
+						其他：
+							
+							** 有代码/null时，使用{@code}包起来。
+							** 如果使用元素{@link}，使用全路径限定名，避免import导入。如：
+								provides access to a {@link org.springframework.beans.factory.support.BeanDefinitionRegistry}
+
+# 2020-2-13 15:22:32
+
+	# spring framework reference + spring guide demo + spring source code 
+
+		
+2020-2-14 20:08:23
+
+	# ClassPathXmlApplicationContext源码阅读，未完待续
+
+2020-2-15 16:25:58
+
+	# AbstractApplicationContext.refresh()执行流程，未完待续：
+
+		@Override
+		public void refresh() throws BeansException, IllegalStateException {
+		    synchronized (this.startupShutdownMonitor) {
+		        // Prepare this context for refreshing.
+		        prepareRefresh();
+
+		        // Tell the subclass to refresh the internal bean factory.  // done 2020-2-15 19:54:35
+		        ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
+
+		        // Prepare the bean factory for use in this context.
+		        prepareBeanFactory(beanFactory);
+
+		        try {
+		            // Allows post-processing of the bean factory in context subclasses.
+		            postProcessBeanFactory(beanFactory);
+
+		            // Invoke factory processors registered as beans in the context.
+		            invokeBeanFactoryPostProcessors(beanFactory);
+
+		            // Register bean processors that intercept bean creation.
+		            registerBeanPostProcessors(beanFactory);
+
+		            // Initialize message source for this context.
+		            initMessageSource();
+
+		            // Initialize event multicaster for this context.
+		            initApplicationEventMulticaster();
+
+		            // Initialize other special beans in specific context subclasses.
+		            onRefresh();
+
+		            // Check for listener beans and register them.
+		            registerListeners();
+
+		            // Instantiate all remaining (non-lazy-init) singletons.
+		            finishBeanFactoryInitialization(beanFactory);
+
+		            // Last step: publish corresponding event.
+		            finishRefresh();
+		        }
+
+		        catch (BeansException ex) {
+		            if (logger.isWarnEnabled()) {
+		                logger.warn("Exception encountered during context initialization - " +
+		                            "cancelling refresh attempt: " + ex);
+		            }
+
+		            // Destroy already created singletons to avoid dangling resources.
+		            destroyBeans();
+
+		            // Reset 'active' flag.
+		            cancelRefresh(ex);
+
+		            // Propagate exception to caller.
+		            throw ex;
+		        }
+
+		        finally {
+		            // Reset common introspection caches in Spring's core, since we
+		            // might not ever need metadata for singleton beans anymore...
+		            resetCommonCaches();
+		        }
+		    }
+		}
+
+2020-2-17 14:56:14
+
+	# ContextPathXmlApplicationContext:
+
+		org.springframework.context.support.AbstractApplicationContext#refresh	
+
+			synchronized (this.startupShutdownMonitor) {
+
+				
+				// 刷新准备
+				// Prepare this context for refreshing.
+				prepareRefresh();
+
+					设置启动时间-startupDate
+					设置容器状态： 
+						关闭状态-closed = false
+						激活状态-active = true
+
+					初始化占位符属性源
+					initPropertySources();
+
+					必输的属性校验
+					getEnvironment().validateRequiredProperties();
+
+					判断刷新前的应用监听器-earlyApplicationListeners是否为null
+						如果是：
+							保存刷新前的应用监听器： 
+							this.earlyApplicationListeners = new LinkedHashSet<>(this.applicationListeners);
+						否则	:
+							重置应用监听器为刷新前的状态
+							this.applicationListeners.clear();
+							this.applicationListeners.addAll(this.earlyApplicationListeners);
+
+					初始化需要提前的应用事件-earlyApplicationEvents
+					this.earlyApplicationEvents = new LinkedHashSet<>();
+
+
+				// 通知子类将要刷新内置的beanFactory
+				// Tell the subclass to refresh the internal bean factory.
+				ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
+
+					// beanFactory的刷新操作，如果之前有beanFactory，则先关闭，然后初始化一个新的beanFactory，为context生命周期下一阶段使用
+					refreshBeanFactory();
+
+						判断是否已有beanFactory，如果有：
+							摧毁beans
+							关闭beanFactory
+
+						新建beanFactory
+
+						设置序列化编号
+
+						设置beanFactory	
+							是否允许Bean定义信息重写
+							是否允许循环引用
+
+						加载bean定义信息，xml实现：AbstractXmlApplicationContext#loadBeanDefinitions
+
+							为指定的beanFactory创建Bean定义信息读取器
+
+							设置环境信息environment = this.getEnvironment();
+							设置资源加载器resourceLoader = this;
+							设置实体解析器entityResolver = new ResourceEntityResolver(this)
+
+							初始化bean定义信息读取器beanDefinitionReader
+
+							加载bean定义信息
+								根据配置资源configResources加载
+								根据配置路径configLocations加载
+
+					return getBeanFactory();
+
+
+				// beanFactory使用前准备
+				// Prepare the bean factory for use in this context.
+				prepareBeanFactory()
+
+					设置Bean类加载器beanClassLoader = 当前类加载器
+					设置Bean表达式解析器beanExpressionResolver 
+						= StandardBeanExpressionResolver[标准的Bean表达式解析器]
+					添加属性编辑器的注册器propertyEditorRegistrars
+						add ResourceEditorRegistrar[资源编辑器注册器]
+
+					添加Bean后置处理器
+						beanPostProcessors add ApplicationContextAwareProcessor[应用通知处理器]
+					忽略接口依赖ignoredDependencyInterfaces 
+						add EnvironmentAware[环境通知类]
+						add EmbeddedValueResolverAware[内嵌的值处理器通知类]
+						add ResourceLoaderAware[资源加载器通知类]
+						add ApplicationEventPublisherAware[应用事件发布器通知类]
+						add MessageSourceAware[消息源通知类]
+						add ApplicationContextAware[应用上下文通知类]
+
+					注册可解析的依赖resolvableDependencies
+						put {BeanFactory.class， beanFactory}
+						put {ResourceLoader.class.class， this}
+						put {ApplicationEventPublisher.class， this}
+						put {ApplicationContext.class， this}
+
+					添加Bean后置处理器beanPostProcessors 
+						add ApplicationListenerDetector[应用监听处理器]
+
+					如果beanFactory包含loadTimeWeaver[加载时植入类]，如果有，
+						Bean请求处理器beanPostProcessors 
+							add LoadTimeWeaverAwareProcessor[加载时植入通知处理器]
+						设置临时类加载器tempClassLoader 
+							= ContextTypeMatchClassLoader[上下文类型匹配类加载器]
+
+					注册默认的环境相关beans，包括：environment	, systemProperties, systemEnvironment
+
+
+				try --------------------------------------------------------------	
+
+
+					// 后置处理context子类中的beanFactory
+					// Allows post-processing of the bean factory in context subclasses.
+					postProcessBeanFactory	
+
+						默认实现为空，子类可覆盖
+
+
+					// 调用context中 已注册为beans的 beanFactory后置处理器
+					// Invoke factory processors registered as beans in the context.
+					invokeBeanFactoryPostProcessors
+
+						调用BeanFactory后置处理器
+							判断beanFactory是否是Bean定义信息注册类的子类
+								如果是：
+									优先调用Bean定义注册的后置处理器BeanDefinitionRegistryPostProcessor，如果有
+										按照实现的接口优先级顺序遍历调用（PriorityOrdered > Ordered > 其他）
+									再调用BeanFactoryPostProcessor
+										按照顺序遍历调用（registryProcessors > regularPostProcessors）
+								否则：
+									遍历调用指定的后置处理器beanFactoryPostProcessors
+
+							调用其他还未调用过的普通beans的beanFactory后置处理器：
+								按照实现的接口优先级顺序遍历调用（PriorityOrdered > Ordered > 其他）
+
+							至此，所有后置处理器均已调用完成！！！！！
+
+						如果 beanFactory中有loadTimeWeaver[加载时植入器] && tempClassLoader[临时类加载器]为null：
+							Bean请求处理器beanPostProcessors 
+						    	add LoadTimeWeaverAwareProcessor[加载时植入通知处理器]
+							设置临时类加载器tempClassLoader 
+						    	= ContextTypeMatchClassLoader[上下文类型匹配类加载器]
+
+
+					// 注册拦截bean创建的bean后置处理器
+					// Register bean processors that intercept bean creation.				
+					registerBeanPostProcessors
+
+						org.springframework.context.support.PostProcessorRegistrationDelegate#registerBeanPostProcessors(
+							ConfigurableListableBeanFactory beanFactory, AbstractApplicationContext applicationContext) 
+
+								从beanFactory中获取BeanPostProcessor类型的beans
+
+								按顺序添加bean后置处理器： [beanPostProcessors add ...]
+									-- BeanPostProcessorChecker[BeanPostProcessor检查器]
+									-- 实现了PriorityOrdered的BeanPostProcessors
+									-- 实现了Ordered的BeanPostProcessors
+									-- 其他普通的BeanPostProcessors
+									-- 内置的BeanPostProcessors
+									-- 应用监听器探测器[ApplicationListenerDetector]
+
+
+					// 初始化消息源
+					// Initialize message source for this context.
+					initMessageSource
+
+						判断beanFacory中是否有名称为'messageSource'的bean：
+
+							如果有：
+								如果父容器不为空，且此messageSource可继承
+									如果父容器的数据源为空
+										设置父容器消息源
+							如果没有：
+								设置父容器消息源[dms = new DelegatingMessageSource()]
+								设置此容器消息源[this.messageSource = dms]
+								注册单例bean，名称为[messageSource]，内容为[this.messageSource]
+
+
+					// 初始化事件广播器
+					// Initialize event multicaster for this context.
+					initApplicationEventMulticaster
+
+						判断beanFacory中是否有名称为'applicationEventMulticaster'的bean：				
+
+							如果有：
+								获取并设置为当前的applicationEventMulticaster
+
+							如果没有：
+								新建并设置为当前的applicationEventMulticaster
+									this.applicationEventMulticaster = new SimpleApplicationEventMulticaster(beanFactory);
+								注册单例bean，名称为[applicationEventMulticaster]，内容为[this.applicationEventMulticaster]
+
+
+					// 初始化容器子类中的特殊bean			
+					// Initialize other special beans in specific context subclasses.			
+					onRefresh
+
+						模板方法，默认为空，可被子类重写。
+
+
+					// 注册监听器
+					// Check for listener beans and register them.
+					registerListeners
+
+						注册容器中的静态特殊监听器
+
+						从beanFactory中获取ApplicationListener类的beans，并注册
+
+						提前发布 需要提前发布的 应用事件[监听器提早执行]
+
+
+					// 初始化所有剩余的单例bean
+					// Instantiate all remaining (non-lazy-init) singletons.
+					finishBeanFactoryInitialization
+
+						初始化conversionService
+						
+						如果没有内置的取值解析器embeddedValueResolvers，则注册一个默认的
+
+						提前初始化加载时植入通知器LoadTimeWeaverAware，以便进行提前处理
+
+						停止使用类型匹配的临时类加载器: this.tempClassLoader = null
+
+						缓存所有的bean定义元数据，不再修改: 
+							this.configurationFrozen = true; 
+							this.frozenBeanDefinitionNames = StringUtils.toStringArray(this.beanDefinitionNames);
+
+						初始化其他的单例bean（非懒加载的）
+
+
+					// 最后一步，发布相关事件
+					// Last step: publish corresponding event.
+					finishRefresh	
+
+						// 清除context级别的资源缓存
+						// Clear context-level resource caches (such as ASM metadata from scanning).
+						clearResourceCaches();
+
+						// 初始化context的生命周期处理器lifecycleProcessor
+						// Initialize lifecycle processor for this context.
+						initLifecycleProcessor();
+
+						// 通知生命周期处理器refresh事件
+						// Propagate refresh to lifecycle processor first.
+						getLifecycleProcessor().onRefresh();
+
+						// 发布最终的事件
+						// Publish the final event.
+						publishEvent(new ContextRefreshedEvent(this));
+
+						// 如果可以，参与活动的Beans视图LiveBeansView
+						// Participate in LiveBeansView MBean, if active.
+						LiveBeansView.registerApplicationContext(this);
+
+
+				catch BeansException ex -----------------------------------------------------
+
+
+					// 清除已经创建的单例bean
+					// Destroy already created singletons to avoid dangling resources.
+					destroyBeans();
+
+
+					// 容器激活标识active设置为false
+					// Reset 'active' flag.
+					cancelRefresh(ex);
+
+
+					// 抛出异常
+					// Propagate exception to caller.
+					throw ex;
+
+
+				finally -----------------------------------------------------
+
+
+					重置通用缓存信息
+					// Reset common introspection caches in Spring's core, since we
+					// might not ever need metadata for singleton beans anymore...
+					resetCommonCaches();
+
+						// 反射工具类缓存清除
+						ReflectionUtils.clearCache();
+
+						// 注解工具类缓存清除
+						AnnotationUtils.clearCache();
+
+						// 类型解析相关缓存清除
+						ResolvableType.clearCache();
+
+						// 缓存的自省结果清除
+						CachedIntrospectionResults.clearClassLoader(getClassLoader());
+
+				-------------------------------------------------------------
+				至此，容器初始化refresh()执行完成。。。。。
+
+
+2020-2-19 10:24:09
+
+	# ClassPathXmlApplicationContext 源码阅读：
+
+
+			obtainFreshBeanFactory()
+
+				// 加载bean定义信息（通过XmlBeanDefinitionReader）
+				org.springframework.context.support.AbstractXmlApplicationContext#loadBeanDefinitions
+
+				// 解析root级别的元素，包括：import，alias，bean
+				org.springframework.beans.factory.xml.DefaultBeanDefinitionDocumentReader#parseBeanDefinitions
+
+				// 从xml文件中读取Bean元素: 
+				org.springframework.beans.factory.xml.BeanDefinitionParserDelegate#parseBeanDefinitionElement
+
+				// 从xml文件中读取Bean属性: 
+				org.springframework.beans.factory.xml.BeanDefinitionParserDelegate#parseBeanDefinitionAttributes
+
+				// 注册bean定义信息：
+				org.springframework.beans.factory.support.DefaultListableBeanFactory#registerBeanDefinition
+
+
+
+			finishBeanFactoryInitialization(beanFactory)	
+
+				// 创建bean（核心方法）：包括创建bean实例，填充bean实例，调用后置处理器，等等
+				org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#createBean
+
+				// 填充bean实例（根据bean定义信息中属性值）
+				org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#populateBean
+				
+				// 更改bean的属性值，解析beanfactory中bean的property值。使用深拷贝，而不永久改变这些property值。
+				org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#applyPropertyValues
+				
+				// 创建bean实例，创建方法包括：工厂方法，构造器，普通实例化
+				org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#createBeanInstance
+
+
+
+				// 根据指定的bean返回一个RootBeanDefinition(如果传入的是子类bean定义信息，将于父类bean定义信息合并)
+				org.springframework.beans.factory.support.AbstractBeanFactory#getMergedBeanDefinition
+
+
+	# 妈妈生日（1-26）！！！！！			
+
+2020-2-20 08:00:00
+
+	# Happy birthday to mama!  Remember it. Don't Forget.
+
+		// remake. 1-26日生日，已经过了。。。。。。
+
+	# spring-refrence-guide restart
+	
+		## BeanFactory与FactoryBean的区别：		
+			 
+			 BeanFactory是个Factory，也就是IOC容器或对象工厂，FactoryBean是个Bean 。
+
+			 在Spring中，所有的Bean都是由BeanFactory(也就是IOC容器) 来进行管理的。
+
+			 但对FactoryBean而言，这个Bean不是简单的Bean，而是一个能生产或者修饰对象生成的工厂Bean, 它的实现与设计模式中的工厂模式和修饰器模式类似。	
+
+
+		## 依赖注入时，使用构造器注入，还是使用setter方法？（官网翻译）
+
+			推荐的规则是：对于有强制性的依赖则使用构造器，对于其他可选择的依赖则使用setter方法。
+			在setter方法上添加注解@Required可以标识属性为必需的依赖，但是，更推荐使用构造器进行依赖注入然后使用单独校验代码。
+
+			构造器注入是Spring团队通常推荐使用的，因为它可以让你的应用组件作为不可变对象，可以确保必需依赖不能为空。而且，构造器注入的组件是完全初始化的，
+			但是另一方面，如果构造器有大量的参数也会使代码很糟糕，也意味着我们需要更多的责任去进行代码重构。
+
+			setter注入，应该只有在可选性依赖可以赋予默认值的时候才使用。否则，用到依赖就要添加非空校验。
+			setter注入的优点：一是setter方法可以重复调用，二是可以通过JMX MBeanns进行管理。
+
+			一般类可以使用这两种方法依赖注入。但有一些是第三方的类，我们没有源码的时候，就需要自己判断，如果第三方类没有暴露任何setter方法，就只能使用构造器注入。	 
+
+
+		## 循环依赖问题
+
+			如果使用构造器注入，可能会出现循环依赖问题。
+
+			比如： 类A进行构造器注入时需要B实例，类B进行构造器注入时需要A实例。 如果出现这种互相依赖，容器运行时会检查，并抛出异常BeanCurrentlyInCreationException。
+
+			一个解决方法时使用setter方法注入代替构造器注入。 虽然不推荐，但是可以使用setter注入解决循环依赖问题。
+
+			和普通情况不一样，一个A-B之间的循环依赖会导致必须先有一个类实例完全初始化（典型的“ 鸡和蛋谁先有的? ”问题）。	
+
+
+	# 1.4.4. Lazy-initialized Beans 		// done 2020-2-20 19:33:26
+	
+2020-2-21 12:15:03
+
+	# spring-reference-guide hot point:
+
+		## 自动注入/自动装配模式：
+
+			no
+				（默认）无自动注入。 Bean引用必须使用ref元素定义。 大型应用部署时不推荐修改默认值，因为其中会有一些特殊配置需要特别管理和明确。从某种角度来说，它决定了一个系统的结构。
+
+			byName
+				根据属性名称自动注入。 Spring会查找和需要注入的元素同名的bean。 
+				比如，如果一个bean设置为根据名称注入，其中包含一个master的元素（有setMaster方法），Spring会查找名称为master的bean然后注入到此元素master中。
+
+			byType
+				根据属性类型自动注入。 如果容器中存在与属性类型相同的单个bean则注入元素。 如果存在多个，代表根据元素类型无法注入bean，则抛出异常。如果没有匹配的beans，则不进行任何操作。
+
+			constructor
+				与byType类似，但是使用构造器参数注入。如果容器中没有与构造器参数相同类型的bean，则程序中止。
+				
+
+		## 自动注入的限制/缺点：
+		
+			属性和构造器参数设置的明确依赖往往会覆盖自动注入。 我们不能自动注入简单的属性，比如基本类型，String，Class，以及包含这些类型的数组。 这些属于设计上的限制。
+
+			自动注入比明确注入更加模棱两可，尽管，如原先表格上的笔记所说，Spring已经很谨慎的避免出现，如果有模棱两可的结果时开发者会猜测，但，在spring管理的对象之间关系并不是那么明确
+
+			对于有些从spring容器中生成文档的工具类，信息注入可能不可用。
+
+			容器中如果有多个bean定义信息，可能会根据setter方法或者构造器参数注入的类型进行匹配。 对于数组array，结合collection，或者映射map实例，这些不是问题。
+			但是对于明确仅有一个值的那些依赖，这种模棱两可并不能简单粗暴地解决。 如果没有唯一的bean定义信息可用，则会抛出异常。
+
+			tips: 
+
+				对于后边的一些场景，我们可以有如下选择：
+				
+					放弃自动注入，使用明确注入。
+
+					通过设置<bean autowire-candidate = false />防止自动注入。 
+
+					设置<bean primary=true />将此bean设置为注入时的首选。
+
+					使用基于注解的配置实现更细粒度的控制。
+
+	# 询问社区是否可以开复工证明 + 盖章。
+
+2020-2-22 10:22:39
+
+	# spring-reference-guide hot point:
+
+		## 	引出问题：（bean scope不一致问题）
+
+				单例bean A中每次调用方法，需要非单例（prototype）的bean B。 容器只会创建A一次，这样只有一次机会来设置属性。 容器无法每次给A提供一个新创建的B。
+
+			解决方案：
+			
+				1. 放弃IOC，让bean A	通过实现接口ApplicationContextAware（既可以设置容器），每次A需要B时，调用applicationContext.getBean("B")。
+
+				2. 使用方法注入Method Injection。
+
+		## Spring代理机制：
+
+				JDK动态代理基于JDK，CGLIB基于AspectJ，已集成在spring-core包下。
+
+				如果代理对象实现了至少一个接口，则使用JDK动态代理，如果没有实现任何接口，则使用CGLIB。
+
+				问题：
+
+					使用CGLIB时，final修饰的方法不能被代理，因为运行时子类无法重写。 
+
+					Spring4.0以后，代理对象构造方法不再会调用两次，因为CGLIB代理实例是通过Objenesis创建的。只有当JVM不允许绕过构造器，spring-support才会两次调用并输出日志。
+
+				如果想强制使用CGLIB代理，可以设置：<aop:config proxy-target-class="true"></aop:config>
+
+				使用注解 @AspectJ 自动代理时如果想强制使用CGLIB代理，可以设置：<aop:aspectj-autoproxy proxy-target-class="true"/>
+
+				CGLIB代理机制：
+
+					代理是通过构造一个和委托类有同样行为的对象，cglib代理是通过字节码技术来生成一个继承该委托类的一个代理类。代理类重写包含委托对象中所有方法（除private修饰的不能继承）。 注：可以使用代理类调用final，static修饰的方法，但是代理类中没有重写该方法，所以会调用委托类中的该方法（增强的代码不会执行）。	
+
+	# 1.5. Bean Scopes 	// done 2020-2-22 11:48:56
+
+	# 1.8. Container Extension Points		// done 2020-2-22 19:06:25
+
+2020-2-23 10:52:41
+
+	# 1.9.4. Fine-tuning Annotation-based Autowiring with Qualifiers	// done 2020-2-23 12:25:03
+
+		@Autowired注解注入流程：（后置处理器： AutowiredAnnotationBeanPostProcessor[在spring-bean包下]）
+
+			AbstractBeanFactory.getBean()
+			AbstractBeanFactory.doGetBean()
+			AbstractAutowireCapableBeanFactory.createBean()
+			AbstractAutowireCapableBeanFactory.doCreateBean()
+			AbstractAutowireCapableBeanFactory.populateBean()
+			AutowiredAnnotationBeanPostProcessor.postProcessProperties()
+			InjectionMetadata.inject()
+			AutowiredFieldElement.inject() 		// 如果注解@Autowired加在字段上，使用此方法注入
+			AutowiredMethodElement.inject()		// 如果注解@Autowired加在方法上，使用此方法注入
+
+			其中：
+
+				// 属性后置处理
+				AutowiredAnnotationBeanPostProcessor.postProcessProperties
+
+					// 查找相关注解（包括：org.springframework.beans.factory.annotation.Autowired， org.springframework.beans.factory.annotation.Value, javax.inject.Inject）
+					AutowiredAnnotationBeanPostProcessor.findAutowiringMetadata
+
+					// 属性注入
+					InjectionMetadata.inject
+						AutowiredFieldElement.inject() 		// 如果注解加在字段上，使用此方法注入
+						AutowiredMethodElement.inject()		// 如果注解加在方法上，使用此方法注入
 
 
 
 
 
-		  	
+		@Resource注解注入流程：（后置处理器： CommonAnnotationBeanPostProcessor[在spring-context包下]）	
 
+			AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
+			AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:321)
+			DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:222)
+			AbstractBeanFactory$$Lambda$269.1401702503.getObject(Unknown Source:-1)
+			AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:323)
+			AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:517)
+			AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:594)
+			AbstractAutowireCapableBeanFactory.populateBean(AbstractAutowireCapableBeanFactory.java:1422)
+			CommonAnnotationBeanPostProcessor.postProcessProperties(CommonAnnotationBeanPostProcessor.java:334)
+			InjectionMetadata.inject(InjectionMetadata.java:133)
+			InjectionMetadata.InjectedElement#inject(InjectionMetadata.java:233)
+
+			
+			其中：
+
+				// 属性后置处理
+				CommonAnnotationBeanPostProcessor.postProcessProperties
+
+					// 查找相关注解(包括：javax.xml.ws.WebServiceRef, javax.ejb.EJB, javax.annotation.Resource):
+					CommonAnnotationBeanPostProcessor.findResourceMetadata
+
+					// 属性注入
+					InjectionMetadata.inject
+						InjectionMetadata.InjectedElement.inject
+
+	# 1.9. Annotation-based Container Configuration	// done 2020-2-23 18:42:11	
+
+2020-2-24 11:26:38
+
+	# spring-reference-guide hot point:
+
+		# @Component，@Repository，@Service，@Controller注解的区别？
+
+			@Component 任何Spring管理的组件都可以使用的通用构造型注解。
+
+			@Repository 即平常所说的DAO，用于与数据库访问相关的持久层
+
+			@Service 服务层
+
+			@Controller 视图层
+
+			tips:
+
+				可以在任何组件上添加注解@Component，但是，使用其他注解如@Repository，@Service，@Controller，能更准确地标识该组件的意图，
+				而且，Spring Framework以后有可能为这些注解添加更多的附加功能，比如，@Respository已经支持持久层的异常自动转换。
+
+	# 1.10.4. Using Filters to Customize Scanning		// done 2020-2-24 12:38:14	
+	
+	# 1.10. Classpath Scanning and Managed Components	// done 2020-2-24 18:52:25	
+
+	# 1.11. Using JSR 330 Standard Annotations 			// done 2020-2-24 19:23:38
+
+2020-2-25 14:59:26
+
+	# 郑各庄村委会【建科大厦】 办理 出入证 2020-2-25 11:00:20
+
+	# spring-reference-guide hot point:
+
+	# 1.12. Java-based Container Configuration		// done 2020-2-25 17:42:54
+
+2020-2-26 10:41:23
+
+	# 1.13. Environment Abstraction 				// done 2020-2-26 16:53:53
+
+		1.13.1. Bean Definition Profiles 			// done 2020-2-26 12:19:23	
+
+	# 1.14. Registering a LoadTimeWeaver 			// done 2020-2-26 16:54:09	
+
+	# 1.15.1. Internationalization using MessageSource // done 2020-2-26 18:29:43
+
+2020-2-27 11:55:58
+
+	# 1.15.2. Standard and Custom Events			// done 2020-2-27 11:55:41	
+
+	# 1. The IoC Container 							// done 2020-2-27 18:03:46
+
+2020-2-28 12:00:11
+
+	# 2.2. The Resource Interface 					// done 2020-2-28 12:00:27	
+
+	# 复工证明（隔离14天以上） 						// done 2020-2-28 16:00:58
+
+	# 2. Resources 									// done 2020-2-28 18:30:45
+
+2020-2-29 10:41:52
+
+	# 3.2. Resolving Codes to Error Messages		// done 2020-2-29 12:06:58	
+
+	# 3.3. Bean Manipulation and the BeanWrapper 	// done 2020-2-29 19:15:23
+
+2020-3-1 10:50:00
+
+	# 3.4. Spring Type Conversion 					// done 2020-3-1 12:15:38
+
+		用法： 可参考测试类org/springframework/core/convert/converter/DefaultConversionServiceTests.java
+
+			private final DefaultConversionService conversionService = new DefaultConversionService();
+
+			conversionService.convert("1", Character.class);
+
+			conversionService.convert("true", Boolean.class);
+
+			conversionService.convert("1", Byte.class);
+
+			conversionService.convert("1", Short.class);
+
+			conversionService.convert("1", Integer.class);
+
+			conversionService.convert(Float.valueOf("1.0"), String.class);
+
+			conversionService.convert("1.0", Double.class);
+
+			conversionService.convert(3L, String.class);
+
+			conversionService.convert("1", BigInteger.class);
+			conversionService.convert(new BigDecimal("100.00"), String.class)
+			conversionService.convert("1.0", Number.class)
+			conversionService.convert("BAR", Foo.class)
+			conversionService.convert("BAZ", SubFoo.BAR.getClass())
+
+			conversionService.convert("en-US", Locale.class)
+
+			conversionService.convert("UTF-8", Charset.class)
+
+			conversionService.convert(Currency.getInstance("USD"), String.class)
+
+			conversionService.convert(new String[] {"1", "2", "3"}, List.class);
+
+			List<Integer> result = (List<Integer>) conversionService.convert(new String[] {"1", "2", "3"}, TypeDescriptor
+				.valueOf(String[].class), new TypeDescriptor(getClass().getDeclaredField("genericList")));
+
+			List<Color> colors = (List<Color>) conversionService.convert(new String[] {"ffffff", "#000000"},
+				TypeDescriptor.valueOf(String[].class),
+				new TypeDescriptor(new MethodParameter(getClass().getMethod("handlerMethod", List.class), 0)));
+				
+			LinkedList<?> result = conversionService.convert(new String[] {"1", "2", "3"}, LinkedList.class);
+			
+			String result = conversionService.convert(new String[] {"1", "2", "3"}, String.class);		
+
+			String[] result = conversionService.convert("1,2,3", String[].class);
+			Integer[] result = conversionService.convert("1,2,3", Integer[].class);
+			int[] result = conversionService.convert("1,2,3", int[].class);
+
+			List<?> result = (List<?>) conversionService.convert("1,2,3", TypeDescriptor.valueOf(String.class),
+				new TypeDescriptor(getClass().getField("genericList")));
+
+			Properties result = conversionService.convert("a=b\nc=2\nd=", Properties.class);
+			Properties result = conversionService.convert("   foo=bar\n   bar=baz\n    baz=boop", Properties.class);
+
+			conversionService.convert(1L, TestEntity.class);
+			TestEntity entity = (TestEntity) conversionService.convert(null,
+				TypeDescriptor.valueOf(String.class), TypeDescriptor.valueOf(TestEntity.class));
+
+	# 3. Validation, Data Binding, and Type Conversion  		// done 2020-3-1 19:05:38、
+
+2020-3-2 11:05:47
+
+	# 已读文档的相关源码测试类										// done 2020-3-2 17:38:12
+
+		org.springframework.core.ResolvableTypeTests
+
+		org.springframework.core.convert.TypeDescriptorTests
+
+		org.springframework.core.convert.converter.DefaultConversionServiceTests
+
+		...		
+
+	# Java模拟框架： Mockito 									
+
+		official website: https://site.mockito.org/
+
+		doc: https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html
+
+		jar: org.mockito:mockito-core:3.2.0
+
+	# 工具集： YourKit [https://www.yourkit.com/]
+
+		说明： CPU, JVM分析工具 [收费]
+
+	# Spring相关类说明：
+
+		ResolvableType: 
+
+			说明：封装了java.lang.refelect.Type类型，能够对Class进行基本解析，还可以从字段、方法参数、方法返回、Class类型解析生成，完成之后可以获取其父类、接口、常规参数等。
+
+			用法：
+
+				public class Demo {
+
+					private HashMap<Integer, List<String>> myMap;
+
+					public void example() {
+
+						ResolvableType t = ResolvableType.forField(getClass().getDeclaredField("myMap"));
+						t.getSuperType(); // AbstractMap<Integer, List<String>>
+						t.asMap(); // Map<Integer, List<String>>
+						t.getGeneric(0).resolve(); // Integer
+						t.getGeneric(1).resolve(); // List
+						t.getGeneric(1); // List<String>
+						t.resolveGeneric(1, 0); // String
+
+					}
+
+				}
+
+
+		TypeDescriptor: 
+
+			说明：类型相关信息说明，包括数组/集合。
+
+			用法：
+
+				public class Demo {
+
+					@Test
+					void parameterPrimitive() throws Exception {
+						TypeDescriptor desc = new TypeDescriptor(new MethodParameter(getClass().getMethod("testParameterPrimitive", int.class), 0));
+						assertThat(desc.getType()).isEqualTo(int.class);
+						assertThat(desc.getObjectType()).isEqualTo(Integer.class);
+						assertThat(desc.getName()).isEqualTo("int");
+						assertThat(desc.toString()).isEqualTo("int");
+						assertThat(desc.isPrimitive()).isTrue();
+						assertThat(desc.getAnnotations().length).isEqualTo(0);
+						assertThat(desc.isCollection()).isFalse();
+						assertThat(desc.isMap()).isFalse();
+					}
+
+					public void testParameterPrimitive(int primitive) {}	
+
+				}
+
+2020-3-3 12:17:49
+
+	# 4.1. Evaluation 								// done 2020-3-3 12:46:24
+
+	# 因为现在还未通知现场办公，年前1月份有几天未报工时，行内现在正在确认工时：  		// @魏坚 done 选第二种
+
+		1. 如果现在确认： 
+
+			确认完了就可以跟公司清账了。
+
+			但那未报工的那几天工时就不算了，后续想补报需要额外加班。 
+
+		2. 如果以后再确认： 
+
+			暂时不和公司清账，等确认的时候再和公司清账。 
+
+			未报工的那几天到时候可以确认，无需额外加班补报。
+
+		如果公司着急清账，就第1种，不着急清账，就第2种。
+
+	# 4. Spring Expression Language (SpEL) 			// done 2020-3-3 19:18:18	
+
+2020-3-4 14:05:20
+
+	# SpEL测试类										// done 2020-3-4 16:47:46
+
+		org.springframework.expression.spel.standard.SpelParserTests
+
+	# SpEL解析过程：									// done 2020-3-4 16:47:51
+	
+		代码块：
+
+			SpelExpressionParser parser = new SpelExpressionParser();
+			SpelExpression expr = parser.parseRaw("2      +    3");		
+			assertThat(expr.getValue()).isEqualTo(5);
+
+		执行逻辑：
+
+			// 实例化SpEL表达式转化器
+			SpelExpressionParser parser = new SpelExpressionParser();
+			
+				// 调用SpEL转化器的构造器
+				org.springframework.expression.spel.standard.SpelExpressionParser	
+
+					// 调用SpEL转化器配置的构造器，
+					// 配置包括： 编译模式[默认OFF]、编译的类加载器[默认NULL]、是否自动添加null引用[默认false]、集合是否自动扩容[默认false]、集合扩容最大长度[默认Integer.MAX_VALUE]
+					org.springframework.expression.spel.SpelParserConfiguration 
+
+			// 转化SpEL表达式		
+			SpelExpression expr = parser.parseRaw("2      +    3");		
+
+				// 转化原始的SpEL表达式
+				org.springframework.expression.spel.standard.SpelExpressionParser#parseRaw(String expressionString)
+
+					// 根据转化上下文执行转化逻辑
+					org.springframework.expression.spel.standard.SpelExpressionParser#doParseExpression(String expressionString, @Nullable ParserContext context)
+
+						// 构造内置的SpEL转化器
+						org.springframework.expression.spel.standard.InternalSpelExpressionParser#InternalSpelExpressionParser(SpelParserConfiguration configuration)
+
+						// 使用内置的SpEL转化器转化表达式
+						org.springframework.expression.spel.standard.InternalSpelExpressionParser#doParseExpression(String expressionString, @Nullable ParserContext context)
+
+							// 根据SpEL表达式构造分词器： Tokenizer tokenizer = new Tokenizer(expressionString);
+							org.springframework.expression.spel.standard.Tokenizer#Tokenizer(String inputData)
+
+							// 将分词器处理为标识符集合： this.tokenStream = tokenizer.process();
+							// 将字符解析为一个个标识符，如：数学运算符（+ - * / % ^）、逻辑运算符（and (&&) or (||) not (!)）、关系运算符（> == < != instanceof match）、赋值（=）
+							org.springframework.expression.spel.standard.Tokenizer#process()
+
+							// 将表达式一步步处理为AST树节点： SpelNodeImpl ast = eatExpression();
+							// 将表达式中的各个标识符进行逻辑处理，如： 数学运算、逻辑运算、关系比较、赋值运算等等
+							org.springframework.expression.spel.standard.InternalSpelExpressionParser#eatExpression()
+
+							// 构造SpEL表达式： return new SpelExpression(expressionString, ast, this.configuration);
+							org.springframework.expression.spel.standard.SpelExpression(String expression, SpelNodeImpl ast, SpelParserConfiguration configuration)
+
+
+			// 获取SpEL表达式结果
+			expr.getValue()
+
+				// 获取SpEL表达式的结果值
+				org.springframework.expression.spel.standard.SpelExpression#getValue()
+
+					// 获取表达式解析上下文
+					org.springframework.expression.spel.standard.SpelExpression#getEvaluationContext
+
+						// 构造标准的表达式解析上下文
+						org.springframework.expression.spel.support.StandardEvaluationContext#StandardEvaluationContext()
+
+					// 构建表达式状态信息： ExpressionState expressionState = new ExpressionState(getEvaluationContext(), this.configuration);
+					org.springframework.expression.spel.ExpressionState#ExpressionState(EvaluationContext context, SpelParserConfiguration configuration)
+
+					// 获取SpEL节点结果值： Object result = this.ast.getValue(expressionState);
+					org.springframework.expression.spel.ast.SpelNodeImpl#getValue(ExpressionState expressionState)
+
+						// 获取内部的操作运算结果值（本例中为加法运算符）
+						org.springframework.expression.spel.ast.OpPlus#getValueInternal(ExpressionState state)
+
+					// 解析次数超过触发编译的阈值时，执行表达式编译
+					// org.springframework.expression.spel.standard.SpelExpression#checkCompile(ExpressionState expressionState)	
+
+					// 返回结果值： return result;
+
+	# 公务：
+
+		1. 2019年第四季度评价工作.      From 张义  To 王飞、张继超 		// done 2020-3-4 16:17:41
+
+		2. 2019年11月13天工时未报. 	   @魏坚 @张继超					// 含糊其辞，无法补报。 尚未恢复魏坚
+
+		3. 2020年1月份工时后续确认. 		@张继超 						// done 开工现场办公时确认 2020-3-4 16:20:00
+
+	# 5. Aspect Oriented Programming with Spring 					// start 2020-3-4 16:48:21
+	
+	# python下载网易云无损音乐歌单
+
+		Git地址：
+
+			https://github.com/YongHaoWu/NeteaseCloudMusicFlac
+
+		安装目录：
+
+			 D:\Tool\python脚本\NeteaseCloudMusicFlac-master
+
+		使用：
+
+			// 使用
+			$ python main.py 歌单地址(如上图便是: http://music.163.com/#/playlist?id=145258012)
+
+			// python3示例命令(注意 windows 可能要把下面的单引号去掉)
+			$ python3 main.py 'http://music.163.com/#/playlist?id=3778678'
+
+			// 下载所有歌曲, 包括 MP3 在内
+			$ python3 main.py 'http://music.163.com/#/playlist?id=145258012' --mp3
+
+		歌曲下载目录：
+
+			D:\Tool\python脚本\NeteaseCloudMusicFlac-master\songs_dir
+
+2020-3-5 11:53:38
+
+	# 5.4. @AspectJ support 									// 泛读done，文档待补充，测试类待debug 2020-3-5 12:06:05	
+
+	# spring hot point:
+
+		## 切面功能实现，是使用Spring AOP还是AspectJ？
+
+			原则： 能简单实现就不搞复杂化。 Spring AOP要比整个AspectJ更简单（没有在开发或者构建应用过程中添加AspectJ编译和植入）。
+
+				如果只需要对在Spring beans上的方法执行进行通知，选择Spring AOP，
+
+				如果需要对非Spring容器管理的对象进行通知，或者通知的匹配方法规则要求很高很复杂，选择AspectJ。
+
+				如果选择AspectJ，是选择编码格式还是注解格式？
+
+					如果使用的java版本1.5或者更早，选择编码格式。
+
+					如果应用设计时，切面相关的占比很高，而且可以使用Eclipse中的AJDT插件，选择编码格式。
+
+					如果不使用Eclipse，aspect切面相关的占比很低，使用注解格式。
+
+		## 如果选择使用Spring AOP，是使用注解格式还是XML格式？
+
+			XML优点：
+
+				使用Spring的用户对XML风格比较熟悉，而且它实际上也属于比较传统的POJO。
+
+				企业服务中把AOP作为工具使用时，使用XML格式，可以让系统中的切面配置保持整洁。
+
+			XML缺点：
+
+				XML其实是将需求与实现（后端的bean类与切面配置）进行分隔了，违背了DRY原则（系统中的任何片段都要独立、明确、有代表性）。
+
+				XML配置要比@AspectJ注解表达上限制更多，比如，切面模型只支持单例模式，xml中无法合并使用已添加的切入点pointcuts。		
+
+	# 5.7. Mixing Aspect Types 						// done 2020-3-5 19:59:23
+
+2020-3-6 09:26:06
+
+	# Objenesis: 
+
+		说明： 特殊类实例化的小型类库。
+
+		由来： java本身已经支持使用Class.newInstance()来动态实例化，然后，只有当类有合适的构造器时才会起作用，如果一个类包含以下几种情况，就很难通过该方式进行实例化：
+
+				- 构造器带参数
+				- 构造器有副作用
+				- 构造器会抛异常
+
+				所以，在很多地方，我们可以看见类似"该类必须有默认构造器"的限制，Objenesis的宗旨就是实例化对象时不受这些限制。
+
+		官网： http://objenesis.org/index.html
+
+		使用： 
+
+			主要接口：
+
+				interface ObjectInstantiator {
+				  Object newInstance();
+				}
+
+				interface InstantiatorStrategy {
+				  ObjectInstantiator newInstantiatorOf(Class type);
+				}
+
+			实例化策略：
+			
+				1. Stardard 不会调用构造器
+				2. Serializable compliant 和java标准的实例化对象方式类似，调用第一个非序列化父类的构造器。
+
+				tips： 程序会自动判断最佳策略。
+
+			使用示例：
+
+				Objenesis objenesis = new ObjenesisStd(); // or ObjenesisSerializer
+				MyThingy thingy1 = (MyThingy) objenesis.newInstance(MyThingy.class);
+
+				// or (a little bit more efficient if you need to create many objects)
+
+				Objenesis objenesis = new ObjenesisStd();
+				ObjectInstantiator thingyInstantiator = objenesis.getInstantiatorOf(MyThingy.class);
+
+				MyThingy thingy1 = (MyThingy)thingyInstantiator.newInstance();				
+				MyThingy thingy2 = (MyThingy)thingyInstantiator.newInstance();				
+				MyThingy thingy3 = (MyThingy)thingyInstantiator.newInstance();	
+
+				// 缓存使用
+
+					Objenesis o = new ObjenesisStd(false); // cache disabled
+
+				// 自定义策略	
+
+					public class Sun14Strategy implements InstantiatorStrategy {
+					    public ObjectInstantiator newInstantiatorOf(Class type) {
+					        // return sun dedicated instantiator
+					        return new SunReflectionFactoryInstantiator(type);
+					    }
+					}		
+
+					// Directly
+					Objenesis o = new ObjenesisBase(new Sun14Strategy());
+
+					// Or inside your Objenesis own implementation
+					public class ObjenesisSun14 extends ObjenesisBase {
+					    public ObjenesisSun14() {
+					       super(new Sun14Strategy());
+					    }
+					}
+
+				// 静态工具类	
+
+					Object o1 = ObjenesisHelper.newInstance(MyClass.class);
+					Object o2 = ObjenesisHelper.newSerializableInstance(MyClass.class);
+					ObjectInstantiator o3 = ObjenesisHelper.getInstantiatorOf(MyClass.class);
+					ObjectInstantiator o4 = ObjenesisHelper.getSerializableObjectInstantiatorOf(MyClass.class);
+				
+	# sublime text2/3 license:
+
+			ZYNGA INC.
+			50 User License
+			EA7E-811825
+			927BA117 84C9300F 4A0CCBC4 34A56B44
+			985E4562 59F2B63B CCCFF92F 0E646B83
+			0FD6487D 1507AE29 9CC4F9F5 0A6F32E3
+			0343D868 C18E2CD5 27641A71 25475648
+			309705B3 E468DDC4 1B766A18 7952D28C
+			E627DDBA 960A2153 69A2D98A C87C0607
+			45DC6049 8C04EC29 D18DFA40 442C680B
+
+			1342224D 44D90641 33A3B9F2 46AADB8F
+
+	# 5.8. Proxying Mechanisms								// done 2020-3-6 12:36:58
+
+		test todo 
+
+			ProxyFactoryTests.java
+
+2020-3-7 10:30:30
+
+	# 代理Proxy相关源码 		
+
+		CGLIB or JDK: 												
+
+			// 新建代理工厂 
+			org.springframework.aop.framework.ProxyFactory#ProxyFactory()
+
+			// 生成代理 
+			org.springframework.aop.framework.ProxyFactory#getProxy()
+
+				// 创建AOP代理
+				org.springframework.aop.framework.ProxyCreatorSupport#createAopProxy
+
+					// 获取AOP代理工厂，默认为：DefaultAopProxyFactory
+					org.springframework.aop.framework.ProxyCreatorSupport#getAopProxyFactory
+
+					// 创建AOP代理
+					org.springframework.aop.framework.DefaultAopProxyFactory#createAopProxy
+
+						// 需要优化(optimize)|需要代理目标类(proxyTargetClass)|无接口(hasNoUserSuppliedProxyInterfaces) 使用CGLIB代理
+						org.springframework.aop.framework.ObjenesisCglibAopProxy#ObjenesisCglibAopProxy
+
+						// 否则，使用JDK动态代理
+						org.springframework.aop.framework.JdkDynamicAopProxy#JdkDynamicAopProxy
+
+					// 生成CGLIB代理	 // done 2020-3-7 19:50:25
+					org.springframework.aop.framework.CglibAopProxy#getProxy()
+
+						// 获取通知的目标类
+						org.springframework.aop.framework.AdvisedSupport#getTargetClass
+						
+						// 如果目标类是CGLIB代理类，则将其基类的接口也添加到通知接口中
+						org.springframework.aop.framework.AdvisedSupport#addInterface
+
+						// 校验类型信息
+						org.springframework.aop.framework.CglibAopProxy#validateClassIfNecessary
+
+						// 创建增强器
+						org.springframework.aop.framework.CglibAopProxy#createEnhancer
+
+						// 设置增强器属性
+
+							// 如果类加载器不为空，设置类加载器
+							org.springframework.cglib.core.AbstractClassGenerator#setClassLoader	
+
+							// 如果类加载器是智能类加载器，并且其中该代理类基类可重复加载，设置用户缓存为false
+							org.springframework.cglib.core.AbstractClassGenerator#setUseCache
+
+							// 设置基类
+							org.springframework.cglib.proxy.Enhancer#setSuperclass
+
+							// 设置接口
+							org.springframework.cglib.proxy.Enhancer#setInterfaces
+
+							// 设置命名规则，默认SpringNamingPolicy（标签为BySpringCGLIB）
+							org.springframework.cglib.core.AbstractClassGenerator#setNamingPolicy
+
+							// 设置生成器生成字节码的使用策略，默认ClassLoaderAwareGeneratorStrategy
+							org.springframework.cglib.core.AbstractClassGenerator#setStrategy
+
+							// 设置回调过滤器，默认ProxyCallbackFilter
+							org.springframework.cglib.proxy.Enhancer#setCallbackFilter
+
+							// 设置回调类型
+							org.springframework.cglib.proxy.Enhancer#setCallbackTypes
+
+						// 创建代理类和代理实例
+						org.springframework.aop.framework.CglibAopProxy#createProxyClassAndInstance
+
+							// 设置增强器，构造期是否拦截为false
+							org.springframework.cglib.proxy.Enhancer#setInterceptDuringConstruction
+
+							// 设置增强器的回调实现类
+							org.springframework.cglib.proxy.Enhancer#setCallbacks
+
+							// 使用基类的构造器生成新类，使用指定的回调生成新对象实例
+							org.springframework.cglib.proxy.Enhancer#create() // 无参构造
+							org.springframework.cglib.proxy.Enhancer#create(java.lang.Class[], java.lang.Object[]) 	// 有参构造
+
+								// 创建辅助类
+								org.springframework.cglib.proxy.Enhancer#createHelper
+
+									// 信息校验: 包括回调类型、过滤器
+									org.springframework.cglib.proxy.Enhancer#preValidate
+
+									// 创建多值Key，通过EnhancerKey接口生成的KeyFactory
+									org.springframework.cglib.proxy.Enhancer.EnhancerKey#newInstance
+
+									// 反射生成类实例
+									org.springframework.cglib.core.AbstractClassGenerator#create
+
+										// 获取类加载器
+										org.springframework.cglib.core.AbstractClassGenerator#getClassLoader
+
+										// 查看缓存是否有该类加载器相关的缓存，如果没有，添加相关缓存(key: 类加载器， map: 类加载器信息)
+										Map<ClassLoader, ClassLoaderData> newCache = new WeakHashMap<ClassLoader, ClassLoaderData>(cache);
+
+										// 从类加载器信息中获取类生成器
+
+											// 如果使用缓存userCache，则从缓存中获取
+											org.springframework.cglib.core.AbstractClassGenerator#unwrapCachedValue(generatedClasses.get(gen));
+
+											// 如果不使用缓存，则使用增强器生成
+											org.springframework.cglib.proxy.Enhancer#generate
+
+												// 校验信息，包括：类仅有、回调等属性
+												org.springframework.cglib.proxy.Enhancer#validate
+
+												// 根据基类、接口设置名称前缀
+												org.springframework.cglib.core.AbstractClassGenerator#setNamePrefix
+
+												// 生成类
+												org.springframework.cglib.core.AbstractClassGenerator#generate
+
+													// 保存并设置线程本地变量
+													java.lang.ThreadLocal#set 
+
+													// 生成类名
+													org.springframework.cglib.core.AbstractClassGenerator#generateClassName
+
+													// 缓存类名
+													org.springframework.cglib.core.AbstractClassGenerator.ClassLoaderData#reserveName
+
+													// 设置类名
+													org.springframework.cglib.core.AbstractClassGenerator#setClassName
+
+													// 如果尝试加载参数attemptLoad为true，直接使用类加载器加载该类并返回
+													java.lang.ClassLoader#loadClass(java.lang.String)
+
+													// 否则，根据生成策略生成字节数组，默认生成策略：DefaultGeneratorStrategy
+													org.springframework.cglib.core.DefaultGeneratorStrategy#generate
+
+														// 获取类访问器
+														org.springframework.cglib.core.DefaultGeneratorStrategy#getClassVisitor
+
+															// 构造可调试的类写入器，ASM API版本使用AsmApi.value()，类访问器使用ClassWriter
+															org.springframework.cglib.core.DebuggingClassWriter#DebuggingClassWriter
+
+															// 生成类文件
+															org.springframework.cglib.proxy.Enhancer#generateClass
+
+																// 根据JVMS，通过ClassEmitter、CodeEmitter来生成类文件头信息、字段信息、构造器、方法、尾信息等等class信息
+
+													// 定义class，参数包括： 类名、字节数组、类加载器、受保护的域对象、	上下文类
+													org.springframework.cglib.core.ReflectUtils#defineClass
+
+														// 根据JDK版本，使用响应的方法加载类Class对象
+
+															// 首选操作: JDK 9+，如果类加载器匹配，使用Lookup.defineClass API
+															// 经典操作: 使用方法 protected ClassLoader.defineClass
+															// 回退操作: JDK 9+，即时类加载器不匹配，也使用Lookup.defineClass API
+
+															// 强制静态域初始化
+
+													// 到此结束！！！！！！！！	
+
+					// 生成JDK动态代理 		// done 2020-3-8 12:11:36
+					org.springframework.aop.framework.JdkDynamicAopProxy#getProxy()
+
+						// 从AOP配置中提取要代理的所有接口，主要包括目标本身接口，以及几个代理通用接口：SpringProxy、Advised、DecoratingProxy
+						org.springframework.aop.framework.AopProxyUtils#completeProxiedInterfaces
+
+						// 查找equals和hashCode方法
+						org.springframework.aop.framework.JdkDynamicAopProxy#findDefinedEqualsAndHashCodeMethods
+
+						// 为指定接口生成代理类实例，该实例可以将方法调用转发给指定的调用处理器（Invocation Handler）
+						java.lang.reflect.Proxy#newProxyInstance
+
+							// 查找或生成指定的代理类
+							java.lang.reflect.Proxy#getProxyClass0
+
+								// 如果该加载器中给定的接口代理实现已存在，直接复制并返回缓存信息。否则，通过ProxyClassFactory创建代理类
+								java.lang.reflect.WeakCache#get
+
+									// 根据类加载器和接口数组生成、定义、并返回代理类
+									java.lang.reflect.Proxy.ProxyClassFactory#apply
+
+										// 校验信息
+
+										// 生成代理类名
+
+										// 生成指定代理类
+										sun.misc.ProxyGenerator#generateProxyClass
+
+											// 生成类文件，包括代理方法、构造器、静态方法，最后返回字节数组
+											sun.misc.ProxyGenerator#generateClassFile
+
+											// 如果需要保存生成文件，在文件夹下生成class文件
+											java.nio.file.Files#write
+
+										// 定义指定代理类
+										java.lang.reflect.Proxy#defineClass0[native]
+
+		// 使用指定的调用处理器调用构造器
+		java.lang.reflect.Constructor#newInstance
+
+			// 后续调用JNI本地接口，c++/c/jvm等不是很懂，所以到此为止
+			jdk\src\share\native\java\lang\reflect\Proxy.c
+			jdk\src\share\javavm\export\jni.h
+
+	# JVM规范（Java Virtual Machine Specification）：
+
+		url: https://docs.oracle.com/javase/specs/jvms/se9/html/index.html
+
+2020-3-8 12:10:52
+
+	# CGLIB代理和JDK动态代理 									// done 2020-3-8 12:11:06
+
+		// 待梳理个MD文档 									// done 2020-3-8 15:52:31
+
+	# 5. Aspect Oriented Programming with Spring 			// done 2020-3-8 16:34:20	
+
+2020-3-9 11:18:32
+
+	# AOP 概念以及通知类型：
+
+		相关概念：
+
+			Aspect（切面）: 关注于切割多个类的模块。 比如事务管理。 Spring AOP中，通过配置/注解普通类来实现切面。
+
+			Join point（连接点）: 程序执行过程中的一个节点，比如方法执行/异常处理。 Spring AOP中，连接点通常代表方法执行。
+
+			Advice（通知）: 切面在指定切入点执行的动作。 动作可在连接点的"前后"、"前"、"后"执行。 许多AOP框架，包括Spring，通知模型指的是连接点前后的一条拦截器链。
+
+			Pointcut（切入点）: 匹配Join point的断言。 Advice与Pointcut表达式有关，在匹配该Pointcut表达式的任何Join point执行。
+			                   切入点表达式匹配连接点是AOP的核心，Spring默认使用AspectJ的表达式语言。
+
+	       	Introduction（说明）： 代表类型额外声明其他方法/字段。 Spring AOP允许对任何通知对象声明接口（以及对应实现）。
+	       						  比如，可以使用Introduction创建一个IsModified接口的实现，来缓存数据。 （在Aspect社区中，Introduction被称为内部类型声明）
+
+		  	Target object（目标对象）： 被切面增强的对象。 也城作为"Advised object"。 由于Spring AOP是通过运行时代理实现的，该对象通常是代理对象。
+
+		  	AOP proxy（AOP代理）： AOP框架为了实现切面目的（比如增强方法执行等等）创建的对象。在Spring中，AOP代理是JDK动态代理或者CGLIB代理。
+
+		  	Weaving （植入）： 联合切面和其他应用类型/对象来创建一个增强对象（Advised object）。 可以在编译器（使用AspectJ compiler），加载器，或者运行期。
+		  					  Spring和其他纯粹的AOP框架一样，在运行期植入。
+
+	  	通知类型：
+
+	  		执行前通知： 连接点前执行通知。 无法终止该连接点的程序执行（除非程序抛出异常）
+
+	  		返回后通知： 连接点完成之后进行通知（比如，方法执行完成并正常返回，无异常抛出）
+
+	  		异常后通知： 方法抛出异常时执行通知
+
+	  		执行后通知： 不管连接点执行情况（正常执行或者返回、还是抛出异常），完成之后都会执行通知
+
+	  		执行前后通知： 连接点执行前后执行通知。 功能最强大的通知，方法执行前后执行后都可以自定义执行通知的程序。 可通过直接返回或抛出异常，来选择是否执行连接点程序，还是来减掉通知方法
+
+	# 6.1. Pointcut API in Spring 					// done 2020-3-9 12:08:30	
+		
+	# 6.2. Advice API in Spring 					// done 2020-3-9 13:05:20
+
+	# Core Technologies 							// done 2020-3-9 19:57:56
+
+	# 今日观影： 蜘蛛侠-平行世界、 大人物
+
+2020-3-10 17:26:24
+
+	# 今日观影： 蜘蛛侠-英雄远征
+
+	# 3.3. JDBC Testing Support	 					// done 2020-3-10 19:44:54	
+
+	# 复工统计：
+
+		姓名			办公地点			所属板块 		民生项目经理		没有复工原因			是否跟项目经理沟通复工 		备注
+
+		韩斌伟		安外 			支付系统 		王飞 			项目组让等通知再去 	已沟通 						无
+
+2020-3-11 10:22:06
+
+	# 今日观影： 瞒天过海 美人计  （英文名： Ocean Eight）
+
+	# 3.5.4. Test Execution Events					// done 2020-3-11 12:18:57	
+
+	# LOL
+
+2020-3-12 08:32:26
+
+	# 周报：
+
+		序号	姓名	本周出勤天数（3.9-3.13）		本周加班小时数/小时（3.9-3.13）	本月出勤天数（3.2-3.15）		本月加班小时数/小时（3.2-3.15）	备注	合计	合计
+		入场办公/天	远程出勤/天		入场办公/天	远程出勤/天				
+
+		0	韩斌伟	0	0	0	0	0	0	项目组办公开始时间待定	0	0
+
+	# 3.5.9. Executing SQL Scripts 					// done 2020-3-12 12:12:12
+
+	# HtmlUnit:
+
+		说明： Java GUI-Less browser, supporting JavaScript, to run against web pages   (web页面高级操作，比如表单填充/提交，链接点击，元素获取等等操作)   
+
+		官网： https://sourceforge.net/projects/htmlunit/
+
+		文档： http://htmlunit.sourceforge.net/gettingStarted.html
+
+		类似框架：（Spring MVC Test Framework）
+
+			Geb： https://gebish.org/manual/current/
+
+			说明： 基于WebDriver，更方便
+
+	# 3.6. Spring MVC Test Framework 				// done 2020-3-12 19:51:36
+
+	# Testing 										// done 2020-3-12 20:07:30
+
+2020-3-13 09:01:18
+
+	# Testing case.
+
+		// 使用内置数据库测试SQL相关（数据库连接、SQL脚本、SQL配置等）
+
+		测试类：
+
+			java:
+
+				package org.springframework.test.context.configuration.interfaces;
+
+				import javax.sql.DataSource;
+
+				import org.junit.jupiter.api.Test;
+				import org.junit.jupiter.api.extension.ExtendWith;
+
+				import org.springframework.beans.factory.annotation.Autowired;
+				import org.springframework.jdbc.core.JdbcTemplate;
+				import org.springframework.test.context.jdbc.Sql;
+				import org.springframework.test.context.jdbc.SqlConfig;
+				import org.springframework.test.context.junit.jupiter.SpringExtension;
+				import org.springframework.test.jdbc.JdbcTestUtils;
+
+				import static org.assertj.core.api.Assertions.assertThat;
+
+				@ExtendWith(SpringExtension.class)
+				class SqlConfigInterfaceTests implements SqlConfigTestInterface {
+
+					JdbcTemplate jdbcTemplate;
+
+					@Autowired
+					void setDataSource(DataSource dataSource) {
+						this.jdbcTemplate = new JdbcTemplate(dataSource);
+					}
+
+					@Test
+					@Sql(scripts = "/org/springframework/test/context/jdbc/schema.sql", //
+							config = @SqlConfig(separator = ";"))
+					@Sql("/org/springframework/test/context/jdbc/data-add-users-with-custom-script-syntax.sql")
+					void methodLevelScripts() {
+						assertNumUsers(3);
+					}
+
+					void assertNumUsers(int expected) {
+						assertThat(countRowsInTable("user")).as("Number of rows in the 'user' table.").isEqualTo(expected);
+					}
+
+					int countRowsInTable(String tableName) {
+						return JdbcTestUtils.countRowsInTable(this.jdbcTemplate, tableName);
+					}
+
+				}	
+
+				@ContextConfiguration(classes = EmptyDatabaseConfig.class)
+				@DirtiesContext
+				@SqlConfig(commentPrefixes = { "`", "%%" }, blockCommentStartDelimiter = "#$", blockCommentEndDelimiter = "$#", separator = "@@")
+				interface SqlConfigTestInterface {
+				}
+
+				@Configuration
+				public class EmptyDatabaseConfig {
+
+					@Bean
+					JdbcTemplate jdbcTemplate(DataSource dataSource) {
+						return new JdbcTemplate(dataSource);
+					}
+
+					@Bean
+					PlatformTransactionManager transactionManager(DataSource dataSource) {
+						return new DataSourceTransactionManager(dataSource);
+					}
+
+					@Bean
+					DataSource dataSource() {
+						return new EmbeddedDatabaseBuilder()//
+						.setName("empty-sql-scripts-test-db")//
+						.build();
+					}
+
+				}
+
+			相关类：
+
+				/**
+				 * @ExtendWith 为添加注解的测试类/测试方法注册Extension实现类
+				 */ 
+				org.junit.jupiter.api.extension.ExtendWith
+
+				/**
+				 * JUnit5的编程模型中集成Spring测试框架（Spring TestContext Framework）
+				 * 集成方法： @ExtendWith(SpringExtension.class) 或者 @SpringJUnitConfig 或者 @SpringJUnitWebConfig
+				 */ 
+				org.springframework.test.context.junit.jupiter.SpringExtension
+
+				/**
+				 * @ContextConfiguration 为集成测试定义ApplicationContext加载和配置等相关信息（支持注解、xml等资源配置）
+				 */
+				org.springframework.test.context.ContextConfiguration
+
+				/** 
+				 * 为了SQL脚本集成测试，提供的空的数据库配置类
+				 */
+				org.springframework.test.context.jdbc.EmptyDatabaseConfig
+
+				/**
+				 * spring-jdbc中的核心类，简化了JDBC和工具类的使用
+				 *
+				 * 执行JDBC工作流，帮助应用代码提供SQL和其他结果信息。
+				 * 执行SQL查询、修改，初始化结果集迭代器、捕获JDBC异常并转换为更易读的spring异常。
+				 */
+				org.springframework.jdbc.core.JdbcTemplate
+
+				/**
+				 * Spring事务中的核心接口
+				 * 默认实现： JtaTransactionManager, DataSourceTransactionManager
+				 */
+				org.springframework.transaction.PlatformTransactionManager
+
+				/**
+				 * 物理数据源的连接工厂。 DriverManager的变体。
+				 * 实现类通常是一个基于Java名称或者JNDI API的名称服务来进行注册。
+				 * 
+				 * 驱动厂商实现，有三种方式：
+				 *     1. 基本实现，提供一个标准的连接对象Connection。
+				 *	   2. 连接池实现，连接对象Connection自动从连接池中获取，该实现处理连接池管理的中间层。
+				 *	   3. 分布式事务实现，连接对象Connection从连接池中获取并且可以用于分布式事务，该实现处理连接池管理和分布式事务的中间层。
+				 * 
+				 * 实现类必须提供一个public的无参构造
+				 */
+				javax.sql.DataSource
+
+				/**
+				 * 内置数据库的构造器
+				 */
+				org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder
+
+				/**
+				 * 内置数据库的工厂类，工厂配置完成后，通过getDatabase()来获取内置数据库实例EmbeddedDatabase
+				 */
+				org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory
+
+				/**
+				 * 支持的内置数据库的类型，包括: HSQL, H2, Derby
+				 */
+				org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType	
+
+				/**
+				 * 处理SQL脚本的通用工具类
+				 */
+				org.springframework.jdbc.datasource.init.ScriptUtils
+
+				/**
+				 * 使用外部资源定义的SQL脚本对数据库进行填充、初始化、清理等操作
+				 */
+				org.springframework.jdbc.datasource.init.ResourceDatabasePopulator
+
+				/**
+				 * 数据库填充、初始化、清理等操作的策略接口
+				 */
+				org.springframework.jdbc.datasource.init.DatabasePopulator
+
+				/**
+				 * 处理DatabasePopulator的工具类
+				 */
+				org.springframework.jdbc.datasource.init.DatabasePopulatorUtils
+
+				/**
+				 * SQL配置注解，可以设置SQL脚本的解析、执行等相关信息（如SQL脚本的注释前缀、分隔符、事务模式（传播机制/执行策略）、编码、数据库名称（多数据源时需要设置））
+				 * 
+				 */
+				org.springframework.test.context.jdbc.SqlConfig
+
+				/**
+				 * 集成测试中，@Sql可以为注解的类/方法配置SQL脚本、执行语句statement，如：@Sql(scripts = "/org/springframework/test/context/jdbc/schema.sql")
+				 */
+				org.springframework.test.context.jdbc.Sql
+
+				/**
+				 * 可用于简单的标准数据库测试场景的JDBC相关的通用工具类
+				 */
+				org.springframework.test.jdbc.JdbcTestUtils
+
+
+		// 添加WebApplicationContext支持
+
+			测试类：
+
+				java:
+
+					@ExtendWith(SpringExtension.class)
+					class WebAppConfigurationInterfaceTests implements WebAppConfigurationTestInterface {
+
+						@Autowired
+						WebApplicationContext wac;
+
+
+						@Test
+						void wacLoaded() {
+							assertThat(wac).isNotNull();
+						}
+
+					}
+
+					@WebAppConfiguration
+					@ContextConfiguration(classes = Config.class)
+					interface WebAppConfigurationTestInterface {
+
+						@Configuration
+						static class Config {
+							/* no user beans required for these tests */
+						}
+
+					}
+
+			相关类：
+			
+				/**
+				 * 类注解，声明集成测试中的applicationConetxt为WebApplicationContext
+				 * 必须与@ContextConfiguration一起使用，要么在单独的测试类中，要么在测试类的子类中。
+				 */
+				org.springframework.test.context.web.WebAppConfiguration		
+
+
+	# 内嵌数据库：
+
+		org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType
+
+			HSQL(Hypersonic): http://hsqldb.org (Embedded Java SQL Database)
+
+			H2(H2): https://h2database.com (Embedded Java SQL Database Engine) 									
+
+			DERBY(Apache Derby): https://db.apache.org/derby (Embedded SQL Database)
+
+	# 住址和宽带信息 	@张良
+	
+		住址： 北京市昌平区定泗路宏福苑北区2-2-1302
+
+		宽带： 电信宽带
+
+	# 远程办公环境：
+
+		虚拟机 -> win7系统
+
+# 2020-3-14 11:59:38
+
+	# 远程办公环境安装：										// todo @凯月 @张良  worktime
+
+		windows7 系统 										// done 2020-3-13 22:00:03		
+
+		Critrix: C:\Users\hbw44\Documents\Citrix1 			// TODO  done 2020-3-14 17:12:41
+
+			CitrixReceiver 									// 添加账户： 请输入您的工作电子邮件或IT部门提供的服务器地址： 			// 直接关掉即可。 done
+
+			CitrixWorkspaceApp								// 请求的操作失败，相关日志：桌面/TrolleyExpress-20200314-115921.txt 	// 不安装也可以。 done
+
+			安全桌面 										// 已安装，账号无权限 									  			// TODO @小郭
+
+		IPV6已关闭（windows10 + windows7虚拟机）	
+
+2020-3-15 12:33:52
+
+	# Testing 完善	
+
+2020-3-16 09:02:14
+
+	# 远程办公：
+
+		- 产出物
+			工作记录
+			填报格式
+			签到、签退
+
+		- 新的系统编码		
+
+		- 小郭tesla会议： 后端开发
+
+		- citrix密码忘记：  忘记密码（连接不上） | 电话沟通 			// done 2020-3-16 09:36:58
+
+			citrix运维电话，56361974，安全桌面运维电话，56363342	
+
+				qwert12345!@#$% -> 13752330376Citrix/
+
+	# “参数校验”相关的分享 											// TODO start 2020-3-16 23:17:59 end 2020-3-22 周日前完成
+
+		D:\workspace\green-handbook\notes\back-end\java\framework
+
+	# 规定：
+
+		citrix: 
+
+			签到、签退。
+
+			每日产出，工作记录。
+
+2020-3-17 11:25:37
+
+	# 敏捷开发			@何灿
+
+	# Hibernate-Validator 
+
+			1 Getting started 						// done 2020-3-17 23:02:14
+
+2020-3-18 11:36:23
+
+	# 饿了											// 2020-3-18 11:36:37
+
+2020-3-21 15:21:06
+
+	# Hibernate Validator Reference Guide
+
+		4. Interpolating constraint error messages 	// done 2020-3-21 15:22:30
+
+2020-3-22 10:20:51
+	
+	# Hibernate Validator Reference Guide
+
+		6. Creating custom constraint 				// done 2020-3-22 10:21:20
+
+		7. Value extraction							// done 2020-3-22 10:29:21
+
+		8. Configuring via xml 						// done 2020-3-22 10:34:43
+
+		9. Bootstraping 							// done 2020-3-22 11:23:45
+
+		10. Using constraint metedata 
+
+2020-3-24 12:38:19
+
+	# JSON序列化时，无相关属性不抛异常
+
+		objectmapper.config(DesirializeFuture.FAIL_ON_UNKOWNON_PROPERTY, false);
+
+2020-3-25
+
+	# hibernate-validator reference-guide
+
+2020-3-27
+
+	# 公司日志：			// done 2020-3-27 16:49:21
+
+		项 目 号：RD-18-1386-03
+		项目名称：中国民生银行信息科技部外部开发资源池公共资源框架采购项目2019-2020年度
+		工作日期：20200323，20200324，20200325，20200326，20200327	
+
+		上班时间：9:00
+		下班时间：18:00
+		工作地点：北京市昌平区宏福苑北区
+		工作内容：
+		周一（远程办公）：1、网联接口联调测试
+		周二（远程办公）：1、网联接口联调测试
+		周三（远程办公）：1、网联前后端功能联调测试
+		周四（远程办公）：1、网联前后端功能联调测试
+		周五（远程办公）：1、网联前后端功能联调测试及相关文档整理
+
+	# hibernate-validator source code 				// 2020-3-27 23:30:28
+
+2020-3-31
+
+	# spring web service: https://docs.spring.io/spring-ws/docs/3.0.8.RELEASE/reference/	// 2020-3-31 20:52:17
+
+2020-4-3
+
+	# 公司日志： 		// doen 2020-4-3 17:17:44
+
+		上班时间：9:00
+		下班时间：18:00
+		工作地点：北京市昌平区宏福苑北区
+		工作内容：
+		周一（远程办公）：1、网联接口联调测试
+		周二（远程办公）：1、WebService接口梳理以及相关资料学习
+		周三（远程办公）：1、日切服务接口开发
+		周四（远程办公）：1、日切服务接口开发
+		周五（远程办公）：1、日切服务接口开发、环境调试、问题排查及修复	
+
+2020-4-4
+
+	# java EE Tutorial Release 7		
+
+		web service 		// 略读 2020-4-4 23:28:28
+
+2020-4-9 09:03:49
+
+	# jdk线程池 和 spring线程池
+
+2020-4-10 10:00:30
+
+	# JCU: https://docs.oracle.com/javase/8/docs/technotes/guides/concurrency/index.html	
+
+	# 公司日志： 		// done 2020-4-10 17:48:51
+
+		上班时间：9:00
+		下班时间：18:00
+		工作地点：北京市昌平区宏福苑北区
+		工作内容：
+		周二（远程办公）：1、业务迁移-WebService接口开发
+		周三（远程办公）：1、业务迁移-WebService接口开发
+		周四（远程办公）：1、业务迁移-WebService接口开发
+		周五（远程办公）：1、业务迁移-WebService接口开发
+
+2020-4-11
+
+	# JCU:https://docs.oracle.com/javase/8/docs/technotes/guides/concurrency/index.html	
+
+		...previous							// done 2020-4-11 12:00:51
+
+		High Level Concurrency Objects		// todo
+
+		// done 2020-4-11 18:45:41
+
+	# Java Concurrent Animated： https://sourceforge.net/projects/javaconcurrenta/	
+
+2020-4-16
+
+	# JMX(Java Management Extensions): 
+
+		https://docs.oracle.com/javase/tutorial/jmx/remote/custom.html 		// done 2020-4-16 16:45:55
+
+	# 工作日志：		// done 2020-4-17 16:48:39
+	
+		上班时间：9:00
+		下班时间：18:00
+		工作地点：北京市昌平区宏福苑北区
+		工作内容：
+		周一（远程办公）：1、业务迁移-WebService接口开发
+		周二（远程办公）：1、业务迁移-WebService接口开发
+		周三（远程办公）：1、业务迁移-WebService接口开发
+		周四（远程办公）：1、业务迁移-WebService接口开发
+		周五（远程办公）：1、业务迁移-WebService接口开发	
+
+	# windows下的cmd命令：
+	
+		复制文件: robocopy D:\tmp  E:\doc readme.txt
+
+		webservice导入wsdl文件生成java代码: wsimport -s E:\workspace\WS_Client\src -p com.ws.client -keep http://127.0.0.1/webService/server?wsdl
+
+			（1）wsimport 是java的一个命令，在bin目录下
+			（2）E:\workspace\WS_Client\src 为项目源码地址
+			（3）com.ws.client 将生成的客户端代码放到这里
+			（4）http://127.0.0.1/webService/server?wsdl 其中http://127.0.0.1/webService/server?wsdl是在服务器端发布的地址	
+
+2020-4-20 15:21:00
+
+	# java tools: jdk中的工具类，如: wsimport native2ascii jar keytool jconsole jvisualvm等等
+
+		https://docs.oracle.com/javase/8/docs/technotes/tools/		
+
+2020-4-21 10:24:30
+
+	# w3c标签库： https://www.w3.org/TR/			
+
+	# dubbo: http://dubbo.apache.org/zh-cn/docs/user/configuration/xml.html
+
+		示例 				// done 2020-4-21 23:59:02
+
+2020-4-22 11:25:25
+
+	# 《Java开发手册 泰山版》		// done 2020-4-22 11:36:51
+
+	# DbUnit：数据库测试工具 		http://dbunit.sourceforge.net/
+
+	# dubbo： http://dubbo.apache.org/zh-cn/docs/user/configuration/xml.html
+
+		dubbo-user-book.pdf // done 2020-4-23 00:12:37
+
+		dubbo-dev-book.pdf  // done 2020-4-23 00:12:19
+
+		dubbo-admin-book.pdf // done 2020-4-23 22:08:54
+
+2020-4-23 22:09:01
+
+	# apache.axis2: webservice服务框架	
+
+		http://axis.apache.org/axis2/java/core/index.html	
+
+2020-4-24 16:49:33
+
+	# 周报				// doen 2020-4-24 16:52:29
+
+		上班时间：9:00
+		下班时间：18:00
+		工作地点：北京市昌平区宏福苑北区
+		工作内容：
+		周一（远程办公）：1、业务迁移-WebService接口联调测试、问题排查及修复、代码优化、文档整理
+		周二（远程办公）：1、业务迁移-WebService接口联调测试、问题排查及修复、代码优化、文档整理
+		周三（远程办公）：1、业务迁移-WebService接口联调测试、问题排查及修复、代码优化、文档整理
+		周四（远程办公）：1、业务迁移-WebService接口联调测试、问题排查及修复、代码优化、文档整理
+		周五（远程办公）：1、业务迁移-WebService接口联调测试、问题排查及修复、代码优化、文档整理
+
+2020-4-26 23:25:33
+
+	# docker && k8s 
+
+2020-4-27 15:18:31
+
+	# k8s-client-java
+
+		基于官方kubernetes-client/
+
+			java类库，实现通过java完成对kubenetes原生资源对象（pod、node、namespace、servcie、deployment）和自定义资源对象（如：cluster）的增删改查或事件监听（watch）
+
+		k8s-client-java选型
+		
+			目前通过java操作k8s，开源版本共有两个：
+
+				kubernetes-client/java
+				fabric8io/kubernetes-client
+
+		kubernetes-client/java和fabric8io/kubernetes-client对比
+
+		 	        			和官网API一致性	   							社区活跃度				代码生成
+		kubernetes-client/java	根据k8s-openapi随之更新，一致性和更新频率高	目前不活跃				kubernetes-client/java提供了生成代码的通用跨语言工具，
+		                                                                              				该工具托管在 kubernetes-client / gen存储库中
+		fabric8io/kubernetes-client	一致性低，更新慢；其中不支持k8s1.8和1.13	社区活跃，目前使用者多	暂无
+
+		鉴于kubernetes-client/java和官网API一致性好，本文决定采用它
+
+2020-4-30：
+
+	# 周报：		// done 2020-4-30 10:32:57
+
+		上班时间：9:00
+		下班时间：18:00
+		工作地点：北京市昌平区宏福苑北区
+		工作内容：
+		周一（远程办公）：1、readiness和liveness系统设计
+		周二（远程办公）：1、readiness和liveness系统设计
+		周三（远程办公）：1、readiness和liveness开发及联调
+		周四（远程办公）：1、readiness和liveness开发及联调
+
+2020-5-6：
+
+	# spring- jdbc相关		
+
+2020-5-7
+
+	# ftp-client 示例参考： org.apache.activemq:activemq-client:5.8.0
+
+		创建FTPClient: org.apache.activemq.blob.FTPStrategy#createFTP
+		文件上传: org.apache.activemq.blob.FTPBlobUploadStrategy	
+		文件下载: org.apache.activemq.blob.FTPBlobDownloadStrategy
+
+2020-5-8
+	
+	# chrome extension 谷歌浏览器扩展程序： 
+
+		E:\BaiduNetdiskDownload\工作文件\ChromeAppHeroes离线安装包		
+
+	# windows相关问题请移步官网： https://www.microsoft.com/zh-cn/
+
+	# 基于Mybatis一主多从数据源 包含具体测试代码实例： 
+
+		https://github.com/L316476844/Mybatis-DynamicDataSource
+
+		https://github.com/amoszhou/spring-dynamic/tree/master/src
+
+2020-5-13
+
+	# 模板模式： org.springframework.jdbc.core.JdbcTemplate		
+
+2020-5-14
+
+	# spring-mybatis 多数据源
+
+		1. 多组数据源相关bean，包括：
+
+			datasource.xml： 
+
+				<bean id="dataSource1" class="..."></>
+				<bean id="dataSource2" class="..."></>
+
+				<bean id="transactionManager1" class="...">
+					<property name="dataSource" ref="dataSource1"/>
+				</bean>
+				<bean id="transactionManager2" class="...">
+					<property name="dataSource" ref="dataSource2"/>
+				</bean>
+
+				<bean id="transactionTemplate1" class="...">
+					<property name="transactionManager" ref="transactionManager1"/>
+				</bean>
+				<bean id="transactionTemplate2" class="...">
+					<property name="transactionManager" ref="transactionManager2"/>
+				</bean>
+
+			mybatis-settings.xml： 
+
+				<bean id="sessionFactory1" class="...">
+					<property name="dataSource" ref="dataSource1">
+					<configLocation>
+ 						classpath*:META-INF/com/model/db1/...*Mapper.xml
+					</configLocation>
+				</bean>
+				<bean id="sessionFactory2" class="...">
+					<property name="dataSource" ref="dataSource2">
+					<configLocation>
+ 						classpath*:META-INF/com/model/db2/...*Mapper.xml
+					</configLocation>
+				</bean>
+
+				<bean id="sessionTemplate1" class="">
+					<property name="sessionFactory" ref="sessionFactory1"/>
+				</bean>
+				<bean id="sessionTemplate2" class="">
+					<property name="sessionFactory" ref="sessionFactory2"/>
+				</bean>
+
+				<bean id="sessionConfigor1" class="">
+					<property name="sessionTemplate" ref="sessionTemplate1"/>
+				</bean>
+				<bean id="sessionConfigor2" class="">
+					<property name="sessionTemplate" ref="sessionTemplate2"/>
+				</bean>
+
+		2. 开启事务注解
+
+			<context:auto-transaction proxy-mode="proxy" />
+
+		3. service层事务开启：（由于没有指定默认事务，会导致service无事务，而Mapper层会默认使用数据库自带事务）
+		
+			@Service
+			@Transactional("transactionManager1")
+			public class XXXServiceImpl implements XXXService {
+
+			}
+
+	# FTP上传下载
+
+		org.apache.common:common-net.jar: 
+
+			FTP客户端类：com.common.net.ftp.FTPClient
+
+		操作：
+
+			上传、下载、删除...
+
+		基本逻辑：
+
+			- 创建FTPClient客户端: new FTPClient();
+
+			- 连接FTP服务器： client.connect(host, port);
+			- 登录FTP服务器： client.login(username, password);
+
+			- FTP相关操作： client.api();
+				上传、下载、删除、创建目录等等
+				
+			- 退出登录： client.logout();
+			- 断开连接： client.disconnect();
+
+	# IO工具类： org.apache.common:common-io.jar.IOUtils		
+
+2020-5-17
+
+	# 4.3. Hibernate 		// done 2020-5-18 11:32:52	
+
+2020-5-18 21:42:20
+
+	# 4.4 JPA 				// 略读，使用时精读	
+
+	# 5 Marshalling XML by Using Object-XML Mappers							// doen 2020-5-18 22:15:25
+
+		// 将对象解析为xml流
+		org.springframework.oxm.Marshaller			
+
+		// 将xml流解析为对象
+		org.springframework.oxm.Unmarshaller
+
+	# 6 Appendix 															// done 2020-5-18 22:15:30
+
+2020-5-19
+
+	# Web on Servlet Stack 													// start 2020-5-19 20:30:57
+
+		1. Spring Web MVC	
+
+			1.1. DispatcherServlet 											// done 2020-5-19 23:35:48
+
+2020-5-20
+
+	# 1.2. Filters 															// done 2020-5-20 23:08:33		
+
+2020-5-21
+
+	# hibernate-validator 													// 2020-5-21 23:41:18
+
+		
+
+
+
+
+
+				
+
+
+		
+
+
+		
+
+			
+
+		
 	
 
-
-
-
-
-
-
-
-
-			 	  
 
 
 
