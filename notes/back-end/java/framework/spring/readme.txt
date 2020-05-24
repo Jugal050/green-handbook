@@ -100,6 +100,12 @@ https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/
 
 							1.3. Annotated Controllers 											// done 2020-5-23 15:52:57 暂未使用，略读
 
+							1.4. Functional Endpoints 											// done 2020-5-24 10:34:54 暂未使用，略读
+
+							1.5. URI Links	 													// done 2020-5-24 10:34:54 暂未使用，略读
+						
+							1.6. Asynchronous Requests 											// done 2020-5-24 10:34:54 暂未使用，略读	
+
 	Web Reactive	 	Spring WebFlux, WebClient, WebSocket.
 
 	Integration	 		Remoting, JMS, JCA, JMX, Email, Tasks, Scheduling, Caching.
