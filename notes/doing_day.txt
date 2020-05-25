@@ -3199,6 +3199,18 @@
 	  1.5. URI Links	
 
 	  1.6. Asynchronous Requests
+
+2020-5-25
+
+	# 1.7. CORS	  															// done 2020-5-25 22:33:15
+
+	  1.8. Web Security
+
+	  1.9. HTTP Caching 													// done 2020-5-25 22:41:23
+
+      1.10. View Technologies
+
+		1.10.4. Script Views 												// done 2020-5-25 23:05:51
 		
 
 

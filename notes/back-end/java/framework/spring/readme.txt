@@ -106,6 +106,16 @@ https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/
 						
 							1.6. Asynchronous Requests 											// done 2020-5-24 10:34:54 暂未使用，略读	
 
+							1.7. CORS	  														// done 2020-5-25 22:33:15
+
+	 						1.8. Web Security 													// done 2020-5-25 22:33:15
+
+	 						1.9. HTTP Caching 													// done 2020-5-25 22:41:23
+
+	 						1.10. View Technologies
+
+								1.10.4. Script Views 											// done 2020-5-25 23:05:51
+
 	Web Reactive	 	Spring WebFlux, WebClient, WebSocket.
 
 	Integration	 		Remoting, JMS, JCA, JMX, Email, Tasks, Scheduling, Caching.
