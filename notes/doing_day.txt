@@ -3211,7 +3211,23 @@
       1.10. View Technologies
 
 		1.10.4. Script Views 												// done 2020-5-25 23:05:51
+
+	  2. REST Clients														// done 2020-5-25 23:41:59
+
+	  3. Testing 															// done 2020-5-25 23:41:59
+
+      4. WebSockets 
+
+	  	4.2. WebSocket API 													// done 2020-5-26 00:30:59	
 		
+2020-5-26
+
+	# 4.3. SockJS Fallback 													// done 2020-5-26 20:59:17	
+
+	# 5. Other Web Frameworks 												// done 2020-5-26 23:55:14	
+
+	# Web on Servlet Stack 													// done 2020-5-26 23:57:23
+
 
 
 

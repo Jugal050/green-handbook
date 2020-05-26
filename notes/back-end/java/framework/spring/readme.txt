@@ -92,7 +92,7 @@ https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/
 
 							6 Appendix 															// done 2020-5-18 22:15:30
 
-	Web Servlet	 		Spring MVC, WebSocket, SockJS, STOMP Messaging.
+	Web Servlet	 		Spring MVC, WebSocket, SockJS, STOMP Messaging. 						// done 2020-5-26 23:56:27
 
 							1.1. DispatcherServlet 												// done 2020-5-19 23:35:48
 
@@ -115,6 +115,18 @@ https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/
 	 						1.10. View Technologies
 
 								1.10.4. Script Views 											// done 2020-5-25 23:05:51
+
+							2. REST Clients														// done 2020-5-25 23:41:59
+
+							3. Testing 															// done 2020-5-25 23:41:59
+
+							4. WebSockets 														// done 2020-5-26 23:30:41
+
+								4.2. WebSocket API 												// done 2020-5-26 00:30:59
+
+								4.3. SockJS Fallback 											// done 2020-5-26 20:59:17
+
+							5. Other Web Frameworks 											// done 2020-5-26 23:55:14	
 
 	Web Reactive	 	Spring WebFlux, WebClient, WebSocket.
 
