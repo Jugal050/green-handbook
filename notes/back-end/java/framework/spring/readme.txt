@@ -146,6 +146,14 @@ https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/
 
 								1.3. DispatcherHandler 											// doen 2020-5-28 22:35:37	
 
+								1.4 Handler Method 												// done 2020-5-29 00:02:34
+
+								  	1.4.3. Handler Methods
+
+								  		Type Conversion											// done 2020-5-28 22:59:08
+
+								  	1.4.7. Controller Advice 									// done 2020-5-29 00:00:50
+
 	Integration	 		Remoting, JMS, JCA, JMX, Email, Tasks, Scheduling, Caching.
 
 	Languages	 		Kotlin, Groovy, Dynamic Languages.
