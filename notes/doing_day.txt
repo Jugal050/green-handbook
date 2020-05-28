@@ -3244,6 +3244,14 @@
 
 			1.2.6. Logging 													// done 2020-5-27 23:56:44
 
+2020-5-28
+
+	# 1.3. DispatcherHandler 												// doen 2020-5-28 22:35:37	
+
+	  1.4 Handler Method
+
+	  	Type Conversion														// done 2020-5-28 22:59:08
+
 
 
 

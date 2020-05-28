@@ -176,6 +176,8 @@ doing：
 
 					1.2.6. Logging 							// done 2020-5-27 23:56:44
 
+				1.3. DispatcherHandler 						// doen 2020-5-28 22:35:37		
+
 
 
 		
