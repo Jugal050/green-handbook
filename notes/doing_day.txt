@@ -3254,9 +3254,13 @@
 
 	  		Type Conversion													// done 2020-5-28 22:59:08
 
-	  	1.4.7. Controller Advice
+	  	1.4.7. Controller Advice 											// done 2020-5-29 00:00:50
 
+2020-6-1
 
+	# 5.3 Generic Array List 
+
+		5.3.1 Accessing Array List Elements 								// TODO 2020-6-1 23:13:29
 
 
 				
