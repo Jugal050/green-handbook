@@ -130,7 +130,7 @@ https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/
 
 	Web Reactive	 	Spring WebFlux, WebClient, WebSocket. 									// start 2020-5-27 21:16:49
 
-							1. Spring WebFlux
+							1. Spring WebFlux 													// done 2020-6-2 23:54:54
 
 								1.1. Overview
 
@@ -153,6 +153,22 @@ https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/
 								  		Type Conversion											// done 2020-5-28 22:59:08
 
 								  	1.4.7. Controller Advice 									// done 2020-5-29 00:00:50
+
+								1.5. Functional Endpoints 										// done 2020-6-2 23:02:07
+
+									1.5.2. HandlerFunction 										// done 2020-6-2 21:25:58  	
+
+								1.6. URI Links													// done 2020-6-2 23:20:19
+								
+								1.7. CORS 														// done 2020-6-2 23:30:12
+
+								1.8. Web Security
+
+								1.9. View Technologies
+
+								1.10. HTTP Caching 												// done 2020-6-2 23:43:52
+
+								1.12. HTTP/2 													// done 2020-6-2 23:54:29	
 
 	Integration	 		Remoting, JMS, JCA, JMX, Email, Tasks, Scheduling, Caching.
 
