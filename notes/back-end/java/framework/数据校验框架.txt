@@ -1,3 +1,159 @@
+目录：
+
+背景说明：
+
+	1. Getting started 
+		1.1. Project set up 
+			1.1.1. Unified EL
+			1.1.2. CDI
+			1.1.3. Running with a security manager
+			1.1.4. Updating Hibernate Validator in WildFly
+			1.1.5. Running on Java 9
+		1.2. Applying constraints
+		1.3. Validating constraints
+		1.4. Where to go next?
+
+	2. Declaring and validating bean constraints 
+		2.1. Declaring bean constraints 
+			2.1.1. Field-level constraints
+			2.1.2. Property-level constraints
+			2.1.3. Container element constraints
+			2.1.4. Class-level constraints
+			2.1.5. Constraint inheritance
+			2.1.6. Object graphs
+		2.2. Validating bean constraints 
+			2.2.1. Obtaining a Validator instance
+			2.2.2. Validator methods
+			2.2.3. ConstraintViolation
+		2.3. Built-in constraints 
+			2.3.1. Bean Validation constraints
+			2.3.2. Additional constraints
+
+	3. Declaring and validating method constraints 
+		3.1. Declaring method constraints 
+			3.1.1. Parameter constraints
+			3.1.2. Return value constraints
+			3.1.3. Cascaded validation
+			3.1.4. Method constraints in inheritance hierarchies
+		3.2. Validating method constraints 
+			3.2.1. Obtaining an ExecutableValidator instance
+			3.2.2. ExecutableValidator methods
+			3.2.3. ConstraintViolation methods for method validation
+		3.3. Built-in method constraints
+
+	4. Interpolating constraint error messages 
+		4.1. Default message interpolation 
+			4.1.1. Special characters
+			4.1.2. Interpolation with message expressions
+			4.1.3. Examples
+		4.2. Custom message interpolation 
+			4.2.1. ResourceBundleLocator
+
+	5. Grouping constraints 
+		5.1. Requesting groups
+		5.2. Group inheritance
+		5.3. Defining group sequences
+		5.4. Redefining the default group sequence 
+			5.4.1. @GroupSequence
+			5.4.2. @GroupSequenceProvider
+		5.5. Group conversion
+
+	6. Creating custom constraints 
+		6.1. Creating a simple constraint 
+			6.1.1. The constraint annotation
+			6.1.2. The constraint validator
+			6.1.3. The error message
+			6.1.4. Using the constraint
+		6.2. Class-level constraints 
+			6.2.1. Custom property paths
+		6.3. Cross-parameter constraints
+		6.4. Constraint composition
+
+	7. Value extraction 
+		7.1. Built-in value extractors
+		7.2. Implementing a ValueExtractor
+		7.3. Non generic containers
+		7.4. JavaFX value extractors
+		7.5. Registering a ValueExtractor
+		7.6. Resolution algorithms
+
+	8. Configuring via XML 
+		8.1. Configuring the validator factory in validation.xml
+		8.2. Mapping constraints via constraint-mappings
+
+	9. Bootstrapping 
+		9.1. Retrieving ValidatorFactory and Validator 
+			9.1.1. ValidationProviderResolver
+		9.2. Configuring a ValidatorFactory 
+			9.2.1. MessageInterpolator
+			9.2.2. TraversableResolver
+			9.2.3. ConstraintValidatorFactory
+			9.2.4. ParameterNameProvider
+			9.2.5. ClockProvider and temporal validation tolerance
+			9.2.6. Registering ValueExtractors
+			9.2.7. Adding mapping streams
+			9.2.8. Provider-specific settings
+			9.2.9. Configuring the ScriptEvaluatorFactory
+		9.3. Configuring a Validator
+
+	10. Using constraint metadata 
+		10.1. BeanDescriptor
+		10.2. PropertyDescriptor
+		10.3. MethodDescriptor and ConstructorDescriptor
+		10.4. ElementDescriptor
+		10.5. ContainerDescriptor and ContainerElementTypeDescriptor
+		10.6. GroupConversionDescriptor
+		10.7. ConstraintDescriptor
+
+	11. Integrating with other frameworks 
+		11.1. ORM integration 
+			11.1.1. Database schema-level validation
+			11.1.2. Hibernate ORM event-based validation
+			11.1.3. JPA
+		11.2. JSF & Seam
+		11.3. CDI 
+			11.3.1. Dependency injection
+			11.3.2. Method validation
+		11.4. Java EE
+		11.5. JavaFX
+
+	12. Hibernate Validator Specifics 
+		12.1. Public API
+		12.2. Fail fast mode
+		12.3. Relaxation of requirements for method validation in class hierarchies
+		12.4. Programmatic constraint definition and declaration
+		12.5. Applying programmatic constraint declarations to the default validator factory
+		12.6. Advanced constraint composition features 
+			12.6.1. Validation target specification for purely composed constraints
+			12.6.2. Boolean composition of constraints
+		12.7. Extensions of the Path API
+		12.8. Dynamic payload as part of ConstraintViolation
+		12.9. ParameterMessageInterpolator
+		12.10. ResourceBundleLocator
+		12.11. Custom contexts 
+			12.11.1. HibernateConstraintValidatorContext
+			12.11.2. HibernateMessageInterpolatorContext
+		12.12. Paranamer based ParameterNameProvider
+		12.13. Providing constraint definitions 
+			12.13.1. Constraint definitions via ServiceLoader
+			12.13.2. Adding constraint definitions programmatically
+		12.14. Customizing class-loading
+
+	13. Annotation Processor 
+		13.1. Prerequisites
+		13.2. Features
+		13.3. Options
+		13.4. Using the Annotation Processor 
+			13.4.1. Command line builds
+			13.4.2. IDE builds
+		13.5. Known issues
+
+	14. Further reading
+
+
+
+
+
 # Java数据校验：
 
 	## 背景说明： 
