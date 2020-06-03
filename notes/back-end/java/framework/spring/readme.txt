@@ -92,13 +92,83 @@ https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/
 
 							6 Appendix 															// done 2020-5-18 22:15:30
 
-	Web Servlet	 		Spring MVC, WebSocket, SockJS, STOMP Messaging.
+	Web Servlet	 		Spring MVC, WebSocket, SockJS, STOMP Messaging. 						// done 2020-5-26 23:56:27
 
 							1.1. DispatcherServlet 												// done 2020-5-19 23:35:48
 
 							1.2. Filters 														// done 2020-5-20 23:08:33
 
-	Web Reactive	 	Spring WebFlux, WebClient, WebSocket.
+							1.3. Annotated Controllers 											// done 2020-5-23 15:52:57 暂未使用，略读
+
+							1.4. Functional Endpoints 											// done 2020-5-24 10:34:54 暂未使用，略读
+
+							1.5. URI Links	 													// done 2020-5-24 10:34:54 暂未使用，略读
+						
+							1.6. Asynchronous Requests 											// done 2020-5-24 10:34:54 暂未使用，略读	
+
+							1.7. CORS	  														// done 2020-5-25 22:33:15
+
+	 						1.8. Web Security 													// done 2020-5-25 22:33:15
+
+	 						1.9. HTTP Caching 													// done 2020-5-25 22:41:23
+
+	 						1.10. View Technologies
+
+								1.10.4. Script Views 											// done 2020-5-25 23:05:51
+
+							2. REST Clients														// done 2020-5-25 23:41:59
+
+							3. Testing 															// done 2020-5-25 23:41:59
+
+							4. WebSockets 														// done 2020-5-26 23:30:41
+
+								4.2. WebSocket API 												// done 2020-5-26 00:30:59
+
+								4.3. SockJS Fallback 											// done 2020-5-26 20:59:17
+
+							5. Other Web Frameworks 											// done 2020-5-26 23:55:14	
+
+	Web Reactive	 	Spring WebFlux, WebClient, WebSocket. 									// start 2020-5-27 21:16:49
+
+							1. Spring WebFlux 													// done 2020-6-2 23:54:54
+
+								1.1. Overview
+
+									1.1.3. Programming Models 									// done 2020-5-27 21:16:56
+
+									1.1.7. Concurrency Model 									// done 2020-5-27 22:31:46
+
+								1.2. Reactive Core
+
+									1.2.2. WebHandler API 										// doen 2020-5-27 22:54:18
+
+									1.2.6. Logging 												// done 2020-5-27 23:56:44
+
+								1.3. DispatcherHandler 											// doen 2020-5-28 22:35:37	
+
+								1.4 Handler Method 												// done 2020-5-29 00:02:34
+
+								  	1.4.3. Handler Methods
+
+								  		Type Conversion											// done 2020-5-28 22:59:08
+
+								  	1.4.7. Controller Advice 									// done 2020-5-29 00:00:50
+
+								1.5. Functional Endpoints 										// done 2020-6-2 23:02:07
+
+									1.5.2. HandlerFunction 										// done 2020-6-2 21:25:58  	
+
+								1.6. URI Links													// done 2020-6-2 23:20:19
+								
+								1.7. CORS 														// done 2020-6-2 23:30:12
+
+								1.8. Web Security
+
+								1.9. View Technologies
+
+								1.10. HTTP Caching 												// done 2020-6-2 23:43:52
+
+								1.12. HTTP/2 													// done 2020-6-2 23:54:29	
 
 	Integration	 		Remoting, JMS, JCA, JMX, Email, Tasks, Scheduling, Caching.
 
