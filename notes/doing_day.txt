@@ -3288,6 +3288,24 @@
 
 		做一个app，可以用来作答开发/测试/运维/PM等相关的面试题。
 
+2020-6-2
+
+	# mybatis select中resultType="java.util.Map"时，设置返回结果的映射key：
+
+		属性设置：
+			
+			setting: mapUnderscoreToCamelCase: true|false
+
+			设置为true时，带下划线_的结果字段，映射时会自动转为驼峰格式，不带下划线的字段，映射时会自动转换为全小写。
+
+		i.e:
+		
+			order_id -> orderId	
+			orderId  -> orderid
+			sum(order_account) -> sum(orderAccount)
+			sum(orderAccount) -> sum(orderaccount)
+
+
 				
 
 
