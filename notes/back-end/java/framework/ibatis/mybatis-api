@@ -1,0 +1,65 @@
+
+
+// 通用标识解析器，解析标签如：#{} ${}
+org.apache.ibatis.parsing.GenericTokenParser		
+
+// XML脚本构造器，构造XML脚本如： <trim> <where> <set> <foreach> <if> <choose> <when> <otherwise> <bind>
+org.apache.ibatis.scripting.xmltags.XMLScriptBuilder
+
+// XML语句构造器，构造SQL执行语句
+org.apache.ibatis.builder.xml.XMLStatementBuilder
+
+	// 解析SQL语句节点
+	parseStatementNode
+
+// mapper构造器辅助类
+org.apache.ibatis.builder.MapperBuilderAssistant	
+
+// SqlSession的默认实现，所有SQL都通过该类执行
+org.apache.ibatis.session.defaults.DefaultSqlSession
+
+	// 根据类获取Mapper对象
+	getMapper(Class<T> type);
+
+// Mapper注册器
+org.apache.ibatis.binding.MapperRegistry
+
+	// 生成Mapper代理类
+	getMapper(Class<T> type, SqlSession sqlSession) 
+
+// Mapper代理工厂类
+org.apache.ibatis.binding.MapperProxyFactory	
+
+	// 生成Mapper实例，内部使用jdk动态代理生成： java.lang.reflect.Proxy#newProxyInstance
+	newInstance(org.apache.ibatis.binding.MapperProxy<T>)
+	newInstance(org.apache.ibatis.session.SqlSession)
+
+// Mapper代理类
+org.apache.ibatis.binding.MapperProxy
+
+	// 通过Mapper代理执行方法
+	invoke(Object proxy, Method method, Object[] args) 	
+
+// Mapper方法
+org.apache.ibatis.binding.MapperMethod
+
+	// Mapper方法执行
+	execute(SqlSession sqlSession, Object[] args)	
+
+// SQL执行器
+org.apache.ibatis.executor.Executor	
+
+// 语句处理路由器
+org.apache.ibatis.executor.statement.RoutingStatementHandler
+
+	query
+	
+// 默认结果集处理器	
+org.apache.ibatis.executor.resultset.DefaultResultSetHandler	
+
+	// 处理结果集
+	handleResultSets
+
+// 结果集处理器接口
+org.apache.ibatis.executor.resultset.ResultSetHandler
+

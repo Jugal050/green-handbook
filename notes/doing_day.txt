@@ -3313,6 +3313,12 @@
 
 		org.mybatis.spring.MyBatisSpringTest#testMyBatisAPI 		// done 2020-6-3 23:23:19
 
+2020-6-4
+
+	# mybatis spring debug
+
+		org.mybatis.spring.MyBatisSpringTest#testMyBatisAPIWithCommit 	// done 2020-6-4 23:59:41		
+
 
 				
 
