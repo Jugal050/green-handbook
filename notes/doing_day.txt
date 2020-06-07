@@ -3317,9 +3317,108 @@
 
 	# mybatis spring debug
 
-		org.mybatis.spring.MyBatisSpringTest#testMyBatisAPIWithCommit 	// done 2020-6-4 23:59:41		
+		org.mybatis.spring.MyBatisSpringTest#testMyBatisAPIWithCommit 	// done 2020-6-4 23:59:41	
 
+2020-6-7
 
+	# 北京白龙马云行科技有限公司 		// TODO 周一 20:00 视频面试
+
+		岗位描述
+
+			1、负责在线服务系统的架构设计、研发工作
+			2、负责攻克服务中高并发、高稳定性，业务模型复杂等带来的各种挑战及技术难关；
+
+		岗位要求
+
+			1、要求3年以上Java开发经验，熟悉高性能、高并发、高可用性分布式系统设计
+			2、Java基础扎实，熟悉JVM，包括内存模型、类加载机制以及性能优化经验；
+			3、熟悉多线程网络编程、分布式缓存、系列化、NIO及相关框架netty\mina等，有相关实践经验；
+			4、熟练掌握MySQL、Redis等，有数据库和缓存调优经验
+			5、熟练使用各类主流互联网中间件，熟悉原理知识者优先
+			6、有技术热情和较强的学习能力，具有良好的团队合作能力、沟通能力、抗压能力。	
+
+	# 面试准备		
+
+		https://github.com/h2pl/Java-Tutorial
+
+			# 基础			// done 
+
+				封装、继承、多态		
+
+			# 数据结构
+
+				List: ArrayList, LinkedList, Vector
+				Map: HashMap, TreeMap, LinkedHashMap, HashTable, ConcurrentHashMap
+				Set: HashSet, TreeSet, LinkedHashSet
+				Stack:
+				Quene:
+				Deque:
+				Iterator:
+
+			# 设计模式		// done 
+
+				Spring中：
+
+					创建型模式：
+
+						简单工厂: BeanFactory
+						工厂方法: FactoryBean
+						单例模式: BeanFactory singleton = "true|false"
+						适配器: AdvisorAdapter
+						包装器: XXXDecorator
+						代理: JdkDynamicAopProxy和Cglib2AopProxy。 
+						观察者: ApplicationListener
+						策略: SimpleInstantiationStrategy
+						模板方法: JdbcTemplate
+
+					结构性模式：	
+
+						代理模式: @Before、@After、@Around
+							Spring 中实现动态代理有两种，
+								一种是如果我们的类定义了接口，如 UserService 接口和 UserServiceImpl 实现，那么采用 JDK 的动态代理，感兴趣的读者可以去看看 java.lang.reflect.Proxy 类的源码；
+								另一种是我们自己没有定义接口的，Spring 会采用 CGLIB 进行动态代理，它是一个 jar 包，性能还不错。
+
+						适配器模式: 
+						桥梁模式: 
+						装饰模式: DataInputStream is = new DataInputStream(new BufferedInputStream(new FileInputStream("")));
+						门面模式: 
+						组合模式: 
+						享元模式: 
+
+				JDK中：
+
+					略
+					
+			# 并发 			// done 
+
+				线程安全
+				互斥和同步
+				JMM内存模型
+				as-if-Serial，happens-before
+				volatile
+				synchronized和锁优化
+				CAS操作
+				Lock类
+					AQS: java.util.concurrent.locks.AbstractQueuedSynchronizer
+					锁Lock和Conditon *
+				并发工具类
+				原子数据类型
+				同步容器
+				阻塞队列
+				线程池
+				类图
+				常用线程池
+				Fork/Join框架				
+
+			# JVM
+
+			# MySQL
+
+			# Redis
+
+			# 消息列队
+
+			# 分布式	
 				
 
 
