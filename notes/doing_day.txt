@@ -3410,7 +3410,7 @@
 				常用线程池
 				Fork/Join框架				
 
-			# JVM
+			# JVM 			
 
 			# MySQL
 
@@ -3422,7 +3422,15 @@
 				
 2020-6-8
 	
-	#			
+	# 面试知识点查看
+
+		IO, NIO, AIO
+
+		Serializable-单例模式
+
+		...
+
+
 
 		
 
