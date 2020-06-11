@@ -1,4 +1,5 @@
-
+// SqlSession工厂bean
+org.mybatis.spring.SqlSessionFactoryBean
 
 // 通用标识解析器，解析标签如：#{} ${}
 org.apache.ibatis.parsing.GenericTokenParser		
@@ -20,6 +21,18 @@ org.apache.ibatis.session.defaults.DefaultSqlSession
 
 	// 根据类获取Mapper对象
 	getMapper(Class<T> type);
+
+// SqlSessionTemplate, 优先使用代替 DefaultSqlSession
+org.mybatis.spring.SqlSessionTemplate
+
+// SqlSessionDaoSupport，提供SqlSession的抽象类 
+org.mybatis.spring.support.SqlSessionDaoSupport
+
+// MapperFactoryBean
+org.mybatis.spring.mapper.MapperFactoryBean
+
+// MapperScannerConfigurer: mapper扫描配置类
+org.mybatis.spring.mapper.MapperScannerConfigurer
 
 // Mapper注册器
 org.apache.ibatis.binding.MapperRegistry
@@ -62,4 +75,10 @@ org.apache.ibatis.executor.resultset.DefaultResultSetHandler
 
 // 结果集处理器接口
 org.apache.ibatis.executor.resultset.ResultSetHandler
+
+// spring事务
+org.springframework.jdbc.datasource.DataSourceTransactionManager
+
+// mybatis事务
+org.apache.ibatis.transaction.managed.ManagedTransactionFactory
 
