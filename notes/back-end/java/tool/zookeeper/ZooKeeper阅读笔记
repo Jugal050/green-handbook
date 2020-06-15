@@ -1,0 +1,54 @@
+ZooKeeper:
+
+	简介：
+
+		Zookeeper是一个用于分布式应用的高性能协调服务。 它提供了一些通用服务，比如命名、配置管理、同步、分组服务，通过简单的接口就可以使用，无需自己手动实现。
+		可以直接用来实现一致性、分组管理、领袖选举、感知协议，和一些其他特殊用途。
+
+	ZooKeeper Overview Technical Overview Documents for Client Developers, Administrators, and Contributors
+
+		Overview - a bird's eye view of ZooKeeper, including design concepts and architecture 						// done 2020-6-15 23:49:03
+
+		Getting Started - a tutorial-style guide for developers to install, run, and program to ZooKeeper
+
+		Release Notes - new developer and user facing features, improvements, and incompatibilities
+
+	Developers Documents for Developers using the ZooKeeper Client API
+
+		API Docs - the technical reference to ZooKeeper Client APIs
+
+		Programmer's Guide - a client application developer's guide to ZooKeeper
+
+		ZooKeeper Use Cases - a series of use cases using the ZooKeeper.
+
+		ZooKeeper Java Example - a simple Zookeeper client application, written in Java
+
+		Barrier and Queue Tutorial - sample implementations of barriers and queues
+
+		ZooKeeper Recipes - higher level solutions to common problems in distributed applications
+
+		Administrators & Operators Documents for Administrators and Operations Engineers of ZooKeeper Deployments
+
+	Administrator's Guide - a guide for system administrators and anyone else who might deploy ZooKeeper
+
+		Quota Guide - a guide for system administrators on Quotas in ZooKeeper.
+
+		JMX - how to enable JMX in ZooKeeper
+
+		Hierarchical quorums
+
+		Observers - non-voting ensemble members that easily improve ZooKeeper's scalability
+
+		Dynamic Reconfiguration - a guide on how to use dynamic reconfiguration in ZooKeeper
+
+		ZooKeeper CLI - a guide on how to use the ZooKeeper command line interface
+
+		ZooKeeper Tools - a guide on how to use a series of tools for ZooKeeper
+
+		ZooKeeper Monitor - a guide on how to monitor the ZooKeeper
+
+		Audit Logging - a guide on how to configure audit logs in ZooKeeper Server and what contents are logged.
+
+	Contributors Documents for Developers Contributing to the ZooKeeper Open Source Project
+		
+		ZooKeeper Internals - assorted topics on the inner workings of ZooKeeper
