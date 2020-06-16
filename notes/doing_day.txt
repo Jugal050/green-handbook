@@ -3547,6 +3547,18 @@
 
 	# ZooKeeper: https://zookeeper.apache.org/
 
+2020-6-17
+
+	# ZooKeeper
+
+		安装路径： C:\home\apache-zookeeper-3.6.1-bin\apache-zookeeper-3.6.1-bin\
+
+		源码路径： D:\workspace\apache-zookeeper-3.6.1\apache-zookeeper-3.6.1
+
+		Getting Started - a tutorial-style guide for developers to install, run, and program to ZooKeeper 			// done 2020-6-17 00:16:13
+
+			Zookeeper CLI: https://zookeeper.apache.org/doc/current/zookeeperCLI.html 								// done 2020-6-17 00:16:33
+
 
 
 

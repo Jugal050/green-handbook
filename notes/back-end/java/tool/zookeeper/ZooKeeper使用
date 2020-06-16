@@ -1,0 +1,30 @@
+ZooKeeper使用:
+
+	Windows:
+
+		下载: https://www.apache.org/dyn/closer.lua/zookeeper/zookeeper-3.6.1/apache-zookeeper-3.6.1-bin.tar.gz 
+
+			tips: 后缀带*-bin-*的是已经编译好的，可以直接在windows使用，不带*-bin-*的属于源码包，需要编译之后才能执行zkServer.cmd等命令。
+
+		安装:
+
+			# 解压、解压
+			# 重命名apache-zookeeper-3.6.1-bin\conf\zoo-simple.cfg为zoo.cfg.
+			# 修改zoo.cfg中的dataDir=C:\\home\\apache-zookeeper-3.6.1-bin\\apache-zookeeper-3.6.1-bin\\var\\lib\\zookeeper
+
+		使用:
+		
+			服务端:
+
+				# 执行命令zkServer.cmd
+
+			客户端:
+			
+				# 执行命令zkCli.cmd
+
+			其他命令:
+			
+				https://zookeeper.apache.org/doc/current/zookeeperCLI.html		
+
+
+
