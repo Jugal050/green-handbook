@@ -3565,7 +3565,9 @@
 
 		ZooKeeper Programmer's Guide: https://zookeeper.apache.org/doc/current/zookeeperProgrammers.html
 
-			Updating the list of servers.Updating the list of servers. 		// TODO 11:29	
+			Updating the list of servers.Updating the list of servers. 		// TODO 11:29 done 
+
+			ZooKeeper access control using ACLs 							// TODO 16:47 	
 
 	# 防锁屏工具制作:
 	
