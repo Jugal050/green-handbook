@@ -1,0 +1,70 @@
+防锁屏工具制作过程-Java版
+
+# Java实现类：通过模拟键盘点击实现（使用少用的Scroll Lock键）
+
+	PreventScreenLock.java
+
+		import java.awt.*;
+		import java.awt.event.KeyEvent;
+
+		public class PreventScreenLock {
+
+			public static void main(String[] args) {
+				System.out.println("Prevent Screen Lock Start");
+				try {
+					while (true) {
+						System.out.println("Press Key Scroll Lock");
+						Robot robot = new Robot();		
+						robot.keyPress(KeyEvent.VK_SCROLL_LOCK);
+						robot.keyRelease(KeyEvent.VK_SCROLL_LOCK);
+						Thread.currentThread().sleep(60000);
+					}
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				} catch (AWTException e) {
+					e.printStackTrace();
+				}	
+			}
+		}
+
+# javac编译为class文件：
+
+	javac PreventScreenLock.java
+
+# 使用jar命令将class文件打成jar包：
+	
+	jar cvf prevent-screen-lock.jar PreventScreenLock.class 	
+
+# 解压之后，提取MAINFEST.MF文件，修改执行类属性
+	
+	MAINFEST.MF
+
+		Manifest-Version: 1.0
+		Created-By: 11.0.3 (Oracle Corporation)
+		Class-Path: .
+		Main-Class: PreventScreenLock
+
+# 删除原来的jar包，重新使用修改后的MAINFEST.MF进行打包
+
+	jar cvfm prevent-screen-lock.jar MAINFEST.MF PreventScreenLock.class 		
+
+# 执行jar包
+
+	java jar prevent-screen-lock.jar
+
+# 创建bat脚本
+
+	prevent-screen-lock.bat
+
+		@echo off
+		java -jar prevent-screen-lock.jar
+
+# 使用说明
+
+	使用时，同时拷贝prevent-screen-lock.bat和prevent-screen-lock.jar。点击psl.bat脚本即可开启防锁屏
+
+	或者下载压缩文件prevent-screen-lock.zip，解压之后，执行脚本 prevent-screen-lock.bat 即可开启防锁屏。
+
+
+
+	

@@ -3565,9 +3565,13 @@
 
 		ZooKeeper Programmer's Guide: https://zookeeper.apache.org/doc/current/zookeeperProgrammers.html
 
+			Updating the list of servers.Updating the list of servers. 		// TODO 11:29	
 
+	# 防锁屏工具制作:
+	
+		问题：java -version 与 javac -version不一致
 
-
+		解决：环境变量Path中，将JAVA_HOME相关的属性移至最上方。
 
 
 		
