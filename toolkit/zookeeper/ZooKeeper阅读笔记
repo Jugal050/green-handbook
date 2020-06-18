@@ -19,21 +19,23 @@ ZooKeeper:
 
 		API Docs - the technical reference to ZooKeeper Client APIs
 
-		Programmer's Guide - a client application developer's guide to ZooKeeper 									// start 2020-6-17 10:00
+		Programmer's Guide - a client application developer's guide to ZooKeeper 									// start 2020-6-17 10:00 	done 2020-6-18 14:41:40
 
-			ZooKeeper access control using ACLs 		// TODO 2020-0-17 18:48
+			ZooKeeper access control using ACLs 		// TODO 2020-0-17 18:48:00  done 2020-6-18 11:52:47
 
-		ZooKeeper Use Cases - a series of use cases using the ZooKeeper.
+			Bindings 									// TODO 2020-6-18 11:52:50	done 2020-6-18 14:28:32
 
-		ZooKeeper Java Example - a simple Zookeeper client application, written in Java
+		ZooKeeper Use Cases - a series of use cases using the ZooKeeper. 											// done 2020-6-18 14:47:36
 
-		Barrier and Queue Tutorial - sample implementations of barriers and queues
+		ZooKeeper Java Example - a simple Zookeeper client application, written in Java 							// done 2020-6-18 15:27:16
 
-		ZooKeeper Recipes - higher level solutions to common problems in distributed applications
+		Barrier and Queue Tutorial - sample implementations of barriers and queues 									// done 2020-6-18 16:49:57
 
-		Administrators & Operators Documents for Administrators and Operations Engineers of ZooKeeper Deployments
+		ZooKeeper Recipes - higher level solutions to common problems in distributed applications 					// done 2020-6-18 18:10:08
 
-	Administrator's Guide - a guide for system administrators and anyone else who might deploy ZooKeeper
+	Administrators & Operators Documents for Administrators and Operations Engineers of ZooKeeper Deployments
+
+		Administrator's Guide - a guide for system administrators and anyone else who might deploy ZooKeeper
 
 		Quota Guide - a guide for system administrators on Quotas in ZooKeeper.
 
