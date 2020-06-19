@@ -3583,6 +3583,12 @@
 
 		org.apache.zookeeper.ZooKeeperTest#testDeleteRecursive 					//doing 2020-6-18 23:20:54
 
+2020-6-19
+
+	# tesla-gateway demo 搭建
+
+	# 左耳疼第三天
+
 
 
 		
