@@ -3589,6 +3589,11 @@
 
 	# 左耳疼第三天
 
+2020-6-20
+
+	# zookeeper-master test debug 		
+
+		org.apache.zookeeper.ZooKeeperTest#testDeleteRecursiveFail				// done 2020-6-20 11:40:35
 
 
 		
