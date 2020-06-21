@@ -35,26 +35,26 @@ ZooKeeper:
 
 	Administrators & Operators Documents for Administrators and Operations Engineers of ZooKeeper Deployments
 
-		Administrator's Guide - a guide for system administrators and anyone else who might deploy ZooKeeper
+		Administrator's Guide - a guide for system administrators and anyone else who might deploy ZooKeeper 		// done 2020-6-21 17:15:57
 
-		Quota Guide - a guide for system administrators on Quotas in ZooKeeper.
+		Quota Guide - a guide for system administrators on Quotas in ZooKeeper. 									// done 2020-6-21 17:22:43
 
-		JMX - how to enable JMX in ZooKeeper
+		JMX - how to enable JMX in ZooKeeper 																		// done 2020-6-21 17:53:50
 
-		Hierarchical quorums
+		Hierarchical quorums 																						// done 2020-6-21 17:53:44
 
-		Observers - non-voting ensemble members that easily improve ZooKeeper's scalability
+		Observers - non-voting ensemble members that easily improve ZooKeeper's scalability 						// done 2020-6-21 17:47:26
 
-		Dynamic Reconfiguration - a guide on how to use dynamic reconfiguration in ZooKeeper
+		Dynamic Reconfiguration - a guide on how to use dynamic reconfiguration in ZooKeeper 						// 略读 2020-6-21 17:51:38
 
-		ZooKeeper CLI - a guide on how to use the ZooKeeper command line interface
+		ZooKeeper CLI - a guide on how to use the ZooKeeper command line interface  								// done 2020-6-21 18:02:37
 
-		ZooKeeper Tools - a guide on how to use a series of tools for ZooKeeper
+		ZooKeeper Tools - a guide on how to use a series of tools for ZooKeeper 									// done 2020-6-21 18:00:27
 
-		ZooKeeper Monitor - a guide on how to monitor the ZooKeeper
+		ZooKeeper Monitor - a guide on how to monitor the ZooKeeper 												// done 2020-6-21 18:04:39
 
-		Audit Logging - a guide on how to configure audit logs in ZooKeeper Server and what contents are logged.
+		Audit Logging - a guide on how to configure audit logs in ZooKeeper Server and what contents are logged. 	// 略读 2020-6-21 17:51:49
 
 	Contributors Documents for Developers Contributing to the ZooKeeper Open Source Project
 		
-		ZooKeeper Internals - assorted topics on the inner workings of ZooKeeper
+		ZooKeeper Internals - assorted topics on the inner workings of ZooKeeper 									// done 2020-6-21 18:31:36

@@ -3595,8 +3595,12 @@
 
 		org.apache.zookeeper.ZooKeeperTest#testDeleteRecursiveFail				// done 2020-6-20 11:40:35
 
+2020-6-21
 
-		
+	# zookeeper reference guide: https://zookeeper.apache.org/doc/current/index.html 				// done 2020-6-21 18:32:18		
+
+	# 分布式锁： 肯定得有一个共同连接的服务来确保一致性，比如：redis（集群）、zookeeper（集群）、数据库（集群）。
+			
 
 
 		

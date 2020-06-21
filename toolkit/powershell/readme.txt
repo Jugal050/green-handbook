@@ -9,4 +9,11 @@
         移除：
             remove-item env:etcdctl_api
 
+    2. 任务相关：
+    	查看任务：
+    		tasklist /?
+    	终止任务：	
+    		taskkill /?
+
+
 
