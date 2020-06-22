@@ -3600,6 +3600,19 @@
 	# zookeeper reference guide: https://zookeeper.apache.org/doc/current/index.html 				// done 2020-6-21 18:32:18		
 
 	# 分布式锁： 肯定得有一个共同连接的服务来确保一致性，比如：redis（集群）、zookeeper（集群）、数据库（集群）。
+
+2020-6-22
+
+	# Files.exists() 问题：
+
+		// 建议您同时使用exists()和notExists()来涵盖三种可能性
+		if (Files.exists(fspec)) {
+		    System.out.println("It exists!");
+		} else if (Files.notExists(fspec)) {
+		    System.out.println("It does not exist!");
+		} else {
+		    System.out.println("I have no idea!");	
+		}
 			
 
 

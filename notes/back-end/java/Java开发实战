@@ -1,0 +1,14 @@
+Java开发实战
+
+	## Files.exists() 问题：
+
+		// 建议您同时使用exists()和notExists()来涵盖三种可能性
+		if (Files.exists(fspec)) {
+		    System.out.println("It exists!");
+		} else if (Files.notExists(fspec)) {
+		    System.out.println("It does not exist!");
+		} else {
+		    System.out.println("I have no idea!");	
+		} 
+
+		tips: 具体请移步查看javadoc
