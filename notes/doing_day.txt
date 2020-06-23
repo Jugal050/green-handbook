@@ -3626,7 +3626,58 @@
 
 		参考资料：
 
-			Java NIO Buffer： http://tutorials.jenkov.com/java-nio/buffers.html		
+			Java NIO Buffer： http://tutorials.jenkov.com/java-nio/buffers.html	
+
+		视频资料：		
+
+			尚硅谷Java视频_NIO 视频教程： https://www.bilibili.com/video/BV1ht41127od?p=3
+
+				P3. NIO_直接缓存区与非直接缓存区 				// done 2020-6-23 14:39:24
+
+				P7. NIO_字符集 Charset 						// done 2020-6-23 23:31:14				
+
+	# 小端序/大端序
+	
+		字节存储顺序主要分为大端序（Big-endian）和小端序（Little-endian），区别如下
+			
+			Big-endian：高位字节存入低地址，低位字节存入高地址
+
+			Little-endian：低位字节存入低地址，高位字节存入高地址
+
+		一般来说，x86系列CPU都是Little-endian字节序，PowerPC通常是Big-endian字节序。因为网络协议也都是采用Big-endian方式传输数据的，所以有时也把Big-endian方式称为网络字节序
+		
+		举例：
+
+			var = 0x11223344，对于这个变量的最高字节为0x11，最低字节为0x44
+
+			(1)大端模式存储（存储地址为16位）
+
+			地址                    数据
+
+			0x0004(高地址)          0x44
+
+			0x0003                 0x33
+
+			0x0002                 0x22
+
+			0x0001(低地址)          0x11
+
+			 
+
+			(2)小端模式存储（存储地址为16位）
+
+			地址                    数据
+
+			0x0004(高地址)          0x11
+
+			0x0003                 0x22
+
+			0x0002                 0x33
+
+			0x0001(低地址)          0x44
+
+	# 药也快吃完了，耳疼好多了。
+			
 
 
 		
