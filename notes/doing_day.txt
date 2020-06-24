@@ -3630,7 +3630,7 @@
 
 		视频资料：		
 
-			尚硅谷Java视频_NIO 视频教程： https://www.bilibili.com/video/BV1ht41127od?p=3
+			尚硅谷Java视频_NIO 视频教程： https://www.bilibili.com/video/BV1ht41127od?p=3 		
 
 				P3. NIO_直接缓存区与非直接缓存区 				// done 2020-6-23 14:39:24
 
@@ -3662,8 +3662,6 @@
 
 			0x0001(低地址)          0x11
 
-			 
-
 			(2)小端模式存储（存储地址为16位）
 
 			地址                    数据
@@ -3677,6 +3675,12 @@
 			0x0001(低地址)          0x44
 
 	# 药也快吃完了，耳疼好多了。
+
+# 2020-6-24
+
+	# 尚硅谷Java视频_NIO 视频教程： https://www.bilibili.com/video/BV1ht41127od?p=3 		// done 2020-6-24 21:43:26	
+
+
 			
 
 
