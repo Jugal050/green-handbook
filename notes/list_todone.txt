@@ -22,7 +22,9 @@ java:
 
 		JMX(Java Management Extensions): https://docs.oracle.com/javase/tutorial/jmx/remote/custom.html 				// start 2020-4-16 14:00:01 done 2020-4-16 16:45:55
 
-		java tools: jdk中的工具类，如: wsimport native2ascii jar keytool jconsole jvisualvm等等		https://docs.oracle.com/javase/8/docs/technotes/tools/		
+		java tools: jdk中的工具类，如: wsimport native2ascii jar keytool jconsole jvisualvm等等		https://docs.oracle.com/javase/8/docs/technotes/tools/	
+
+		Java I/O, NIO, and NIO.2: https://docs.oracle.com/javase/8/docs/technotes/guides/io/index.html 					// start 2020-6-26 22:10:11	
 
 framework
 

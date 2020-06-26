@@ -1,0 +1,24 @@
+I/O, NIO, NIO.2 
+
+	Java I/O support is included in the java.io and java.nio packages. Together these packages include the following features:
+
+		Input and output through data streams, serialization and the file system.
+
+			java basic io 		// done 2020-6-27 00:48:45
+
+		Charsets, decoders, and encoders, for translating between bytes and Unicode characters.
+
+		Access to file, file attributes and file systems.
+
+		APIs for building scalable servers using asynchronous or multiplexed, non-blocking I/O.
+
+	Tutorials and Programmer's Guides
+
+		The Basic I/O section of The Java Tutorial and, in particular, File I/O (featuring NIO.2)
+
+		Developing a Custom File System Provider
+
+		Zip File System Provider
+
+		Troubleshooting Tips
+

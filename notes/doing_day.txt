@@ -3682,8 +3682,21 @@
 
 # 2020-6-26
 
-	# NIO 视频教程： 牛皮了，头一次见有清华大佬把TCP，NIO，epoll一直到netty解释的这么明白 https://www.bilibili.com/video/BV1Af4y117ZK?p=4  	// done 2020-6-26 18:27:30		
+	# NIO 视频教程： 牛皮了，头一次见有清华大佬把TCP，NIO，epoll一直到netty解释的这么明白 https://www.bilibili.com/video/BV1Af4y117ZK?p=4  	// done 2020-6-26 18:27:30
 
+	# Java I/O, NIO, and NIO.2 		https://docs.oracle.com/javase/8/docs/technotes/guides/io/index.html 		// start 2020-6-26 22:07:53
+
+		Tutorials and Programmer's Guides
+
+			The Basic I/O section of The Java Tutorial and, in particular, File I/O (featuring NIO.2)
+
+				java basic io 		// done 2020-6-27 00:48:45
+
+			Developing a Custom File System Provider
+
+			Zip File System Provider
+
+			Troubleshooting Tips
 
 
 
