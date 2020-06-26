@@ -1,0 +1,84 @@
+NIO 笔记
+
+# 视频来源： 牛皮了，头一次见有清华大佬把TCP，NIO，epoll一直到netty解释的 https://www.bilibili.com/video/BV1Af4y117ZK?p=5
+
+# linux 命令
+
+	追踪： strace -ff -o out java SocketNIO
+
+	行尾： tail -f *.out
+
+	内核命令： man 2 socket
+
+	开启端口： nc localhost 8090
+
+	帮助： man man
+
+# BIO
+
+	说明：每线程每连接
+	优势：可以接受很多的连接
+	劣势：线程内存浪费，cpu调度消耗
+	根源：BLOCKING 阻塞：accept, recv
+	解决：NONBLOCKING
+
+# NIO
+
+	java: Java New IO (java.nio.xxx) 
+
+	os: NONBLOKING
+
+	## 非阻塞
+
+		accept必有返回client, 但是返回client可能为null，notnull。
+
+	## example
+
+		SocketNIO.java
+
+	优势	：
+		规避多线程的问题
+		C10K问题： 10000个客户端连接时，会产生问题
+
+	弊端：
+		假设有1万个连接，只有一个发来数据，没循环一次，其实你必须向讷河发送一万次recv的系统调用，那么这里有9999次是无意义的，浪费的，消耗时间和资源的。（用户空间向内核空间的循环遍历，复杂度在系统调用上）
+
+	解决：
+		多路复用器
+
+# 多路复用器
+	
+	说明：只能返回状态，如果程序自己读取IO，那么这个IO模型，无论BIO,NIO,堵路复用器：都是同步IO模型。
+
+	分类：
+
+		select(fds) O(1) 状态 1024(fds数量限制)
+		poll(fds)
+
+			优势：通过一次系统调用，把fds，传递给内核，内核进行遍历，减少了系统调用的次数。
+
+			弊端：
+				重复传递fd 解决方案：内核开启空间保留fd
+				每次select,poll都要重新遍历全量的fd（机组深度知识，中断，callback, 增强）
+
+		epoll	
+
+			伪代码：
+				socket=>3
+				bind(3, 8090)	
+				listen(3)
+
+				epoll_create()=7
+				epoll_ctl(7, ADD, 3, accept)
+
+				epoll_wait O(1)
+				accept(3) = 8
+
+				epoll_ctl(7, ADD, 8, read)
+				epoll_wait (fd3, fd8)
+
+
+
+
+
+	
