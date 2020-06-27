@@ -3698,6 +3698,25 @@
 
 			Troubleshooting Tips
 
+2020-6-27
+
+	# nio:
+
+		api:
+
+			java.nio.file.Path
+			java.nio.file.Paths
+
+			java.nio.file.Files
+
+		reference:
+		
+			https://docs.oracle.com/javase/tutorial/essential/io/fileOps.html 						// 略读done 2020-6-27 21:29:52
+
+			OpenJDK: NIO  http://openjdk.java.net/projects/nio/ 									// TODO 2020-6-27 21:29:59	
+
+
+
 
 
 
