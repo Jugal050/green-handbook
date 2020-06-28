@@ -3715,7 +3715,13 @@
 
 			OpenJDK: NIO  http://openjdk.java.net/projects/nio/ 									// TODO 2020-6-27 21:29:59	
 
+2020-6-28
 
+	# xml：
+
+		core java 2. Chapter 3 XML 	 // done 2020-6-29 00:20:17 （笔记待补）		
+
+			3.3 XML文档校验 			// done 2020-6-28 23:37:35
 
 
 
