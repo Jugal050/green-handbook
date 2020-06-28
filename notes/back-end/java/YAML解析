@@ -1,0 +1,18 @@
+YAML解析：
+
+当前还在维护的YAML解析器/生成器有：
+	
+	SnakeYAML
+		完整的YAML 1.1解析器，尤其是SnakeYAML能够分析来自于规范的所有示例
+		支持Unicode，包括UTF-8/UTF-16的输入/输出
+		为序列化和反序列化本地的Java对象提供了高级API
+		支持YAML类型库中的所有类型
+		比较理性的错误信息
+
+	YamlBeans：
+		支持YAML 1.0和1.1
+
+	FasterXML/jackson-dataformat-yaml：
+		处于原型阶段
+
+SnakeYAML和YamlBeans都在Google Code仓库时，SnakeYAML的使用人数和提交者均优于YamlBeans。目前大多数帖子还是推荐选用SnakeYAML，而SpringBoot读取YAML配置采用的就是SnakeYAML。		
