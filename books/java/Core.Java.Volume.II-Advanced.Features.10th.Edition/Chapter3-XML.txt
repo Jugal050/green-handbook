@@ -183,7 +183,36 @@ Chapter3.XML
 
 	3.4 使用XPath定位信息
 
+		xml:
+
+			<configuration>
+				...
+					<database>
+						<username>dbuser</username>
+						<password>secret</password>
+					</database>
+				...
+			</configuration>
+
+		java:
+		
+			XPathFactory xpFactory = XPathFactory.newInstance();	
+			XPath path = xpFactory.newXPath();
+
+			String expression = "/configuration/database/username";
+			String username = path.evaluate(expression, doc);
+
+			NodeList nodes = (NodeList) path.evaluate("gridbag/row", doc, XPathConstants.NODESET);
+			Node nodes = (Node) path.evaluate("gridbag/row[1]", doc, XPathConstants.NODE);
+			int count = ((Number) path.evaluate("count(gridbag/row)", doc, XPathConstants.NUMBER)).intValue();
+
 	3.5 命名空间使用
+
+		举例：
+			http://www.w3.org/2001/XMLSchema
+
+		开启：
+			factory.setNamespaceAware(true);
 
 	3.6 流式解析器
 
@@ -192,24 +221,194 @@ Chapter3.XML
 
 		3.6.1 SAX解析器的使用
 
+
+			java:
+				SAXParserFactory factory = SAXParserFactory.newInstance();
+				factory.setNamespaceAware(true);
+				SAXParser parser = factory.newSAXParser();
+
+				File/String(url)/InputStream source = ...
+				parser.parse(source, handler);
+
+			api:
+			
+				javax.xml.parsers.SAXParserFactory	
+				javax.xml.parsers.SAXParser
+				org.xml.sax.ContextHandler
+				org.xml.sax.Attributes
+
 		3.6.2 StAX解析器的使用
+
+			java:
+				InputStream in = url.openStream();
+				XMLInputFactory factory = XMLInputFactory.newInstance();
+				factory.setProperty(XMLInputFactory.IS_NAMESPACE_AWARE, false);
+				XMLStreamReader parser = factory.createXMLStreamReader(in);
+				String units = parser.getAttributeValue(null, "units");
+				while (parser.hasNext()) {
+					int event = parser.next();
+					// Call parser methods to obtain event details
+				}
+
+			api:	
+				javax.xml.stream.XMLInputFactory
+				javax.xml.stream.XMLStreamReader
 
 	3.7 XML文档生成
 
 		3.7.1 没有命名空间的文档
 
+			java:
+				DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+	            DocumentBuilder builder = factory.newDocumentBuilder();
+				Document doc = builder.newDocument();
+
+				Element rootElement = doc.createElement(rootName);
+				Element childElement = doc.createElement(childName);
+				Text textNode = doc.createTextNode(textContents);
+
+				doc.appendChild(rootElement);
+				rootElement.appendChild(childElement);
+				childElement.appendChild(textNode);
+
+				rootElement.setAttribute(name, value);
+
+
 		3.7.2 有命名空间的文档
+
+			java:
+				DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+				factory.setNamespaceAware(true);
+	            DocumentBuilder builder = factory.newDocumentBuilder();
+				Document doc = builder.newDocument();
+
+				String namespace = "http://www.w3.org/2000/svg";
+				Element rootElement = doc.createElement(namespace, "svg");
+				Element svgElement = doc.createElement(namespace, "svg:svg");
+
+				rootElement.setAttributeNS(namespace, qualifiedName, value);
+
+			xml:
+				<svg:svg xmlns:svg="http://www.w3.org/2000/svg">	
 
 		3.7.3 编写文档
 
+			java:
+
+				way1:
+					// construct the do-nothing transformation
+					Transformer t = TransformerFactory.newInstance().newTransformer();
+					// set output properties to get a DOCTYPE node
+					t.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, systemIdentifier);
+					t.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, publicIdentifier);
+					// set indentation
+					t.setOutputProperty(OutputKeys.INDENT, "yes");
+					t.setOutputProperty(OutputKeys.METHOD, "xml");
+					t.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+					// apply the do-nothing transformation and send the output to a file
+					t.transform(new DOMSource(doc), new StreamResult(new FileOutputStream(file)));
+
+				way2:	
+					DOMImplementation impl = doc.getImplementation();
+					DOMImplementationLS implLS = (DOMImplementationLS) impl.getFeature("LS", "3.0");
+					LSSerializer ser = implLS.createLSSerializer();
+					
+					ser.getDomConfig().setParameter("format-pretty-print", true);
+					
+					String str = ser.writeToString(doc);
+
+					LSOutput out = implLS.createLSOutput();
+					out.setEncoding("UTF-8");
+					out.setByteStream(Files.newOutputStream(path));
+					ser.write(doc, out);
+
 		3.7.4 例子：生成一个SVG文件
 
+			API:
+				javax.xml.parsers.DocumentBuilder
+				org.w3c.dom.Document 
+				org.w3c.dom.Node 
+				org.w3c.dom.Element
+				javax.xml.transform.TransformerFactory
+				javax.xml.transform.Transformer
+				javax.xml.transform.dom.DOMSource
+				javax.xml.transform.stream.StreamResult
+
 		3.7.5 使用StAX编写XML文档
+
+			上文中，是通过写DOM树生成XML文档，如果DOM树没有其他的用处，这种方式不是很高效。
+			可以通过StAX API直接生成XML。
+
+			java:
+				XMLOutputFactory factory = XMLOutputFactory.newInstance();
+				XMLStreamWriter writer = factory.createXMLStreamWriter(out);
+				// To produce the XML header, call
+				writer.writeStartDocument()
+				// Then call
+				writer.writeStartElement(name);
+				// Add attributes by calling
+				writer.writeAttribute(name, value);
+				// Now you can add child elements by calling writeStartElement again, or write characters with
+				writer.writeCharacters(text);
+				// When you have written all child nodes, call
+				writer.writeEndElement();
+				// This causes the current element to be closed.
+				// To write an element without children (such as <img. . ./>), use the call
+				writer.writeEmptyElement(name);
+				// Finally, at the end of the document, call
+				writer.writeEndDocument();
+				// This call closes any open elements.
+				// You still need to close the XMLStreamWriter, and you need to do it manually since the
+				// XMLStreamWriter interface does not extend the AutoCloseable interface.
+
+			API:
+				javax.xml.stream.XMLOutputFactory 
+				javax.xml.stream.XMLStreamWriter	
 
 	3.6 XSLT
 
 		XSL Transformation: 指定规则将XML文档转换为其他格式，如文本、XHTML或者其他XML格式。
 
+		java:
 
+			File styleSheet = new File(filename);
+			StreamSource styleSource = new StreamSource(styleSheet);
+			Transformer t = TransformerFactory.newInstance().newTransformer(styleSource);
+			t.transform(source, result);
+			t.transform(new DOMSource(doc), result);
 
+			// 
+			AttributesImpl attributes = new AttributesImpl();
+			handler.startDocument();
+			handler.startElement("", "staff", "staff", attributes);
+			while ((line = in.readLine()) != null) {
+				handler.startElement("", "employee", "employee", attributes);
+				StringTokenizer t = new StringTokenizer(line, "|");
+				handler.startElement("", "name", "name", attributes);
+				String s = t.nextToken();
+				handler.characters(s.toCharArray(), 0, s.length());
+				handler.endElement("", "name", "name");
+				...
+				handler.endElement("", "employee", "employee");
+			}
+			handler.endElement("", rootElement, rootElement);
+			handler.endDocument();
 
+			// The SAXSource for the transformer is constructed from the XML reader:
+			t.transform(new SAXSource(new EmployeeReader(), 
+				new InputSource(new FileInputStream(filename))), result);
+
+			// To store the result in a DOM tree, use a DocumentBuilder to generate a new document node and wrap it into a DOMResult:	
+			Document doc = builder.newDocument();
+			t.transform(source, new DOMResult(doc));
+
+			// To save the output in a file, use a StreamResult:
+			t.transform(source, new StreamResult(file));
+
+		API:
+			javax.xml.transform.TransformerFactory
+			javax.xml.transform.stream.StreamSource
+			javax.xml.transform.sax.SAXSource
+			org.xml.sax.XMLReader
+			javax.xml.transform.dom.DOMResult 
+			org.xml.sax.helpers.AttributesImpl	

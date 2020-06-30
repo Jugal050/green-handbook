@@ -79,6 +79,12 @@ XML解析: https://blog.csdn.net/M_Jack/article/details/87373036
 		XML文档。XMLEventReader负责使用一个对象事件迭代子分析XML事件-这与XMLStreamReader所使用的光标机制
 		形成对照。
 
+(6)Marshaller and UnMarshaller(Spring)
+	【优点】
+		①配置简单
+		②接口方便：Marshaller and UnMarshaller
+		③异常信息获取方便		
+
  总结：
 
     1）DOM、JDOM、DOM4j都是把xml文档读取到内存中，生成dom对象进行遍历的；
@@ -208,7 +214,7 @@ stackoverflow: https://stackoverflow.com/questions/5059224/which-is-the-best-lib
 		        ma.marshal(out, adrFile);
 		    }
 		}
-		
+
 	Examples shamelessly copied from some old lecture slides ;-)
 
 	Edit: About "which API should I use?". Well it depends - not all APIs have the same capabilities as you see, but if you have control over the classes you use to map the XML document JAXB is my personal favorite, really elegant and simple solution (though I haven't used it for really large documents, it could get a bit complex). SAX is pretty easy to use too and just stay away from DOM if you don't have a really good reason to use it - old, clunky API in my opinion. I don't think there are any modern 3rd party libraries that feature anything especially useful that's missing from the STL and the standard libraries have the usual advantages of being extremely well tested, documented and stable.
