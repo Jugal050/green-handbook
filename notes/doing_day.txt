@@ -3729,6 +3729,58 @@
 
 		使用jackson相关包进行。
 
+		问题：
+
+			有同名元素时，如<root><a>1</a><a>2</a></root>	，如果不使用指定Bean进行转换，会丢失信息。（在未来的2.12版本中已经修复）
+
+			git issue: https://github.com/FasterXML/jackson-dataformat-xml/issues/403
+
+		其他jackson-dataformat-xml已知的限制性可参考git文档：	https://github.com/FasterXML/jackson-dataformat-xml
+
+		解决方案：
+
+			json转换时使用org.json包替换，具体操作步骤：
+
+				maven:
+
+			        <dependency>
+			            <groupId>org.json</groupId>
+			            <artifactId>json</artifactId>
+			            <version>20180130</version>
+			        </dependency>
+
+			    convert: 
+
+			    	// 参考io.github.assimbly:docconverter:1.3.0 org.assimbly.docconverter.DocConverter.java
+			    	
+		    		@Test
+					public void test() {
+						try {
+							String xml = new String(Files.readAllBytes(xmlPath));
+							System.out.println(xml);
+
+							JSONObject xmlJSONObj = XML.toJSONObject(xml);
+							String json = xmlJSONObj.toString();
+							System.out.println(json);
+
+							JsonNode jsonNode = new ObjectMapper().readTree(json);
+							String yaml = new YAMLMapper().writeValueAsString(jsonNode);
+							System.out.println(yaml);
+							
+							Files.write(yamlPath, yaml.getBytes());
+						} catch (IOException e) {
+							e.printStackTrace();
+						} catch (JSONException e) {
+							e.printStackTrace();
+						}
+					}    
+
+
+
+
+
+
+
 
 
 
