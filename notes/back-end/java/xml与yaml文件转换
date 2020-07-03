@@ -614,10 +614,10 @@ xml与yaml文件转换：
 								int copyLength = 0;
 								if (copyTarget == null) {
 									copyLength = ((JSONArray) copySource).length();
-								} else if (copySource instanceof JSONObject) {
+								} else if (copyTarget instanceof JSONObject) {
 									copyLength = ((JSONArray) copySource).length() - 1;
-								} else if (copySource instanceof JSONArray) {
-									copyLength = ((JSONArray) copySource).length() - ((JSONArray) copySource).length();
+								} else if (copyTarget instanceof JSONArray) {
+									copyLength = ((JSONArray) copySource).length() - ((JSONArray) copyTarget).length();
 								}
 								for (int i = 0; i < copyLength; i++) {
 									((JSONObject) dest).accumulate(tag, new JSONObject());
