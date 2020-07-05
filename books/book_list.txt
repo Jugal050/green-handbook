@@ -56,9 +56,7 @@ doing：
 
 		Aspect Oriented Programming with Spring  // 2019-12-28 16:17:50
 
-		Web on Servlet Stack					 // start 2019-12-30 21:35:22
-
-			1.3 Annotated Controllers 			 // start 2020-1-7 21:30:49		done 2020-1-7 22:39:44
+		Web on Servlet Stack					 			// start 2019-12-30 21:35:22
 
 		Core Technologies 									// start 2020-2-20 08:00:00 	done 2020-3-9 19:57:56
 
@@ -68,47 +66,7 @@ doing：
 
 		Web Servlet 										// done 2020-5-26 23:56:27
 
-		Web on Reactive Stack 								// start 2020-5-27 21:16:49
-
-			1. Spring WebFlux 								// done 2020-6-2 23:56:13
-
-				1.1. Overview
-
-					1.1.3. Programming Models 				// done 2020-5-27 21:16:56
-
-					1.1.7. Concurrency Model 				// done 2020-5-27 22:31:46
-
-				1.2. Reactive Core
-
-					1.2.2. WebHandler API 					// doen 2020-5-27 22:54:18
-
-					1.2.6. Logging 							// done 2020-5-27 23:56:44
-
-				1.3. DispatcherHandler 						// doen 2020-5-28 22:35:37		
-
-				1.4 Handler Method 							// done 2020-5-29 00:02:34
-
-				  	1.4.3. Handler Methods
-
-				  		Type Conversion						// done 2020-5-28 22:59:08
-
-				  	1.4.7. Controller Advice 				// done 2020-5-29 00:00:50
-
-				1.5. Functional Endpoints 					// done 2020-6-2 23:02:07
-
-					1.5.2. HandlerFunction 					// done 2020-6-2 21:25:58
-
-				1.6. URI Links								// done 2020-6-2 23:20:19	
-
-				1.7. CORS 									// done 2020-6-2 23:30:12	
-
-				1.8. Web Security
-
-	  			1.9. View Technologies
-
-				1.10. HTTP Caching 							// done 2020-6-2 23:43:52
-
-				1.12. HTTP/2 								// done 2020-6-2 23:54:29
+		Web on Reactive Stack 								// start 2020-5-27 21:16:49 done 2020-7-5 18:10:14
 
 		
 	The Java EE Tutorial: https://docs.oracle.com/javaee/7/tutorial/index.html 		// start 2020-4-4 11:29:31		

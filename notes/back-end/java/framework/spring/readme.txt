@@ -128,7 +128,7 @@ https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/
 
 							5. Other Web Frameworks 											// done 2020-5-26 23:55:14	
 
-	Web Reactive	 	Spring WebFlux, WebClient, WebSocket. 									// start 2020-5-27 21:16:49
+	Web Reactive	 	Spring WebFlux, WebClient, WebSocket. 									// start 2020-5-27 21:16:49 done 2020-7-5 18:09:15
 
 							1. Spring WebFlux 													// done 2020-6-2 23:54:54
 
@@ -169,6 +169,18 @@ https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/
 								1.10. HTTP Caching 												// done 2020-6-2 23:43:52
 
 								1.12. HTTP/2 													// done 2020-6-2 23:54:29	
+
+							2. WebClient 														// done 2020-7-5 16:06:42
+			
+								2.1 Configuration 												// done 2020-7-5 15:34:38	
+
+							3. WebSockets 														// done 2020-7-5 17:39:12		
+
+							4. Testing	 														// done 2020-7-5 17:39:21
+
+							5. RSocket             												// done 2020-7-5 18:07:40
+
+		    				6. Reactive Libraries 												// done 2020-7-5 18:07:33
 
 	Integration	 		Remoting, JMS, JCA, JMX, Email, Tasks, Scheduling, Caching.
 

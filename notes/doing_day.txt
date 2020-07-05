@@ -3781,7 +3781,29 @@
 
 		删除节点： 		// done 2020-7-2 20:09:50
 
-		保留节点： 		// TODO 
+		保留节点： 		// done 2020-7-3 17:19:51
+
+2020-7-5
+
+	# Web Reactive	Spring WebFlux, WebClient, WebSocket. 					// done 2020-7-5 18:11:20
+
+	  2. WebClient
+
+		reactor-netty: https://github.com/reactor/reactor-netty
+
+		Reactor 3 Reference Guide: https://projectreactor.io/docs/core/release/reference/index.html
+
+	  3. WebSockets 							// done 2020-7-5 17:39:12	
+
+		Data Buffers and Codecs https://docs.spring.io/spring/docs/current/spring-framework-reference/core.html#databuffers
+
+	  4. Testing	 							// done 2020-7-5 17:39:21
+
+	  5. RSocket             					// done 2020-7-5 18:07:40
+
+	  	rsocket-java: https://github.com/rsocket/rsocket-java
+
+	  6. Reactive Libraries 					// done 2020-7-5 18:07:33	
 
 	 	
 
