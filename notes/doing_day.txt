@@ -3805,6 +3805,12 @@
 
 	  6. Reactive Libraries 					// done 2020-7-5 18:07:33	
 
+2020-7-6
+
+	# XPath 查看
+
+		是否可以通过XPath来拷贝xml节点？待考证。	  
+
 	 	
 
 
