@@ -182,7 +182,41 @@ https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/
 
 		    				6. Reactive Libraries 												// done 2020-7-5 18:07:33
 
-	Integration	 		Remoting, JMS, JCA, JMX, Email, Tasks, Scheduling, Caching.
+	Integration	 		Remoting, JMS, JCA, JMX, Email, Tasks, Scheduling, Caching.				// start 2020-7-8 23:15:07
+
+							1. Remoting and Web Services 										// done 2020-7-9 00:03:50
+							
+								1.1. RMI
+								
+								1.2. Using Hessian to Remotely Call Services through HTTP
+								
+								1.3. Spring HTTP Invoker
+								
+								1.4. Java Web Services
+								
+								1.5. JMS
+								
+								1.6. AMQP
+								
+								1.7. Considerations when Choosing a Technology
+								
+								1.8. REST Endpoints
+							
+							2. Enterprise JavaBeans (EJB) Integration
+							
+							3. JMS (Java Message Service)
+							
+							4. JMX
+							
+							5. JCA CCI
+							
+							6. Email
+							
+							7. Task Execution and Scheduling
+							
+							8. Cache Abstraction
+
+							9. Appendix
 
 	Languages	 		Kotlin, Groovy, Dynamic Languages.
 

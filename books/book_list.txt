@@ -68,6 +68,8 @@ doing：
 
 		Web on Reactive Stack 								// start 2020-5-27 21:16:49 done 2020-7-5 18:10:14
 
+		Integration											// start 2020-7-8 23:15:07
+
 		
 	The Java EE Tutorial: https://docs.oracle.com/javaee/7/tutorial/index.html 		// start 2020-4-4 11:29:31		
 
