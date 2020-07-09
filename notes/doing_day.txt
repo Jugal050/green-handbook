@@ -3821,6 +3821,14 @@
 
 		1. Remoting and Web Services 					// done 2020-7-9 00:05:21
 
+		2. Enterprise JavaBeans (EJB) Integration 		// done 2020-7-9 22:55:37
+
+		3. JMS (Java Message Service)
+
+			3.1. Using Spring JMS
+			3.2. Sending a Message 						// done 2020-7-9 23:32:50
+
+
 	 	
 
 

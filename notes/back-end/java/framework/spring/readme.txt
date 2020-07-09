@@ -202,9 +202,21 @@ https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/
 								
 								1.8. REST Endpoints
 							
-							2. Enterprise JavaBeans (EJB) Integration
+							2. Enterprise JavaBeans (EJB) Integration 							// done 2020-7-9 22:55:37
 							
 							3. JMS (Java Message Service)
+
+								3.1. Using Spring JMS
+								3.2. Sending a Message 											// done 2020-7-9 23:32:50
+								3.3. Receiving a Message
+									3.3.1. Synchronous Reception
+									3.3.2. Asynchronous reception: Message-Driven POJOs
+									3.3.3. Using the SessionAwareMessageListener Interface
+									3.3.4. Using MessageListenerAdapter
+									3.3.5. Processing Messages Within Transactions
+								3.4. Support for JCA Message Endpoints
+								3.5. Annotation-driven Listener Endpoints
+								3.6. JMS Namespace Support
 							
 							4. JMX
 							
