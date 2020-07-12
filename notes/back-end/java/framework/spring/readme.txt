@@ -1,4 +1,4 @@
-https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/
+https://docs.spring.io/spring/docs/current/spring-framework-reference/   			// start: 2019-10-24 20:52:56 done 2020-7-12 22:25:49
 
 	Overview			history, design philosophy, feedback, getting started. 											// done 2020-2-13 15:58:12
 
@@ -182,7 +182,7 @@ https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/
 
 		    				6. Reactive Libraries 												// done 2020-7-5 18:07:33
 
-	Integration	 		Remoting, JMS, JCA, JMX, Email, Tasks, Scheduling, Caching.				// start 2020-7-8 23:15:07
+	Integration	 		Remoting, JMS, JCA, JMX, Email, Tasks, Scheduling, Caching.				// start 2020-7-8 23:15:07 done 2020-7-12 21:55:55
 
 							1. Remoting and Web Services 										// done 2020-7-9 00:03:50
 							
@@ -262,7 +262,7 @@ https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/
 
 								7.5. Using the Quartz Scheduler
 							
-							8. Cache Abstraction
+							8. Cache Abstraction 												// done 2020-7-12 21:52:58
 								
 								8.2. Declarative Annotation-based Caching
 								
@@ -276,9 +276,47 @@ https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/
 								
 								8.7. How can I Set the TTL/TTI/Eviction policy/XXX feature?
 
-							9. Appendix
+							9. Appendix 														// done 2020-7-12 21:55:49
 
-	Languages	 		Kotlin, Groovy, Dynamic Languages.
+	Languages	 		Kotlin, Groovy, Dynamic Languages.										// start 2020-7-12 22:12:48 end 2020-7-12 22:25:20（（略读，需要学习kotlin|Groovy））
+
+							1. Kotlin 							
+							
+								1.1. Requirements
+								
+								1.2. Extensions
+								
+								1.3. Null-safety
+								
+								1.4. Classes and Interfaces
+								
+								1.5. Annotations
+								
+								1.6. Bean Definition DSL
+								
+								1.7. Web
+								
+								1.8. Coroutines
+								
+								1.9. Spring Projects in Kotlin
+								
+								1.10. Getting Started
+								
+								1.11. Resources
+							
+							2. Apache Groovy
+							
+							3. Dynamic Language Support
+
+								3.1. A First Example
+								
+								3.2. Defining Beans that Are Backed by Dynamic Languages
+								
+								3.3. Scenarios
+								
+								3.4. Additional Details
+
+								3.5. Further Resourc
 
 https://docs.spring.io/spring-ws/docs/3.0.8.RELEASE/reference/	
 

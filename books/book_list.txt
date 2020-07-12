@@ -36,6 +36,10 @@ done：
 
 	java tools: https://docs.oracle.com/javase/8/docs/technotes/tools/
 
+	spring-framework-reference-guide 								// start: 2019-10-24 20:52:56 done 2020-7-12 22:27:09
+
+	ZooKeeper: https://zookeeper.apache.org/ 						// start 2020-6-15 21:55:34  done 2020-6-21 18:32:51
+
 doing：
 
 	《TCP/IP详解：卷1》												// doing start: 2019-8-20 16:43:51 now：chapter13 2019-8-28 20:58:41 TODO
@@ -51,33 +55,10 @@ doing：
 	简历 + 面试题...													// doing start: 2019-10-2 10:41:35
 
 	《数据库系统概念》													// doing start: 2019-10-5 10:00:46
-
-	spring-framework-reference-guide 								// doing start: 2019-10-24 20:52:56
-
-		Aspect Oriented Programming with Spring  // 2019-12-28 16:17:50
-
-		Web on Servlet Stack					 			// start 2019-12-30 21:35:22
-
-		Core Technologies 									// start 2020-2-20 08:00:00 	done 2020-3-9 19:57:56
-
-		Testing												// start 2020-3-10 15:43:59 done 2020-3-12 20:07:43
-
-		Data Access	 										// done 2020-5-18 22:17:42
-
-		Web Servlet 										// done 2020-5-26 23:56:27
-
-		Web on Reactive Stack 								// start 2020-5-27 21:16:49 done 2020-7-5 18:10:14
-
-		Integration											// start 2020-7-8 23:15:07
-
 		
 	The Java EE Tutorial: https://docs.oracle.com/javaee/7/tutorial/index.html 		// start 2020-4-4 11:29:31		
 
 	http://dubbo.apache.org/zh-cn/docs/user/configuration/xml.html
-
-Tool:	
-
-	ZooKeeper: https://zookeeper.apache.org/ 				// start 2020-6-15 21:55:34
 
 todo:
 
