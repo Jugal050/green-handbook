@@ -3826,7 +3826,22 @@
 		3. JMS (Java Message Service)
 
 			3.1. Using Spring JMS
+
 			3.2. Sending a Message 						// done 2020-7-9 23:32:50
+
+2020-7-12			
+
+			3.3. Receiving a Message 					// done 2020-7-12 09:41:04
+
+		4. JMX (Java Management Extensions)  			// done 2020-7-12 11:06:06	
+
+		5. JCA CCI 										// done 2020-7-12 16:58:21
+
+		6. Email 										// done 2020-7-12 17:15:13
+
+		7. Task Execution and Scheduling 				// done 2020-7-12 17:51:29
+
+
 
 
 	 	

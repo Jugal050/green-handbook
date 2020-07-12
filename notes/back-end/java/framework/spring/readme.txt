@@ -204,29 +204,77 @@ https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/
 							
 							2. Enterprise JavaBeans (EJB) Integration 							// done 2020-7-9 22:55:37
 							
-							3. JMS (Java Message Service)
+							3. JMS (Java Message Service) 										// done 2020-7-12 10:18:36
 
 								3.1. Using Spring JMS
+
 								3.2. Sending a Message 											// done 2020-7-9 23:32:50
-								3.3. Receiving a Message
-									3.3.1. Synchronous Reception
-									3.3.2. Asynchronous reception: Message-Driven POJOs
-									3.3.3. Using the SessionAwareMessageListener Interface
-									3.3.4. Using MessageListenerAdapter
-									3.3.5. Processing Messages Within Transactions
+
+								3.3. Receiving a Message 										// done 2020-7-12 09:41:28
+									
 								3.4. Support for JCA Message Endpoints
+
 								3.5. Annotation-driven Listener Endpoints
+
 								3.6. JMS Namespace Support
 							
-							4. JMX
+							4. JMX (Java Management Extensions)  								// done 2020-7-12 11:06:06
+
+								4.1. Exporting Your Beans to JMX
+
+								4.2. Controlling the Management Interface of Your Beans 		// done 2020-7-12 10:47:05
+
+								4.3. Controlling ObjectName Instances for Your Beans
+
+								4.4. Using JSR-160 Connectors 									// done 2020-7-12 10:57:13
+
+								4.5. Accessing MBeans through Proxies
+
+								4.6. Notifications
+
+								4.7. Further Resources
 							
-							5. JCA CCI
+							5. JCA CCI 															// done 2020-7-12 16:58:10
+
+								5.1. Configuring CCI
+								
+								5.2. Using Spring’s CCI Access Support 							// done 2020-7-12 16:44:27
+								
+								5.3. Modeling CCI Access as Operation Objects
+								
+								5.4. Transactions
 							
-							6. Email
+							6. Email 															// done 2020-7-12 17:15:07
+
+								6.1. Usage
+
+								6.2. Using the JavaMail MimeMessageHelper
 							
-							7. Task Execution and Scheduling
+							7. Task Execution and Scheduling 									// done 2020-7-12 17:51:29
+
+								7.1. The Spring TaskExecutor Abstraction
+								
+								7.2. The Spring TaskScheduler Abstraction
+								
+								7.3. Annotation Support for Scheduling and Asynchronous Execution
+								
+								7.4. The task Namespace
+
+								7.5. Using the Quartz Scheduler
 							
 							8. Cache Abstraction
+								
+								8.2. Declarative Annotation-based Caching
+								
+								8.3. JCache (JSR-107) Annotations
+								
+								8.4. Declarative XML-based Caching
+								
+								8.5. Configuring the Cache Storage
+								
+								8.6. Plugging-in Different Back-end Caches
+								
+								8.7. How can I Set the TTL/TTI/Eviction policy/XXX feature?
 
 							9. Appendix
 
