@@ -60,6 +60,8 @@ doing：
 
 	http://dubbo.apache.org/zh-cn/docs/user/configuration/xml.html
 
+	springboot-reference-guide: https://docs.spring.io/spring-boot/docs/2.3.1.RELEASE/reference/html/ 		// start 2020-7-13 22:15:23
+
 todo:
 
 	《Spring揭秘》
@@ -80,9 +82,7 @@ todo:
 
 	mybatis-reference-guide 										
 
-	struts-reference-guide 											
-
-	springboot-reference-guide
+	struts-reference-guide 			
 
 	jvms
 

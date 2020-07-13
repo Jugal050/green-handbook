@@ -3859,7 +3859,13 @@
 
 				相关资源： https://docs.spring.io/spring/docs/current/spring-framework-reference/languages.html#dynamic-language-resources
 
-	##### 至此，https://docs.spring.io/spring/docs/current/spring-framework-reference/ 已完结。 // start: 2019-10-24 20:52:56  end 2020-7-12 22:28:28			
+	##### 至此，https://docs.spring.io/spring/docs/current/spring-framework-reference/ 已完结。 // start: 2019-10-24 20:52:56  end 2020-7-12 22:28:28		
+
+2020-7-13
+
+	# springboot reference guide: https://docs.spring.io/spring-boot/docs/2.3.1.RELEASE/reference/html/
+
+	# mvn dependency:tree
 
 
 
