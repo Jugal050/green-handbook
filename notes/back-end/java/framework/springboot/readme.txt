@@ -31,7 +31,8 @@ The reference documentation consists of the following sections:
 			4.5. Creating an Executable Jar
 		5. What to Read Ne
 
-	Using Spring Boot	 				Build Systems, Structuring Your Code, Configuration, Spring Beans and Dependency Injection, and more.
+	Using Spring Boot	 				Build Systems, Structuring Your Code, Configuration, Spring Beans and Dependency Injection, and more.  
+																	// done 2020-7-14 00:31:27
 
 		1. Build Systems 											// done 2020-7-13 23:56:09
 			1.1. Dependency Management
@@ -40,14 +41,32 @@ The reference documentation consists of the following sections:
 			1.4. Ant
 			1.5. Starters
 		2. Structuring Your Code
+			2.1. Using the “default” Package
+			2.2. Locating the Main Application Class
 		3. Configuration Classes
+			3.2. Importing XML Configuration
+			3.1. Importing Additional Configuration Classes
 		4. Auto-configuration
+			4.1. Gradually Replacing Auto-configuration
+			4.2. Disabling Specific Auto-configuration Classes
 		5. Spring Beans and Dependency Injection
 		6. Using the @SpringBootApplication Annotation
 		7. Running Your Application
+			7.1. Running from an IDE
+			7.2. Running as a Packaged Application
+			7.3. Using the Maven Plugin
+			7.4. Using the Gradle Plugin
+			7.5. Hot Swapping
 		8. Developer Tools
+			8.1. Property Defaults
+			8.2. Automatic Restart
+			8.3. LiveReload
+			8.4. Global Settings
+			8.5. Remote Applications
+				8.5.1. Running the Remote Client Application
+				8.5.2. Remote Update
 		9. Packaging Your Application for Production
-		10. What to Read Next
+		10. What to Read Next 										// done 2020-7-14 00:31:27
 
 	Spring Boot Features	 			Profiles, Logging, Security, Caching, Spring Integration, Testing, and more.
 
