@@ -69,6 +69,9 @@ The reference documentation consists of the following sections:
 		10. What to Read Next 										// done 2020-7-14 00:31:27
 
 	Spring Boot Features	 			Profiles, Logging, Security, Caching, Spring Integration, Testing, and more.
+		1. SpringApplication 										// done 2020-7-14 08:40:00
+		2. Externalizd Configuration 								// done 2020-7-14 13:48:00
+		3. 
 
 	Spring Boot Actuator	 			Monitoring, Metrics, Auditing, and more.
 
