@@ -70,8 +70,85 @@ The reference documentation consists of the following sections:
 
 	Spring Boot Features	 			Profiles, Logging, Security, Caching, Spring Integration, Testing, and more.
 		1. SpringApplication 										// done 2020-7-14 08:40:00
+			1.1. Startup Failure
+			1.2. Lazy Initialization
+			1.3. Customizing the Banner
+			1.4. Customizing SpringApplication
+			1.5. Fluent Builder API
+			1.6. Application Availability
+			1.7. Application Events and Listeners
+			1.8. Web Environment
+			1.9. Accessing Application Arguments
+			1.10. Using the ApplicationRunner or CommandLineRunner
+			1.11. Application Exit
+			1.12. Admin Features
 		2. Externalizd Configuration 								// done 2020-7-14 13:48:00
-		3. 
+			2.1. Configuring Random Values
+			2.2. Accessing Command Line Properties
+			2.3. Application Property Files
+			2.4. Profile-specific Properties
+			2.5. Placeholders in Properties
+			2.6. Encrypting Properties
+			2.7. Using YAML Instead of Properties
+			2.8. Type-safe Configuration Properties
+		3. Profiles 												
+			3.1. Adding Active Profiles
+			3.2. Programmatically Setting Profiles
+			3.3. Profile-specific Configuration Files
+		4. Logging
+			4.1. Log Format
+			4.2. Console Output
+			4.3. File Output
+			4.4. Log Levels
+			4.5. Log Groups
+			4.6. Custom Log Configuration
+			4.7. Logback Extensions
+		5. Internationalization
+		6. JSON
+			6.1. Jackson
+			6.2. Gson
+			6.3. JSON-B
+		7. Developing Web Applications 								// done 2020-7-15 23:24:41
+			7.1. The “Spring Web MVC Framework” 					
+			7.2. The “Spring WebFlux Framework” 					
+			7.3. JAX-RS and Jersey
+			7.4. Embedded Servlet Container Support
+			7.5. Embedded Reactive Server Support
+			7.6. Reactive Server Resources Configuration
+		8. Graceful shutdown
+		9. RSocket
+			9.1. RSocket Strategies Auto-configuration
+			9.2. RSocket server Auto-configuration
+			9.3. Spring Messaging RSocket support
+			9.4. Calling RSocket Services with RSocketRequester
+		10. Security 												// done 2020-7-15 23:46:13
+			10.1. MVC Security
+			10.2. WebFlux Security
+			10.3. OAuth2
+			10.4. SAML 2.0
+			10.5. Actuator Security
+		11. Working with SQL Databases
+		12. Working with NoSQL Technologies
+		13. Caching
+		14. Messaging
+		15. Calling REST Services with RestTemplate
+		16. Calling REST Services with WebClient
+		17. Validation
+		18. Sending Email
+		19. Distributed Transactions with JTA
+		20. Hazelcast
+		21. Quartz Scheduler
+		22. Task Execution and Scheduling
+		23. Spring Integration
+		24. Spring Session
+		25. Monitoring and Management over JMX
+		26. Testing
+		27. WebSockets
+		28. Web Services
+		29. Creating Your Own Auto-configuration
+		30. Kotlin support
+		31. Building Docker Images
+		32. What to Read Next
 
 	Spring Boot Actuator	 			Monitoring, Metrics, Auditing, and more.
 
