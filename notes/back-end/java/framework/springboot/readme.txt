@@ -227,7 +227,40 @@ The reference documentation consists of the following sections:
 
 				desc: InfluxDB is an open-source time series database optimized for fast, high-availability storage and retrieval of time series data in fields such as operations monitoring, application metrics, Internet-of-Things sensor data, and real-time analytics.
 
-		13. Caching
+		13. Caching 												// done 2020-7-18 18:15:04
+
+			13.1. Supported Cache Providers
+
+				13.1.1. Generic
+				
+				13.1.2. JCache (JSR-107)
+
+					url: https://jcp.org/en/jsr/detail?id=107
+				
+				13.1.3. EhCache 2.x
+
+					url: https://www.ehcache.org/
+				
+				13.1.4. Hazelcast
+				
+				13.1.5. Infinispan
+
+					url: https://github.com/infinispan/infinispan-spring-boot
+				
+				13.1.6. Couchbase
+
+					url: https://www.couchbase.com/
+				
+				13.1.7. Redis
+				
+				13.1.8. Caffeine
+
+					desc: Caffeine is a Java 8 rewrite of Guava’s cache that supersedes support for Guava.
+				
+				13.1.9. Simple
+				
+				13.1.10. None
+
 		14. Messaging
 		15. Calling REST Services with RestTemplate
 		16. Calling REST Services with WebClient
