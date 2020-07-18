@@ -127,8 +127,106 @@ The reference documentation consists of the following sections:
 			10.3. OAuth2
 			10.4. SAML 2.0
 			10.5. Actuator Security
-		11. Working with SQL Databases
-		12. Working with NoSQL Technologies
+		11. Working with SQL Databases 								// doen 2020-7-18 16:05:25
+ 
+			11.1. Configure a DataSource
+
+				Embedded Database Support: 
+
+					H2: https://www.h2database.com
+					HSQL: http://hsqldb.org/
+					Derby: https://db.apache.org/derby/
+
+				Connection to a Production Database: 
+
+					HikariCP: https://github.com/brettwooldridge/HikariCP
+					Tomcat pooling DataSource
+					Commons DBCP2: https://commons.apache.org/proper/commons-dbcp/
+
+			11.2. Using JdbcTemplate
+
+			11.3. JPA and Spring Data JPA
+
+			11.4. Spring Data JDBC
+
+			11.5. Using H2’s Web Console
+
+			11.6. Using jOOQ
+
+				jOOQ(Java Object Oriented Query): https://www.jooq.org/ 		// doen 2020-7-18 15:51:24
+
+				desc: jOOQ generates Java code from your database and lets you build type safe SQL queries through its fluent API.
+
+			11.7. Using R2DBC
+
+		 		 R2DBC(Reactive Relational Database Connectivity): https://r2dbc.io/
+
+		 		 desc: The Reactive Relational Database Connectivity (R2DBC) project brings reactive programming APIs to relational databases.
+
+		12. Working with NoSQL Technologies 						// done 2020-7-18 17:00:58
+
+	 		12.1. Redis 
+
+	 			url: https://redis.io/
+
+	 			desc: Redis is a cache, message broker, and richly-featured key-value store. 
+
+	 			client: Spring Boot offers basic auto-configuration for the Lettuce and Jedis client libraries and the abstractions on top of them provided by Spring Data Redis.
+			
+			12.2. MongoDB
+
+				url: https://www.mongodb.com/
+
+				desc: MongoDB is an open-source NoSQL document database that uses a JSON-like schema instead of traditional table-based relational data. 
+			
+			12.3. Neo4j
+
+				url: https://neo4j.com
+
+				desc: Neo4j is an open-source NoSQL graph database that uses a rich data model of nodes connected by first class relationships, which is better suited for connected big data than traditional RDBMS approaches. 
+			
+			12.4. Solr
+
+				url: https://lucene.apache.org/solr/
+
+				desc: Apache Solr is a search engine.
+			
+			12.5. Elasticsearch
+
+				url: https://www.elastic.co/products/elasticsearch
+
+				desc: Elasticsearch is an open source, distributed, RESTful search and analytics engine. 
+
+				client: 
+
+					The official Java "Low Level" and "High Level" REST clients
+
+					The ReactiveElasticsearchClient provided by Spring Data Elasticsearch
+			
+			12.6. Cassandra
+
+				url: https://cassandra.apache.org/
+
+				desc: Cassandra is an open source, distributed database management system designed to handle large amounts of data across many commodity servers. 
+			
+			12.7. Couchbase
+
+				url: https://www.couchbase.com/
+
+				desc: Couchbase is an open-source, distributed, multi-model NoSQL document-oriented database that is optimized for interactive applications. 
+			
+			12.8. LDAP
+
+				url: https://en.wikipedia.org/wiki/Lightweight_Directory_Access_Protocol
+
+				desc: LDAP (Lightweight Directory Access Protocol) is an open, vendor-neutral, industry standard application protocol for accessing and maintaining distributed directory information services over an IP network. 
+			
+			12.9. InfluxDB
+
+				url: https://www.influxdata.com/
+
+				desc: InfluxDB is an open-source time series database optimized for fast, high-availability storage and retrieval of time series data in fields such as operations monitoring, application metrics, Internet-of-Things sensor data, and real-time analytics.
+
 		13. Caching
 		14. Messaging
 		15. Calling REST Services with RestTemplate

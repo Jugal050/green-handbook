@@ -3879,7 +3879,63 @@
 
 		https://docs.spring.io/spring-boot/docs/current/gradle-plugin/reference/html/
 
-	 	
+2020-7-18
+
+	# 	11. Working with SQL Databases 								// done 2020-7-18 16:05:34
+
+			11.1. Configure a DataSource
+
+				Embedded Database Support: 
+
+					H2: https://www.h2database.com
+					HSQL: http://hsqldb.org/
+					Derby: https://db.apache.org/derby/
+
+				Connection to a Production Database: 
+
+					HikariCP: https://github.com/brettwooldridge/HikariCP
+					Tomcat pooling DataSource
+					Commons DBCP2: https://commons.apache.org/proper/commons-dbcp/
+
+			11.2. Using JdbcTemplate
+
+			11.3. JPA and Spring Data JPA
+
+			11.4. Spring Data JDBC
+
+			11.5. Using H2’s Web Console
+
+			11.6. Using jOOQ
+
+				jOOQ(Java Object Oriented Query): https://www.jooq.org/ 		// done 2020-7-18 15:51:24
+
+				desc: jOOQ generates Java code from your database and lets you build type safe SQL queries through its fluent API.
+
+			11.7. Using R2DBC
+
+		 		 R2DBC(Reactive Relational Database Connectivity): https://r2dbc.io/
+
+		 		 desc: The Reactive Relational Database Connectivity (R2DBC) project brings reactive programming APIs to relational databases.
+
+	 	12. Working with NoSQL Technologies		 					// done 2020-7-18 17:00:58
+
+	 		12.1. Redis
+			
+			12.2. MongoDB
+			
+			12.3. Neo4j
+			
+			12.4. Solr
+			
+			12.5. Elasticsearch
+			
+			12.6. Cassandra
+			
+			12.7. Couchbase
+			
+			12.8. LDAP
+			
+			12.9. InfluxDB
 
 
 
