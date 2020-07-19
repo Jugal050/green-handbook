@@ -261,24 +261,156 @@ The reference documentation consists of the following sections:
 				
 				13.1.10. None
 
-		14. Messaging
-		15. Calling REST Services with RestTemplate
-		16. Calling REST Services with WebClient
-		17. Validation
-		18. Sending Email
-		19. Distributed Transactions with JTA
-		20. Hazelcast
-		21. Quartz Scheduler
-		22. Task Execution and Scheduling
-		23. Spring Integration
-		24. Spring Session
-		25. Monitoring and Management over JMX
-		26. Testing
-		27. WebSockets
-		28. Web Services
-		29. Creating Your Own Auto-configuration
+		14. Messaging 									// done 2020-7-19 13:59:36
+
+			14.1. JMS
+
+				ActiveMQ: https://activemq.apache.org/
+
+				Artemis: https://activemq.apache.org/components/artemis/
+			
+			14.2. AMQP
+
+				desc: The Advanced Message Queuing Protocol (AMQP) is a platform-neutral, wire-level protocol for message-oriented middleware.
+
+				RabbitMQ: https://www.rabbitmq.com/
+
+					desc: RabbitMQ is a lightweight, reliable, scalable, and portable message broker based on the AMQP protocol. 
+
+				Apache Kafka: https://kafka.apache.org/	
+			
+			14.3. Apache Kafka Support
+
+		15. Calling REST Services with RestTemplate		// done 2020-7-19 14:19:27
+
+			15.1. RestTemplate Customization
+
+		16. Calling REST Services with WebClient		// doen 2020-7-19 14:23:13
+
+			16.1. WebClient Runtime
+
+			16.2. WebClient Customization
+
+		17. Validation 									// done 2020-7-19 14:26:33
+
+		18. Sending Email 								// done 2020-7-19 14:26:29
+
+		19. Distributed Transactions with JTA 			// done 2020-7-19 14:44:26
+
+			19.1. Using an Atomikos Transaction Manager
+
+				Atomikos: 
+
+					url: https://www.atomikos.com/
+
+					desc: Reliability through Atomicity Manage your distributed transactions and protect your mission critical data
+			
+			19.2. Using a Bitronix Transaction Manager
+
+				Bitronix: 
+
+					tips: Deprecated support for using a Bitronix embedded transaction manager is also provided but it will be removed in a future release.
+			
+					url: https://github.com/bitronix/btm	
+
+					desc: The Bitronix Transaction Manager (BTM) is a simple but complete implementation of the JTA 1.1 API. It is a fully working XA transaction manager that provides all services required by the JTA API while trying to keep the code as simple as possible for easier understanding of the XA semantics.
+			
+			19.3. Using a Java EE Managed Transaction Manager
+			
+			19.4. Mixing XA and Non-XA JMS Connections
+			
+			19.5. Supporting an Alternative Embedded Transaction Manager
+
+		20. Hazelcast 									// done 2020-7-19 15:01:46
+
+			url: https://hazelcast.com/
+
+			desc: Application performance at scale. Simplified. lets you build the fastest applications. Access a scalable, shared pool of RAM across a cluster of computers
+
+			doc: https://docs.hazelcast.org/docs/latest/manual/html-single/
+
+		21. Quartz Scheduler 							// doen 2020-7-19 15:25:31
+
+		22. Task Execution and Scheduling 				// done 2020-7-19 15:31:53
+
+		23. Spring Integration 							// done 2020-7-19 15:37:29
+		
+		24. Spring Session 								// done 2020-7-19 15:37:29
+		
+		25. Monitoring and Management over JMX 			// done 2020-7-19 15:38:17
+
+		26. Testing 									// done 2020-7-19 16:51:18
+
+			26.1. Test Scope Dependencies
+
+				- JUnit 5 (including the vintage engine for backward compatibility with JUnit 4): The de-facto standard for unit testing Java applications.
+
+					url: https://junit.org/junit5/
+
+				- Spring Test & Spring Boot Test: Utilities and integration test support for Spring Boot applications.
+
+					url: https://docs.spring.io/spring/docs/5.2.7.RELEASE/spring-framework-reference/testing.html#integration-testing
+
+				- AssertJ: A fluent assertion library.
+
+					url: https://assertj.github.io/doc/
+
+				- Hamcrest: A library of matcher objects (also known as constraints or predicates).
+
+					url: https://github.com/hamcrest/JavaHamcrest
+
+				- Mockito: A Java mocking framework.
+
+					url: https://site.mockito.org/
+
+				- JSONassert: An assertion library for JSON.
+
+					url: https://github.com/skyscreamer/JSONassert
+
+				- JsonPath: XPath for JSON.
+
+					url: https://github.com/jayway/JsonPath
+
+			26.2. Testing Spring Applications
+
+				Spock: http://spockframework.org/spock/docs/1.2/modules.html#_spring_module
+			
+			26.3. Testing Spring Boot Applications
+			
+			26.4. Test Utilities	
+		
+		27. WebSockets 									// done 2020-7-19 16:51:56
+		
+		28. Web Services 								// done 2020-7-19 16:55:22
+		
+		29. Creating Your Own Auto-configuration 		// done 2020-7-19 17:13:15
+
+			29.1. Understanding Auto-configured Beans
+			
+			29.2. Locating Auto-configuration Candidates
+			
+			29.3. Condition Annotations
+
+				ASM: https://asm.ow2.io/
+
+				desc: ASM is an all purpose Java bytecode manipulation and analysis framework. It can be used to modify existing classes or to dynamically generate classes, directly in binary form. ASM provides some common bytecode transformations and analysis algorithms from which custom complex transformations and code analysis tools can be built. ASM offers similar functionality as other Java bytecode frameworks, but is focused on performance. Because it was designed and implemented to be as small and as fast as possible, it is well suited for use in dynamic systems (but can of course be used in a static way too, e.g. in compilers).
+
+				usage: ASM is used in many projects, including:
+
+					- the OpenJDK, to generate the lambda call sites, and also in the Nashorn compiler,
+					- the Groovy compiler and the Kotlin compiler,
+					- Cobertura and Jacoco, to instrument classes in order to measure code coverage,
+					- CGLIB, to dynamically generate proxy classes (which are used in other projects such as Mockito and EasyMock),
+					- Gradle, to generate some classes at runtime.
+			
+			29.4. Testing your Auto-configuration
+			
+			29.5. Creating Your Own Starter
+		
 		30. Kotlin support
+		
 		31. Building Docker Images
+		
 		32. What to Read Next
 
 	Spring Boot Actuator	 			Monitoring, Metrics, Auditing, and more.

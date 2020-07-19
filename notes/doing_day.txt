@@ -3937,6 +3937,39 @@
 			
 			12.9. InfluxDB
 
+2020-7-19
+
+	# 	14. Messaging 									// done 2020-7-19 13:54:26
+
+	  	15. Calling REST Services with RestTemplate		// doen 2020-7-19 14:19:14	
+
+	  	16. Calling REST Services with WebClient		// doen 2020-7-19 14:23:13
+
+	  	17. Validation 									// done 2020-7-19 14:26:33
+
+		18. Sending Email 								// done 2020-7-19 14:26:29
+
+		19. Distributed Transactions with JTA 			// done 2020-7-19 14:44:26
+
+		20. Hazelcast 									// done 2020-7-19 15:01:46
+
+		21. Quartz Scheduler 							// doen 2020-7-19 15:25:31
+
+		22. Task Execution and Scheduling 				// done 2020-7-19 15:31:53
+
+		23. Spring Integration 							// done 2020-7-19 15:37:29
+		
+		24. Spring Session 								// done 2020-7-19 15:37:29
+		
+		25. Monitoring and Management over JMX 			// done 2020-7-19 15:38:17
+
+		26. Testing 									// done 2020-7-19 16:51:18
+
+		27. WebSockets 									// done 2020-7-19 16:51:56
+		
+		28. Web Services 								// done 2020-7-19 16:55:22
+
+		29. Creating Your Own Auto-configuration 		// done 2020-7-19 17:13:15
 
 
 
