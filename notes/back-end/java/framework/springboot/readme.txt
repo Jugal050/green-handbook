@@ -68,7 +68,7 @@ The reference documentation consists of the following sections:
 		9. Packaging Your Application for Production
 		10. What to Read Next 										// done 2020-7-14 00:31:27
 
-	Spring Boot Features	 			Profiles, Logging, Security, Caching, Spring Integration, Testing, and more.
+	Spring Boot Features	 			Profiles, Logging, Security, Caching, Spring Integration, Testing, and more. 			// done 2020-7-19 19:23:57
 		1. SpringApplication 										// done 2020-7-14 08:40:00
 			1.1. Startup Failure
 			1.2. Lazy Initialization
@@ -407,11 +407,35 @@ The reference documentation consists of the following sections:
 			
 			29.5. Creating Your Own Starter
 		
-		30. Kotlin support
+		30. Kotlin support 								// done 2020-7-19 18:03:19
+
+			url: https://kotlinlang.org/
+
+			desc: Kotlin is a statically-typed language targeting the JVM (and other platforms) which allows writing concise and elegant code while providing interoperability with existing libraries written in Java.
+
+			30.1. Requirements
+			
+			30.2. Null-safety
+			
+			30.3. Kotlin API
+			
+			30.4. Dependency management
+			
+			30.5. @ConfigurationProperties
+			
+			30.6. Testing
+
+			30.7. Resources
 		
-		31. Building Docker Images
+		31. Building Docker Images 						// done 2020-7-19 19:23:11
+
+			31.1. Layering Docker Images
+
+			31.2. Writing the Dockerfile
+
+			31.3. Buildpacks
 		
-		32. What to Read Next
+		32. What to Read Next 							// done 2020-7-19 19:23:17
 
 	Spring Boot Actuator	 			Monitoring, Metrics, Auditing, and more.
 

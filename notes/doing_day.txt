@@ -3971,6 +3971,12 @@
 
 		29. Creating Your Own Auto-configuration 		// done 2020-7-19 17:13:15
 
+		30. Kotlin support 								// done 2020-7-19 18:03:19
+
+		31. Building Docker Images 						// done 2020-7-19 19:23:11
+
+		32. What to Read Next 							// done 2020-7-19 19:23:17
+
 
 
 
