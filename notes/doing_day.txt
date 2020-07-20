@@ -3977,6 +3977,32 @@
 
 		32. What to Read Next 							// done 2020-7-19 19:23:17
 
+2020-7-20
+
+	# Spring Boot Actuator: Production-ready Features	// done 2020-7-20 23:59:32	
+
+		1. Enabling Production-ready Features 			// done 2020-7-20 22:00:00
+
+		2. Endpoints 									// done 2020-7-20 23:09:02
+
+		3. Monitoring and Management over HTTP 			// done 2020-7-20 23:15:55
+
+		4. Monitoring and Management over JMX 			// done 2020-7-20 23:19:06
+
+		5. Loggers 										// done 2020-7-20 23:21:22
+
+		6. Metrics 										// done 2020-7-20 23:47:40
+
+		7. Auditing 									// done 2020-7-20 23:49:28
+
+		8. HTTP Tracing 								// done 2020-7-20 23:50:54
+
+		9. Process Monitoring 							// done 2020-7-20 23:52:06
+
+		10. Cloud Foundry Support 						// done 2020-7-20 23:55:07
+
+		11. What to Read Next 							// done 2020-7-20 23:59:32
+
 
 
 

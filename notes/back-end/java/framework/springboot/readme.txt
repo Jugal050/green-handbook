@@ -437,7 +437,127 @@ The reference documentation consists of the following sections:
 		
 		32. What to Read Next 							// done 2020-7-19 19:23:17
 
-	Spring Boot Actuator	 			Monitoring, Metrics, Auditing, and more.
+	Spring Boot Actuator	 			Monitoring, Metrics, Auditing, and more. 	// start 2020-7-20 21:47:14 done 2020-7-20 23:58:58
+
+		1. Enabling Production-ready Features
+		
+		2. Endpoints 									// done 2020-7-20 23:09:02
+
+			Jolokia: https://jolokia.org/
+
+				desc: Jolokia is remote JMX with JSON over HTTP. It is fast, simple, polyglot and has unique features. It's JMX on Capsaicin.
+
+			prometheus: https://prometheus.io/	
+
+				desc: From metrics to insight. Power your metrics and alerting with a leading open-source monitoring solution.
+
+			actuator-api: https://docs.spring.io/spring-boot/docs/2.3.1.RELEASE/actuator-api/html/	
+		
+			2.1. Enabling Endpoints
+		
+			2.2. Exposing Endpoints
+		
+			2.3. Securing HTTP Endpoints
+		
+			2.4. Configuring Endpoints
+		
+			2.5. Hypermedia for Actuator Web Endpoints
+		
+			2.6. CORS Support
+		
+			2.7. Implementing Custom Endpoints
+		
+			2.8. Health Information
+		
+			2.9. Kubernetes Probes
+
+				url: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#container-probes
+		
+			2.10. Application Information
+		
+		3. Monitoring and Management over HTTP 			// done 2020-7-20 23:15:55
+
+			3.1. Customizing the Management Endpoint Paths
+			
+			3.2. Customizing the Management Server Port
+			
+			3.3. Configuring Management-specific SSL
+			
+			3.4. Customizing the Management Server Address
+			
+			3.5. Disabling HTTP Endpoints
+		
+		4. Monitoring and Management over JMX 			// done 2020-7-20 23:19:06
+			
+			4.1. Customizing MBean Names
+			
+			4.2. Disabling JMX Endpoints
+			
+			4.3. Using Jolokia for JMX over HTTP
+		
+		5. Loggers 										// done 2020-7-20 23:21:22
+
+			5.1. Configure a Logger
+		
+		6. Metrics 										// done 2020-7-20 23:47:40
+
+			micrometer: 
+
+				url: https://micrometer.io/
+
+				desc: Vendor-neutral application metrics facade
+					  Micrometer provides a simple facade over the instrumentation clients for the most popular monitoring systems, allowing you to instrument your JVM-based application code without vendor lock-in. Think SLF4J, but for metrics.
+
+				doc: https://micrometer.io/docs
+
+				concepts: https://micrometer.io/docs/concepts	  
+
+
+			Signalfx: 
+
+				url: https://www.signalfx.com/
+			
+				desc: Real-Time Cloud Monitoring and Observability for Infrastructure, Microservices and Applications	
+
+			6.1. Getting started
+			
+			6.2. Supported monitoring systems
+			
+			6.3. Supported Metrics
+			
+			6.4. Registering custom metrics
+			
+			6.5. Customizing individual metrics
+			
+			6.6. Metrics endpoint	
+		
+		7. Auditing 									// done 2020-7-20 23:49:28
+
+			7.1. Custom Auditing
+		
+		8. HTTP Tracing 								// done 2020-7-20 23:50:54
+
+			8.1. Custom HTTP tracing
+		
+		9. Process Monitoring 							// done 2020-7-20 23:52:06
+
+			9.1. Extending Configuration
+			
+			9.2. Programmatically
+		
+		10. Cloud Foundry Support 						// done 2020-7-20 23:55:07
+
+			10.1. Disabling Extended Cloud Foundry Actuator Support
+			
+			10.2. Cloud Foundry Self-signed Certificates
+			
+			10.3. Custom context path
+		
+		11. What to Read Next 							// done 2020-7-20 23:59:32
+
+			Graphite: https://graphiteapp.org/
+
+				desc: Graphite is an enterprise-ready monitoring tool that runs equally well on cheap hardware or Cloud infrastructure. Teams use Graphite to track the performance of their websites, applications, business services, and networked servers. It marked the start of a new generation of monitoring tools, making it easier than ever to store, retrieve, share, and visualize time-series data.
 
 	Deploying Spring Boot Applications	Deploying to the Cloud, Installing as a Unix application.
 
