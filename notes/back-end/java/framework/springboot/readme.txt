@@ -559,7 +559,62 @@ The reference documentation consists of the following sections:
 
 				desc: Graphite is an enterprise-ready monitoring tool that runs equally well on cheap hardware or Cloud infrastructure. Teams use Graphite to track the performance of their websites, applications, business services, and networked servers. It marked the start of a new generation of monitoring tools, making it easier than ever to store, retrieve, share, and visualize time-series data.
 
-	Deploying Spring Boot Applications	Deploying to the Cloud, Installing as a Unix application.
+	Deploying Spring Boot Applications	Deploying to the Cloud, Installing as a Unix application. 		// done 2020-7-21 22:39:50
+
+		1. Deploying to Containers 						// done 2020-7-21 22:10:49
+		
+		2. Deploying to the Cloud 						// done 2020-7-21 22:23:36
+		
+			2.1. Cloud Foundry
+
+				url: https://www.cloudfoundry.org/
+
+				desc: The Cloud Foundry Developer Experience On Kubernetes
+					  Get the simplicity, control and speed of Cloud Foundry on the industry standard container platform: Kubernetes.
+			
+			2.2. Kubernetes
+			
+			2.3. Heroku
+
+				url: https://www.heroku.com/
+
+				desc: Developers, teams, and businesses of all sizes use Heroku to deploy, manage, and scale apps.
+			
+			2.4. OpenShift
+
+				url: https://www.openshift.com/
+
+				desc: The Kubernetes platform for big ideas
+				 	  Empower developers to innovate and ship faster with the leading hybrid cloud, enterprise container platform
+			
+			2.5. Amazon Web Services (AWS)
+			
+			2.6. Boxfuse and Amazon Web Services
+
+				Boxfuse: https://boxfuse.com/
+
+					desc: Deploy your JVM, Node.js and Go apps to AWS. Effortlessly.
+						  Build minimal fully-provisioned images in seconds. 
+						  Test on VirtualBox, deploy atomically to AWS. 
+						  No legacy OS. No containers. No drift.
+			
+			2.7. Google Cloud
+
+				Google Cloud SDK: https://cloud.google.com/sdk/install
+		
+		3. Installing Spring Boot Applications 				// done 2020-7-21 22:40:16
+
+			3.1. Supported Operating Systems
+			
+			3.2. Unix/Linux Services
+			
+			3.3. Microsoft Windows Services
+
+				winsw: https://github.com/winsw/winsw
+
+					desc: WinSW is an executable binary, which can be used to wrap and manage a custom process as a Windows service. Once you download the installation package, you can rename WinSW.exe to any name, e.g. MyService.exe.
+
+		4. What to Read Next
 
 	Spring Boot CLI	 					Installing the CLI, Using the CLI, Configuring the CLI, and more.
 

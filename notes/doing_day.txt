@@ -4003,6 +4003,18 @@
 
 		11. What to Read Next 							// done 2020-7-20 23:59:32
 
+2020-7-21
+
+	# Deploying Spring Boot Applications	Deploying to the Cloud, Installing as a Unix application. 		// done 2020-7-21 22:39:50
+
+		1. Deploying to Containers 						// done 2020-7-21 22:10:49
+		
+		2. Deploying to the Cloud 						// done 2020-7-21 22:23:36		
+
+		3. Installing Spring Boot Applications 			// done 2020-7-21 22:40:16
+
+		4. What to Read Next 							// done 2020-7-21 22:40:31
+
 
 
 
