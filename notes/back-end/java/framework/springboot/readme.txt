@@ -616,7 +616,29 @@ The reference documentation consists of the following sections:
 
 		4. What to Read Next
 
-	Spring Boot CLI	 					Installing the CLI, Using the CLI, Configuring the CLI, and more.
+	Spring Boot CLI	 					Installing the CLI, Using the CLI, Configuring the CLI, and more. 	// done 2020-7-22 21:09:18
+
+		1. Installing the CLI
+		
+		2. Using the CLI
+
+			2.1. Running Applications with the CLI
+			
+			2.2. Applications with Multiple Source Files
+			
+			2.3. Packaging Your Application
+			
+			2.4. Initialize a New Project
+			
+			2.5. Using the Embedded Shell
+			
+			2.6. Adding Extensions to the CLI
+		
+		3. Developing Applications with the Groovy Beans DSL
+		
+		4. Configuring the CLI with settings.xml
+		
+		5. What to Read Next
 
 	Build Tool Plugins	 				Maven Plugin, Gradle Plugin, Antlib, and more.
 

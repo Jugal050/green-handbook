@@ -4015,6 +4015,20 @@
 
 		4. What to Read Next 							// done 2020-7-21 22:40:31
 
+2020-7-22
+
+	# Spring Boot CLI	 					Installing the CLI, Using the CLI, Configuring the CLI, and more. 	// done 2020-7-22 21:08:42
+
+		1. Installing the CLI
+		
+		2. Using the CLI
+		
+		3. Developing Applications with the Groovy Beans DSL
+		
+		4. Configuring the CLI with settings.xml
+
+		5. What to Read Next		
+
 
 
 
