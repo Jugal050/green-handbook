@@ -635,12 +635,40 @@ The reference documentation consists of the following sections:
 			2.6. Adding Extensions to the CLI
 		
 		3. Developing Applications with the Groovy Beans DSL
+
+			Grails: https://grails.org/
+
+				desc: A powerful Groovy-based web application framework for the JVM built on top of Spring Boot
 		
 		4. Configuring the CLI with settings.xml
 		
 		5. What to Read Next
 
-	Build Tool Plugins	 				Maven Plugin, Gradle Plugin, Antlib, and more.
+			source code: https://github.com/spring-projects/spring-boot/tree/v2.3.1.RELEASE/spring-boot-project/spring-boot-cli/src/main/java/org/springframework/boot/cli
+
+	Build Tool Plugins	 				Maven Plugin, Gradle Plugin, Antlib, and more. 			// done 2020-7-22 21:17:36
+
+		1. Spring Boot Maven Plugin
+		
+		2. Spring Boot Gradle Plugin
+		
+		3. Spring Boot AntLib Module
+
+			3.1. Spring Boot Ant Tasks
+			
+			3.2. Using the “findmainclass” Task
+		
+		4. Supporting Other Build Systems
+
+			4.1. Repackaging Archives
+
+			4.2. Nested Libraries
+
+			4.3. Finding a Main Class
+
+			4.4. Example Repackage Implementation
+
+		5. What to Read Next
 
 	“How-to” Guides	 					Application Development, Configuration, Embedded Servers, Data Access, and many more.
 
