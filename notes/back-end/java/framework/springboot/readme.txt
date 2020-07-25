@@ -672,6 +672,50 @@ The reference documentation consists of the following sections:
 
 	“How-to” Guides	 					Application Development, Configuration, Embedded Servers, Data Access, and many more.
 
+		1. Spring Boot Application 					// done 2020-7-25 15:04:22
+		
+			1.1. Create Your Own FailureAnalyzer
+			
+			1.2. Troubleshoot Auto-configuration
+			
+			1.3. Customize the Environment or ApplicationContext Before It Starts
+			
+			1.4. Build an ApplicationContext Hierarchy (Adding a Parent or Root Context)
+			
+			1.5. Create a Non-web Application
+		
+		2. Properties and Configuration
+		
+		3. Embedded Web Servers
+		
+		4. Spring MVC
+		
+		5. Testing With Spring Security
+		
+		6. Jersey
+		
+		7. HTTP Clients
+		
+		8. Logging
+		
+		9. Data Access
+		
+		10. Database Initialization
+		
+		11. Messaging
+		
+		12. Batch Applications
+		
+		13. Actuator
+		
+		14. Security
+		
+		15. Hot Swapping
+		
+		16. Build
+		
+		17. Traditional Deployment
+
 The reference documentation has the following appendices:
 
 	Application Properties	 			Common application properties that can be used to configure your application.
