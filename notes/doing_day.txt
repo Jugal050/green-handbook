@@ -4045,7 +4045,16 @@
 
 	# “How-to” Guides
 
-				
+		1. Spring Boot Application 					// done 2020-7-25 15:04:22
+		2. Properties and Configuration 			// done 2020-7-25 16:48:22
+		3. Embedded Web Servers 					// done 2020-7-25 17:35:49
+		4. Spring MVC 								// done 2020-7-25 18:02:05
+		5. Testing With Spring Security 			// done 2020-7-25 18:03:01
+		6. Jersey 									// done 2020-7-25 18:08:54
+		7. HTTP Clients 							// done 2020-7-25 18:12:03
+		8. Logging 									// done 2020-7-25 18:21:54
+
+
 
 
 

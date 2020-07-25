@@ -675,28 +675,73 @@ The reference documentation consists of the following sections:
 		1. Spring Boot Application 					// done 2020-7-25 15:04:22
 		
 			1.1. Create Your Own FailureAnalyzer
-			
 			1.2. Troubleshoot Auto-configuration
-			
 			1.3. Customize the Environment or ApplicationContext Before It Starts
-			
 			1.4. Build an ApplicationContext Hierarchy (Adding a Parent or Root Context)
-			
 			1.5. Create a Non-web Application
 		
-		2. Properties and Configuration
+		2. Properties and Configuration 			// done 2020-7-25 16:48:22
+
+			2.1. Automatically Expand Properties at Build Time
+			2.2. Externalize the Configuration of SpringApplication
+			2.3. Change the Location of External Properties of an Application
+			2.4. Use ‘Short’ Command Line Arguments
+			2.5. Use YAML for External Properties
+			2.6. Set the Active Spring Profiles
+			2.7. Change Configuration Depending on the Environment
+			2.8. Discover Built-in Options for External Properties
 		
-		3. Embedded Web Servers
+		3. Embedded Web Servers 					// done 2020-7-25 17:35:49
+
+			3.1. Use Another Web Server
+			3.2. Disabling the Web Server
+			3.3. Change the HTTP Port
+			3.4. Use a Random Unassigned HTTP Port
+			3.5. Discover the HTTP Port at Runtime
+			3.6. Enable HTTP Response Compression
+			3.7. Configure SSL
+			3.8. Configure HTTP/2
+			3.9. Configure the Web Server
+			3.10. Add a Servlet, Filter, or Listener to an Application
+			3.11. Configure Access Logging
+			3.12. Running Behind a Front-end Proxy Server
+			3.13. Enable Multiple Connectors with Tomcat
+			3.14. Use Tomcat’s LegacyCookieProcessor
+			3.15. Enable Tomcat’s MBean Registry
+			3.16. Enable Multiple Listeners with Undertow
+			3.17. Create WebSocket Endpoints Using @ServerEndpoint
 		
-		4. Spring MVC
+		4. Spring MVC 								// done 2020-7-25 18:02:05
+
+			4.1. Write a JSON REST Service
+			4.2. Write an XML REST Service
+			4.3. Customize the Jackson ObjectMapper
+			4.4. Customize the @ResponseBody Rendering
+			4.5. Handling Multipart File Uploads
+			4.6. Switch Off the Spring MVC DispatcherServlet
+			4.7. Switch off the Default MVC Configuration
+			4.8. Customize ViewResolvers
 		
-		5. Testing With Spring Security
+		5. Testing With Spring Security 			// done 2020-7-25 18:03:01
 		
-		6. Jersey
+		6. Jersey 									// done 2020-7-25 18:08:54
+
+			url: https://eclipse-ee4j.github.io/jersey/
+
+			desc: Eclipse Jersey is a REST framework that provides a JAX-RS (JSR-370) implementation and more
+
+			6.1. Secure Jersey endpoints with Spring Security
+			6.2. Use Jersey Alongside Another Web Framework
 		
-		7. HTTP Clients
+		7. HTTP Clients 							// done 2020-7-25 18:12:03
+
+			7.1. Configure RestTemplate to Use a Proxy
+			7.2. Configure the TcpClient used by a Reactor Netty-based WebClient
 		
-		8. Logging
+		8. Logging 									// done 2020-7-25 18:21:54
+
+			8.1. Configure Logback for Logging
+			8.2. Configure Log4j for Logging
 		
 		9. Data Access
 		
