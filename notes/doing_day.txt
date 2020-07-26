@@ -4054,6 +4054,20 @@
 		7. HTTP Clients 							// done 2020-7-25 18:12:03
 		8. Logging 									// done 2020-7-25 18:21:54
 
+2020-7-26
+
+	# “How-to” guides 								// done 2020-7-26 16:54:12
+
+		9. Data Access 								// done 2020-7-26 15:34:52
+		10. Database Initialization 				// done 2020-7-26 15:56:11
+		11. Messaging 								// done 2020-7-26 15:59:20
+		12. Batch Applications 						// done 2020-7-26 16:03:09
+		13. Actuator 								// done 2020-7-26 16:20:11
+		14. Security 								// done 2020-7-26 16:24:11
+		15. Hot Swapping 							// done 2020-7-26 16:28:04
+		16. Build 									// done 2020-7-26 16:41:27
+		17. Traditional Deployment					// done 2020-7-26 16:53:48		
+
 
 
 

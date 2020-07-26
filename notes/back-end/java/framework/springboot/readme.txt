@@ -670,7 +670,7 @@ The reference documentation consists of the following sections:
 
 		5. What to Read Next
 
-	“How-to” Guides	 					Application Development, Configuration, Embedded Servers, Data Access, and many more.
+	“How-to” Guides	 					Application Development, Configuration, Embedded Servers, Data Access, and many more. 	// doen 2020-7-26 16:52:47
 
 		1. Spring Boot Application 					// done 2020-7-25 15:04:22
 		
@@ -743,23 +743,101 @@ The reference documentation consists of the following sections:
 			8.1. Configure Logback for Logging
 			8.2. Configure Log4j for Logging
 		
-		9. Data Access
+		9. Data Access 								// done 2020-7-26 15:34:52
+
+			9.1. Configure a Custom DataSource
+			9.2. Configure Two DataSources
+			9.3. Use Spring Data Repositories
+			9.4. Separate @Entity Definitions from Spring Configuration
+			9.5. Configure JPA Properties
+			9.6. Configure Hibernate Naming Strategy
+			9.7. Configure Hibernate Second-Level Caching
+			9.8. Use Dependency Injection in Hibernate Components
+			9.9. Use a Custom EntityManagerFactory
+			9.10. Use Two EntityManagers
+			9.11. Use a Traditional persistence.xml File
+			9.12. Use Spring Data JPA and Mongo Repositories
+			9.13. Customize Spring Data’s Web Support
+			9.14. Expose Spring Data Repositories as REST Endpoint
+			9.15. Configure a Component that is Used by JPA
+			9.16. Configure jOOQ with Two DataSources
 		
-		10. Database Initialization
+		10. Database Initialization 				// done 2020-7-26 15:56:11
+
+			10.1. Initialize a Database Using JPA
+			10.2. Initialize a Database Using Hibernate
+			10.3. Initialize a Database using basic SQL scripts
+			10.4. Initialize a Database Using R2DBC
+			10.5. Initialize a Spring Batch Database
+			10.6. Use a Higher-level Database Migration Tool
+
+			tips：
+				- Flyway: https://flywaydb.org/
+					desc: Version control for your database. Robust schema evolution across all your environments. With ease, pleasure and plain SQL.
+				- Liquibase: https://www.liquibase.org/
+					desc: Track, version, and deploy database changes
 		
-		11. Messaging
+		11. Messaging 								// done 2020-7-26 15:59:20
+
+			11.1. Disable Transacted JMS Session
 		
-		12. Batch Applications
+		12. Batch Applications 						// done 2020-7-26 16:03:09
+
+			12.1. Specifying a Batch Data Source
+			12.2. Running Spring Batch Jobs on Startup
+			12.3. Running from the Command Line
+			12.4. Storing the Job Repository
+
+			tips:
+				- spring batch projcet: https://spring.io/projects/spring-batch
 		
-		13. Actuator
+		13. Actuator 								// done 2020-7-26 16:20:11
+
+			13.1. Change the HTTP Port or Address of the Actuator Endpoints
+			13.2. Customize the ‘whitelabel’ Error Page
+			13.3. Sanitize Sensitive Values
+			13.4. Map Health Indicators to Micrometer Metrics
 		
-		14. Security
+		14. Security 								// done 2020-7-26 16:24:11
+
+			14.1. Switch off the Spring Boot Security Configuration
+			14.2. Change the UserDetailsService and Add User Accounts
+			14.3. Enable HTTPS When Running behind a Proxy Server
+
+			tips:
+				 - Spring Security project page: https://spring.io/projects/spring-security
 		
-		15. Hot Swapping
+		15. Hot Swapping 							// done 2020-7-26 16:28:04
+
+			15.1. Reload Static Content
+			15.2. Reload Templates without Restarting the Container
+			15.3. Fast Application Restarts
+			15.4. Reload Java Classes without Restarting the Container
 		
-		16. Build
+		16. Build 									// done 2020-7-26 16:41:27
+
+			16.1. Generate Build Information
+			16.2. Generate Git Information
+			16.3. Customize Dependency Versions
+			16.4. Create an Executable JAR with Maven
+			16.5. Use a Spring Boot Application as a Dependency
+			16.6. Extract Specific Libraries When an Executable Jar Runs
+			16.7. Create a Non-executable JAR with Exclusions
+			16.8. Remote Debug a Spring Boot Application Started with Maven
+			16.9. Build an Executable Archive from Ant without Using spring-boot-antlib
 		
-		17. Traditional Deployment
+		17. Traditional Deployment					// done 2020-7-26 16:53:48
+
+			17.1. Create a Deployable War File
+			17.2. Convert an Existing Application to Spring Boot
+			17.3. Deploying a WAR to WebLogic
+			17.4. Use Jedis Instead of Lettuce
+			17.5. Use Testcontainers for integration testing
+
+			tips:
+
+				- Testcontainers: https://www.testcontainers.org/
+					desc: Testcontainers is a Java library that supports JUnit tests, providing lightweight, throwaway instances of common databases, Selenium web browsers, or anything else that can run in a Docker container.
 
 The reference documentation has the following appendices:
 
