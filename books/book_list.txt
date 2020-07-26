@@ -40,6 +40,8 @@ done：
 
 	ZooKeeper: https://zookeeper.apache.org/ 						// start 2020-6-15 21:55:34  done 2020-6-21 18:32:51
 
+	springboot-reference-guide: https://docs.spring.io/spring-boot/docs/current/reference/html/index.html // start 2020-7-13 22:15:23 done 2020-7-26 17:30:32
+
 doing：
 
 	《TCP/IP详解：卷1》												// doing start: 2019-8-20 16:43:51 now：chapter13 2019-8-28 20:58:41 TODO
@@ -59,8 +61,6 @@ doing：
 	The Java EE Tutorial: https://docs.oracle.com/javaee/7/tutorial/index.html 		// start 2020-4-4 11:29:31		
 
 	http://dubbo.apache.org/zh-cn/docs/user/configuration/xml.html
-
-	springboot-reference-guide: https://docs.spring.io/spring-boot/docs/2.3.1.RELEASE/reference/html/ 		// start 2020-7-13 22:15:23
 
 todo:
 

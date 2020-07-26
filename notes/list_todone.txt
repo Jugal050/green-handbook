@@ -58,7 +58,7 @@ framework
 
 	springboot:
 
-		springboot-reference-guide: https://docs.spring.io/spring-boot/docs/2.3.1.RELEASE/reference/html/ 		// start 2020-7-13 22:15:23
+		springboot-reference-guide: https://docs.spring.io/spring-boot/docs/current/reference/html/index.html // start 2020-7-13 22:15:23 done 2020-7-26 17:30:32
 
 		source-code:
 

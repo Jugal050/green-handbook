@@ -1,4 +1,4 @@
-https://docs.spring.io/spring-boot/docs/2.3.1.RELEASE/reference/html/ 		// start 2020-7-13 22:15:23
+https://docs.spring.io/spring-boot/docs/current/reference/html/index.html 		// start 2020-7-13 22:15:23 	done 2020-7-26 17:28:25
 
 The reference documentation consists of the following sections:
 
@@ -7,57 +7,83 @@ The reference documentation consists of the following sections:
 	Documentation Overview				About the Documentation, Getting Help, First Steps, and more. 		// done 2020-7-13 22:29:48
 
 		1. About the Documentation
+		
 		2. Getting Help
+		
 		3. First Steps
+		
 		4. Working with Spring Boot
+		
 		5. Learning about Spring Boot Features
+		
 		6. Moving to Production
+		
 		7. Advanced Topics
 
 	Getting Started	 					Introducing Spring Boot, System Requirements, Servlet Containers, Installing Spring Boot, Developing Your First Spring Boot Application 																				// done 2020-7-13 23:03:42
 
 		1. Introducing Spring Boot
+
 		2. System Requirements
+			
 			2.1. Servlet Containers
+
 		3. Installing Spring Boot
+
 			3.1. Installation Instructions for the Java Developer
 			3.2. Installing the Spring Boot CLI
 			3.3. Upgrading from an Earlier Version of Spring Boot
+
 		4. Developing Your First Spring Boot Application
+
 			4.1. Creating the POM
 			4.2. Adding Classpath Dependencies
 			4.3. Writing the Code
 			4.4. Running the Example
 			4.5. Creating an Executable Jar
+
 		5. What to Read Ne
 
 	Using Spring Boot	 				Build Systems, Structuring Your Code, Configuration, Spring Beans and Dependency Injection, and more.  
 																	// done 2020-7-14 00:31:27
 
 		1. Build Systems 											// done 2020-7-13 23:56:09
+			
 			1.1. Dependency Management
 			1.2. Maven
 			1.3. Gradle
 			1.4. Ant
 			1.5. Starters
+
 		2. Structuring Your Code
+			
 			2.1. Using the “default” Package
 			2.2. Locating the Main Application Class
+
 		3. Configuration Classes
+			
 			3.2. Importing XML Configuration
 			3.1. Importing Additional Configuration Classes
+
 		4. Auto-configuration
+
 			4.1. Gradually Replacing Auto-configuration
 			4.2. Disabling Specific Auto-configuration Classes
+
 		5. Spring Beans and Dependency Injection
+
 		6. Using the @SpringBootApplication Annotation
+
 		7. Running Your Application
+
 			7.1. Running from an IDE
 			7.2. Running as a Packaged Application
 			7.3. Using the Maven Plugin
 			7.4. Using the Gradle Plugin
 			7.5. Hot Swapping
+
 		8. Developer Tools
+
 			8.1. Property Defaults
 			8.2. Automatic Restart
 			8.3. LiveReload
@@ -65,11 +91,15 @@ The reference documentation consists of the following sections:
 			8.5. Remote Applications
 				8.5.1. Running the Remote Client Application
 				8.5.2. Remote Update
+
 		9. Packaging Your Application for Production
+
 		10. What to Read Next 										// done 2020-7-14 00:31:27
 
 	Spring Boot Features	 			Profiles, Logging, Security, Caching, Spring Integration, Testing, and more. 			// done 2020-7-19 19:23:57
+		
 		1. SpringApplication 										// done 2020-7-14 08:40:00
+			
 			1.1. Startup Failure
 			1.2. Lazy Initialization
 			1.3. Customizing the Banner
@@ -82,7 +112,9 @@ The reference documentation consists of the following sections:
 			1.10. Using the ApplicationRunner or CommandLineRunner
 			1.11. Application Exit
 			1.12. Admin Features
+
 		2. Externalizd Configuration 								// done 2020-7-14 13:48:00
+			
 			2.1. Configuring Random Values
 			2.2. Accessing Command Line Properties
 			2.3. Application Property Files
@@ -91,11 +123,15 @@ The reference documentation consists of the following sections:
 			2.6. Encrypting Properties
 			2.7. Using YAML Instead of Properties
 			2.8. Type-safe Configuration Properties
-		3. Profiles 												
+
+		3. Profiles 
+
 			3.1. Adding Active Profiles
 			3.2. Programmatically Setting Profiles
 			3.3. Profile-specific Configuration Files
+
 		4. Logging
+
 			4.1. Log Format
 			4.2. Console Output
 			4.3. File Output
@@ -103,30 +139,41 @@ The reference documentation consists of the following sections:
 			4.5. Log Groups
 			4.6. Custom Log Configuration
 			4.7. Logback Extensions
+
 		5. Internationalization
+
 		6. JSON
+
 			6.1. Jackson
 			6.2. Gson
 			6.3. JSON-B
+
 		7. Developing Web Applications 								// done 2020-7-15 23:24:41
+
 			7.1. The “Spring Web MVC Framework” 					
 			7.2. The “Spring WebFlux Framework” 					
 			7.3. JAX-RS and Jersey
 			7.4. Embedded Servlet Container Support
 			7.5. Embedded Reactive Server Support
 			7.6. Reactive Server Resources Configuration
+
 		8. Graceful shutdown
+
 		9. RSocket
+
 			9.1. RSocket Strategies Auto-configuration
 			9.2. RSocket server Auto-configuration
 			9.3. Spring Messaging RSocket support
 			9.4. Calling RSocket Services with RSocketRequester
+
 		10. Security 												// done 2020-7-15 23:46:13
+
 			10.1. MVC Security
 			10.2. WebFlux Security
 			10.3. OAuth2
 			10.4. SAML 2.0
 			10.5. Actuator Security
+
 		11. Working with SQL Databases 								// doen 2020-7-18 16:05:25
  
 			11.1. Configure a DataSource
@@ -144,13 +191,9 @@ The reference documentation consists of the following sections:
 					Commons DBCP2: https://commons.apache.org/proper/commons-dbcp/
 
 			11.2. Using JdbcTemplate
-
 			11.3. JPA and Spring Data JPA
-
 			11.4. Spring Data JDBC
-
 			11.5. Using H2’s Web Console
-
 			11.6. Using jOOQ
 
 				jOOQ(Java Object Oriented Query): https://www.jooq.org/ 		// doen 2020-7-18 15:51:24
@@ -232,7 +275,6 @@ The reference documentation consists of the following sections:
 			13.1. Supported Cache Providers
 
 				13.1.1. Generic
-				
 				13.1.2. JCache (JSR-107)
 
 					url: https://jcp.org/en/jsr/detail?id=107
@@ -242,7 +284,6 @@ The reference documentation consists of the following sections:
 					url: https://www.ehcache.org/
 				
 				13.1.4. Hazelcast
-				
 				13.1.5. Infinispan
 
 					url: https://github.com/infinispan/infinispan-spring-boot
@@ -252,13 +293,11 @@ The reference documentation consists of the following sections:
 					url: https://www.couchbase.com/
 				
 				13.1.7. Redis
-				
 				13.1.8. Caffeine
 
 					desc: Caffeine is a Java 8 rewrite of Guava’s cache that supersedes support for Guava.
 				
 				13.1.9. Simple
-				
 				13.1.10. None
 
 		14. Messaging 									// done 2020-7-19 13:59:36
@@ -288,7 +327,6 @@ The reference documentation consists of the following sections:
 		16. Calling REST Services with WebClient		// doen 2020-7-19 14:23:13
 
 			16.1. WebClient Runtime
-
 			16.2. WebClient Customization
 
 		17. Validation 									// done 2020-7-19 14:26:33
@@ -316,9 +354,7 @@ The reference documentation consists of the following sections:
 					desc: The Bitronix Transaction Manager (BTM) is a simple but complete implementation of the JTA 1.1 API. It is a fully working XA transaction manager that provides all services required by the JTA API while trying to keep the code as simple as possible for easier understanding of the XA semantics.
 			
 			19.3. Using a Java EE Managed Transaction Manager
-			
 			19.4. Mixing XA and Non-XA JMS Connections
-			
 			19.5. Supporting an Alternative Embedded Transaction Manager
 
 		20. Hazelcast 									// done 2020-7-19 15:01:46
@@ -376,7 +412,6 @@ The reference documentation consists of the following sections:
 				Spock: http://spockframework.org/spock/docs/1.2/modules.html#_spring_module
 			
 			26.3. Testing Spring Boot Applications
-			
 			26.4. Test Utilities	
 		
 		27. WebSockets 									// done 2020-7-19 16:51:56
@@ -386,9 +421,7 @@ The reference documentation consists of the following sections:
 		29. Creating Your Own Auto-configuration 		// done 2020-7-19 17:13:15
 
 			29.1. Understanding Auto-configured Beans
-			
 			29.2. Locating Auto-configuration Candidates
-			
 			29.3. Condition Annotations
 
 				ASM: https://asm.ow2.io/
@@ -404,7 +437,6 @@ The reference documentation consists of the following sections:
 					- Gradle, to generate some classes at runtime.
 			
 			29.4. Testing your Auto-configuration
-			
 			29.5. Creating Your Own Starter
 		
 		30. Kotlin support 								// done 2020-7-19 18:03:19
@@ -414,25 +446,17 @@ The reference documentation consists of the following sections:
 			desc: Kotlin is a statically-typed language targeting the JVM (and other platforms) which allows writing concise and elegant code while providing interoperability with existing libraries written in Java.
 
 			30.1. Requirements
-			
 			30.2. Null-safety
-			
 			30.3. Kotlin API
-			
 			30.4. Dependency management
-			
 			30.5. @ConfigurationProperties
-			
 			30.6. Testing
-
 			30.7. Resources
 		
 		31. Building Docker Images 						// done 2020-7-19 19:23:11
 
 			31.1. Layering Docker Images
-
 			31.2. Writing the Dockerfile
-
 			31.3. Buildpacks
 		
 		32. What to Read Next 							// done 2020-7-19 19:23:17
@@ -454,45 +478,28 @@ The reference documentation consists of the following sections:
 			actuator-api: https://docs.spring.io/spring-boot/docs/2.3.1.RELEASE/actuator-api/html/	
 		
 			2.1. Enabling Endpoints
-		
-			2.2. Exposing Endpoints
-		
-			2.3. Securing HTTP Endpoints
-		
-			2.4. Configuring Endpoints
-		
+			2.2. Exposing Endpoints		
+			2.3. Securing HTTP Endpoints		
+			2.4. Configuring Endpoints	
 			2.5. Hypermedia for Actuator Web Endpoints
-		
 			2.6. CORS Support
-		
 			2.7. Implementing Custom Endpoints
-		
 			2.8. Health Information
-		
-			2.9. Kubernetes Probes
-
-				url: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#container-probes
-		
+			2.9. Kubernetes Probes : https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#container-probes
 			2.10. Application Information
 		
 		3. Monitoring and Management over HTTP 			// done 2020-7-20 23:15:55
 
 			3.1. Customizing the Management Endpoint Paths
-			
 			3.2. Customizing the Management Server Port
-			
 			3.3. Configuring Management-specific SSL
-			
 			3.4. Customizing the Management Server Address
-			
 			3.5. Disabling HTTP Endpoints
 		
 		4. Monitoring and Management over JMX 			// done 2020-7-20 23:19:06
 			
 			4.1. Customizing MBean Names
-			
 			4.2. Disabling JMX Endpoints
-			
 			4.3. Using Jolokia for JMX over HTTP
 		
 		5. Loggers 										// done 2020-7-20 23:21:22
@@ -520,15 +527,10 @@ The reference documentation consists of the following sections:
 				desc: Real-Time Cloud Monitoring and Observability for Infrastructure, Microservices and Applications	
 
 			6.1. Getting started
-			
 			6.2. Supported monitoring systems
-			
 			6.3. Supported Metrics
-			
 			6.4. Registering custom metrics
-			
 			6.5. Customizing individual metrics
-			
 			6.6. Metrics endpoint	
 		
 		7. Auditing 									// done 2020-7-20 23:49:28
@@ -542,15 +544,12 @@ The reference documentation consists of the following sections:
 		9. Process Monitoring 							// done 2020-7-20 23:52:06
 
 			9.1. Extending Configuration
-			
 			9.2. Programmatically
 		
 		10. Cloud Foundry Support 						// done 2020-7-20 23:55:07
 
 			10.1. Disabling Extended Cloud Foundry Actuator Support
-			
 			10.2. Cloud Foundry Self-signed Certificates
-			
 			10.3. Custom context path
 		
 		11. What to Read Next 							// done 2020-7-20 23:59:32
@@ -605,9 +604,7 @@ The reference documentation consists of the following sections:
 		3. Installing Spring Boot Applications 				// done 2020-7-21 22:40:16
 
 			3.1. Supported Operating Systems
-			
 			3.2. Unix/Linux Services
-			
 			3.3. Microsoft Windows Services
 
 				winsw: https://github.com/winsw/winsw
@@ -623,15 +620,10 @@ The reference documentation consists of the following sections:
 		2. Using the CLI
 
 			2.1. Running Applications with the CLI
-			
 			2.2. Applications with Multiple Source Files
-			
 			2.3. Packaging Your Application
-			
 			2.4. Initialize a New Project
-			
 			2.5. Using the Embedded Shell
-			
 			2.6. Adding Extensions to the CLI
 		
 		3. Developing Applications with the Groovy Beans DSL
@@ -655,17 +647,13 @@ The reference documentation consists of the following sections:
 		3. Spring Boot AntLib Module
 
 			3.1. Spring Boot Ant Tasks
-			
 			3.2. Using the “findmainclass” Task
 		
 		4. Supporting Other Build Systems
 
 			4.1. Repackaging Archives
-
 			4.2. Nested Libraries
-
 			4.3. Finding a Main Class
-
 			4.4. Example Repackage Implementation
 
 		5. What to Read Next
