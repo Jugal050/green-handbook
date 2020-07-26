@@ -841,14 +841,58 @@ The reference documentation consists of the following sections:
 
 The reference documentation has the following appendices:
 
-	Application Properties	 			Common application properties that can be used to configure your application.
+	Application Properties	 			Common application properties that can be used to configure your application. 	// done 2020-7-26 16:59:43
 
-	Configuration Metadata	 			Metadata used to describe configuration properties.
+		1. Core properties
+		2. Cache properties
+		3. Mail properties
+		4. JSON properties
+		5. Data properties
+		6. Transaction properties
+		7. Data migration properties
+		8. Integration properties
+		9. Web properties
+		10. Templating properties
+		11. Server properties
+		12. Security properties
+		13. RSocket properties
+		14. Actuator properties
+		15. Devtools properties
+		16. Testing properties
 
-	Auto-configuration Classes	 		Auto-configuration classes provided by Spring Boot.
+	Configuration Metadata	 			Metadata used to describe configuration properties. 	// done 2020-7-26 17:10:53
 
-	Test Auto-configuration Annotations	Test-autoconfiguration annotations used to test slices of your application.
+		1. Metadata Format
+			1.1. Group Attributes
+			1.2. Property Attributes
+			1.3. Hint Attributes
+			1.4. Repeated Metadata Items
+		2. Providing Manual Hints
+			2.1. Value Hint
+			2.2. Value Providers
+		3. Generating Your Own Metadata by Using the Annotation Processor
+			3.1. Nested Properties
+			3.2. Adding Additional Metadata
 
-	Executable Jars	 					Spring Boot’s executable jars, their launchers, and their format.
+	Auto-configuration Classes	 		Auto-configuration classes provided by Spring Boot. 	// done 2020-7-26 17:14:35
 
-	Dependency Versions	 				Details of the dependencies that are managed by Spring Boot.
+		1. spring-boot-autoconfigure
+		2. spring-boot-actuator-autoconfigure
+
+	Test Auto-configuration Annotations	Test-autoconfiguration annotations used to test slices of your application. 	// done 2020-7-26 17:15:36
+
+		1. Test Slices
+
+	Executable Jars	 					Spring Boot’s executable jars, their launchers, and their format. 		// done 2020-7-26 17:22:54
+
+		1. Nested JARs
+		2. Spring Boot’s “JarFile” Class
+		3. Launching Executable Jars
+		4. PropertiesLauncher Features
+		5. Executable Jar Restrictions
+		6. Alternative Single Jar Solutions
+
+	Dependency Versions	 				Details of the dependencies that are managed by Spring Boot. 			// done 2020-7-26 17:25:41
+ 	
+		1. Managed Dependency Coordinates
+		2. Version Properties

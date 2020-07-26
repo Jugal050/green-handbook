@@ -4068,6 +4068,20 @@
 		16. Build 									// done 2020-7-26 16:41:27
 		17. Traditional Deployment					// done 2020-7-26 16:53:48		
 
+	# The reference documentation has the following appendices:  // doen 2020-7-26 17:27:51
+
+		Application Properties						// done 2020-7-26 16:59:43
+
+		Configuration Metadata						// done 2020-7-26 17:10:53
+
+		Auto-configuration Classes					// done 2020-7-26 17:14:35
+
+		Test Auto-configuration Annotations			// done 2020-7-26 17:15:36
+
+		Executable Jars								// done 2020-7-26 17:22:54
+
+		Dependency Versions							// done 2020-7-26 17:25:41
+
 
 
 
