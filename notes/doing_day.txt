@@ -4084,6 +4084,14 @@
 
 	# springboot-reference-guide: https://docs.spring.io/spring-boot/docs/current/reference/html/index.html // done 2020-7-26 17:30:32
 
+2020-07-29
+
+	# jacoco: 
+
+		homepage: http://www.jacoco.org/jacoco	
+
+		github: https://github.com/jacoco/jacoco
+
 
 
 
