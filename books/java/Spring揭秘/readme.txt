@@ -33,15 +33,97 @@
 				3.2.3 元数据方式
 			3.3 小结
 		
-		第4章　Spring的IoC容器之BeanFactory　
+		第4章　Spring的IoC容器之BeanFactory　				// done 2020-8-2 17:42:58
 		
-			4.1 
+			4.1 拥有BeanFactory之后的生活
+			4.2 BeanFactory的对象注册和依赖绑定方式
+				4.2.1 直接编码方式
+				4.2.2 外部配置文件方式
+					1. Properties配置格式的加载
+					2. XML配置格式的加载
+				4.2.3 注解方式
+			4.3 BeanFactory的XML之旅
+				4.3.1 <beans>和<bean>
+					1. <beans>之唯我独尊
+					2. <description>、<import>和<alias>
+				4.3.2 孤孤单单一个人
+				4.3.3 Help Me, Help You
+					1. 构造方式注入的XML之道
+					2. setter方法注入的XML之道
+					3. <property>和<constructor-arg>中可用的配置项
+					4. depends-on
+					5. aotowire
+					6. dependency-check
+					7. lazy-init
+				4.3.4 继承？我也会！
+				4.3.5 bean的scope
+					1. singleton
+					2. protoype
+					3. request、session和global session
+					4. 自定义scope类型
+				4.3.6 工厂方法和FactoryBean
+					1. 静态工厂方法（Static Factory Method）
+					2. 非静态工厂方法（Instance Factory Method）
+					3. FactoryBean
+				4.3.7 偷梁换柱之术
+					1. 方法注入 
+					2. 殊途同归
+					3. 方法替换
+			4.4 容器背后的秘密
+				4.4.1 “战略性观望”
+					1. 容器启动阶段
+					2. Bean实例化阶段
+				4.4.2 “插手”容器的启动
+					1. PropertyPlaceholderConfigurer
+					2. PropertyOverrideConfigurer
+					3. CustomEditorConfiguer
+				4.4.3 了解Bean的一生
+					1. Bean的实例化和BeanWrapper
+					2. 各色的Aware接口
+					3. BeanPostProcessor
+					4. InitializingBean和init-method
+					5. DisposableBean和destory-method
+			4.5 小结
 
-		第5章　Spring IoC容器ApplicationContext　
-		
+		第5章　Spring IoC容器ApplicationContext　			// done 2020-8-2 19:11:29
 
+			5.1 统一资源加载策略
+				5.1.1 Spring中的Resource
+				5.1.2 ResourceLoader，更广泛的“URL”
+					1. 可用的ResourceLoader
+					2. ResourePatternResolver————批量查找的ResourceLoader
+					3. 回顾与展望
+				5.1.3 Application和ResourceLoader
+					1. 扮演ResourceLoader的角色
+					2. RsourceLoader类型的注入
+					3. Rsource类型的注入
+					4. 在特定情况下，ApplicationContext的Resource加载行为
+			5.2 国际化信息支持（I18n MessageSource）
+				5.2.1 JavaSE提供的国际化支持
+					1. Locale
+					2. ResourceBundle
+				5.2.2 MessageSource和ApplicationContext
+					1. 可用的MessageSource实现
+					2. MessageSourceAware和MessageSource的注入
+			5.3 容器内部事件发布
+				5.3.1 自定义事件发布
+				5.3.2 Spring的容器内事件发布类结构分析
+			5.4 多配置模块加载的简化
+			5.5 小结
 
-		第6章　Spring IoC容器之扩展篇　
+				ApplicationContext是Spring在BeanFactory基础容器之上，提供的另一个IoC容器实现。它拥有许多BeanFactory所没有的特性，
+				包括统一的资源加载策略、国际化信息支持、容器内事件发布以及简化的多配置文件加载功能。
+
+		第6章　Spring IoC容器之扩展篇　					// done 2020-8-2 19:29:42
+
+			6.1 Spring2.5的基于注解的依赖注入
+				6.1.1 注解版的自动绑定（@Autowired）
+					1. 从自动绑定（autowire）到@Autowired
+					2. @Qualifier的陪伴
+				6.1.2 @Autowired之外的选择————使用JSR250标注依赖注入㽑
+				6.1.3 将革命进行地更彻底一些（classpath-scanning功能介绍）
+			6.2 Spring3.0展望
+			6.3 小结
 
 	第三部分　Spring AOP框架
 
