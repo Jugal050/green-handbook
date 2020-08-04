@@ -4127,7 +4127,7 @@
 
 	# 《Spring揭秘》
 
-		第1章 Spring框架的由来 							// done 2020-8-2 10:39:09
+		第1章  Spring框架的由来 							// done 2020-8-2 10:39:09
 		第2章　IoC的基本概念　							// done 2020-8-2 11:11:26
 		第3章　掌管大局的IoC Service Provider　			// done 2020-8-2 11:26:45
 		第4章　Spring的IoC容器之BeanFactory　				// done 2020-8-2 17:42:58
@@ -4136,8 +4136,16 @@
 
 2020-8-3
 	
-	# 《Spring揭秘》		
+	# 《Spring揭秘》
+
 		第7章　一起来看AOP　								// done 2020-8-3 23:43:26
+
+2020-8-4、
+
+	# 《Spring揭秘》
+
+		第8章　Spring AOP概述及其实现机制　				// done 2020-8-4 22:14:50
+		第9章　Spring AOP一世　							// done 2020-8-5 00:04:26
 
 
 

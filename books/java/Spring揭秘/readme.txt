@@ -159,16 +159,76 @@
 					org.springframework.aop.framework.ProxyFactory
 				7.4.6 目标对象
 			7.5 小结
+
+		第8章　Spring AOP概述及其实现机制　						// done 2020-8-4 22:14:50
 		
+			8.1 Spring AOP概述
+			8.2 Spring AOP的实现机制
+				8.2.1 设计模式之代理模式
+				8.2.2 动态代理
+					java.lang.reflect.Proxy
+					java.lang.reflect.InvocationHandler
 
+					java: 
+						// To create a proxy for some interface Foo:
+				       InvocationHandler handler = new MyInvocationHandler(...);
+				       Class<?> proxyClass = Proxy.getProxyClass(Foo.class.getClassLoader(), Foo.class);
+				       Foo f = (Foo) proxyClass.getConstructor(InvocationHandler.class).
+				                       newInstance(handler);
+						   
+						// or more simply:
+				       Foo f = (Foo) Proxy.newProxyInstance(Foo.class.getClassLoader(),
+				                                            new Class<?>[] { Foo.class },
+				                                            handler);
 
-		第8章　Spring AOP概述及其实现机制　
+				8.2.3 动态字节码生成
+					net.sf.cglib.proxy.Callback
+					net.sf.cglib.proxy.MethodInterceptor
+					net.sf.cglib.proxy.Enhancer
+
+					java: org.springframework.aop.framework.CglibAopProxy#getProxy(java.lang.ClassLoader)
+						// Configure CGLIB Enhancer...
+						Enhancer enhancer = new Enhancer();
+						if (classLoader != null) {
+							enhancer.setClassLoader(classLoader);
+							if (classLoader instanceof SmartClassLoader &&
+									((SmartClassLoader) classLoader).isClassReloadable(proxySuperClass)) {
+								enhancer.setUseCache(false);
+							}
+						}
+						enhancer.setSuperclass(proxySuperClass);
+						enhancer.setInterfaces(AopProxyUtils.completeProxiedInterfaces(this.advised));
+						enhancer.setNamingPolicy(SpringNamingPolicy.INSTANCE);
+						enhancer.setStrategy(new ClassLoaderAwareGeneratorStrategy(classLoader));
+
+						Callback[] callbacks = getCallbacks(rootClass);
+						Class<?>[] types = new Class<?>[callbacks.length];
+						for (int x = 0; x < types.length; x++) {
+							types[x] = callbacks[x].getClass();
+						}
+						// fixedInterceptorMap only populated at this point, after getCallbacks call above
+						enhancer.setCallbackFilter(new ProxyCallbackFilter(
+								this.advised.getConfigurationOnlyCopy(), this.fixedInterceptorMap, this.fixedInterceptorOffset));
+						enhancer.setCallbackTypes(types);
+
+						// Generate the proxy class and create a proxy instance.
+						enhancer.setInterceptDuringConstruction(false);
+						enhancer.setCallbacks(callbacks);
+						return (this.constructorArgs != null && this.constructorArgTypes != null ?
+								enhancer.create(this.constructorArgTypes, this.constructorArgs) :
+								enhancer.create());
+
+			8.3 小结 
+
+		第9章　Spring AOP一世　							// done 2020-8-5 00:04:26
 		
-
-
-		第9章　Spring AOP一世　
-		
-
+			9.1 Spring AOP中的Joinpoint
+			9.2 Spring AOP中的Pointcut
+			9.3 Spring AOP中的Advice
+			9.4 Spring AOP中的Aspect
+			9.5 Spring AOP中的织入
+			9.6 TargetSource
+			9.7 小结
 
 		第10章　Spring AOP二世　
 		
