@@ -4147,6 +4147,32 @@
 		第8章　Spring AOP概述及其实现机制　				// done 2020-8-4 22:14:50
 		第9章　Spring AOP一世　							// done 2020-8-5 00:04:26
 
+2020-8-5
+
+	# 解析wsdl文件: 
+
+		wsdl4j:
+
+			https://blog.csdn.net/zhangzhuoyang/article/details/51898437
+
+		spring-ws:
+
+			https://docs.spring.io/spring-ws/docs/3.0.9.RELEASE/reference/	
+		
+				4.3. Handling XML With XPath
+
+	# spring-ws: https://docs.spring.io/spring-ws/docs/3.0.9.RELEASE/reference/	
+	
+		Preface
+		I. Introduction
+		II. Reference
+			4. Shared Components 						// done 2020-8-6 00:00:24
+				
+
+			
+
+
+
 
 
 

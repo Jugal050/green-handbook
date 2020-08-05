@@ -60,7 +60,9 @@ doing：
 
 	《数据库系统概念》													// doing start: 2019-10-5 10:00:46
 		
-	The Java EE Tutorial: https://docs.oracle.com/javaee/7/tutorial/index.html 		// start 2020-4-4 11:29:31		
+	The Java EE Tutorial: https://docs.oracle.com/javaee/7/tutorial/index.html 		// start 2020-4-4 11:29:31	
+
+	spring-ws: https://docs.spring.io/spring-ws/docs/3.0.9.RELEASE/reference/		// start 2020-8-5 22:01:31	
 
 todo:
 
