@@ -224,10 +224,172 @@
 		
 			9.1 Spring AOP中的Joinpoint
 			9.2 Spring AOP中的Pointcut
+				9.2.1 常见的Pointcut
+					1. NameMatchMethodPointcut
+					2. JdkRegexpMethodPointcut和Perl5RegexpMethodPointcut
+					3. AnnotationMatchingPointcut
+					4. ComposablePointcut
+					5. ControlFlowPointcut
+				9.2.2 扩展Pointcut（Customize Pointcut）
+					1. 自定义StaticMethodMatcherPointcut
+					2. 自定义DynamicMethodMatcherPointcut
+				9.2.3 IoC容器中的Pointcut
 			9.3 Spring AOP中的Advice
+				9.3.1 per-class类型的Advice
+					1. Before Advice
+					2. ThrowsAdvice
+					3. AfterReturningAdvice
+				9.3.2 per-instance类型的Advice
 			9.4 Spring AOP中的Aspect
+				9.4.1 PointcutAdvisor家族
+					1. DefaultPointcutAdvisor
+					2. NameMatchMethodPointcutAdvisor
+					3. RegexpMethodPointcutAdvisor
+					4. DefaultBeanFactoryPointcutAdvisor
+				9.4.2 IntrodoctionAdvisor分支
+				9.4.3 Ordered的作用
 			9.5 Spring AOP中的织入
+				9.5.1 如何与ProxyFactory打交道
+					1. 基于接口的代理
+						
+						public interface ITask {
+							void execute(TaskExecutionContext ctx);
+						}
+
+						public class MockTask implements ITask {
+							public void execute(TaskExecutionContext ctx) {
+								System.out.println("task executed");
+							}
+						}
+
+						public class PerformanceMethodInterceptor implements MethodInterceptor {
+							public static final Logger logger = LoggerFactory.getLogger(PerformanceMethodInterceptor.class);
+							public Object invoke(MethodInvocation invocation) throws Throwable {
+								StopWatch watch = new StopWatch();
+								try {
+									watch.start();
+									return invocation.proceed();
+								} finally {
+									watch.stop();
+									if (logger.isInfoEnabled()) {
+										logger.info(watch.toString());
+									}
+								}
+							}
+						}
+
+						// 实现了某个接口时，默认采用基于接口的动态代理。
+
+							MockTask task = new MockTask();
+							ProxyFactory weaver = new ProxyFactory(task);
+							// weaver.setInterfaces(new class[]{ITask.class});
+							NameMatchMethodPointcutAdvisor advisor = new NameMatchMethodPointcutAdvisor();
+							advisor.setMappedName("execute");
+							advisor.setAdvice(new PerformanceMethodInterceptor());
+							weaver.addAdvisor(advisor);
+							ITask proxyObject = (ITask)weaver.getProxy();
+							proxyObject.execute(null);
+
+					2. 基于类的代理
+
+						public class Executable {
+							public void execute() {
+								System.out.println("Executable without any Interfaces");
+							}
+						}
+
+
+						// 默认没有实现任何接口时，默认采用基于类的代理-CGLIB代理：
+
+							ProxyFactory weaver = new ProxyFactory(new Executable());
+							NameMatchMethodPointcutAdvisor advisor = new NameMatchMethodPointcutAdvisor();
+							advisor.setMappedName("execute");
+							advisor.setAdvice(new PerformanceMethodInterceptor());
+							weaver.addAdvisor(advisor);
+							Executable proxyObject = (Executable)weaver.getProxy();
+							proxyObject.execute(null);
+							System.out.println(proxyObject.getClass());
+
+						// 实现了某个接口时，通过proxyTargetClass属性强制proxyFactory采用基于类的代理
+
+							MockTask task = new MockTask();
+							ProxyFactory weaver = new ProxyFactory(task);
+							// weaver.setInterfaces(new class[]{ITask.class});
+							weaver.setProxyTargetClass(true);
+							NameMatchMethodPointcutAdvisor advisor = new NameMatchMethodPointcutAdvisor();
+							advisor.setMappedName("execute");
+							advisor.setAdvice(new PerformanceMethodInterceptor());
+							weaver.addAdvisor(advisor);
+							MockTask proxyObject = (MockTask)weaver.getProxy();
+							proxyObject.execute(null);
+							System.out.println(proxyObject.getClass());
+
+						// 满足以下任一条件，则创建CGLIB代理：
+							1. the optimize flag is set
+							2. the proxyTargetClass flag is set
+							3. no proxy interfaces have been specified
+
+				9.5.2 看清ProxyFactory的本质
+
+					public class DefaultAopProxyFactory implements AopProxyFactory, Serializable {
+
+						/**
+						 * Whether this environment lives within a native image.
+						 * Exposed as a private static field rather than in a {@code NativeImageDetector.inNativeImage()} static method due to https://github.com/oracle/graal/issues/2594.
+						 * @see <a href="https://github.com/oracle/graal/blob/master/sdk/src/org.graalvm.nativeimage/src/org/graalvm/nativeimage/ImageInfo.java">ImageInfo.java</a>
+						 */
+						private static final boolean IN_NATIVE_IMAGE = (System.getProperty("org.graalvm.nativeimage.imagecode") != null);
+
+
+						@Override
+						public AopProxy createAopProxy(AdvisedSupport config) throws AopConfigException {
+							if (!IN_NATIVE_IMAGE &&
+									(config.isOptimize() || config.isProxyTargetClass() || hasNoUserSuppliedProxyInterfaces(config))) {
+								Class<?> targetClass = config.getTargetClass();
+								if (targetClass == null) {
+									throw new AopConfigException("TargetSource cannot determine target class: " +
+											"Either an interface or a target is required for proxy creation.");
+								}
+								if (targetClass.isInterface() || Proxy.isProxyClass(targetClass)) {
+									return new JdkDynamicAopProxy(config);
+								}
+								return new ObjenesisCglibAopProxy(config);
+							}
+							else {
+								return new JdkDynamicAopProxy(config);
+							}
+						}
+
+						/**
+						 * Determine whether the supplied {@link AdvisedSupport} has only the
+						 * {@link org.springframework.aop.SpringProxy} interface specified
+						 * (or no proxy interfaces specified at all).
+						 */
+						private boolean hasNoUserSuppliedProxyInterfaces(AdvisedSupport config) {
+							Class<?>[] ifcs = config.getProxiedInterfaces();
+							return (ifcs.length == 0 || (ifcs.length == 1 && SpringProxy.class.isAssignableFrom(ifcs[0])));
+						}
+
+					}
+
+				9.5.3 容器中的织入器————ProxyFactoryBean
+					1. ProxyFactoryBean的本质
+					2. ProxyFactoryBean的使用
+				9.5.4 加快织入的自动化进程
+					1. 自动代理得以实现的原理
+						BeanPostProcessor
+					2. 可用的AutoProxyCreator
+						- BeanNameAutoProxyCreator
+						- DefaultAdvisorAutoProxyCreator
 			9.6 TargetSource
+				9.6.1 可用的TargetSource实现类
+					1. SingletonTargetSource
+					2. PrototypeTargetSource
+					3. HotSwappableTargetSource
+					4. CommonsPoolTargetSource
+					5. ThreadLocalTargetSource
+				9.6.2 如何自定义TargetSource
+					class XXX extends TargetSource	
 			9.7 小结
 
 		第10章　Spring AOP二世　
