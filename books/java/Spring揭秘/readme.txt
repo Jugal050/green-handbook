@@ -392,15 +392,148 @@
 					class XXX extends TargetSource	
 			9.7 小结
 
-		第10章　Spring AOP二世　
+		第10章　Spring AOP二世　							// done 2020-8-9 14:33:38
 		
+			10.1 @AspectJ形式的Spring AOP
 
+				10.1.1 @Aspect形式AOP使用之先睹为快
+					1. 编程方式织入
+						AspectJProxyFactory factory = new AspectJProxyFactory();
+						factory.setProxyTargetClass(true);
+						factory.setTarget(new Foo());
+						factory.addAspect(PerformanceTraceAspect.class);
+						Object proxy = factory.getProxy();
+						((Foo)proxy).method1();
+						((Foo)proxy).method2();
+					2. 通过自动代理织入
+						<bean class="org.springframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator">
+							<property name="proxyTargetClass" value="true"></property>
+						</bean>
+						<bean id="performanceAspect" class="...PerformanceTraceAspect"></bean>
+						<bean id="target" class="...Foo">
+				10.1.2 @Aspect形式的Pointcut
+					1. @Aspect形式Pointcut的声明方式
+					2. @Aspect形式Pointcut表达式的标识符
+						-execution
+						-within
+						-this、target
+						-args
+						-@within
+						-@annotation
+					3. @Aspect形式Pointcut在SpringAOP中的真实面目
+						Pointcut: AspectJExpressionPointcut
+				10.1.3 @Aspect形式的Advice
+					1. Before Advice: org.aspectj.lang.annotation.Before
+					2. After Throwing Advice: org.aspectj.lang.annotation.AfterThrowing
+					3. After Returning Advice: org.aspectj.lang.annotation.AfterReturning
+					4. After (Finally) Advice: org.aspectj.lang.annotation.After
+					5. Around Advice: org.aspectj.lang.annotation.Around
+					6. Introduction: org.aspectj.lang.annotation.DeclearParents
+				10.1.4 @AspectJ中的Aspect更多话题
+					1. Advice的执行顺序
+					2. Aspect的实例化模式	
 
-		第11章　AOP应用案例　
+			10.2 基于Schema的AOP
+
+				10.2.1 基于Schema的AOP配置概览
+					<aop:config proxy-target-class="true">
+						<aop:pointcut/>
+						<aop:advisor/>
+						<aop:aspect></aop:aspect>
+					</aop:config>
+				10.2.2 向基于Schema的AOP迁移
+					1. 单纯的迁移
+					2. 深入挖掘<aop:advisor>
+				10.2.3 @Aspect到“基于Schema的AOP”迁移
+					1. 基于Schema的Aspect声明
+					2. 基于Schema的Pointcut声明
+					3. 基于Schema的Advice声明
+						<aop:aspect id="myaspect" ref="genericSchemaBaseAspect" order="2">
+							<aop:pointcut id="privatePointcut" expression="execution(public void *.doSth())"/>
+							<aop:before pointcut-ref="privatePointcut" method="doBefore"/>
+							<aop:after-returning pointcut-ref="privatePointcut" method="doAfterReturning" returning="retValue"/>
+							<aop:after-throwing pointcut-ref="privatePointcut" method="doAfterThrowing" throwing="e"/>
+							<aop:after pointcut-ref="privatePointcut" method="doAfter"/>
+							<aop:around pointcut-ref="privatePointcut" method="doProfile"/>
+							<aop:declear-parents types-matching="...*" implement-interface="...ICounter" default-impl="...CounterImpl">
+						</aop:aspect>
+					4. 其他需要关注的地方
+						- Advice的参数化
+						- Advcie的执行顺序
+						- Advcie的实例化模式
+
+			10.3 小结
+				三种Spring AOP的使用方式
+					- Spring AOP 1.x基于接口定义的Advice声明方式
+					- @AspectJ形式的AOP，注解方式
+					- 基于Schema的AOP，XML+注解
+
+		第11章　AOP应用案例　								// done 2020-8-9 14:53:23
+
+			11.1 异常处理
+				11.1.1 Java异常处理
+					Java异常类型：
+						- unchecked exception: 编译器不会对这些类型的异常进行编译期检查。
+							java.lang.Error, java.lang.RuntimeException及其子类
+							
+						- checked exception: 编译期会对这些类型的异常进行编译期检查，如果有方法抛出该类异常，调用程序必须对这些异常进行处理。
+							java.lang.Exception及其子类，除去java.lang.RuntimeException分支
+
+				11.1.2 Fault Barrier
+
+			11.2 安全检查
+
+				Spring Security
+
+			11.3 缓存
+
+			11.4 小结
 		
+		第12章　Spring AOP之扩展篇　						// done 2020-8-9 15:05:22
 
+			12.1 有关公开当前调用的代理对象的探讨
 
-		第12章　Spring AOP之扩展篇　
+				12.1.1 问题的现象
+
+					public class NestableInvocationBO {
+
+						public void method1() {
+							method2();
+							System.out.println("method1 executed");
+						}
+
+						public void method2() {
+							System.out.println("method2 executed");
+						}
+
+					}
+
+					如果定义Aspect进行横切拦截，当执行method1的时候，只有method1会拦截成功，method1中的method2方法执行没有被拦截。
+
+				12.1.2 原因的分析
+
+					Spring AOP的实现机制造成的。 Spring AOP采用代理模式实现AOP，具体的横切逻辑会被添加到动态生成的代理对象中，只要调用的是目标对象的代理
+					对象上的方法，通常就可以保证目标对象上的方法执行可以被拦截。 但代理的执行，终归要调用目标对象上的同一方法来执行最初所定义的方法逻辑。
+					如果目标对象中原始方法调用依赖于其他对象，那没问题，可以为目标对象注入所依赖对象的代理，保证响应的Joinpoint被拦截并织入横切逻辑。而一旦
+					目标对象中的原始方法调用直接调用自身方法的时候，也就是说，它依赖于自身所定义的其他方法的时候，问题就来了。
+
+				12.1.3 解决方案
+					
+					public class NestableInvocationBO {
+
+						public void method1() {
+							((NestableInvocationBO)AopContext.currentProxy()).method2();
+							System.out.println("method1 executed");
+						}
+
+						public void method2() {
+							System.out.println("method2 executed");
+						}
+
+					}	
+
+			12.2 小结
+
 
 	第四部分　使用Spring访问数据
 
