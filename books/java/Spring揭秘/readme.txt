@@ -539,17 +539,210 @@
 
 		第13章　统一的数据访问异常层次体系　					// done 2020-8-10 21:00:00
 		
+			13.1 DAO模式的背景
 
+			13.2 梦想照进现实
+
+			13.3 发现问题，解决问题
+
+			13.4 不重复发明轮子
+
+			13.5 小结
 
 		第14章　JDBC API的最佳实践　							// done 2020-8-10 22:39:32
 		
+			14.1 基于Template的JDBC使用方式
 
+				14.1.1 JDBC的尴尬
+				14.1.2 JdbcTemplate的诞生
+					1. 模板方法模式简介
+					2. JdbcTemplate的演化
+					3. 使用DataSourceUtils进行Connection的管理
+					4. 使用NativeJdbcExtractor来获得“真相”
+					5. 控制JdbcTemplate的行为
+					6. SQLException到DataAccessException体系的转译
+				14.1.3 JdbcTemplate和它的兄弟们
+					1. 使用JdbcTemplate进行数据访问
+					2. NamedParameterJdbcTemplate
+					3. SimpleJdbcTemplate
+				14.1.4 Spring中的DataSource
+					1. DataSource的种类
+					2. DataSource的访问方式
+					3. 自定义DataSource实现
+				14.1.5 JdbcDaoSupport
+
+			14.2 基于操作对象的JDBC使用方式
+
+				14.2.1 基于操作对象的查询
+					1. MappingSqlQueryWithParameters
+					2. MappingSqlQuery
+					3. SqlFunction
+					4. UpdatableSqlQuery
+					5. 基于操作对象的LOB查询
+				14.2.2 基于操作对象的更新
+					1. SqlUpdate
+					2. BatchSqlUpdate
+					3. 基于操作对象的LOB更新
+				14.2.3 基于操作对象的存储过程调用
+
+			14.3 小结	
+			
 
 		第15章　Spring对各种ORM的集成　						// done 2020-8-10 23:17:12
 		
+			15.1 Spring对Hibernate的集成
 
+				15.1.1 旧日“冬眠”时光
+				15.1.2 “春天”里的“冬眠”
+					1. HibernateTemplate的登场
+					2. Spring中的SessionFactory的配置及获取
+					3. HibernateDaoSupport
+
+			15.2 Spring对iBatis的集成
+
+				15.2.1 iBatis实践之“前生”篇
+				15.2.2 iBatis实践之“今世”篇
+					1. SqlMapClientTemplate的实现
+					2. SqlMapClientTemplate的使用
+					3. SqlMapClientDaoSupoort
+
+			15.3 Spring对其他ORM方案的集成概述
+
+				15.3.1 Spring对JDO的集成
+					1. Spring中的JDO资源管理
+					2. Spring中的JDO异常转译
+					3. JdoDaoSupport
+				15.3.2 Spring对TopLink的集成
+					1. Spring中的TopLink资源管理
+					2. TopLink数据访问异常到Spring异常体系的转译
+					3. TopLinkDaoSupport
+				15.3.3 Spring对JPA的集成
+					1. Spring中JPA的资源管理	
+					2. Spring中JPA的异常转译
+
+			15.4 小结		
 
 		第16章　Spring数据访问之扩展篇　						// done 2020-8-10 23:26:13
+
+			16.1 活用模板方法模式及Callback
+				16.1.1 FtpClientTemplate
+				16.1.2 HttpClientTemplate
+
+			16.2 数据访问中多数据源
+				
+				16.2.1 “主权独立”的多数据源
+
+					`xml:
+
+						<bean id="mainDataSource" class="org.apache.commons.dbcp.BasicDataSource" destory-method="close">
+							<property name="url" value="..." />
+							<property name="driverClassName" value="..." />
+							<property name="username" value="..." />
+							<property name="password" value="..." />
+							<!-- other property settings -->
+						</bean>
+
+						<bean id="infoDataSource" class="org.apache.commons.dbcp.BasicDataSource" destory-method="close">
+							<property name="url" value="..." />
+							<property name="driverClassName" value="..." />
+							<property name="username" value="..." />
+							<property name="password" value="..." />
+							<!-- other property settings -->
+						</bean>
+
+						<bean id="mainJdbcTemplate" class="org.springframework.jdbc.core.JbdcTemplate">
+							<property name="dataSource" ref="mainDataSource">
+						</bean>
+
+						<bean id="infoJdbcTemplate" class="org.springframework.jdbc.core.JbdcTemplate">
+							<property name="dataSource" ref="infoDataSource">
+						</bean>
+
+						<bean id="dataAccessResourceSupport" abastract="true">
+							<property name="mainJdbcTemplate" ref="mainJdbcTemplate" />
+							<property name="infoJdbcTemplate" ref="infoJdbcTemplate" />
+						<bean/>
+
+						<bean id="someDaoWithMainDS" class="...">
+							<property name="mainJdbcTemplate" ref="mainJdbcTemplate" />
+						</bean>
+
+						<bean id="someDaoWithInfoDS" class="...">
+							<property name="infoJdbcTemplate" ref="infoJdbcTemplate" />
+						</bean>
+
+						<bean id="someDaoWithBothDS" parent="dataAccessResourceSupport">
+						</bean>
+
+				16.2.2 “合纵连横”的多数据源
+
+					`java:
+
+						public class PrototypeLoadBalanceDataSource extends AbstractRoutingDataSource {
+
+							private Lock lock = new ReentrantLock();
+							private int counter = 0;
+							private int dataSourceNumber = 3;
+
+							@Override
+							public Object determineCurrentLookupKey() {
+								lock.lock();
+								try {
+									counter++;
+									int lookupKey = counter % getDataSourceNumber();
+									return new Integer(lookupKey);
+								} finally {
+									lock.unlock();
+								}
+							}
+							// ...
+						}
+
+					`xml:	
+
+						<bean id="dataSource1" class="org.apache.commons.dbcp.BasicDataSource" destory-method="close">
+							<property name="url" value="..." />
+							<property name="driverClassName" value="..." />
+							<property name="username" value="..." />
+							<property name="password" value="..." />
+							<!-- other property settings -->
+						</bean>
+
+						<bean id="dataSource2" class="org.apache.commons.dbcp.BasicDataSource" destory-method="close">...</bean>
+
+						<bean id="dataSource3" class="org.apache.commons.dbcp.BasicDataSource" destory-method="close">...</bean>
+
+						<util:map id="dataSources">
+							<entry key="0" value-ref="dataSource1" />
+							<entry key="1" value-ref="dataSource2" />
+							<entry key="2" value-ref="dataSource3" />
+						</util:map>
+
+						<bean id="dataSourceLookup" class="org.springframework.jdbc.datasource.lookup.MapDataSourceLookup">
+							<contructor-arg>
+								<ref bean="dataSource">
+							</contructor-arg>
+						</bean>
+
+						<bean id="dataSource" class="...PrototypeLoadBalanceDataSource">
+							<property name="defaultTargetDataSource" ref="dataSource1" />
+							<property name="targetDataSource" ref="dataSources" />
+							<property name="dataSourceLookup" ref="dataSourceLookup" />
+						</bean>
+
+						<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JbdcTemplate">
+							<property name="dataSource" ref="dataSource">
+						</bean>
+
+						<bean id="someDao" class="...SomeDaoImpl">
+							<property name="jdbcTemplate" ref="jdbcTemplate" />
+						</bean>
+
+				16.2.3 结束语
+
+			16.3 Spring3.0展望
+
+			16.4 小结
 
 	第五部分　事务管理
 
