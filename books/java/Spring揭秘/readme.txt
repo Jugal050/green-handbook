@@ -746,19 +746,209 @@
 
 	第五部分　事务管理 										// done 2020-8-11 23:54:15
 
-		第17章　有关事务的楔子　								
+		第17章　有关事务的楔子　								// done 2020-8-12 21:08:30						
 
+			17.1 认识事物本身
 
-		第18章　群雄逐鹿下的Java事务管理　						
+				事务： 以可控的方式对数据资源进行访问的一组操作。
 
+				属性：
+
+					原子性（Atomicity）： 事务所包含的全部操作是一个不可分割的整体，要么全部成功，要失败就全部失败。
+
+					一致性（Consistency）： 数据资源在事务执行前后都保持数据间的一致性状态。
+
+					隔离性（Isolation）： 规定了各个事务之间互相影响的程度。
+
+						隔离级别：
+
+							read uncommited: 一个事务可以读取另一个事务未提交的更新结果。问题：脏读、幻读、不可重复读
+
+							read commited: 一个事务的更新操作只有在该事务提交之后，另一个事务才可能读取到更新后的结果。问题：幻读、不可重复读（Oracle的默认隔离级别）
+
+							repeatable read: 保证在整个事务的过程中，对同一笔数据的读取结果是相同的，不管其他事务是否同时在对同一笔数据进行更新，以及事务是否提交。 问题：幻读（MySQL的默认隔离级别）
+
+							serializable: 所有的事务操作依次顺序执行。
+
+						tips:	
+
+							Oracle只支持READ COMMITTED 和 SERIALIZABLE这两种事务隔离级别。所以Oracle不支持脏读。 MySQL支持以上4种隔离级别。
+
+						并发问题：	
+
+							脏读： 如果一个事务对数据进行更新，但未提交事务，另一个事务就可以看到该事务未提交的更新结果。事务回滚之后，第二个事务读取的数据是笔脏数据。
+
+							幻读： 同一个查询在整个事务过程中多次执行后，查询所得的结果集不一样，针对的是多笔记录。
+
+							不可重复读： 同一个事务在整个事务过程中对同一笔数据进行读取，每次读取结果不同。
+
+					持久性（Durability）： 一旦整个事务提交成功，对数据所做的变更将被记载并不可逆转。
+
+			17.2 初始事务家族成员
+
+			17.3 小结	
+
+		第18章　群雄逐鹿下的Java事务管理　						// done 2020-8-12 21:12:49
+
+			18.1 Java平台的局部事务支持
+
+			18.2 Java平台的分布式事务支持
+
+				18.2.1 基于JTA的分布式事务管理
+
+				18.2.2 基于JCA的分布式事务管理
+
+			18.3 继续前行之前的反思
+
+				1. 局部事务的管理绑定到了具体的数据访问方式
+
+				2. 事务的异常处理
+
+				3. 事务处理API的多样性
+
+				4. CMT声明式事务的局限
+
+			18.4 小结	
 
 		第19章　Spring事务王国的架构　						
 		
+			19.1 统一中原的过程
 
-		第20章　使用Spring进行事务管理　						
+				核心接口： org.springframework.transaction.PlatformTransactionManager
 
+			19.2 和平时代
 
-		第21章　Spring事务管理之扩展篇　						
+				19.2.1 TransactionDefinition
+
+					1. TransactionDefinition简介: 具体细节参考spring-refrence-guide
+
+						隔离级别：#getIsolationLevel
+
+							ISOLATION_DEFAULT:
+
+							ISOLATION_READ_UNCOMMITTED:
+
+							ISOLATION_READ_COMMITTED:
+
+							ISOLATION_REPEATABLE_READ:
+
+							ISOLATION_SERIALIZABLE:
+
+						传播行为：#getPropagationBehavior
+
+							PROPAGATION_REQUIRED: 
+
+							PROPAGATION_SUPPORTS:
+
+							PROPAGATION_MANDATORY:
+
+							PROPAGATION_REQUIRES_NEW:
+
+							PROPAGATION_NOT_SUPPORTED:
+
+							PROPAGATION_NEVER:
+
+							PROPAGATION_NESTED:
+
+						超时时间：#getTimeout
+
+							TIMEOUT_DEFAULT = -1
+
+						是否只读：#isReadOnly
+
+					2 TransactionDefinition相关实现
+
+						默认实现类： org.springframework.transaction.support.DefaultTransactionDefinition
+
+						编程式事务管理的模板方法类： org.springframework.transaction.support.TransactionTemplate
+
+						声明式事务管理类： org.springframework.transaction.interceptor.TransactionAttribute
+
+							默认实现： org.springframework.transaction.interceptor.DefaultTransactionAttribute
+
+				19.2.2 TransactionStatus
+				
+				19.2.3 PlatformTransactionManager
+
+					1. PlatformTransactionManager实现类概览
+
+					2. 窥一斑而知全豹
+
+			19.3 小结
+
+		第20章　使用Spring进行事务管理　						// done 2020-8-12 22:25:30						
+
+			20.1 编程式事务管理
+
+				20.1.1 直接使用PlatformTransactionManager进行编程式事务管理
+
+				20.1.2 使用TransactionTemplate进行编程式事务管理
+
+				20.1.3 编程创建基于Savapoint的嵌套事务
+
+			20.2 声明式事务管理
+
+				20.2.1 引子
+
+				20.2.2 XML元数据驱动的声明式事务
+
+					1. 使用ProxyFactory(ProxyFactoryBean) + TransactionInterceptor
+
+					2. 使用“一站式”的TransactionProxyFactoryBean
+
+					3. 使用BeanNameAutoProxyCreator
+
+					4. 使用Spring2.0的声明事务配置方式
+
+				20.2.3 注解元数据驱动的声明式事务
+
+					@Transactional
+
+					xml: <tx:annotation-driven transaction-manager="transactionManager">	
+
+			20.3 小结
+
+		第21章　Spring事务管理之扩展篇　						// done 2020-8-12 23:25:12				
+
+			21.1 理解并活用ThreadLocal
+
+				21.1.1 理解ThreadLocal的存在背景
+
+					目的： 通过避免对象的共享来保证应用程序实现中的线程安全。
+
+				21.1.2 理解ThreadLocal的实现
+
+				21.1.3 ThreadLocal的应用场景
+
+					- 管理应用程序实现中的线程安全： 对于某些有状态的或者非线程安全的对象，在多线程程序中为每个线程都分配相应的副本，而不是让多线程共享该对象。
+
+						如： JDBC中的Connection
+
+					- 实现当前程序执行流程内的数据传递
+
+						如： 跟踪线程内的日志序列。
+
+					- 某些情况下的性能优化： 有些情况下，系统中一些没有必要共享的对象被设置成了共享，为了保证应用程序的线程安全以及对象状态的正确，我们往往就得通过同步
+					等方式对多线程的访问进行管理和控制。
+
+					- per-thread Singleton： 当某些资源的初始化代价有些大，并且整个执行流程中还会多次访问，为了避免在访问时每次都需要去初始化该资源，可以第一次初始化
+					完成之后，直接通过ThreadLocal将其绑定到当前线程，之后，所有对该资源的访问都从当前线程获取即可。
+
+				21.1.4 使用ThreadLocal管理多数据源切换的条件
+				
+			21.2 谈Strategy模式在开发过程中的应用
+			
+				- 本部分的事务抽象框架
+
+				- Ioc bean实例化策略： InstantiationStrategy -> CglibSubclassingInstantiationStrategy | SimpleInstantiationStrategy
+
+				- Spring Validation框架： Validator -> ... | ...
+
+				- jakarta commons logging: Log -> Jdk14Logger | Log4jLogger | SimpleLog
+
+			21.3 Spring与JTA背后的奥秘
+			
+			21.4 小结	
 
 	第六部分　Spring的Web MVC框架
 
