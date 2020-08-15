@@ -950,14 +950,79 @@
 			
 			21.4 小结	
 
-	第六部分　Spring的Web MVC框架
+	第六部分　Spring的Web MVC框架 							
 
-		第22章　迈向Spring MVC的旅程　
+		第22章　迈向Spring MVC的旅程　						// done 2020-8-15 11:32:56	
 		
+			22.1 Servlet独行天下的时代
+
+			22.2 繁盛一时的JSP时代
+
+			22.3 Servlet与JSP的结盟
+
+			22.4 数英雄人物，还看今朝
+
+				请求驱动的Web框架： Struts, WebWork, Spring MVC
+
+				事件驱动的Web框架： Tapestry, JSF
+
+			22.5 小结
 
 
-		第23章　Spring MVC初体验　
-		
+		第23章　Spring MVC初体验　							// done 2020-8-15 13:04:46
+
+			23.1 鸟瞰Spring MVC
+
+				DispatcherServlet的处理流程：
+
+					1. HandlerMapping先生（Web请求的处理协调人）
+
+					2. org.springframework.web.servlet.Controller（Web请求的具体处理者）
+
+					3. ViewResolver和View（视图独立战争的领导者）
+
+
+				DispatcherServlet 		HandlerMapping 		Controller 					ViewResolver 		View
+
+						1.getHandler(request)
+							_________\
+
+							return Controller
+							_ _ _ _ _ _
+							\
+
+							2.handlerRequest(request, response)
+						________________________________________\	
+
+																2.1 new()
+																___________\ ModelAndView
+					
+								return ModelAndView
+						/_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+
+							3. resolveViewName(viewName.Locale)
+						_______________________________________________________________________\
+
+								return view
+						/_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+														4. render(model, request, response)
+						_______________________________________________________________________________________\
+
+
+
+			23.2 实践出真知
+
+				23.2.1 Spring MVC 应用的物理结构
+
+					1. ContextLoaderListener与/WEB-INF/applicationContext.xml
+
+					2. DispatcherServlet与XXX-servlet.xml
+
+				23.2.2 按部就班的开始工作
+			
+			23.3 小结
 
 
 		第24章　近距离接触Spring MVC主要角色　
