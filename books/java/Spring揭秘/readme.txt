@@ -1025,9 +1025,105 @@
 			23.3 小结
 
 
-		第24章　近距离接触Spring MVC主要角色　
-		
+		第24章　近距离接触Spring MVC主要角色　 					// doen 2020-8-18 00:14:22
 
+			24.1 忙碌的协调人 HandlerMapping
+
+				24.1.1 可用的 HandlerMapping
+
+				24.1.2 HandlerMapping执行序列（Chain of HandlerMapping）
+
+			24.2 我们的亲密伙伴 Controller
+
+				24.2.1 AbstractController
+				
+				24.2.2 MultiActionController
+				
+				24.2.3 SimpleFormController
+				
+					1. 了解数据绑定
+
+						org.springframework.beans.BeanWrapperImpl
+
+						java.beans.PropertyEditor
+
+						org.springframework.validation.DataBinder
+
+					2. 	Spring框架数据验证简介
+
+						org.springframework.validation.Validator
+
+						org.springframework.validation.Errors
+
+				24.2.4 AbstractWizardFormController
+				
+				24.2.5 其他可用的Controller实现
+
+			24.3 ModelAndView
+
+				24.3.1 ModelAndView中的视图信息
+
+					org.springframework.web.servlet.View
+
+				24.3.2 ModelAndView中的数据模型
+
+					org.springframework.ui.ModelMap
+
+			24.4 视图定位器 ViewResolver
+
+				24.4.1 可用的ViewResolver实现类
+
+					1. 面向单一视图类型的ViewResolver
+
+						org.springframework.web.servlet.view.InternalResourceViewResolver
+
+						org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver
+
+						org.springframework.web.servlet.view.groovy.GroovyMarkupViewResolver
+
+						org.springframework.web.servlet.view.xslt.XsltViewResolver
+
+					2. 面向多视图类型的ViewResolver
+
+						org.springframework.web.servlet.view.ResourceBundleViewResolver
+
+						org.springframework.web.servlet.view.XmlViewResolver
+
+						org.springframework.web.servlet.view.BeanNameViewResolver
+				
+				24.4.2 ViewResolver查找序列（Chain of ViewResolver）
+				
+			24.5 各司其职的 View
+
+				24.5.1 View实现原理回顾
+
+				24.5.2 可用的View实现类
+
+					1. 使用JSP技术的View实现
+
+						org.springframework.web.servlet.view.InternalResourceView
+
+						org.springframework.web.servlet.view.JstlView
+
+						org.springframework.web.servlet.view.tiles3.TilesView
+
+					2. 使用通用模板技术的View实现
+
+						org.springframework.web.servlet.view.freemarker.FreeMarkerView
+
+						org.springframework.web.servlet.view.groovy.GroovyMarkupView
+
+					3. 使用二进制文档格式的View实现
+
+						org.springframework.web.servlet.view.document.AbstractPdfView
+
+						org.springframework.web.servlet.view.document.AbstractXlsView
+
+						org.springframework.web.servlet.view.document.AbstractXlsxView
+
+				24.5.3 自定义View实现
+
+			24.6 小结
 
 		第25章　认识更多Spring MVC家族成员　
 		
