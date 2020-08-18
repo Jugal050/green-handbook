@@ -1125,13 +1125,55 @@
 
 			24.6 小结
 
-		第25章　认识更多Spring MVC家族成员　
+		第25章　认识更多Spring MVC家族成员　					// done 2020-8-18 23:13:45
 		
+			25.1 文件上传与MultipartResolver
+				
+				25.1.1 使用MultipartResolver进行文件上传的简单分析
 
+				25.1.2 文件上传实践
+
+			25.2 Handler与HandlerAdaptor
+
+				25.2.1 问题的起源
+
+				25.2.2 深入了解Handler
+
+				25.2.3 近看HandlerAdaptor的奥秘
+
+				25.2.4 告知Handler与HandlerAdapator的存在
+
+			25.3 框架内处理流程拦截与HandlerInterceptor
+
+				25.3.1 可用的HandlerInterceptor实现
+
+				25.3.2 自定义实现HandlerInterceptor
+
+				25.3.3 HandlerInterceptor寻根
+
+				25.3.4 HandlerInterceptor之外的选择
+
+			25.4 框架内的异常处理与HandlerExceptionResolver
+
+			25.5 国际化视图与LocaleResolver
+
+				25.5.1 可用的LocaleResolver
+
+				25.5.2 LocaleResolver的足迹
+
+				25.5.3 Locale的变更与LocalChangeHandler
+
+			25.6 主题（Theme）与ThemeResolver
+			
+				25.6.1 提供主题资源的ThemeSource
+
+				25.6.2 管理主题的ThemeResolver
+
+				25.6.3 切换主题的ThemeChangeInterceptor
+
+			25.7 小结
 
 		第26章　Spring MVC中基于注解的Controller　
-		
-
 
 		第27章　Spring MVC之扩展篇　
 
