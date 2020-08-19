@@ -950,7 +950,7 @@
 			
 			21.4 小结	
 
-	第六部分　Spring的Web MVC框架 							
+	第六部分　Spring的Web MVC框架 			 				// done 2020-8-19 22:44:32				
 
 		第22章　迈向Spring MVC的旅程　						// done 2020-8-15 11:32:56	
 		
@@ -1173,9 +1173,59 @@
 
 			25.7 小结
 
-		第26章　Spring MVC中基于注解的Controller　
+		第26章　Spring MVC中基于注解的Controller　 			// done 2020-8-19 22:41:52
 
-		第27章　Spring MVC之扩展篇　
+			26.1 初识基于注解的Controller
+
+			26.2 基于注解的Controller原型分析
+
+				26.2.1 自定义基于注解的Controller的HandleMapping
+
+					org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping
+
+				26.2.2 自定义基于注解的Controller的HandleAdaptor
+
+					org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter
+
+			26.3 近看基于注解的Controller
+
+				26.3.1 声明基于注解Controller
+
+					1. 再谈@Controller
+
+					2. @RequsetMapping详解
+
+					3. 请求处理方法签名规则说明
+
+				26.3.2 请求参数到方法参数的绑定
+
+					1. 默认绑定行为
+
+					2. 使用@RequestParam明确地绑定关系
+
+					3. 添加自定义数据绑定规则
+
+						- 使用@InitBinder标注的初始化方法
+
+						- 指定自定义的WebBindingInitializer
+
+				26.3.3 使用@ModelAttribute访问模型数据
+
+			26.4 小结
+
+		第27章　Spring MVC之扩展篇　						// done 2020-8-19 22:43:49
+
+			27.1 Spring MVC 也 Convertion Over Configuration
+
+ 				27.1.1 Convertion Over Configuration简介
+
+ 					约定大于配置
+
+ 				27.1.2 Spring MVC 中的 Convertion Over Configuration	
+
+			27.2 Spring 3.0 展望
+
+			27.3 小结
 
 	第七部分　Spring框架对J2EE服务的集成和支持
 
