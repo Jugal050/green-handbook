@@ -1,4 +1,4 @@
-《Spring揭秘》
+《Spring揭秘》 											// start 2020-8-2 10:00:09 done 2020-8-24 23:48:21
 
 	第一部分 掀起Spring的盖头来
 
@@ -1229,24 +1229,150 @@
 
 	第七部分　Spring框架对J2EE服务的集成和支持
 
-		第28章　Spring框架内的JNDI支持　
+		第28章　Spring框架内的JNDI支持　						// done 2020-8-24 22:56:31
 		
+			28.1 JNDI简单回顾
 
+				JNDI: Java Naming and Directory Interface, Java命名与目录接口
 
-		第29章　Spring框架对JMS的集成　
+			28.2 Spring框架内JNDI访问的基石————JndiTemplate
+
+			28.3 JNDI对象的依赖注入————JndiObjectFactoryBean
+
+			28.4 小结
+
+		第29章　Spring框架对JMS的集成　 						// done 2020-8-24 23:00:37
 		
+			29.1 说说JMS的身世
 
+			29.2 使用JMS API进行应用开发的传统套路
 
-		第30章　使用Spring发送E-mail　
+			29.3 Spring改进后的JMS实战格斗术
+
+				29.3.1 消息发送和同步接收
+
+					1. JmsTemplate亲密接触
+
+					2. 同步消息处理场景浅析
+
+				29.3.2 异步消息接收
+
+					1. 了解MessageListenerContainer
+
+					2. 消息驱动POJO
+
+				29.3.3 JMS相关异常处理
+
+				29.3.4 框架内的事务管理支持
+
+			29.4 小结
+
+		第30章　使用Spring发送E-mail　						// done 2020-8-24 23:03:27
 		
+			30.1 思甜前，先忆苦
 
+			30.2 Spring的E-mail抽象层分析
 
-		第31章　Spring中的任务调度和线程池支持　
-		
+				30.2.1 直接创建邮件消息并发送
 
+				30.2.2 使用MimeMessagePreparator发送邮件
 
-		第32章　Spring框架对J2EE服务的集成之扩展篇　
-		
+			30.3 Spring的E-mail支持在实际开发中的应用
 
+			30.4 小结
 
-		第33章　Spring远程方案	
+		第31章　Spring中的任务调度和线程池支持　				// done 2020-8-24 23:10:16
+
+			31.1 Spring与Quartz	
+
+				31.1.1 初始Quartz
+
+				31.1.2 融入Spring大家庭的Quartz
+
+					1. Job的实现策略
+
+					2. JobDetail的更多选择
+
+					3. Trigger的可配置化
+
+					4. Scheduler的新家
+
+			31.2 Spring对JDK Timer的集成
+
+				31.2.1 JDK Timer小记
+
+				31.2.2 Spring集成后的 JDK Timer
+
+					1. 逃离TimerTask的魔咒
+
+					2. TimerTask模块化封装————ScheduledTimeTask
+
+			31.3 Executor的孪生兄弟TaskExecutor
+
+				31.3.1 可用的TaskExecutor
+
+					1. SyncTaskExecutor
+
+					2. SimpleSyncTaskExecutor
+
+					3. ThreadPoolTaskExecutor
+
+					4. ConcurrentTaskExecutor
+
+					5. TimerTaskExecutor、 SimpleThreadPoolTaskExecutor和WorkManagerTaskExecutor
+
+				31.3.2 TaskExecutor使用示例
+
+			31.4 小结
+
+		第32章　Spring框架对J2EE服务的集成之扩展篇　			// done 2020-8-24 23:13:17
+			
+			32.1 MailMonitor的延伸
+
+			32.2 Spring3.0展望
+
+			32.3 小结
+
+		第33章　Spring远程方案								// done 2020-8-24 23:45:43
+
+			33.1 从“对面交谈”到“千里传声”
+
+			33.2 Spring Remoting架构分析
+
+				33.2.1 Spring Remoting之远程访问异常体系
+
+				33.2.2 统一风格的远程服务公开和访问方式
+
+					Server Accessor:
+
+						org.springframework.remoting.rmi.RmiProxyFactoryBean
+
+						org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean
+
+						org.springframework.remoting.caucho.HessianProxyFactoryBean
+
+					Server Exporter: 								
+
+						org.springframework.remoting.rmi.RmiServiceExporter
+
+						org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter
+
+						org.springframework.remoting.caucho.HessianServiceExporter
+
+			33.3 Spring Remoting提供的远程服务支持
+
+				33.3.1 基于 RMI 的 Remoting方案
+				
+				33.3.2 基于 HTTP 的轻量级 Remoting方案
+
+				33.3.3 基于 Web服务 的 Remoting方案
+
+				33.3.3 基于 JMS 的 Remoting方案
+			
+			33.4 扩展 Spring Remoting
+			
+			33.5 Spring Remoting之扩展篇
+
+				33.5.1 拉开JMX演出的序幕
+
+				33.5.2 Spring 3.0 展望
