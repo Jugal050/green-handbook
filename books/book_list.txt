@@ -68,8 +68,6 @@ doing：
 
 todo:
 
-	《Spring揭秘》
-
 	《Spring技术内幕》
 
 	《Spring in Action》
