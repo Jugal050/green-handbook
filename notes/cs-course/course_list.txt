@@ -1,0 +1,18 @@
+course_list.txt
+
+done:
+
+todo:
+
+	网易云课堂：
+
+		顶尖中文大学计算机专业课程体系： https://study.163.com/curricula/cs.htm
+
+doing:
+	
+	# 计算机专业导论       // start 2020-8-26 21:30:00
+
+		url: https://www.icourse163.org/learn/HIT-437006?tid=1206805212#/learn/content
+
+
+
