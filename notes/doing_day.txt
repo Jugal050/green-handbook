@@ -4277,6 +4277,30 @@
 
 		第3讲-冯.诺依曼计算机 							// done 2020-8-29 12:14:21			
 
+2020-8-31
+
+	# Web Service:
+
+		j2ee7: https://docs.oracle.com/javaee/7/tutorial/webservices-intro002.htm		
+
+		spring-ws: https://docs.spring.io/spring-ws/docs/3.0.9.RELEASE/reference/
+
+		spring: https://docs.spring.io/spring-framework/docs/current/spring-framework-reference/integration.html#remoting-web-services
+
+		springboot: https://docs.spring.io/spring-boot/docs/current/reference/html/spring-boot-features.html#boot-features-webservices
+
+	# 生成wsdl文件：
+	
+		org.springframework.remoting.jaxws.AbstractJaxWsServiceExporter#afterPropertiesSet
+		org.springframework.remoting.jaxws.SimpleJaxWsServiceExporter#publishEndpoint(javax.xml.ws.Endpoint, javax.jws.WebService)
+		com.sun.xml.internal.ws.transport.http.server.EndpointImpl#publish(java.lang.String)
+		com.sun.xml.internal.ws.server.EndpointFactory#create
+		com.sun.xml.internal.ws.server.EndpointFactory#generateWSDL
+		com.sun.xml.internal.ws.db.DatabindingImpl#generateWSDL
+		com.sun.xml.internal.ws.wsdl.writer.WSDLGenerator#doGeneration
+		com.sun.xml.internal.ws.wsdl.writer.WSDLGenerator#generateDocument
+
+
 
 			
 
