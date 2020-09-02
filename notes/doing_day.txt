@@ -4365,21 +4365,26 @@
 
 	# springboot webservice guide:
 
-		## 发布webservice: 
+		## webservice服务发布: 
 
 			guide: https://spring.io/guides/gs/producing-web-service/
 
 			git: https://github.com/spring-guides/gs-producing-web-service
 
-		## 调用webservice: 
+			### 根据xsd生成class： org.codehaus.mojo:jaxb2-maven-plugin:2.5.0
+
+		## webservice服务调用: 
 
 			guide: https://spring.io/guides/gs/consuming-web-service/
 
 			git: https://github.com/spring-guides/gs-consuming-web-service
+
+			### 根据wsdl生成class： org.jvnet.jaxb2.maven2:maven-jaxb2-plugin:0.14.0
 
 	# spring guide: 
 
 		spring.io: https://spring.io/guides			
 
 		git: https://github.com/spring-guides/
+
 
