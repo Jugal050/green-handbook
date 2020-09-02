@@ -4361,40 +4361,25 @@
 			// ws终端实现类
 			com.sun.xml.internal.ws.server.WSEndpointImpl
 
+2020-09-02
 
+	# springboot webservice guide:
 
-			
+		## 发布webservice: 
 
+			guide: https://spring.io/guides/gs/producing-web-service/
 
+			git: https://github.com/spring-guides/gs-producing-web-service
 
+		## 调用webservice: 
 
+			guide: https://spring.io/guides/gs/consuming-web-service/
 
+			git: https://github.com/spring-guides/gs-consuming-web-service
 
+	# spring guide: 
 
+		spring.io: https://spring.io/guides			
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-			
-
-
-		
-
-			
-
-		
-	
-
-
-
+		git: https://github.com/spring-guides/
 
