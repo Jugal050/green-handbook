@@ -4399,3 +4399,19 @@
 			405-操作系统的合作与协同管理
 			406-现代计算机的演进
 
+	# website:
+
+		programcreek：
+
+			https://www.programcreek.com/
+
+		java code examples: 
+
+			https://www.programcreek.com/java-api-examples/index.php?action=search		
+
+		AdoptOpenJDK: 
+
+			official: https://adoptopenjdk.net/index.html
+
+			git: https://github.com/AdoptOpenJDK
+
