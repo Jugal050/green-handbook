@@ -4415,3 +4415,6 @@
 
 			git: https://github.com/AdoptOpenJDK
 
+2020-9-4
+
+	# xsd - java 相互转换
