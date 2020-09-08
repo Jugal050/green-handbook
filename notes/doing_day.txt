@@ -4415,7 +4415,6 @@
 
 			git: https://github.com/AdoptOpenJDK
 
-
 2020-9-4
 
 	# xsd - java 相互转换
@@ -4444,5 +4443,35 @@
 			P106-读写文件
 			P107-利用Python语言编写简单的程序
 			P108-小结	
+
+2020-9-8
+
+	# class类文件字节码生成
+
+		- javassist
+
+		- jdk: Proxy
+
+			- 入口： 
+
+					InvocationHandler handler = new MyInvocationHandler(...);
+					Class<?> proxyClass = Proxy.getProxyClass(Foo.class.getClassLoader(), Foo.class);
+					Foo f = (Foo) proxyClass.getConstructor(InvocationHandler.class).newInstance(handler);
+
+                or：
+
+					Foo f = (Foo) Proxy.newProxyInstance(Foo.class.getClassLoader(),
+	                                     new Class&lt;?&gt;[] { Foo.class },
+	                                     handler);
+
+         	- class类文件生成方式：（纯字节码生成class类文件数据）
+
+         		byte[] proxyClassFile = ProxyGenerator.generateProxyClass(proxyName, interfaces, accessFlags);
+
+		- mybatis-generator
+
+		- spring
+
+		- org.codehaus.mojo:jaxb2-maven-plugin:xjc:2.5.0
 
 
