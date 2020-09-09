@@ -4474,4 +4474,19 @@
 
 		- org.codehaus.mojo:jaxb2-maven-plugin:xjc:2.5.0
 
+2020-9-9
+
+	# class动态生成
+
+		- hard code	
+		- java dynamic proxy
+		- [cglib](http://cglib.sourceforge.net/)
+		- [asm](http://asm.ow2.org/)
+		- [javassist](http://www.javassist.org/)
+		- [bcel](http://jakarta.apache.org/bcel/)
+		- [Burningwave Core](https://github.com/burningwave/core)
+
+	# code generators: https://github.com/akullpp/awesome-java#code-generators
+
+	# Bytecode Manipulation: https://github.com/akullpp/awesome-java#bytecode-manipulation
 
