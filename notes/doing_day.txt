@@ -4490,3 +4490,13 @@
 
 	# Bytecode Manipulation: https://github.com/akullpp/awesome-java#bytecode-manipulation
 
+2020-9-11
+
+	# asm: 	
+
+		Core API 					// done 2020-9-11 18:00:00
+
+2020-9-12
+
+	# jls8:	
+

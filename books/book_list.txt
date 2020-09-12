@@ -66,6 +66,12 @@ doing：
 
 	spring-ws: https://docs.spring.io/spring-ws/docs/3.0.9.RELEASE/reference/		// start 2020-8-5 22:01:31	
 
+	asm: 
+
+	jvms8:
+
+	jls8:
+
 todo:
 
 	《Spring技术内幕》
@@ -84,6 +90,6 @@ todo:
 
 	struts-reference-guide 			
 
-	jvms
+	
 
 
