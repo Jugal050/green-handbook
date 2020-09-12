@@ -104,3 +104,4 @@
 		git: https://github.com/spring-guides/gs-consuming-web-service		
 - wsdl: https://www.w3.org/TR/wsdl	
 - soap: https://www.w3.org/TR/soap
+

@@ -4490,6 +4490,22 @@
 
 	# Bytecode Manipulation: https://github.com/akullpp/awesome-java#bytecode-manipulation
 
+2020-9-10
+
+	# asm: https://asm.ow2.io/asm4-guide.pdf
+
+		## Introduction
+
+		## Core API
+
+			2. Classes 								// done 2020-09-10 21:00
+
+				2.1 Structure
+
+				2.2 Interfaces and components
+
+				2.3 Tools
+
 2020-9-11
 
 	# asm: 	
@@ -4498,5 +4514,4 @@
 
 2020-9-12
 
-	# jls8:	
-
+	# jls8:					
