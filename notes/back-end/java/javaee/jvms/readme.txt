@@ -18,7 +18,7 @@ Preface to the Java SE 8 Edition xiii
 			2.3.1 Integral Types and Values 7
 			2.3.2 Floating-Point Types, Value Sets, and Values 8
 			2.3.3 The returnAddress Type and Values 10
-			2.3.4 The boolean Type 10
+			2.3.4 The boolean Type 10 											// done 2020-9-13 09:39:57
 		2.4 Reference Types and Values 11
 		2.5 Run-Time Data Areas 11
 			2.5.1 The pc Register 12
@@ -39,9 +39,9 @@ Preface to the Java SE 8 Edition xiii
 			2.8.2 Floating-Point Modes 20
 			2.8.3 Value Set Conversion 20
 		2.9 Special Methods 22
-		2.10 Exceptions 23
+		2.10 Exceptions 23 														// done 2020-9-13 11:39:29
 		2.11 Instruction Set Summary 25
-			2.11.1 Types and the Java Virtual Machine 26
+			2.11.1 Types and the Java Virtual Machine 26 						// todo 2020-9-13 11:39:40
 			2.11.2 Load and Store Instructions 29
 			2.11.3 Arithmetic Instructions 30
 			2.11.4 Type Conversion Instructions 32

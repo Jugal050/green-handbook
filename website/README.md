@@ -12,6 +12,7 @@
 * [awesome](https://github.com/sindresorhus/awesome)
 * [IMOOC](https://www.icourse163.org/)
 * [programcreek](https://www.programcreek.com/)
+* [unicode](https://home.unicode.org/)
 
 ## API
 
