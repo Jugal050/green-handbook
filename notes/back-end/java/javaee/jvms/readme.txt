@@ -10,7 +10,7 @@ Preface to the Java SE 8 Edition xiii
 		1.4 Notation 4
 		1.5 Feedback 4
 		
-	2 The Structure of the Java Virtual Machine 5
+	2 The Structure of the Java Virtual Machine 5 								// done 2020-9-13 17:37:20
 
 		2.1 The class File Format 5
 		2.2 Data Types 6
@@ -40,8 +40,8 @@ Preface to the Java SE 8 Edition xiii
 			2.8.3 Value Set Conversion 20
 		2.9 Special Methods 22
 		2.10 Exceptions 23 														// done 2020-9-13 11:39:29
-		2.11 Instruction Set Summary 25
-			2.11.1 Types and the Java Virtual Machine 26 						// todo 2020-9-13 11:39:40
+		2.11 Instruction Set Summary 25 										// done 2020-9-13 17:30:06
+			2.11.1 Types and the Java Virtual Machine 26 						
 			2.11.2 Load and Store Instructions 29
 			2.11.3 Arithmetic Instructions 30
 			2.11.4 Type Conversion Instructions 32
@@ -54,7 +54,7 @@ Preface to the Java SE 8 Edition xiii
 		2.12 Class Libraries 37
 		2.13 Public Design, Private Implementation 37
 		
-	3 Compiling for the Java Virtual Machine 39
+	3 Compiling for the Java Virtual Machine 39 								// done 2020-9-13 19:00:39
 
 		3.1 Format of Examples 39
 		3.2 Use of Constants, Local Variables, and Control Constructs 40
