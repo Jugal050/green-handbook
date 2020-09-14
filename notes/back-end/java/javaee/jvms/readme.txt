@@ -94,8 +94,8 @@ Preface to the Java SE 8 Edition xiii
 			4.4.9 The CONSTANT_MethodType_info Structure 89
 			4.4.10 The CONSTANT_InvokeDynamic_info Structure 89
 		4.5 Fields 90
-		4.6 Methods 92
-		4.7 Attributes 95
+		4.6 Methods 92 															// done 2020-9-14 21:47:39				
+		4.7 Attributes 95 														// done 2020-9-14 23:58:31
 			4.7.1 Defining and Naming New Attributes 101
 			4.7.2 The ConstantValue Attribute 101
 			4.7.3 The Code Attribute 102
@@ -108,7 +108,7 @@ Preface to the Java SE 8 Edition xiii
 				4.7.9.1 Signatures 120
 			4.7.10 The SourceFile Attribute 123
 			4.7.11 The SourceDebugExtension Attribute 124
-			4.7.12 The LineNumberTable Attribute 125
+			4.7.12 The LineNumberTable Attribute 125 							// done 2020-9-14 23:07:40
 			4.7.13 The LocalVariableTable Attribute 126
 			4.7.14 The LocalVariableTypeTable Attribute 128
 			4.7.15 The Deprecated Attribute 130
@@ -124,7 +124,7 @@ Preface to the Java SE 8 Edition xiii
 			4.7.22 The AnnotationDefault Attribute 154
 			4.7.23 The BootstrapMethods Attribute 155
 			4.7.24 The MethodParameters Attribute 157
-		4.8 Format Checking 159
+		4.8 Format Checking 159 												// done 2020-9-14 23:58:31
 		4.9 Constraints on Java Virtual Machine Code 160
 			4.9.1 Static Constraints 160
 			4.9.2 Structural Constraints 164
