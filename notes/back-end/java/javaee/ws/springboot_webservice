@@ -1,0 +1,13 @@
+# springboot webservice guide:
+
+	## 发布webservice: 
+
+		guide: https://spring.io/guides/gs/producing-web-service/
+
+		git: https://github.com/spring-guides/gs-producing-web-service
+
+	## 调用webservice: 
+
+		guide: https://spring.io/guides/gs/consuming-web-service/
+
+		git: https://github.com/spring-guides/gs-consuming-web-service
