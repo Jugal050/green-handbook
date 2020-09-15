@@ -72,7 +72,7 @@ Preface to the Java SE 8 Edition xiii
 		3.14 Synchronization 66
 		3.15 Annotations 67
 		
-	4 The class File Format 69
+	4 The class File Format 69 													// done 2020-9-15 21:33:14
 
 		4.1 The ClassFile Structure 70
 		4.2 The Internal Form of Names 74
@@ -125,10 +125,10 @@ Preface to the Java SE 8 Edition xiii
 			4.7.23 The BootstrapMethods Attribute 155
 			4.7.24 The MethodParameters Attribute 157
 		4.8 Format Checking 159 												// done 2020-9-14 23:58:31
-		4.9 Constraints on Java Virtual Machine Code 160
+		4.9 Constraints on Java Virtual Machine Code 160 						// done 2020-9-15 20:31:12
 			4.9.1 Static Constraints 160
 			4.9.2 Structural Constraints 164
-		4.10 Verification of class Files 167
+		4.10 Verification of class Files 167 									// done 2020-9-15 21:29:56
 			4.10.1 Verification by Type Checking 168
 				4.10.1.1 Accessors for Java Virtual Machine Artifacts 171
 				4.10.1.2 Verification Type System 175
@@ -145,13 +145,13 @@ Preface to the Java SE 8 Edition xiii
 				4.10.2.3 Values of Types long and double 326
 				4.10.2.4 Instance Initialization Methods and Newly Created Objects 326
 				4.10.2.5 Exceptions and finally 328
-		4.11 Limitations of the Java Virtual Machine 330
+		4.11 Limitations of the Java Virtual Machine 330 						// done 2020-9-15 21:33:06
 		
-	5 Loading, Linking, and Initializing 333
+	5 Loading, Linking, and Initializing 333 									// done 2020-9-15 23:45:32
 
 		5.1 The Run-Time Constant Pool 333
 		5.2 Java Virtual Machine Startup 336
-		5.3 Creation and Loading 336
+		5.3 Creation and Loading 336 											// done 2020-9-15 22:36:34
 			5.3.1 Loading Using the Bootstrap Class Loader 338
 			5.3.2 Loading Using a User-defined Class Loader 339
 			5.3.3 Creating Array Classes 340

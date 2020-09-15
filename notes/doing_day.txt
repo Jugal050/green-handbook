@@ -4570,3 +4570,9 @@
 			9 Metadata 								// done 2020-09-15 14:50
 
 			10 Backward compatibility 				// done 2020-09-15 15:03
+
+	# 《jvms8》
+	
+		4 The class File Format 69 					// done 2020-9-15 21:33:14		
+
+		5 Loading, Linking, and Initializing 333 	// done 2020-9-15 23:45:32
