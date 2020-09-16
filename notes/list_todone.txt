@@ -8,7 +8,7 @@ java:
 
 		Java Virtual Machine Guide: https://docs.oracle.com/en/java/javase/13/vm/java-virtual-machine-technology-overview.html
 
-		Java Virtual Machine Specification（JVM规范）： https://docs.oracle.com/javase/specs/jvms/se9/html/index.html （se9表示： JDK1.9）
+		jvms： https://docs.oracle.com/javase/specs/jvms/se8/html/index.html 	// start 2020-9-12 18:07:48  done 2020-9-16 22:50:07
 
 	javaEE：
 

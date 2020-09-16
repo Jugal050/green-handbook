@@ -1,4 +1,4 @@
-《The Java® Virtual Machine Specification Java SE 8 Edition》 Java8虚拟机规范 		// start 2020-9-12 18:07:48
+《The Java® Virtual Machine Specification Java SE 8 Edition》 Java8虚拟机规范 		// start 2020-9-12 18:07:48  done 2020-9-16 22:50:07
 
 Preface to the Java SE 8 Edition xiii
 
@@ -178,9 +178,9 @@ Preface to the Java SE 8 Edition xiii
 		6.1 Assumptions: The Meaning of "Must" 361
 		6.2 Reserved Opcodes 362
 		6.3 Virtual Machine Errors 362
-		6.4 Format of Instruction Descriptions 363
+		6.4 Format of Instruction Descriptions 363 								// done 2020-9-16 22:44:04
 			mnemonic 364
-		6.5 Instructions 366
+		6.5 Instructions 366 													// pass 指令集说明，暂时略过，需要时查看
 			aaload 367
 			aastore 368
 			aconst_null 370
@@ -331,6 +331,6 @@ Preface to the Java SE 8 Edition xiii
 			tableswitch 560
 			wide 562
 	
-	7 Opcode Mnemonics by Opcode 565
+	7 Opcode Mnemonics by Opcode 565 											// pass 指令目录A-Z，需要时查看 2020-9-16 22:48:38
 		Index 569
 		A Limited License Grant 587

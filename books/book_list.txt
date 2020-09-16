@@ -30,9 +30,9 @@ done：
 
 	《代码整洁之道》 													// done 2019-12-25 23:50:59 
 
-	JCU(Java Concurrency Utilities): https://docs.oracle.com/javase/8/docs/technotes/guides/concurrency/index.html	// start 2020-4-10 10:03:45	done 2020-4-11 18:47:07
+	JCU(Java Concurrency Utilities): 								// start 2020-4-10 10:03:45	done 2020-4-11 18:47:07
 
-	JMX(Java Management Extensions): https://docs.oracle.com/javase/tutorial/jmx/remote/custom.html 				// start 2020-4-16 14:00:01 done 2020-4-16 16:45:55
+	JMX(Java Management Extensions):								// start 2020-4-16 14:00:01 done 2020-4-16 16:45:55
 
 	java tools: https://docs.oracle.com/javase/8/docs/technotes/tools/
 
@@ -40,11 +40,15 @@ done：
 
 	ZooKeeper: https://zookeeper.apache.org/ 						// start 2020-6-15 21:55:34  done 2020-6-21 18:32:51
 
-	springboot-reference-guide: https://docs.spring.io/spring-boot/docs/current/reference/html/index.html // start 2020-7-13 22:15:23 done 2020-7-26 17:30:32
+	springboot-reference-guide: 									// start 2020-7-13 22:15:23 done 2020-7-26 17:30:32
 
-	dubbo: http://dubbo.apache.org/zh-cn/docs/user/configuration/xml.html 	// done
+	dubbo: 															// done 2020
 
 	《Spring揭秘》 													// start 2020-8-2 10:00:09 done 2020-8-24 23:48:21
+
+	jvms8:  														// start 2020-9-12 18:07:48 done 2020-9-16 22:50:07
+
+	asm: https://asm.ow2.io/asm4-guide.pdf							// start 2020-9-10 09:05:58 done 2020-9-15 15:48:00
 
 doing：
 
@@ -65,10 +69,6 @@ doing：
 	The Java EE Tutorial: https://docs.oracle.com/javaee/7/tutorial/index.html 		// start 2020-4-4 11:29:31	
 
 	spring-ws: https://docs.spring.io/spring-ws/docs/3.0.9.RELEASE/reference/		// start 2020-8-5 22:01:31	
-
-	asm: 
-
-	jvms8:
 
 	jls8:
 
