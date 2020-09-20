@@ -4587,3 +4587,90 @@
 
 		7 Opcode Mnemonics by Opcode 565 			// pass 指令目录A-Z，需要时查看 2020-9-16 22:48:38
 
+2020-9-20
+
+	# “汉诺塔”算法
+
+		汉诺塔（又称河内塔）问题是源于印度一个古老传说的益智玩具。大梵天创造世界的时候做了三根金刚石柱子，在一根柱子上从下往上按照大小顺序摞着64片黄金圆盘。大梵天命令婆罗门把圆盘从下面开始按大小顺序重新摆放在另一根柱子上。并且规定，在小圆盘上不能放大圆盘，在三根柱子之间一次只能移动一个圆盘。
+
+		后来，这个传说就演变为汉诺塔游戏，玩法如下:
+
+		1.有三根杆子A,B,C。A杆上有若干碟子
+		2.每次移动一块碟子,小的只能叠在大的上面
+		3.把所有碟子从A杆全部移到C杆上
+
+		java:
+
+			public class Hanoi {
+
+				public static void main(String[] args) {
+					int nDisk = 3;
+					doTowers(3, 'A', 'B', 'C');
+				}
+
+				public static doTowers(int topN, char from, char inter, char to) {
+					if (topN == 1) {
+						System.out.println("Disk 1 from " + from + " to " + to);
+					} else {
+						hanoi(topN - 1, from, to, inter);
+						System.out.println("Disk" + topN + " from " + from + " to " + to);
+						hanoi(topN - 1, inter, from, to);
+					}
+				}
+
+			}
+
+	# "斐波那契数列"（Fibonacci sequence）算法
+
+		斐波那契数列指的是这样一个数列 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233，377，610，987，1597，2584，4181，6765，10946，17711，28657，46368……
+
+		特别指出：第0项是0，第1项是第一个1。
+
+		这个数列从第三项开始，每一项都等于前两项之和。
+
+		java:
+
+			public class Fibonacci {
+
+				public static int fibonacci(int n) {
+
+					if (n == 0 || n == 1) {
+						return n;
+					} else {
+						return fibonacci(n - 1) + fibonacci(n - 2);
+					}
+
+				}
+
+			}
+
+		# "阿克曼"（Ackermann）递归算法
+
+			Ackermann函数定义如下：
+			{
+				A(1, 0) = 2 
+				A(0, m) = 1
+				A(n, 0) = n + 1
+				A(n, m) = A(A(n - 1, m), m - 1)
+			}
+
+		java:
+
+			public class Ackerman {
+
+				public static int ackerman(int n,int m){
+				    if (n == 1 && m == 0) {
+				        return 2;
+				    } else if ( n == 0 && m >= 0) {
+				        return 1;
+				    } else if (n >= 2 && m == 0) {
+				        return n + 2;
+				    } else {
+				        return ackerman(ackerman(n - 1, m), m - 1);
+				    }
+				}
+
+			}
+
+
+
