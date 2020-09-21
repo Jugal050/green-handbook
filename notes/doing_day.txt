@@ -4672,5 +4672,17 @@
 
 			}
 
+2020-9-21
 
+	# apache-cxf: http://cxf.apache.org/docs/index.html
+
+		maven:
+
+			org.apache.cxf:cxf-spring-boot-starter-jaxws:3.2.7
+
+		tool:
+
+			java2ws: org.apache.cxf.tools.java2ws.JavaToWS  	// velocity模板引擎
+
+			wsdl2java: org.apache.cxf.tools.wsdlto.WSDLToJava 	// velocity模板引擎
 
