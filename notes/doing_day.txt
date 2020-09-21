@@ -4686,3 +4686,33 @@
 
 			wsdl2java: org.apache.cxf.tools.wsdlto.WSDLToJava 	// velocity模板引擎
 
+	# awesome-java: https://github.com/akullpp/awesome-java
+
+		Code Generators
+
+			Tools that generate patterns for repetitive code in order to reduce verbosity and error-proneness.
+
+				ADT4J - JSR-269 code generator for algebraic data types.
+
+				Auto - Generates factory, service, and value classes.
+
+				FreeBuilder - Automatically generates the Builder pattern.
+
+				Immutables - Annotation processors to generate simple, safe and consistent value objects.
+
+				JavaPoet - API to generate source files. 														// 源码生成，doc规范、全面++
+
+				JHipster - Yeoman source code generator for Spring Boot and AngularJS. 							// https://start.spring.io/新建项目时使用
+
+				Joda-Beans - Small framework that adds queryable properties to Java, enhancing JavaBeans.
+
+				Lombok - Code generator that aims to reduce verbosity.
+
+				Telosys - Simple and light code generator available as an Eclipse Plugin and also as a CLI.	
+
+		comment:		
+
+			底层使用的技术包括但不限于： 模板引擎（velocity, freemaker, thymeleaf...）
+
+	# Google Cloud Shell: https://console.cloud.google.com		// google云终端
+
