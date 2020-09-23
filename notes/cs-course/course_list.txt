@@ -2,6 +2,10 @@ course_list.txt
 
 done:
 
+	# 计算机专业导论       // start 2020-8-26 21:30:00 done 2020-9-23 22:26:56
+
+		url: https://www.icourse163.org/learn/HIT-437006?tid=1206805212#/learn/content
+
 todo:
 
 	网易云课堂：
@@ -10,9 +14,8 @@ todo:
 
 doing:
 	
-	# 计算机专业导论       // start 2020-8-26 21:30:00
-
-		url: https://www.icourse163.org/learn/HIT-437006?tid=1206805212#/learn/content
+	
+	
 
 
 
