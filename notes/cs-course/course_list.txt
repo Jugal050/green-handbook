@@ -13,6 +13,10 @@ todo:
 		顶尖中文大学计算机专业课程体系： https://study.163.com/curricula/cs.htm
 
 doing:
+
+	# 数据结构             // start 2020-9-24 07:15:56
+
+		url: http://www.icourse163.org/learn/ZJU-93001?tid=1461682474#/learn/content
 	
 	
 	

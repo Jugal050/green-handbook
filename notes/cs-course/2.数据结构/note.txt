@@ -1,0 +1,242 @@
+《数据结构》 课程习题
+
+	第一讲：基本概念 					// done 2020-9-24 23:14:24
+
+		## 写程序实现一个函数printN，使得传入一个正整数为N的参数后，能顺序打印从1到N的全部正整数
+
+			public class PrintN {
+
+				public static void main(String[] args) {
+					int n = 10;
+					printFor(n);
+					System.out.println("-------------");
+					printRecursive(n);
+				}
+
+				/**
+				 * 循环实现
+				 */
+				public static void printFor(int n) {
+					for (int i = 1; i <= n; i++) {
+						System.out.println(i);
+					}
+				}
+
+				/**
+				 * 递归实现：由于每次递归会保存之前的执行数据，当n值很大时，占用空间会很大
+				 */
+				public static void printRecursive(int n) {
+					if (n > 0) {
+						printRecursive(n - 1);
+						System.out.println(n);
+					}
+					return;
+				}
+
+			}
+
+		## 写程序计算给定多项式在给定点x处的值，f(x) = a0 + a1 * X + a(n-1) * X (n-1次方) + an * X (n次方)
+
+			public class MathTest {
+
+				public static void main(String[] args) {
+					int n = 10000000;
+					double[] a = new double[n + 1];
+					for (int i = 0; i <= n; i++) {
+						a[i] = i;
+					}
+					double b = 10;
+
+					StopWatch stopWatch = new StopWatch();
+					stopWatch.start("math1");
+					math1(n, a, b);
+					stopWatch.stop();
+					stopWatch.start("math2");
+					math2(n, a, b);
+					stopWatch.stop();
+					System.out.println(stopWatch.prettyPrint());
+				}
+
+				/**
+				 * 按表达式计算
+				 */
+				public static double math1(int n, double[] a, double b) {
+					double sum = a[0];
+					for (int i = 1; i <= n; i++) {
+						sum += a[i] * Math.pow(b, i);
+					}
+					return sum;
+				}
+
+				/**
+				 * 按变形式计算： a[0] + b * (a[1] + b * (a[2] + b * (...... b * (a[n-1] + b * a[n]))))
+				 */
+				public static double math2(int n, double[] a, double b) {
+					double sum = a[n];
+					for (int i = n; i > 0; i--) {
+						sum = a[i-1] + b * sum;
+					}
+					return sum;
+				}
+
+			}
+
+		## 最大子列和问题：给定N个整数的序列{A[1], A[2]......A[N]}，求函数f(i,j) = max{0, E(i<=k<=j)A[k]}的最大值
+		 	
+			public class MaxSubseqSum {
+
+				public static void main(String[] args) {
+					int[] range = {1, 10, 100, 1000, 5000};
+					int n;
+					for (int j = 0; j < range.length; j++) {
+						n = range[j];
+						System.out.println("n = " + n);
+
+						int a[] = new int[n];
+						Random random = new Random();
+						for (int i = 0; i < n; i++) {
+							a[i] = random.nextInt(n) * (random.nextBoolean() ? 1 : -1);
+						}
+
+						StopWatch stopWatch = new StopWatch();
+						stopWatch.start("math1");
+						math1(a, n);
+						stopWatch.stop();
+						stopWatch.start("math2");
+						math2(a, n);
+						stopWatch.stop();
+						stopWatch.start("math3");
+						math3(a, n);
+						stopWatch.stop();
+						stopWatch.start("math4");
+						math4(a, n);
+						stopWatch.stop();
+						System.out.println(stopWatch.prettyPrint());
+					}
+				}
+
+				/**
+				 * T(N) = O(N的3次方)
+				 */
+				public static int math1(int[] a, int n) {
+					// tempSum为从a[i]到a[j]的子列和
+					int tempSum, maxSum = 0;
+					// i-子列左端位置，j-子列右段位置，k-i和j之间的位置
+					int i, j, k;
+					for (i = 0; i < n; i++) {
+						for (j = i; j < n; j++) {
+							tempSum = 0;
+							for (k = i; k <= j; k++) {
+								tempSum += a[k];
+							}
+							if (tempSum > maxSum) {
+								maxSum = tempSum;
+							}
+						}
+					}
+					return maxSum;
+				}
+
+				/**
+				 * T(N) = O(N的平方)
+				 */
+				public static int math2(int[] a, int n) {
+					// tempSum为从a[i]到a[j]的子列和
+					int tempSum, maxSum = 0;
+					// i-子列左端位置，j-子列右段位置，k-i和j之间的位置
+					int i, j, k;
+					for (i = 0; i < n; i++) {
+						tempSum = 0;
+						for (j = i; j < n; j++) {
+							tempSum += a[j];
+							if (tempSum > maxSum) {
+								maxSum = tempSum;
+							}
+						}
+					}
+					return maxSum;
+				}
+
+				/**
+				 * 分而治之：T(N) = O(NlogN)
+				 */
+				public static int math3(int[] a, int n) {
+					return divideAndConquer(a, 0, n - 1);
+				}
+
+				/**
+				 * 分而治法求a[left]到a[rigth]的最大子列和
+				 */
+				private static int divideAndConquer(int[] a, int left, int right) {
+					int maxLeftSum, maxRightSum; // 存放左右子列的最大和
+					int maxLeftBorderSum, maxRightBorderSum; // 存放左右跨分界线的结果
+
+					int leftBorderSum, rightBorderSum;
+					int center, i;
+
+					if (left == right) {
+						if (a[left] > 0) {
+							return a[left];
+						} else {
+							return 0;
+						}
+					}
+
+					// “分”的过程
+					center = (left + right) / 2;
+					// 递归求得两边子列的最大和
+					maxLeftSum = divideAndConquer(a, left, center);
+					maxRightSum = divideAndConquer(a, center + 1, right);
+
+					// 求跨分界线的子列和
+					maxLeftBorderSum = 0;
+					leftBorderSum = 0;
+					for (i = center; i >= left; i--) {
+						leftBorderSum += a[i];
+						if (leftBorderSum > maxLeftBorderSum) {
+							maxLeftBorderSum = leftBorderSum;
+						}
+					}
+
+					maxRightBorderSum = 0;
+					rightBorderSum = 0;
+					for (i = center + 1; i <= right; i++) {
+						rightBorderSum += a[i];
+						if (rightBorderSum > maxRightBorderSum) {
+							maxRightBorderSum = rightBorderSum;
+						}
+					}
+
+					// 返回“治”的结果
+					return max3(maxLeftSum, maxRightSum, maxLeftBorderSum + maxRightBorderSum);
+				}
+
+				/**
+				 * 返回三个数中的最大值
+				 */
+				private static int max3(int a, int b, int c) {
+					return a > b ? a > c ? a : c : b > c ? b : c;
+				}
+
+
+				/**
+				 * 在线处理：T(N) = O(N)
+				 */
+				public static int math4(int[] a, int n) {
+					int tempSum = 0, maxSum = 0;
+					int i;
+					for (i = 0; i < n; i++) {
+						tempSum += a[i];
+						if (tempSum > maxSum) {
+							maxSum = tempSum;
+						} else if (tempSum < 0) {
+							tempSum = 0;
+						}
+					}
+					return maxSum;
+				}
+
+
+			}
+
+	第二讲：线性结构	
