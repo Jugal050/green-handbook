@@ -20,6 +20,8 @@ without direction and strong interest, reading source is so boring. here start r
 
 ### data structure
 
+ * 《数据结构》 （用面向对象方法与C++语言描述）（第2版） 
+
 ### computer science
 
 - 《TCP-IP详解》
